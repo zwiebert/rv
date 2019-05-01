@@ -17,8 +17,8 @@
 #include "rtc.h"
 
  Mcp23017 relay_16;
-#define RELAY_ON 0U
-#define RELAY_OFF ((uint16_t)~0U)
+#define RELAY_ON MCP23017_PORT_PINS_LOW
+#define RELAY_OFF MCP23017_PORT_PINS_HIGH
 
  static void i2c2_setup(void)
  {
@@ -128,11 +128,7 @@
 
 void app() {
 	setup();
-	Mcp23017_construct(&relay_16, I2C2, Mcp23017_SLAVE_ADDRESS(0, 0, 0), //
-	0, // dir
-			~0, // gpo_values
-			0, 0, 0, 0, 0,
-			false, false, false);
+	Mcp23017_construct_out(&relay_16, I2C2, Mcp23017_slave_address(0, 0, 0), RELAY_OFF);
 
 	puts("hello");
 
