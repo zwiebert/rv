@@ -99,10 +99,10 @@
 								<option id="com.atollic.truestudio.common_options.target.fpu.99719773" name="Floating point" superClass="com.atollic.truestudio.common_options.target.fpu" useByScannerDiscovery="false"/>
 								<option id="com.atollic.truestudio.ldcc.optimization.do_garbage.208779736" name="Dead code removal" superClass="com.atollic.truestudio.ldcc.optimization.do_garbage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
 								<option id="com.atollic.truestudio.ldcc.general.scriptfile.168333047" name="Linker script" superClass="com.atollic.truestudio.ldcc.general.scriptfile" useByScannerDiscovery="false" value="../stm32_flash.ld" valueType="string"/>
-								<option id="com.atollic.truestudio.ldcc.libraries.list.1933654997" superClass="com.atollic.truestudio.ldcc.libraries.list" useByScannerDiscovery="false" valueType="libs">
+								<option id="com.atollic.truestudio.ldcc.libraries.list.1933654997" name="Libraries" superClass="com.atollic.truestudio.ldcc.libraries.list" useByScannerDiscovery="false" valueType="libs">
 									<listOptionValue builtIn="false" value="opencm3_stm32f1"/>
 								</option>
-								<option id="com.atollic.truestudio.ldcc.libraries.searchpath.381854572" superClass="com.atollic.truestudio.ldcc.libraries.searchpath" useByScannerDiscovery="false" valueType="libPaths">
+								<option id="com.atollic.truestudio.ldcc.libraries.searchpath.381854572" name="Library search path" superClass="com.atollic.truestudio.ldcc.libraries.searchpath" useByScannerDiscovery="false" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/home/bertw/arm/libopencm3/lib"/>
 								</option>
 								<inputType id="com.atollic.truestudio.ldcc.input.763477795" name="Input" superClass="com.atollic.truestudio.ldcc.input">

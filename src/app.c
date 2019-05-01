@@ -14,8 +14,11 @@
 #include <stdio.h>
 #include <errno.h>
 #include "mcp23017.h"
+#include "rtc.h"
 
  Mcp23017 relay_16;
+#define RELAY_ON 0U
+#define RELAY_OFF ((uint16_t)~0U)
 
  static void i2c2_setup(void)
  {
@@ -89,11 +92,38 @@
  	gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
  }
 
+ static void timer_set(int8_t channel) {
+	 static uint16_t set_mask;
+
+	 if (channel >= 0) {
+		 set_mask |= 1 << channel;
+		 return;
+	 }
+
+	 Mcp23017_putBits(&relay_16, set_mask, RELAY_ON);
+	 set_mask = 0;
+ }
+
+ static void timer_alarm(int8_t channel) {
+	 static uint16_t alarm_mask;
+
+	 if (channel >= 0) {
+		 alarm_mask |= 1 << channel;
+		 return;
+	 }
+
+	 Mcp23017_putBits(&relay_16, alarm_mask, RELAY_OFF);
+	 alarm_mask = 0;
+ }
+
  void setup() {
 		clock_setup();
 		serialPort_setup();
 		i2c2_setup();
 		led_setup();
+		timer_alarm_cb = timer_alarm;
+		timer_set_cb = timer_set;
+		rtc_setup();
  }
 
 void app() {
@@ -105,14 +135,21 @@ void app() {
 			false, false, false);
 
 	puts("hello");
+
+	rtc_set_timer_duration_by_minutes(9, 1);
+	timer_set(-1);
+
 	bool toggle = false;
 	while (1) {
 		unsigned long i;
 		for (i = 0; i < 800000; ++i) {
 			__asm__("nop");
 		}
+
+		rtc_timer_loop();
+
 		/* Using API function gpio_toggle(): */
-		gpio_toggle(GPIOC, GPIO13); /* LED on/off */
+		//gpio_toggle(GPIOC, GPIO13); /* LED on/off */
 		Mcp23017_putBit(&relay_16, 1, toggle);
 
 		toggle = !toggle;
