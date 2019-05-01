@@ -129,7 +129,7 @@
 void app() {
 	setup();
 	Mcp23017_construct(&relay_16, I2C2, Mcp23017_SLAVE_ADDRESS(0, 0, 0), //
-			0, // dir
+	0, // dir
 			~0, // gpo_values
 			0, 0, 0, 0, 0,
 			false, false, false);
@@ -141,8 +141,7 @@ void app() {
 
 	bool toggle = false;
 	while (1) {
-		unsigned long i;
-		for (i = 0; i < 800000; ++i) {
+		for (unsigned long i = 0; i < 800000; ++i) {
 			__asm__("nop");
 		}
 

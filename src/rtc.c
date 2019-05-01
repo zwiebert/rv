@@ -25,7 +25,7 @@ volatile bool timer_rang;
 volatile bool timer_rang, timer_noticed;
 
 uint32_t rtc_set_timer_duration_by_minutes(uint8_t channel, uint8_t minutes) {
-	if (!(channel < OUTPUT_PIN_COUNT && minutes <= MAX_TIMER_MINUTES))
+	if (!(channel < OUTPUT_PIN_COUNT && minutes <= MAX_TIMER_MINUTES && curr_time > 0))
 		return 0;
 	if (timer_set_cb)
 		timer_set_cb(channel);
@@ -122,6 +122,7 @@ return;
 void rtc_setup(void)
 {
 	timer_table_setup();
+	curr_time = rtc_get_counter_val();
 	/*
 	 * If the RTC is pre-configured just allow access, don't reconfigure.
 	 * Otherwise enable it with the LSE as clock source and 0x7fff as
