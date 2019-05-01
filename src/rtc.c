@@ -31,6 +31,7 @@ uint32_t rtc_set_timer_duration_by_minutes(uint8_t channel, uint8_t minutes) {
 		timer_set_cb(channel);
 
 	uint32_t timer = timers[channel] = minutes * 60 + curr_time;
+	printf("timer set: %u : %u (%u)\n", (unsigned)channel, (unsigned)timer, (unsigned)curr_time);
 	if (timer < next_timer_value) {
 		next_timer_value = timer;
 	}
