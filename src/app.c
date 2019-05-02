@@ -14,8 +14,9 @@
 #include <stdio.h>
 #include <errno.h>
 #include "mcp23017.h"
-#include "../Libraries/tm1638/include/tm1638.h"
 #include "rtc.h"
+
+#include "../Libraries/tm1638/include/boards/dlb8.h"
 
  Mcp23017 relay_16;
 #define RELAY_ON MCP23017_PORT_PINS_LOW
@@ -157,8 +158,10 @@ void app() {
 
 	bool toggle = false;
 	char c = '0';
+
+
 	while (1) {
-		for (unsigned long i = 0; i < 800000; ++i) {
+		for (unsigned long i = 0; i < 450000; ++i) {
 			__asm__("nop");
 		}
 
@@ -167,7 +170,17 @@ void app() {
 		/* Using API function gpio_toggle(): */
 		//gpio_toggle(GPIOC, GPIO13); /* LED on/off */
 		Mcp23017_putBit(&relay_16, 1, toggle);
-		 Tm1638_put_char(&input1, c++, LED_KEY_POS_TO_REG(5));
+		Tm1638_put_char(&input1, c++, LED_KEY_POS_TO_REG(5));
+
+
+		int button = dlb8_get_button(&input1);
+
+		if (button >= 0) {
+			Tm1638_put_char(&input1, '1', LED_KEY_POS_TO_REG(6));
+			printf("button: %d\n", button);
+		} else {
+			Tm1638_put_char(&input1, '0', LED_KEY_POS_TO_REG(6));
+		}
 
 		toggle = !toggle;
 

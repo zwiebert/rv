@@ -9,6 +9,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <libopencm3/stm32/gpio.h>
+#include "int_macros.h"
 
 uint32_t Tm1638_clk_port, Tm1638_dio_port;
 uint16_t Tm1638_clk_pin, Tm1638_dio_pin;
@@ -17,18 +18,28 @@ uint16_t Tm1638_clk_pin, Tm1638_dio_pin;
 #define TM1638_DATA_0 1
 
 static void pin_change_delay() {
-	for (unsigned long i = 0; i < 300; ++i) {
+	for (unsigned long i = 0; i < 3; ++i) {
 		__asm__("nop");
 	}
 }
 
+static void twait() {
+	for (unsigned long i = 0; i < 5; ++i) {
+		__asm__("nop");
+	}
+}
+
+
 static void Tm1638_dout(Tm1638 *obj, bool value) {
-	pin_change_delay();
 	if (value)
 		gpio_clear(Tm1638_dio_port, Tm1638_dio_pin);
 	else
 		gpio_set(Tm1638_dio_port, Tm1638_dio_pin);
-	pin_change_delay();
+}
+
+static bool Tm1638_din(Tm1638 *obj) {
+	uint16_t result = gpio_get(Tm1638_dio_port, Tm1638_dio_pin);
+	return result != 0;
 }
 
 static void Tm1638_strobe(Tm1638 *obj, bool value) {
@@ -57,6 +68,17 @@ static void Tm1638_write_byte(Tm1638 *obj, uint8_t data) {
 	}
 }
 
+static uint8_t Tm1638_read_byte(Tm1638 *obj) {
+	uint8_t data = 0;
+	for (int i = 0; i < 8; ++i) {
+		Tm1638_clock(obj, 0);
+		if (Tm1638_din(obj))
+			SET_BIT(data, i);
+		Tm1638_clock(obj, 1);
+	}
+	return data;
+}
+
 bool Tm1638_write(Tm1638 *obj, const uint8_t *cmd, uint8_t cmd_len,
 		const uint8_t *data, uint8_t data_len) {
 
@@ -79,9 +101,6 @@ bool Tm1638_write(Tm1638 *obj, const uint8_t *cmd, uint8_t cmd_len,
 	return true;
 }
 
-bool Tm1638_read(Tm1638 *obj, uint8_t *buf, uint8_t len);
-
-uint32_t Tm1638_read_keys(Tm1638 *obj);
 
 #define S7A 0x01
 #define S7B 0x02
@@ -169,6 +188,29 @@ void Tm1638_clear_registers(Tm1638 *obj) {
 	uint8_t data[16] = {0};
 
 	Tm1638_write(obj, cmd, sizeof cmd, data, sizeof data);
+}
+
+uint32_t Tm1638_read(Tm1638 *obj) {
+	uint32_t result = 0;
+
+	Tm1638_strobe(obj, true);
+	Tm1638_write_byte(obj,
+			TM1638_CMD_TYPE_DATA_MANAGEMENT | TM1638_CMD_DIR_READ);
+	gpio_set_mode(Tm1638_dio_port, GPIO_MODE_INPUT,
+			GPIO_CNF_INPUT_FLOAT, Tm1638_dio_pin);
+	twait();
+	for (int i = 0; i < 4; ++i) {
+		uint32_t data = Tm1638_read_byte(obj);
+		if (data)
+			result |= data << (i*8);
+
+	}
+	Tm1638_strobe(obj, false);
+	gpio_set_mode(Tm1638_dio_port, GPIO_MODE_OUTPUT_2_MHZ,
+			GPIO_CNF_OUTPUT_OPENDRAIN, Tm1638_dio_pin);
+
+	return result;
+
 }
 
 Tm1638 *Tm1638_construct(void *memory, uint32_t stb_port, uint16_t stb_pin) {

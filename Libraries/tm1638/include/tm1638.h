@@ -29,11 +29,8 @@
 
 #define TM1638_REG_OUTPUT 0xC0
 
-//LED&KEY module with 8 buttons, 8 7 segments, 8 LEDs
-#define LED_KEY_ADDR_FIRST 0xC0
-#define LED_KEY_ADDR_7S1(n) (LED_KEY_ADDR_FIRST + (n)*2)
-#define LED_KEY_ADDR_LED(n) (LED_KEY_ADDR_FIRST + (n)*2 +1)
-#define LED_KEY_POS_TO_REG(pos) ((pos)*2)
+
+
 
 
 extern uint32_t Tm1638_clk_port, Tm1638_dio_port;
@@ -48,12 +45,8 @@ typedef struct {
 
 Tm1638 *Tm1638_construct(void *memory, uint32_t stb_port, uint16_t stb_pin);
 bool Tm1638_write(Tm1638 *obj, const uint8_t *cmd, uint8_t cmd_len, const uint8_t *data, uint8_t data_len);
-bool Tm1638_read(Tm1638 *obj, uint8_t *buf, uint8_t len);
-
+uint32_t Tm1638_read(Tm1638 *obj);
 bool Tm1638_put_char(Tm1638 *obj, char c, uint8_t register_number);
-
-
-uint32_t Tm1638_read_keys(Tm1638 *obj);
 
 #endif /* TM1638_INCLUDE_TM1638_H_ */
 
