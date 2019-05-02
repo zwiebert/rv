@@ -14,11 +14,30 @@
 #include <stdio.h>
 #include <errno.h>
 #include "mcp23017.h"
+#include "../Libraries/tm1638/include/tm1638.h"
 #include "rtc.h"
 
  Mcp23017 relay_16;
 #define RELAY_ON MCP23017_PORT_PINS_LOW
 #define RELAY_OFF MCP23017_PORT_PINS_HIGH
+
+ Tm1638 input1;
+
+
+ static void input_setup(void) {
+	 rcc_periph_clock_enable(RCC_GPIOB);
+	 Tm1638_clk_port = GPIOB;
+	 Tm1638_dio_port = GPIOB;
+	 Tm1638_clk_pin = GPIO13;
+	 Tm1638_dio_pin = GPIO14;
+	 gpio_set(Tm1638_clk_port, Tm1638_clk_pin);
+	 gpio_set_mode(Tm1638_clk_port, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_OPENDRAIN, Tm1638_clk_pin);
+	 gpio_set_mode(Tm1638_dio_port, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_OPENDRAIN, Tm1638_dio_pin);
+	 Tm1638_construct(&input1,GPIOB,GPIO15);
+
+	 Tm1638_put_char(&input1, 'A', LED_KEY_POS_TO_REG(3));
+
+ }
 
  static void i2c2_setup(void)
  {
@@ -124,6 +143,7 @@
 		timer_alarm_cb = timer_alarm;
 		timer_set_cb = timer_set;
 		rtc_setup();
+		input_setup();
  }
 
 void app() {
@@ -136,6 +156,7 @@ void app() {
 	timer_set(-1);
 
 	bool toggle = false;
+	char c = '0';
 	while (1) {
 		for (unsigned long i = 0; i < 800000; ++i) {
 			__asm__("nop");
@@ -146,6 +167,7 @@ void app() {
 		/* Using API function gpio_toggle(): */
 		//gpio_toggle(GPIOC, GPIO13); /* LED on/off */
 		Mcp23017_putBit(&relay_16, 1, toggle);
+		 Tm1638_put_char(&input1, c++, LED_KEY_POS_TO_REG(5));
 
 		toggle = !toggle;
 

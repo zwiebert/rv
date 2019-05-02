@@ -19,12 +19,13 @@ typedef struct {
 	uint8_t mAddr;
 } Mcp23017;
 
+// calculate slave address from values for A0/1/2 IC pins
 #define Mcp23017_slave_address(a0,a1,a2) ((1U<<5) | ((a2)<<2) | ((a1)<<1) | (a0))
 
-#define MCP23017_PORT_PINS_LOW 0U
+#define MCP23017_PORT_PINS_LOW  0x0000
 #define MCP23017_PORT_PINS_HIGH 0xffff
-#define MCP23017_PORTA_MASK 0x00ff
-#define MCP23017_PORTB_MASK 0xff00
+#define MCP23017_PORTA_MASK     0x00ff
+#define MCP23017_PORTB_MASK     0xff00
 
 Mcp23017 *Mcp23017_construct_out(// setup object with all pins as output
 		void *memory, // uninitialized object (sizeof Mcp23017)
