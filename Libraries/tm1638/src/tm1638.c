@@ -94,39 +94,44 @@ uint32_t Tm1638_read_keys(Tm1638 *obj);
 
 static uint8_t Tm1638_char_to_7s(char c) {
 	switch (c) {
-	case '0': return S7A | S7B | S7C | S7D | S7E | S7F;
-	case '1': return S7B | S7C;
-	case '2': return S7A | S7B | S7G | S7D | S7E;
-	case '3': return S7A | S7B | S7C | S7D | S7G;
-	case '4': return S7B | S7C | S7G | S7F;
+	case '0':
+		return S7A | S7B | S7C | S7D | S7E | S7F;
+	case '1':
+		return S7B | S7C;
+	case '2':
+		return S7A | S7B | S7G | S7D | S7E;
+	case '3':
+		return S7A | S7B | S7C | S7D | S7G;
+	case '4':
+		return S7B | S7C | S7G | S7F;
 	case '5':
-		return 0b01101101;
+		return S7A | S7C | S7D | S7F | S7G;
 	case '6':
-		return 0b01111101;
+		return S7A | S7C | S7D | S7E | S7F | S7G;
 	case '7':
-		return 0b00000111;
+		return S7A | S7B | S7C;
 	case '8':
-		return 0b01111111;
+		return S7A | S7B | S7C | S7D | S7E | S7F | S7G;
 	case '9':
-		return 0b01101111;
+		return S7A | S7B | S7C | S7D | S7F | S7G;
 	case 'a':
 	case 'A':
 		return S7A | S7B | S7C | S7E | S7F | S7G;
 	case 'b':
 	case 'B':
-		return 0b01111100;
+		return S7C | S7D | S7E | S7F | S7G;
 	case 'c':
 	case 'C':
-		return 0b00111001;
+		return S7A | S7D | S7E | S7F;
 	case 'd':
 	case 'D':
-		return 0b01011110;
+		return S7B | S7C | S7D | S7E | S7G;
 	case 'e':
 	case 'E':
-		return 0b01111001;
+		return S7A | S7D | S7E | S7F | S7G;
 	case 'f':
 	case 'F':
-		return 0b01110001;
+		return S7A | S7E | S7F | S7G;
 
 	default:
 		return 0;
