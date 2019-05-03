@@ -21,7 +21,9 @@
 #define OUTPUT_PIN_COUNT 16
 #define MAX_TIMER_MINUTES 60
 #define NO_TIMER_VALUE ~0UL
+#define MAX_TIME_PER_DAY (60 * 90)
 
+#define IS_TIMER_RUNNING(t) (t->target_time != NO_TIMER_VALUE)
 
 
 valve_timer_T timers[OUTPUT_PIN_COUNT];
@@ -46,6 +48,7 @@ uint32_t valve_timer_set_timer_duration_by_minutes(uint8_t channel, uint8_t minu
 
 
 	timers[channel].programmed_minutes = minutes;
+	timers[channel].start_time = curr_time;
 	uint32_t timer = timers[channel].target_time = minutes * 60 + curr_time;
 
 	if (valve_timer_set_cb)
@@ -77,8 +80,10 @@ uint32_t valve_timer_increment_timer_duration(uint8_t channel) {
 	if (minutes_to_add < 0)
 		return 0;
 
+	if (!IS_TIMER_RUNNING(t))
+		t->start_time = curr_time;
 
-	uint32_t timer = t->target_time == NO_TIMER_VALUE ? curr_time : t->target_time;
+	uint32_t timer = !IS_TIMER_RUNNING(t) ? curr_time : t->target_time;
 	timer += minutes_to_add * 60;
 	t->target_time = timer;
 	rtc_update_timer_table();
@@ -88,6 +93,18 @@ uint32_t valve_timer_increment_timer_duration(uint8_t channel) {
 
 
 	return timer;
+}
+
+
+void reset_active_times() {  // FIXME: should do  reset at midnight
+	static uint32_t day_start_time;
+
+	if (day_start_time + ONE_DAY < curr_time) {
+		for (int i = 0; i < OUTPUT_PIN_COUNT; ++i) {
+			timers[i].active_time_today = 0;
+		}
+		day_start_time = curr_time;
+	}
 }
 
 uint32_t valve_timer_finish_timer(uint8_t channel) {
@@ -108,18 +125,26 @@ static void rtc_update_timer_table(void) {
 	bool callback_called = false;
 
 	for (uint8_t i = 0; i < OUTPUT_PIN_COUNT; ++i) {
-		uint32_t timer = timers[i].target_time;
-		if (timer < curr_time) {
+		valve_timer_T *t = &timers[i];
+
+		if (!IS_TIMER_RUNNING(t))
+			continue;
+
+		uint32_t run_time = curr_time - t->start_time;
+
+		if (t->target_time < curr_time) {
 			valve_timer_alarm_cb(i);
 			callback_called = true;
-			timers[i].target_time = NO_TIMER_VALUE;
-			timers[i].programmed_minutes = 0;
-			D(printf("timer alarm: ch=%u, end=%u, curr=%u\n", (unsigned) i,
-					(unsigned) timer, (unsigned) curr_time));
+			t->target_time = NO_TIMER_VALUE;
+			t->programmed_minutes = 0;
+			t->active_time_today += run_time;
+			D(printf("timer alarm: ch=%u, end=%u, curr=%u\n", (unsigned) i,	(unsigned) t->target_time, (unsigned) curr_time));
+		} else if (t->target_time < next_timer_value) {
+			next_timer_value = t->target_time;
+		}
 
-
-		} else if (timer < next_timer_value) {
-			next_timer_value = timer;
+		if (IS_TIMER_RUNNING(t) && t->active_time_today + run_time > MAX_TIME_PER_DAY) {
+			valve_timer_finish_timer(i);
 		}
 	}
 	if (callback_called) {
@@ -135,6 +160,7 @@ void valve_timer_loop(void) {
 		rtc_update_timer_table();
 		timer_finished = false;
 	}
+	reset_active_times();
 }
 
 static void timer_table_setup(void) {
@@ -142,6 +168,7 @@ static void timer_table_setup(void) {
 	for (int i=0; i < OUTPUT_PIN_COUNT; ++i) {
 	   timers[i].target_time = NO_TIMER_VALUE;
 	   timers[i].programmed_minutes = 0;
+	   timers[i].active_time_today = 0;
 	}
 }
 

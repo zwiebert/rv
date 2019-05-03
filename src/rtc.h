@@ -10,6 +10,10 @@
 
 #include <stdint.h>
 
+#define ONE_MINUTE (60)
+#define ONE_HOUR (ONE_MINUTE * 60)
+#define ONE_DAY (ONE_HOUR * 24)
+
 void rtc_setup(void);
 
 extern volatile uint32_t curr_time;

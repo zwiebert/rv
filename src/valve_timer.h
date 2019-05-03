@@ -13,8 +13,10 @@
 #define TIMER_SET_DONE -1
 
 typedef struct {
+	uint32_t start_time;
 	uint32_t target_time;
 	uint8_t programmed_minutes;
+	uint32_t active_time_today;
 } valve_timer_T;
 
 extern void (*valve_timer_alarm_cb)(int8_t channel);
