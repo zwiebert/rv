@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include "mcp23017.h"
 #include "rtc.h"
+#include "valve_timer.h"
 #include "int_macros.h"
 
 #include "../Libraries/tm1638/include/boards/dlb8.h"
@@ -140,8 +141,9 @@
 		serialPort_setup();
 		i2c2_setup();
 		led_setup();
-		timer_alarm_cb = timer_alarm;
-		timer_set_cb = timer_set;
+		valve_timer_alarm_cb = timer_alarm;
+		valve_timer_set_cb = timer_set;
+		valve_timer_setup();
 		rtc_setup();
 		input_setup();
  }
@@ -156,7 +158,7 @@
 
 void set_timers(timer_args_T *ta, uint8_t ta_len) {
 	for (int i=0; i < ta_len; ++i) {
-		rtc_set_timer_duration_by_minutes(ta[i].channel, ta[i].minutes);
+		valve_timer_set_timer_duration_by_minutes(ta[i].channel, ta[i].minutes);
 		if (ta[i].channel < 8) {
 			dlb8_put_chars(&input1, (1 << ta[i].channel), '0'+ta[i].minutes, true);
 		}
@@ -188,7 +190,7 @@ void app() {
 
 	puts("hello");
 
-	rtc_set_timer_duration_by_minutes(9, 1);
+	valve_timer_set_timer_duration_by_minutes(9, 1);
 	timer_set(-1);
 	uint8_t ta_len = parse_timer_string(tas, ta_buf);
 	set_timers(ta_buf, ta_len);
@@ -198,7 +200,7 @@ void app() {
 			__asm__("nop");
 		}
 
-		rtc_timer_loop();
+		valve_timer_loop();
 
 		/* Using API function gpio_toggle(): */
 		//gpio_toggle(GPIOC, GPIO13); /* LED on/off */
@@ -210,7 +212,7 @@ void app() {
 
 		if (button) {
 			printf("button: %d\n", button);
-			rtc_set_timer_duration_by_minutes(button, 1);
+			valve_timer_set_timer_duration_by_minutes(button, 1);
 			Tm1638_put_char(&input1, '1', LED_KEY_ADDR_DIGIT(button));
 			timer_set(-1);
 		} else {
