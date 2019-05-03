@@ -37,6 +37,9 @@ uint8_t dlb8_get_buttons(Tm1638 *obj);
 // get only pressed buttons which were not pressed at the last call of this function
 uint8_t dlb8_get_changed_buttons(Tm1638 *obj);
 
+// return buttons which were hold pressed while NMB_CALLS of get_buttons()/get_changed_buttons()
+uint8_t dlb8_calculate_hold_buttons(Tm1638 *obj, uint8_t nmb_calls);
+
 //  put led on or off
 // parameters:
 //    mask: bit mask of LEDs to be addressed

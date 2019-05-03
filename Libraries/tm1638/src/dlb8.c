@@ -12,13 +12,29 @@
 
 uint8_t dlb8_get_changed_buttons(Tm1638 *obj) {
 
-	uint8_t result = dlb8_get_buttons(obj);
+	uint8_t buttons = dlb8_get_buttons(obj);
+	if (!buttons) {
+
+		return 0;
+	}
+
+
 	uint8_t changed;
 
-	if ((changed = obj->user_data[0] ^ result)) {
-		obj->user_data[0] = result;
-		result &= changed;
-		return result;
+	if ((changed = obj->user_data[0] ^ buttons)) {
+		obj->user_data[0] = buttons;
+		buttons &= changed;
+		obj->user_data[1] = 0;
+		return buttons;
+	} else {
+		++obj->user_data[1];
+	}
+	return 0;
+}
+
+uint8_t dlb8_calculate_hold_buttons(Tm1638 *obj, uint8_t nmb_calls) {
+	if (obj->user_data[1] >= nmb_calls) {
+		return obj->user_data[0];
 	}
 	return 0;
 }
@@ -26,8 +42,13 @@ uint8_t dlb8_get_changed_buttons(Tm1638 *obj) {
 uint8_t dlb8_get_buttons(Tm1638 *obj) {
 	uint32_t data = Tm1638_read(obj);
 	uint8_t result = 0;
-	if (!data)
+
+	if (!data) {
+		obj->user_data[0] = 0;
+		obj->user_data[1] = 0;
 		return 0;
+	}
+
 	if (LED_KEY_BUTTON_0 & data)
 		result |= 1<<0;
 

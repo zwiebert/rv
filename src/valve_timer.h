@@ -23,6 +23,7 @@ extern void (*valve_timer_set_cb)(int8_t channel);
 void valve_timer_loop(void);
 uint32_t valve_timer_set_timer_duration_by_minutes(uint8_t channel, uint8_t minutes);
 uint32_t valve_timer_increment_timer_duration(uint8_t channel);
+uint32_t valve_timer_finish_timer(uint8_t channel);
 
 uint8_t valve_timer_get_programmed_minutes(uint8_t channel);
 

@@ -32,6 +32,7 @@ void (*valve_timer_alarm_cb)(int8_t channel);
 volatile uint32_t next_timer_value;
 
 volatile bool timer_rang, timer_noticed;
+bool timer_finished;
 
 static void rtc_update_timer_table(void);
 
@@ -89,6 +90,15 @@ uint32_t valve_timer_increment_timer_duration(uint8_t channel) {
 	return timer;
 }
 
+uint32_t valve_timer_finish_timer(uint8_t channel) {
+	if (timers[channel].target_time != NO_TIMER_VALUE) {
+		timers[channel].target_time = curr_time - 1;
+		timer_finished = true;
+		return timers[channel].target_time;
+	}
+	return 0;
+}
+
 bool rtc_timer_test() {
 	return next_timer_value < curr_time;
 }
@@ -121,6 +131,9 @@ void valve_timer_loop(void) {
 	if (timer_rang && !timer_noticed) {
 		rtc_update_timer_table();
 		timer_noticed = true;
+	} else if (timer_finished) {
+		rtc_update_timer_table();
+		timer_finished = false;
 	}
 }
 

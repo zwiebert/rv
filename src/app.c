@@ -134,7 +134,7 @@ static void timer_set(int8_t channel) {
 	 static uint16_t alarm_mask;
 
 	 if (channel >= 0) {
-		 alarm_mask |= 1 << channel;
+		 alarm_mask |= (1 << channel);
 		 return;
 	 }
 
@@ -217,12 +217,21 @@ void app() {
 		uint8_t button = dlb8_get_changed_buttons(&input1);
 
 		if (button) {
-			printf("button: %x\n", button);
+			printf("pressed button: %x\n", button);
 			for (int i = 0; i < 8; ++i) {
 				if (GET_BIT(button, i))
 					valve_timer_increment_timer_duration(i);
 			}
 			timer_set(TIMER_SET_DONE);
+		}
+		button = dlb8_calculate_hold_buttons(&input1, 10);
+
+		if (button) {
+			printf("hold button: %x\n", button);
+			for (int i = 0; i < 8; ++i) {
+				if (GET_BIT(button, i))
+					valve_timer_finish_timer(i);
+			}
 		}
 	}
 }
