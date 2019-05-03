@@ -10,7 +10,7 @@
 #define TM1638_INCLUDE_BOARD_D8L8K8_H_
 
 //
-#define LED_KEY_ADDR_7S1(n) (TM1638_REG_OUTPUT + (n)*2)
+#define LED_KEY_ADDR_DIGIT(n) (TM1638_REG_OUTPUT + (n)*2)
 #define LED_KEY_ADDR_LED(n) (TM1638_REG_OUTPUT + (n)*2 +1)
 #define LED_KEY_POS_TO_REG(pos) ((pos)*2)
 
@@ -27,7 +27,32 @@
 
 
 
-int8_t dlb8_get_button(Tm1638 *obj);
+// get pressed button
+// return value:
+//   if no button is pressed: 0
+//   if one or more buttons are pressed: bits 0..7 are set representing the pressed buttons 0..7 (or 1..8)
+//
+uint8_t dlb8_get_button(Tm1638 *obj);
 
+//  put led on or off
+// parameters:
+//    mask: bit mask of LEDs to be addressed
+//    value: on=true, off=false
+// return value:
+//    if success: true
+//
+bool dlb8_put_leds(Tm1638 *obj, uint8_t mask, bool value);
+
+//  put value to digit
+// parameters:
+//    mask: bit mask of Digits to be addressed
+//    value: bits 0..6 are representing digit segments a..g. bit 7 represents decimal point.
+// return value:
+//    if success: true
+//
+bool dlb8_put_digits(Tm1638 *obj, uint8_t mask, uint8_t value);
+
+// put char to digit
+#define dlb8_put_chars(obj,mask,c, dp) dlb8_put_digits(obj,mask, Tm1638_char_to_7s((c)) | ((dp)?0x80:0))
 
 #endif /* TM1638_INCLUDE_BOARD_D8L8K8_H_ */

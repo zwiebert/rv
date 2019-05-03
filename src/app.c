@@ -13,8 +13,11 @@
 #include <libopencm3/stm32/f1/memorymap.h>
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
+#include <stdlib.h>
 #include "mcp23017.h"
 #include "rtc.h"
+#include "int_macros.h"
 
 #include "../Libraries/tm1638/include/boards/dlb8.h"
 
@@ -36,7 +39,7 @@
 	 gpio_set_mode(Tm1638_dio_port, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_OPENDRAIN, Tm1638_dio_pin);
 	 Tm1638_construct(&input1,GPIOB,GPIO15);
 
-	 Tm1638_put_char(&input1, 'A', LED_KEY_POS_TO_REG(3));
+	 //Tm1638_put_char(&input1, 'A', LED_KEY_POS_TO_REG(3));
 
  }
 
@@ -121,6 +124,7 @@
 	 }
 
 	 Mcp23017_putBits(&relay_16, set_mask, RELAY_ON);
+	 dlb8_put_leds(&input1, GET_LOW_BYTE(set_mask), true);
 	 set_mask = 0;
  }
 
@@ -133,6 +137,9 @@
 	 }
 
 	 Mcp23017_putBits(&relay_16, alarm_mask, RELAY_OFF);
+	 dlb8_put_leds(&input1, GET_LOW_BYTE(alarm_mask), false);
+	 dlb8_put_chars(&input1, GET_LOW_BYTE(alarm_mask), 'F', true);
+
 	 alarm_mask = 0;
  }
 
@@ -147,6 +154,42 @@
 		input_setup();
  }
 
+ typedef struct {
+	 uint8_t channel;
+	 uint8_t minutes;
+ } timer_args_T;
+
+ timer_args_T ta_buf[16];
+
+
+void set_timers(timer_args_T *ta, uint8_t ta_len) {
+	for (int i=0; i < ta_len; ++i) {
+		rtc_set_timer_duration_by_minutes(ta[i].channel, ta[i].minutes);
+		if (ta[i].channel < 8) {
+			dlb8_put_chars(&input1, (1 << ta[i].channel), '0'+ta[i].minutes, true);
+		}
+	}
+	timer_set(-1);
+}
+
+char tas[] = "0:1 3:5";
+uint8_t parse_timer_string(char *s, timer_args_T *result) {
+	uint8_t i = 0;
+
+	for (char *token = strtok(s, " "); token; token = strtok(NULL, " ")) {
+		char *dp = index(token, ':');
+		if (dp) {
+			*dp = '\0';
+			result[i].channel = atoi(token);
+			result[i].minutes = atoi(dp + 1);
+			*dp = ':';
+			++i;
+		}
+	}
+	return i;
+}
+
+
 void app() {
 	setup();
 	Mcp23017_construct_out(&relay_16, I2C2, Mcp23017_slave_address(0, 0, 0), RELAY_OFF);
@@ -155,10 +198,8 @@ void app() {
 
 	rtc_set_timer_duration_by_minutes(9, 1);
 	timer_set(-1);
-
-	bool toggle = false;
-	char c = '0';
-
+	uint8_t ta_len = parse_timer_string(tas, ta_buf);
+	set_timers(ta_buf, ta_len);
 
 	while (1) {
 		for (unsigned long i = 0; i < 450000; ++i) {
@@ -169,21 +210,20 @@ void app() {
 
 		/* Using API function gpio_toggle(): */
 		//gpio_toggle(GPIOC, GPIO13); /* LED on/off */
-		Mcp23017_putBit(&relay_16, 1, toggle);
-		Tm1638_put_char(&input1, c++, LED_KEY_POS_TO_REG(5));
+		//Mcp23017_putBit(&relay_16, 1, toggle);
+		//Tm1638_put_char(&input1, c++, LED_KEY_POS_TO_REG(5));
 
 
-		int button = dlb8_get_button(&input1);
+		uint8_t button = dlb8_get_button(&input1);
 
-		if (button >= 0) {
-			Tm1638_put_char(&input1, '1', LED_KEY_POS_TO_REG(6));
+		if (button) {
 			printf("button: %d\n", button);
+			rtc_set_timer_duration_by_minutes(button, 1);
+			Tm1638_put_char(&input1, '1', LED_KEY_ADDR_DIGIT(button));
+			timer_set(-1);
 		} else {
-			Tm1638_put_char(&input1, '0', LED_KEY_POS_TO_REG(6));
+
 		}
-
-		toggle = !toggle;
-
 	}
 }
 

@@ -21,7 +21,6 @@ void (*timer_alarm_cb)(int8_t channel);
 
 volatile uint32_t next_timer_value;
 volatile uint32_t curr_time;
-volatile bool timer_rang;
 volatile bool timer_rang, timer_noticed;
 
 uint32_t rtc_set_timer_duration_by_minutes(uint8_t channel, uint8_t minutes) {
@@ -31,10 +30,12 @@ uint32_t rtc_set_timer_duration_by_minutes(uint8_t channel, uint8_t minutes) {
 		timer_set_cb(channel);
 
 	uint32_t timer = timers[channel] = minutes * 60 + curr_time;
-	printf("timer set: %u : %u (%u)\n", (unsigned)channel, (unsigned)timer, (unsigned)curr_time);
+
 	if (timer < next_timer_value) {
 		next_timer_value = timer;
 	}
+	printf("timer set: ch=%u, end=%u, curr=%u, next:%u\n",
+			(unsigned)channel, (unsigned)timer, (unsigned)curr_time, (unsigned)next_timer_value);
 	return timer;
 }
 
@@ -50,10 +51,13 @@ void rtc_update_timer_table(void) {
 		uint32_t timer = timers[i];
 		if (timer < curr_time) {
 			timers[i] = NO_TIMER_VALUE;
-			if (timer_alarm_cb) {
-				timer_alarm_cb(i);
-				callback_called = true;
-			}
+			printf("timer alarm: ch=%u, end=%u, curr=%u\n", (unsigned) i,
+					(unsigned) timer, (unsigned) curr_time);
+			timer_alarm_cb(i);
+			callback_called = true;
+
+		} else if (timer < next_timer_value) {
+			next_timer_value = timer;
 		}
 	}
 	if (callback_called) {

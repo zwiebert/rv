@@ -43,10 +43,15 @@ typedef struct {
 
 } Tm1638;
 
+uint8_t Tm1638_char_to_7s(char c);
+
 Tm1638 *Tm1638_construct(void *memory, uint32_t stb_port, uint16_t stb_pin);
-bool Tm1638_write(Tm1638 *obj, const uint8_t *cmd, uint8_t cmd_len, const uint8_t *data, uint8_t data_len);
+
+bool Tm1638_write(Tm1638 *obj, const uint8_t *cmd, uint8_t cmd_len,	const uint8_t *data, uint8_t data_len, const uint8_t *regs);
 uint32_t Tm1638_read(Tm1638 *obj);
+bool Tm1638_put_value(Tm1638 *obj, uint8_t value, uint8_t register_number);
 bool Tm1638_put_char(Tm1638 *obj, char c, uint8_t register_number);
+bool Tm1638_put_data(Tm1638 *obj, const uint8_t data[],  uint8_t length, const uint8_t registers[]);
 
 #endif /* TM1638_INCLUDE_TM1638_H_ */
 

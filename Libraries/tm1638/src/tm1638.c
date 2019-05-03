@@ -17,6 +17,8 @@ uint16_t Tm1638_clk_pin, Tm1638_dio_pin;
 #define TM1638_DATA_1 0
 #define TM1638_DATA_0 1
 
+#define D(x)
+
 static void pin_change_delay() {
 	for (unsigned long i = 0; i < 3; ++i) {
 		__asm__("nop");
@@ -61,6 +63,7 @@ static void Tm1638_clock(Tm1638 *obj, bool value) {
 }
 
 static void Tm1638_write_byte(Tm1638 *obj, uint8_t data) {
+	D(printf("write byte: %x\n", data));
 	for (int i = 0; i < 8; (++i), (data >>= 1)) {
 		Tm1638_clock(obj, 0);
 		Tm1638_dout(obj, (data & 0x01) ? TM1638_DATA_1 : TM1638_DATA_0);
@@ -78,7 +81,7 @@ static uint8_t Tm1638_read_byte(Tm1638 *obj) {
 	}
 	return data;
 }
-
+#if 0
 bool Tm1638_write(Tm1638 *obj, const uint8_t *cmd, uint8_t cmd_len,
 		const uint8_t *data, uint8_t data_len) {
 
@@ -100,6 +103,45 @@ bool Tm1638_write(Tm1638 *obj, const uint8_t *cmd, uint8_t cmd_len,
 
 	return true;
 }
+#endif
+bool Tm1638_write(Tm1638 *obj, const uint8_t *cmd, uint8_t cmd_len,
+		const uint8_t *data, uint8_t data_len, const uint8_t *regs) {
+
+	for (uint8_t i = 0; i < cmd_len; ++i) {
+		Tm1638_strobe(obj, true);
+		Tm1638_write_byte(obj, cmd[i]);
+		if (regs || i + 1 < cmd_len || !data_len) {
+			Tm1638_strobe(obj, false);
+		}
+	}
+
+	if (data_len) {
+
+		if (regs) {
+			for (uint8_t i = 0; i < data_len; ++i) {
+				Tm1638_strobe(obj, true);
+				Tm1638_write_byte(obj,
+						TM1638_CMD_TYPE_REGISTER_ADDRESS | regs[i]);
+				Tm1638_write_byte(obj, data[i]);
+				Tm1638_strobe(obj, false);
+			}
+			return true;
+		} else {
+			if (!cmd_len) {
+				Tm1638_strobe(obj, true);
+			}
+
+			for (uint8_t i = 0; i < data_len; ++i) {
+				Tm1638_write_byte(obj, data[i]);
+			}
+
+			Tm1638_strobe(obj, false);
+		}
+	}
+
+	return true;
+}
+
 
 
 #define S7A 0x01
@@ -111,7 +153,7 @@ bool Tm1638_write(Tm1638 *obj, const uint8_t *cmd, uint8_t cmd_len,
 #define S7G 0x40
 #define S7P 0x80
 
-static uint8_t Tm1638_char_to_7s(char c) {
+uint8_t Tm1638_char_to_7s(char c) {
 	switch (c) {
 	case '0':
 		return S7A | S7B | S7C | S7D | S7E | S7F;
@@ -158,7 +200,19 @@ static uint8_t Tm1638_char_to_7s(char c) {
 	}
 }
 
-bool Tm1638_put_char(Tm1638 *obj, char c, uint8_t register_number) {
+bool Tm1638_put_data(Tm1638 *obj, const uint8_t data[],  uint8_t length, const uint8_t registers[]){
+	uint8_t cmd[] = {
+			TM1638_CMD_TYPE_DATA_MANAGEMENT | TM1638_CMD_DIR_WRITE
+			| TM1638_CMD_ADDR_MODE_SINGLE
+	};
+	if (!length || !registers || registers[0] == 0xff)
+		return false;
+
+	return Tm1638_write(obj, cmd, sizeof cmd, data, length, registers);
+}
+
+
+bool Tm1638_put_value(Tm1638 *obj, uint8_t value, uint8_t register_number) {
 
 
 	uint8_t cmd[] = {
@@ -168,11 +222,15 @@ bool Tm1638_put_char(Tm1638 *obj, char c, uint8_t register_number) {
 
 	};
 
-	uint8_t data[] = {Tm1638_char_to_7s(c)};
+	uint8_t data[] = {value};
 
-	Tm1638_write(obj, cmd, sizeof cmd, data, sizeof data);
+	Tm1638_write(obj, cmd, sizeof cmd, data, sizeof data, 0);
 
 	return true;
+}
+
+bool Tm1638_put_char(Tm1638 *obj, char c, uint8_t register_number) {
+	return Tm1638_put_value(obj, Tm1638_char_to_7s(c), register_number);
 }
 
 void Tm1638_clear_registers(Tm1638 *obj) {
@@ -187,7 +245,7 @@ void Tm1638_clear_registers(Tm1638 *obj) {
 
 	uint8_t data[16] = {0};
 
-	Tm1638_write(obj, cmd, sizeof cmd, data, sizeof data);
+	Tm1638_write(obj, cmd, sizeof cmd, data, sizeof data, 0);
 }
 
 uint32_t Tm1638_read(Tm1638 *obj) {
