@@ -8,11 +8,14 @@
 #include "../include/tm1638.h"
 #include <string.h>
 #include <ctype.h>
+
+#ifdef STM32F1
 #include <libopencm3/stm32/gpio.h>
+#endif
+
 #include "int_macros.h"
 
-uint32_t Tm1638_clk_port, Tm1638_dio_port;
-uint16_t Tm1638_clk_pin, Tm1638_dio_pin;
+gpio_pin_T Tm1638_clk_pin, Tm1638_dio_pin;
 
 #define TM1638_DATA_1 0
 #define TM1638_DATA_0 1
@@ -33,32 +36,23 @@ static void twait() {
 
 
 static void Tm1638_dout(Tm1638 *obj, bool value) {
-	if (value)
-		gpio_clear(Tm1638_dio_port, Tm1638_dio_pin);
-	else
-		gpio_set(Tm1638_dio_port, Tm1638_dio_pin);
+	my_put_pin(Tm1638_dio_pin, !value);
 }
 
 static bool Tm1638_din(Tm1638 *obj) {
-	uint16_t result = gpio_get(Tm1638_dio_port, Tm1638_dio_pin);
+	uint16_t result = my_get_pin(Tm1638_dio_pin);
 	return result != 0;
 }
 
 static void Tm1638_strobe(Tm1638 *obj, bool value) {
 	pin_change_delay();
-	if (value)
-		gpio_clear(obj->mStrobePort, obj->mStrobePin);
-	else
-		gpio_set(obj->mStrobePort, obj->mStrobePin);
+	my_put_pin(obj->mStrobePin, !value);
 	pin_change_delay();
 }
 
 static void Tm1638_clock(Tm1638 *obj, bool value) {
 	pin_change_delay();
-	if (value)
-		gpio_set(Tm1638_clk_port, Tm1638_clk_pin);
-	else
-		gpio_clear(Tm1638_clk_port, Tm1638_clk_pin);
+	my_put_pin(Tm1638_clk_pin, value);
 	pin_change_delay();
 }
 
@@ -81,29 +75,7 @@ static uint8_t Tm1638_read_byte(Tm1638 *obj) {
 	}
 	return data;
 }
-#if 0
-bool Tm1638_write(Tm1638 *obj, const uint8_t *cmd, uint8_t cmd_len,
-		const uint8_t *data, uint8_t data_len) {
 
-	for (uint8_t i = 0; i < cmd_len; ++i) {
-		Tm1638_strobe(obj, true);
-		Tm1638_write_byte(obj, cmd[i]);
-		if (i + 1 < cmd_len)
-			Tm1638_strobe(obj, false);
-	}
-
-	if (!cmd_len)
-		Tm1638_strobe(obj, true);
-
-	for (uint8_t i = 0; i < data_len; ++i) {
-		Tm1638_write_byte(obj, data[i]); // FIXME: inverted data
-	}
-
-	Tm1638_strobe(obj, false);
-
-	return true;
-}
-#endif
 bool Tm1638_write(Tm1638 *obj, const uint8_t *cmd, uint8_t cmd_len,
 		const uint8_t *data, uint8_t data_len, const uint8_t *regs) {
 
@@ -254,8 +226,7 @@ uint32_t Tm1638_read(Tm1638 *obj) {
 	Tm1638_strobe(obj, true);
 	Tm1638_write_byte(obj,
 			TM1638_CMD_TYPE_DATA_MANAGEMENT | TM1638_CMD_DIR_READ);
-	gpio_set_mode(Tm1638_dio_port, GPIO_MODE_INPUT,
-			GPIO_CNF_INPUT_FLOAT, Tm1638_dio_pin);
+	my_pin_input_float(Tm1638_dio_pin);
 	twait();
 	for (int i = 0; i < 4; ++i) {
 		uint32_t data = Tm1638_read_byte(obj);
@@ -264,21 +235,42 @@ uint32_t Tm1638_read(Tm1638 *obj) {
 
 	}
 	Tm1638_strobe(obj, false);
-	gpio_set_mode(Tm1638_dio_port, GPIO_MODE_OUTPUT_2_MHZ,
-			GPIO_CNF_OUTPUT_OPENDRAIN, Tm1638_dio_pin);
+	my_pin_output_open(Tm1638_dio_pin);
 
 	return result;
 
 }
 
+#ifdef STM32F1
+
 Tm1638 *Tm1638_construct(void *memory, uint32_t stb_port, uint16_t stb_pin) {
 	Tm1638 *obj = memory;
 	memset(obj, 0, sizeof(*obj));
-	gpio_set(stb_port,stb_pin);
-	gpio_set_mode(stb_port, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_OPENDRAIN, stb_pin);
 
-	obj->mStrobePort = stb_port;
-	obj->mStrobePin = stb_pin;
+	obj->mStrobePin.port = stb_port;
+	obj->mStrobePin.pin = stb_pin;
+
+	my_set_pin(obj->mStrobePin);
+	my_pin_output_open(obj->mStrobePin);
+
 	Tm1638_clear_registers(obj);
 	return obj;
 }
+
+
+void Tm1638_setup(uint32_t clk_port, uint16_t clk_pin, uint32_t dio_port, uint16_t dio_pin) {
+	 Tm1638_clk_pin.port = clk_port;
+	 Tm1638_dio_pin.port = dio_port;
+
+	 Tm1638_clk_pin.pin = clk_pin;
+	 Tm1638_dio_pin.pin = dio_pin;
+
+	 my_set_pin(Tm1638_clk_pin);
+	 my_set_pin(Tm1638_dio_pin);
+
+	 my_pin_output_open(Tm1638_clk_pin);
+	 my_pin_output_open(Tm1638_dio_pin);
+}
+#else
+#error "implement these MCU/library specific functions: Tm1638_construct(), Tm1638_setup()"
+#endif

@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "stm32f1-opencm3.h"
+
 
 
 #define TM1638_CMD_TYPE_DATA_MANAGEMENT  0x40
@@ -30,22 +32,20 @@
 #define TM1638_REG_OUTPUT 0xC0
 
 
-
-
-
-extern uint32_t Tm1638_clk_port, Tm1638_dio_port;
-extern uint16_t Tm1638_clk_pin, Tm1638_dio_pin;
-
 typedef struct {
-	uint32_t mStrobePort;
-	uint16_t mStrobePin;
-
-
+	gpio_pin_T mStrobePin;
 } Tm1638;
 
 uint8_t Tm1638_char_to_7s(char c);
 
+#ifdef STM32F1
+void Tm1638_setup(uint32_t clk_port, uint16_t clk_pin, uint32_t dio_port, uint16_t dio_pin);
 Tm1638 *Tm1638_construct(void *memory, uint32_t stb_port, uint16_t stb_pin);
+#else
+#error "implement these MCU/library specific functions: Tm1638_construct(), Tm1638_setup()"
+#endif
+
+
 
 bool Tm1638_write(Tm1638 *obj, const uint8_t *cmd, uint8_t cmd_len,	const uint8_t *data, uint8_t data_len, const uint8_t *regs);
 uint32_t Tm1638_read(Tm1638 *obj);

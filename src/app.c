@@ -30,17 +30,9 @@
 
  static void input_setup(void) {
 	 rcc_periph_clock_enable(RCC_GPIOB);
-	 Tm1638_clk_port = GPIOB;
-	 Tm1638_dio_port = GPIOB;
-	 Tm1638_clk_pin = GPIO13;
-	 Tm1638_dio_pin = GPIO14;
-	 gpio_set(Tm1638_clk_port, Tm1638_clk_pin);
-	 gpio_set_mode(Tm1638_clk_port, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_OPENDRAIN, Tm1638_clk_pin);
-	 gpio_set_mode(Tm1638_dio_port, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_OPENDRAIN, Tm1638_dio_pin);
+	 Tm1638_setup(GPIOB, GPIO13, GPIOB, GPIO14);
+
 	 Tm1638_construct(&input1,GPIOB,GPIO15);
-
-	 //Tm1638_put_char(&input1, 'A', LED_KEY_POS_TO_REG(3));
-
  }
 
  static void i2c2_setup(void)
