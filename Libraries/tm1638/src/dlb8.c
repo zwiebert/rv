@@ -10,8 +10,20 @@
 
 #include "../include/boards/dlb8.h"
 
+uint8_t dlb8_get_changed_buttons(Tm1638 *obj) {
 
-uint8_t dlb8_get_button(Tm1638 *obj) {
+	uint8_t result = dlb8_get_buttons(obj);
+	uint8_t changed;
+
+	if ((changed = obj->user_data[0] ^ result)) {
+		obj->user_data[0] = result;
+		result &= changed;
+		return result;
+	}
+	return 0;
+}
+
+uint8_t dlb8_get_buttons(Tm1638 *obj) {
 	uint32_t data = Tm1638_read(obj);
 	uint8_t result = 0;
 	if (!data)
@@ -26,6 +38,9 @@ uint8_t dlb8_get_button(Tm1638 *obj) {
 			}
 		}
 	}
+
+
+
 	return result;
 }
 

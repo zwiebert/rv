@@ -206,7 +206,7 @@ void app() {
 		//Tm1638_put_char(&input1, c++, LED_KEY_POS_TO_REG(5));
 
 
-		uint8_t button = dlb8_get_button(&input1);
+		uint8_t button = dlb8_get_changed_buttons(&input1);
 
 		if (button) {
 			printf("button: %d\n", button);

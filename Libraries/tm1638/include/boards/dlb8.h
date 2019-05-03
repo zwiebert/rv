@@ -32,7 +32,10 @@
 //   if no button is pressed: 0
 //   if one or more buttons are pressed: bits 0..7 are set representing the pressed buttons 0..7 (or 1..8)
 //
-uint8_t dlb8_get_button(Tm1638 *obj);
+uint8_t dlb8_get_buttons(Tm1638 *obj);
+
+// get only pressed buttons which were not pressed at the last call of this function
+uint8_t dlb8_get_changed_buttons(Tm1638 *obj);
 
 //  put led on or off
 // parameters:
