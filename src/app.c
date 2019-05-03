@@ -108,18 +108,27 @@
  	gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
  }
 
- static void timer_set(int8_t channel) {
-	 static uint16_t set_mask;
+static void timer_set(int8_t channel) {
+	static uint16_t set_mask;
 
-	 if (channel >= 0) {
-		 set_mask |= 1 << channel;
-		 return;
-	 }
+	if (channel >= 0) {
+		set_mask |= 1 << channel;
+		return;
+	}
 
-	 Mcp23017_putBits(&relay_16, set_mask, RELAY_ON);
-	 dlb8_put_leds(&input1, GET_LOW_BYTE(set_mask), true);
-	 set_mask = 0;
- }
+	Mcp23017_putBits(&relay_16, set_mask, RELAY_ON);
+	dlb8_put_leds(&input1, GET_LOW_BYTE(set_mask), true);
+
+	for (int i = 0; i < 16; ++i) { //FIXME: number literal
+		if (GET_BIT(set_mask, i)) {
+			char buf[8];
+			uint8_t minutes = valve_timer_get_programmed_minutes(i);
+			itoa(minutes, buf, 10);
+			dlb8_put_chars(&input1, 1 << i, buf[0], minutes >= 10);
+		}
+	}
+	set_mask = 0;
+}
 
  static void timer_alarm(int8_t channel) {
 	 static uint16_t alarm_mask;
@@ -159,11 +168,8 @@
 void set_timers(timer_args_T *ta, uint8_t ta_len) {
 	for (int i=0; i < ta_len; ++i) {
 		valve_timer_set_timer_duration_by_minutes(ta[i].channel, ta[i].minutes);
-		if (ta[i].channel < 8) {
-			dlb8_put_chars(&input1, (1 << ta[i].channel), '0'+ta[i].minutes, true);
-		}
 	}
-	timer_set(-1);
+	timer_set(TIMER_SET_DONE);
 }
 
 char tas[] = "0:1 3:5";
@@ -211,12 +217,12 @@ void app() {
 		uint8_t button = dlb8_get_changed_buttons(&input1);
 
 		if (button) {
-			printf("button: %d\n", button);
-			valve_timer_set_timer_duration_by_minutes(button, 1);
-			Tm1638_put_char(&input1, '1', LED_KEY_ADDR_DIGIT(button));
-			timer_set(-1);
-		} else {
-
+			printf("button: %x\n", button);
+			for (int i = 0; i < 8; ++i) {
+				if (GET_BIT(button, i))
+					valve_timer_increment_timer_duration(i);
+			}
+			timer_set(TIMER_SET_DONE);
 		}
 	}
 }

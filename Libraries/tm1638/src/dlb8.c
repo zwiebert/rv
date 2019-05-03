@@ -28,21 +28,33 @@ uint8_t dlb8_get_buttons(Tm1638 *obj) {
 	uint8_t result = 0;
 	if (!data)
 		return 0;
+	if (LED_KEY_BUTTON_0 & data)
+		result |= 1<<0;
 
-	for(int i=0; i < 8; (++i), (data >>= 4)) {
-		if (data & 1) {
-			if (i&1) {
-				result |= (i>>1) + 4;
-			} else {
-				result |= (i>>1);
-			}
-		}
-	}
+	if (LED_KEY_BUTTON_1 & data)
+		result |= 1<<1;
 
+	if (LED_KEY_BUTTON_2 & data)
+		result |= 1<<2;
 
+	if (LED_KEY_BUTTON_3 & data)
+		result |= 1<<3;
+
+	if (LED_KEY_BUTTON_4 & data)
+		result |= 1<<4;
+
+	if (LED_KEY_BUTTON_5 & data)
+		result |= 1<<5;
+
+	if (LED_KEY_BUTTON_6 & data)
+		result |= 1<<6;
+
+	if (LED_KEY_BUTTON_7 & data)
+		result |= 1<<7;
 
 	return result;
 }
+
 
 bool dlb8_put_leds(Tm1638 *obj, uint8_t mask, bool value) {
 	uint8_t data[8], addr[8], data_len = 0;
