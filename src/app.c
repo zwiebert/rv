@@ -26,14 +26,15 @@
 #define RELAY_ON MCP23017_PORT_PINS_LOW
 #define RELAY_OFF MCP23017_PORT_PINS_HIGH
 
- Tm1638 input1;
+ Dlb8 input[2];
+ Dlb8 *dlb8_obj[2];
 
 
  static void input_setup(void) {
 	 rcc_periph_clock_enable(RCC_GPIOB);
 	 Tm1638_setup(GPIOB, GPIO13, GPIOB, GPIO14);
-
-	 Tm1638_construct(&input1,GPIOB,GPIO15);
+	 Tm1638_construct(&input[0].tm,GPIOB,GPIO15);
+	 dlb8_obj[0] = &input[0];
  }
 
  static void i2c2_setup(void)
@@ -117,14 +118,14 @@ static void timer_set(int8_t channel) {
 	}
 
 	Mcp23017_putBits(&relay_16, set_mask, RELAY_ON);
-	dlb8_put_leds(&input1, GET_LOW_BYTE(set_mask), true);
+	dlb8_put_leds(dlb8_obj[0], GET_LOW_BYTE(set_mask), true);
 
 	for (int i = 0; i < 16; ++i) { //FIXME: number literal
 		if (GET_BIT(set_mask, i)) {
 			char buf[8];
 			uint8_t minutes = valve_timer_get_programmed_minutes(i);
 			itoa(minutes, buf, 10);
-			dlb8_put_chars(&input1, 1 << i, buf[0], minutes >= 10);
+			dlb8_put_chars(dlb8_obj[0], 1 << i, buf[0], minutes >= 10);
 		}
 	}
 	set_mask = 0;
@@ -139,8 +140,8 @@ static void timer_set(int8_t channel) {
 	 }
 
 	 Mcp23017_putBits(&relay_16, alarm_mask, RELAY_OFF);
-	 dlb8_put_leds(&input1, GET_LOW_BYTE(alarm_mask), false);
-	 dlb8_put_chars(&input1, GET_LOW_BYTE(alarm_mask), 'F', true);
+	 dlb8_put_leds(dlb8_obj[0], GET_LOW_BYTE(alarm_mask), false);
+	 dlb8_put_chars(dlb8_obj[0], GET_LOW_BYTE(alarm_mask), 'F', true);
 
 	 alarm_mask = 0;
  }
@@ -214,7 +215,7 @@ void app() {
 		//Tm1638_put_char(&input1, c++, LED_KEY_POS_TO_REG(5));
 
 
-		uint8_t button = dlb8_get_changed_buttons(&input1);
+		uint8_t button = dlb8_get_changed_buttons(dlb8_obj[0]);
 
 		if (button) {
 			printf("pressed button: %x\n", button);
@@ -224,7 +225,7 @@ void app() {
 			}
 			timer_set(TIMER_SET_DONE);
 		}
-		button = dlb8_calculate_hold_buttons(&input1, 10);
+		button = dlb8_calculate_hold_buttons(dlb8_obj[0], 10);
 
 		if (button) {
 			printf("hold button: %x\n", button);

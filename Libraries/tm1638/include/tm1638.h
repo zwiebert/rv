@@ -34,7 +34,6 @@
 
 typedef struct {
 	gpio_pin_T mStrobePin;
-	uint8_t user_data[4];
 } Tm1638;
 
 uint8_t Tm1638_char_to_7s(char c);

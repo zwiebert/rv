@@ -25,20 +25,25 @@
 #define LED_KEY_BUTTON_6 0x00100000
 #define LED_KEY_BUTTON_7 0x10000000
 
+typedef struct {
+	Tm1638 tm;
+	uint8_t last_buttons;
+	uint8_t hold_counter;
 
+} Dlb8;
 
 // get pressed button
 // return value:
 //   if no button is pressed: 0
 //   if one or more buttons are pressed: bits 0..7 are set representing the pressed buttons 0..7 (or 1..8)
 //
-uint8_t dlb8_get_buttons(Tm1638 *obj);
+uint8_t dlb8_get_buttons(Dlb8 *obj);
 
 // get only pressed buttons which were not pressed at the last call of this function
-uint8_t dlb8_get_changed_buttons(Tm1638 *obj);
+uint8_t dlb8_get_changed_buttons(Dlb8 *obj);
 
 // return buttons which were hold pressed while NMB_CALLS of get_buttons()/get_changed_buttons()
-uint8_t dlb8_calculate_hold_buttons(Tm1638 *obj, uint8_t nmb_calls);
+uint8_t dlb8_calculate_hold_buttons(Dlb8 *obj, uint8_t nmb_calls);
 
 //  put led on or off
 // parameters:
@@ -47,7 +52,7 @@ uint8_t dlb8_calculate_hold_buttons(Tm1638 *obj, uint8_t nmb_calls);
 // return value:
 //    if success: true
 //
-bool dlb8_put_leds(Tm1638 *obj, uint8_t mask, bool value);
+bool dlb8_put_leds(Dlb8 *obj, uint8_t mask, bool value);
 
 //  put value to digit
 // parameters:
@@ -56,7 +61,7 @@ bool dlb8_put_leds(Tm1638 *obj, uint8_t mask, bool value);
 // return value:
 //    if success: true
 //
-bool dlb8_put_digits(Tm1638 *obj, uint8_t mask, uint8_t value);
+bool dlb8_put_digits(Dlb8 *obj, uint8_t mask, uint8_t value);
 
 // put char to digit
 #define dlb8_put_chars(obj,mask,c, dp) dlb8_put_digits(obj,mask, Tm1638_char_to_7s((c)) | ((dp)?0x80:0))

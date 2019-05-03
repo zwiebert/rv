@@ -10,7 +10,7 @@
 
 #include "../include/boards/dlb8.h"
 
-uint8_t dlb8_get_changed_buttons(Tm1638 *obj) {
+uint8_t dlb8_get_changed_buttons(Dlb8 *obj) {
 
 	uint8_t buttons = dlb8_get_buttons(obj);
 	if (!buttons) {
@@ -21,31 +21,31 @@ uint8_t dlb8_get_changed_buttons(Tm1638 *obj) {
 
 	uint8_t changed;
 
-	if ((changed = obj->user_data[0] ^ buttons)) {
-		obj->user_data[0] = buttons;
+	if ((changed = obj->last_buttons ^ buttons)) {
+		obj->last_buttons = buttons;
 		buttons &= changed;
-		obj->user_data[1] = 0;
+		obj->hold_counter = 0;
 		return buttons;
 	} else {
-		++obj->user_data[1];
+		++obj->hold_counter;
 	}
 	return 0;
 }
 
-uint8_t dlb8_calculate_hold_buttons(Tm1638 *obj, uint8_t nmb_calls) {
-	if (obj->user_data[1] >= nmb_calls) {
-		return obj->user_data[0];
+uint8_t dlb8_calculate_hold_buttons(Dlb8 *obj, uint8_t nmb_calls) {
+	if (obj->hold_counter >= nmb_calls) {
+		return obj->last_buttons;
 	}
 	return 0;
 }
 
-uint8_t dlb8_get_buttons(Tm1638 *obj) {
-	uint32_t data = Tm1638_read(obj);
+uint8_t dlb8_get_buttons(Dlb8 *obj) {
+	uint32_t data = Tm1638_read(&obj->tm);
 	uint8_t result = 0;
 
 	if (!data) {
-		obj->user_data[0] = 0;
-		obj->user_data[1] = 0;
+		obj->last_buttons = 0;
+		obj->hold_counter = 0;
 		return 0;
 	}
 
@@ -77,7 +77,7 @@ uint8_t dlb8_get_buttons(Tm1638 *obj) {
 }
 
 
-bool dlb8_put_leds(Tm1638 *obj, uint8_t mask, bool value) {
+bool dlb8_put_leds(Dlb8 *obj, uint8_t mask, bool value) {
 	uint8_t data[8], addr[8], data_len = 0;
 
 	for (int i=0; i < 8; (++i), (mask >>= 1)) {
@@ -86,10 +86,10 @@ bool dlb8_put_leds(Tm1638 *obj, uint8_t mask, bool value) {
 			addr[data_len++] =  LED_KEY_ADDR_LED(i);
 		}
 	}
-	return Tm1638_put_data(obj, data, data_len, addr);
+	return Tm1638_put_data(&obj->tm, data, data_len, addr);
 }
 
-bool dlb8_put_digits(Tm1638 *obj, uint8_t mask, uint8_t value) {
+bool dlb8_put_digits(Dlb8 *obj, uint8_t mask, uint8_t value) {
 	uint8_t data[8], addr[8], data_len = 0;
 
 	for (int i=0; i < 8; (++i), (mask >>= 1)) {
@@ -98,7 +98,7 @@ bool dlb8_put_digits(Tm1638 *obj, uint8_t mask, uint8_t value) {
 			addr[data_len++] =  LED_KEY_ADDR_DIGIT(i);
 		}
 	}
-	return Tm1638_put_data(obj, data, data_len, addr);
+	return Tm1638_put_data(&obj->tm, data, data_len, addr);
 }
 
 #endif /* TM1638_SRC_L8D8K8_C_ */
