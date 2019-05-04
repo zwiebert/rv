@@ -22,3 +22,6 @@ The valves are controlled by timers which can be set using local hardware or via
 ### Author
 Bert Winkelmann
 
+### License
+GPL v3
+
