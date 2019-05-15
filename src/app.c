@@ -15,10 +15,13 @@
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 #include "mcp23017.h"
 #include "rtc.h"
 #include "valve_timer.h"
 #include "int_macros.h"
+#include "water_pump_logic.h"
+
 
 #include "../Libraries/tm1638/include/boards/dlb8.h"
 
@@ -29,12 +32,99 @@
  Dlb8 input[2];
  Dlb8 *dlb8_obj[2];
 
+ void loop(void);
+
+#if 1
+void display_print_timer(uint8_t n) {
+	char buf[8] = " ";
+	uint8_t minutes = valveTimer_getProgrammedMinutes(n);
+	if (minutes)
+		itoa(minutes, buf, 10);
+	dlb8_put_chars(dlb8_obj[n < 8 ? 0 : 1], 1 << n, buf[0], minutes >= 10);
+}
+
+void display_print_timers() {
+	for (int i = 0; i < 16; ++i)
+		display_print_timer(i);
+}
+
+void dlb8_print_date(Dlb8 *obj, struct tm *tm) {
+	uint8_t digit = 0;
+	uint8_t mask = 0x01;
+	int n;
+
+	n = tm->tm_year + 1900;
+
+	digit = n / 1000;
+	n %= 1000;
+	dlb8_put_chars(obj, mask, '0'+digit, false);
+	mask <<=1;
+	digit = n / 100;
+	n %= 100;
+	dlb8_put_chars(obj, mask, '0'+digit, false);
+	mask <<=1;
+	digit = n / 10;
+	n %= 10;
+	dlb8_put_chars(obj, mask, '0'+digit, false);
+	mask <<=1;
+	digit = n;
+	dlb8_put_chars(obj, mask, '0'+digit, false);
+	mask <<=1;
+
+	n = tm->tm_mon;
+	digit = n > 9 ? n / 10 : 0;
+	dlb8_put_chars(obj, mask, '0'+digit, false);
+	mask <<=1;
+	digit = digit ? n % 10 : n;
+	dlb8_put_chars(obj, mask, '0'+digit, false);
+	mask <<=1;
+
+	n = tm->tm_mday;
+	digit = n > 9 ? n / 10 : 0;
+	dlb8_put_chars(obj, mask, '0'+digit, false);
+	mask <<=1;
+	digit = digit ? n % 10 : n;
+	dlb8_put_chars(obj, mask, '0'+digit, false);
+	mask <<=1;
+
+}
+
+void dlb8_print_time(Dlb8 *obj, struct tm *tm) {
+	uint8_t digit = 0;
+	uint8_t mask = 0x01;
+	int n;
+
+	n = tm->tm_hour;
+	digit = n > 9 ? n / 10 : 0;
+	dlb8_put_chars(obj, mask, '0'+digit, false);
+	mask <<=1;
+	digit = digit ? n % 10 : n;
+	dlb8_put_chars(obj, mask, '0'+digit, false);
+	mask <<=1;
+
+	n = tm->tm_min;
+	digit = n > 9 ? n / 10 : 0;
+	dlb8_put_chars(obj, mask, '0'+digit, false);
+	mask <<=1;
+	digit = digit ? n % 10 : n;
+	dlb8_put_chars(obj, mask, '0'+digit, false);
+	mask <<=1;
+
+	for (int i=0; i < 4; ++i) {
+		dlb8_put_chars(obj, mask, ' ', false);
+		mask <<=1;
+	}
+}
+#endif
+
 
  static void input_setup(void) {
 	 rcc_periph_clock_enable(RCC_GPIOB);
 	 Tm1638_setup(GPIOB, GPIO13, GPIOB, GPIO14);
 	 Tm1638_construct(&input[0].tm,GPIOB,GPIO15);
 	 dlb8_obj[0] = &input[0];
+	 Tm1638_construct(&input[1].tm,GPIOB,GPIO12);
+	 dlb8_obj[1] = &input[1];
  }
 
  static void i2c2_setup(void)
@@ -122,10 +212,7 @@ static void timer_set(int8_t channel) {
 
 	for (int i = 0; i < 16; ++i) { //FIXME: number literal
 		if (GET_BIT(set_mask, i)) {
-			char buf[8];
-			uint8_t minutes = valve_timer_get_programmed_minutes(i);
-			itoa(minutes, buf, 10);
-			dlb8_put_chars(dlb8_obj[0], 1 << i, buf[0], minutes >= 10);
+			display_print_timer(i);
 		}
 	}
 	set_mask = 0;
@@ -151,11 +238,13 @@ static void timer_set(int8_t channel) {
 		serialPort_setup();
 		i2c2_setup();
 		led_setup();
-		valve_timer_alarm_cb = timer_alarm;
-		valve_timer_set_cb = timer_set;
-		valve_timer_setup();
+		valveTimer_alarmCb = timer_alarm;
+		valveTimer_setCb = timer_set;
+		valveTimer_setup();
 		rtc_setup();
 		input_setup();
+		Mcp23017_construct_out(&relay_16, I2C2, Mcp23017_slave_address(0, 0, 0), RELAY_OFF);
+		wp_setup();
  }
 
  typedef struct {
@@ -168,12 +257,12 @@ static void timer_set(int8_t channel) {
 
 void set_timers(timer_args_T *ta, uint8_t ta_len) {
 	for (int i=0; i < ta_len; ++i) {
-		valve_timer_set_timer_duration_by_minutes(ta[i].channel, ta[i].minutes);
+		valveTimer_setTimerDurationByMinutes(ta[i].channel, ta[i].minutes);
 	}
 	timer_set(TIMER_SET_DONE);
 }
 
-char tas[] = "0:1 3:5";
+char tas[] = "3:5";
 uint8_t parse_timer_string(char *s, timer_args_T *result) {
 	uint8_t i = 0;
 
@@ -193,27 +282,13 @@ uint8_t parse_timer_string(char *s, timer_args_T *result) {
 
 void app() {
 	setup();
-	Mcp23017_construct_out(&relay_16, I2C2, Mcp23017_slave_address(0, 0, 0), RELAY_OFF);
 
-	puts("hello");
 
-	valve_timer_set_timer_duration_by_minutes(9, 1);
-	timer_set(-1);
-	uint8_t ta_len = parse_timer_string(tas, ta_buf);
-	set_timers(ta_buf, ta_len);
 
 	while (1) {
 		for (unsigned long i = 0; i < 450000; ++i) {
 			__asm__("nop");
 		}
-
-		valve_timer_loop();
-
-		/* Using API function gpio_toggle(): */
-		//gpio_toggle(GPIOC, GPIO13); /* LED on/off */
-		//Mcp23017_putBit(&relay_16, 1, toggle);
-		//Tm1638_put_char(&input1, c++, LED_KEY_POS_TO_REG(5));
-
 
 		uint8_t button = dlb8_get_changed_buttons(dlb8_obj[0]);
 
@@ -221,7 +296,7 @@ void app() {
 			printf("pressed button: %x\n", button);
 			for (int i = 0; i < 8; ++i) {
 				if (GET_BIT(button, i))
-					valve_timer_increment_timer_duration(i);
+					valveTimer_incrementTimerDuration(i);
 			}
 			timer_set(TIMER_SET_DONE);
 		}
@@ -231,11 +306,36 @@ void app() {
 			printf("hold button: %x\n", button);
 			for (int i = 0; i < 8; ++i) {
 				if (GET_BIT(button, i))
-					valve_timer_finish_timer(i);
+					valveTimer_finishTimer(i);
 			}
 		}
+
+		if ((button & 0x81) == 0x81) {
+			time_t t = time(0);
+			struct tm *tm = gmtime(&t);
+			printf("%d-%d-%dT%d:%d:%02d\n",tm->tm_year+1900, tm->tm_mon, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec);
+			dlb8_print_date(dlb8_obj[0], tm);
+		}
+
+		if ((button & 0x41) == 0x41) {
+			time_t t = time(0);
+			struct tm *tm = gmtime(&t);
+			printf("%d-%d-%dT%d:%d:%02d\n",tm->tm_year+1900, tm->tm_mon, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec);
+			dlb8_print_time(dlb8_obj[0], tm);
+		}
+		if ((button & 0x21) == 0x21) {
+			display_print_timers();
+
+		}
+
 	}
 }
+
+time_t time(time_t *p) {
+	return curr_time;
+}
+
+
 
 // redirect any output to USART1
 int _write(int fd, char *ptr, int len) {
@@ -250,3 +350,17 @@ int _write(int fd, char *ptr, int len) {
 	errno = EIO;
 	return -1;
 }
+
+void uart_loop() {
+#if 0
+	uint8_t ta_len = parse_timer_string(tas, ta_buf);
+	set_timers(ta_buf, ta_len);
+#endif
+}
+
+void loop(void) {
+	valveTimer_loop();
+	wpl_loop();
+	uart_loop();
+}
+

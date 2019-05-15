@@ -157,7 +157,10 @@ bool Mcp23017_getBit(Mcp23017 *obj, uint8_t bitNumber, bool cached) {
 
 	}
 
-	return GET_BIT(obj->mRegs[GPIO], bitNumber) != 0;
+	if (GET_BIT(obj->mRegs[IODIR], bitNumber))
+		return GET_BIT(obj->mRegs[GPIO], bitNumber) != 0;
+	else
+		return GET_BIT(obj->mRegs[OLAT], bitNumber) != 0;
 }
 
 bool Mcp23017_putBits(Mcp23017 *obj, uint16_t bitMask, uint16_t values) {

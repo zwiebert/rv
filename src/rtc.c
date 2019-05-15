@@ -12,16 +12,18 @@
 #include <libopencm3/cm3/nvic.h>
 #include <valve_timer.h>
 
-#define OUTPUT_PIN_COUNT 16
+#include <time.h>
+
+#define VT_TIMER_COUNT 16
 #define MAX_TIMER_MINUTES 60
 #define NO_TIMER_VALUE ~0UL
 
-uint32_t timers[OUTPUT_PIN_COUNT];
-void (*valve_timer_set_cb)(int8_t channel);
-void (*valve_timer_alarm_cb)(int8_t channel);
+uint32_t timers[VT_TIMER_COUNT];
+void (*valveTimer_setCb)(int8_t channel);
+void (*valveTimer_alarmCb)(int8_t channel);
 
 volatile uint32_t next_timer_value;
-volatile uint32_t curr_time;
+volatile time_t curr_time;
 volatile bool timer_rang, timer_noticed;
 
 
@@ -41,7 +43,7 @@ void RTC_IRQHandler(void)
 	gpio_toggle(GPIOC, GPIO13);
 	curr_time = rtc_get_counter_val();
 
-	valve_timer_tick();
+	valveTimer_tick();
 }
 
 

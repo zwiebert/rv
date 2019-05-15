@@ -18,18 +18,17 @@
 #include <stdio.h>
 
 #define D(x) x
-#define OUTPUT_PIN_COUNT 16
-#define MAX_TIMER_MINUTES 60
+
+
 #define NO_TIMER_VALUE ~0UL
-#define MAX_TIME_PER_DAY (60 * 90)
 
 #define IS_TIMER_RUNNING(t) (t->target_time != NO_TIMER_VALUE)
 
 
-valve_timer_T timers[OUTPUT_PIN_COUNT];
+valveTimer_T timers[VALVE_TIMER_COUNT];
 
-void (*valve_timer_set_cb)(int8_t channel);
-void (*valve_timer_alarm_cb)(int8_t channel);
+void (*valveTimer_setCb)(int8_t channel);
+void (*valveTimer_alarmCb)(int8_t channel);
 
 volatile uint32_t next_timer_value;
 
@@ -38,12 +37,12 @@ bool timer_finished;
 
 static void rtc_update_timer_table(void);
 
-uint8_t valve_timer_get_programmed_minutes(uint8_t channel) {
+uint8_t valveTimer_getProgrammedMinutes(uint8_t channel) {
 	return timers[channel].programmed_minutes;
 }
 
-uint32_t valve_timer_set_timer_duration_by_minutes(uint8_t channel, uint8_t minutes) {
-	if (!(channel < OUTPUT_PIN_COUNT && minutes <= MAX_TIMER_MINUTES && curr_time > 0))
+uint32_t valveTimer_setTimerDurationByMinutes(uint8_t channel, uint8_t minutes) {
+	if (!(channel < VALVE_TIMER_COUNT && minutes <= MAX_TIMER_MINUTES && curr_time > 0))
 		return 0;
 
 
@@ -51,8 +50,8 @@ uint32_t valve_timer_set_timer_duration_by_minutes(uint8_t channel, uint8_t minu
 	timers[channel].start_time = curr_time;
 	uint32_t timer = timers[channel].target_time = minutes * 60 + curr_time;
 
-	if (valve_timer_set_cb)
-		valve_timer_set_cb(channel);
+	if (valveTimer_setCb)
+		valveTimer_setCb(channel);
 
 	if (timer < next_timer_value) {
 		next_timer_value = timer;
@@ -63,8 +62,8 @@ uint32_t valve_timer_set_timer_duration_by_minutes(uint8_t channel, uint8_t minu
 }
 
 int8_t valve_timer_increments[] = { 0, 5, 7, 10, 20, 30, 40, -1 };
-uint32_t valve_timer_increment_timer_duration(uint8_t channel) {
-	valve_timer_T *t = &timers[channel];
+uint32_t valveTimer_incrementTimerDuration(uint8_t channel) {
+	valveTimer_T *t = &timers[channel];
 	int minutes_to_add = -1;
 
 	for (int i = 0; valve_timer_increments[i] >= 0; ++i) {
@@ -88,8 +87,8 @@ uint32_t valve_timer_increment_timer_duration(uint8_t channel) {
 	t->target_time = timer;
 	rtc_update_timer_table();
 
-	if (valve_timer_set_cb)
-		valve_timer_set_cb(channel);
+	if (valveTimer_setCb)
+		valveTimer_setCb(channel);
 
 
 	return timer;
@@ -100,14 +99,14 @@ void reset_active_times() {  // FIXME: should do  reset at midnight
 	static uint32_t day_start_time;
 
 	if (day_start_time + ONE_DAY < curr_time) {
-		for (int i = 0; i < OUTPUT_PIN_COUNT; ++i) {
+		for (int i = 0; i < VALVE_TIMER_COUNT; ++i) {
 			timers[i].active_time_today = 0;
 		}
 		day_start_time = curr_time;
 	}
 }
 
-uint32_t valve_timer_finish_timer(uint8_t channel) {
+uint32_t valveTimer_finishTimer(uint8_t channel) {
 	if (timers[channel].target_time != NO_TIMER_VALUE) {
 		timers[channel].target_time = curr_time - 1;
 		timer_finished = true;
@@ -124,8 +123,8 @@ static void rtc_update_timer_table(void) {
 	next_timer_value = NO_TIMER_VALUE;
 	bool callback_called = false;
 
-	for (uint8_t i = 0; i < OUTPUT_PIN_COUNT; ++i) {
-		valve_timer_T *t = &timers[i];
+	for (uint8_t i = 0; i < VALVE_TIMER_COUNT; ++i) {
+		valveTimer_T *t = &timers[i];
 
 		if (!IS_TIMER_RUNNING(t))
 			continue;
@@ -133,7 +132,7 @@ static void rtc_update_timer_table(void) {
 		uint32_t run_time = curr_time - t->start_time;
 
 		if (t->target_time < curr_time) {
-			valve_timer_alarm_cb(i);
+			valveTimer_alarmCb(i);
 			callback_called = true;
 			t->target_time = NO_TIMER_VALUE;
 			t->programmed_minutes = 0;
@@ -144,15 +143,15 @@ static void rtc_update_timer_table(void) {
 		}
 
 		if (IS_TIMER_RUNNING(t) && t->active_time_today + run_time > MAX_TIME_PER_DAY) {
-			valve_timer_finish_timer(i);
+			valveTimer_finishTimer(i);
 		}
 	}
 	if (callback_called) {
-		valve_timer_alarm_cb(-1);
+		valveTimer_alarmCb(-1);
 	}
 }
 
-void valve_timer_loop(void) {
+void valveTimer_loop(void) {
 	if (timer_rang && !timer_noticed) {
 		rtc_update_timer_table();
 		timer_noticed = true;
@@ -165,7 +164,7 @@ void valve_timer_loop(void) {
 
 static void timer_table_setup(void) {
 	next_timer_value = NO_TIMER_VALUE;
-	for (int i=0; i < OUTPUT_PIN_COUNT; ++i) {
+	for (int i=0; i < VALVE_TIMER_COUNT; ++i) {
 	   timers[i].target_time = NO_TIMER_VALUE;
 	   timers[i].programmed_minutes = 0;
 	   timers[i].active_time_today = 0;
@@ -173,7 +172,7 @@ static void timer_table_setup(void) {
 }
 
 /* IRQ */
-void valve_timer_tick()
+void valveTimer_tick()
 {
 	if (timer_rang && timer_noticed) {
 		timer_rang = false;
@@ -185,7 +184,7 @@ void valve_timer_tick()
 	}
 }
 
-void valve_timer_setup() {
+void valveTimer_setup() {
 	timer_table_setup();
 
 }

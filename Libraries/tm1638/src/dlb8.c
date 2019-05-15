@@ -92,7 +92,7 @@ bool dlb8_put_leds(Dlb8 *obj, uint8_t mask, bool value) {
 bool dlb8_put_digits(Dlb8 *obj, uint8_t mask, uint8_t value) {
 	uint8_t data[8], addr[8], data_len = 0;
 
-	for (int i=0; i < 8; (++i), (mask >>= 1)) {
+	for (int i=0; i < 8 && mask; (++i), (mask >>= 1)) {
 		if (mask&1) {
 			data[data_len] = value;
 			addr[data_len++] =  LED_KEY_ADDR_DIGIT(i);
