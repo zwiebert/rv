@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>RV</title>
+    <script type="text/javascript" src="tfmcu_dev.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", onContentLoaded);
+    </script>
+
+    <style>
+
+    </style>
+  </head>
+  <body>
+
+    <div class="tab">
+      <button class="tablinks" id="stb">Command</button>
+      <button class="tablinks" id="atb">Automatic</button>
+      <button class="tablinks" id="ctb">Configuration</button>
+    </div>
+
+    
+
+    <div id="id-timer-table-div">
+    </div>
+
+
+        <div id="configdiv">
+      <h3>Configuration</h3>
+      <div  class="config" id="config-div">
+        <p><strong style="animation: blink .75s linear 4;">...try to load configuration data from MCU...</strong></p>
+      <!-- configuration widgets. javascript output goes here -->
+    </div>
+
+ <br>
+      <button id="crlb" type="button">Reload</button>
+      <button id="csvb" type="button">Save</button>
+      <br><br>
+    <button id="mrtb" type="button">Restart MCU</button><br>
+    </div>
+  </body>
+</html>
+<!--
+Local Variables:
+compile-command: "weblint tfmcu_dev.html"
+End:
+-->
