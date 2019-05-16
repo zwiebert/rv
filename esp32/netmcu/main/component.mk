@@ -8,3 +8,4 @@
 #
 COMPONENT_PRIV_INCLUDEDIRS = .
 COMPONENT_SRCDIRS+= ./userio ./config ./userio/http_data ./cli ./main ./misc
+

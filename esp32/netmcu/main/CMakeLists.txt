@@ -7,3 +7,9 @@ set(COMPONENT_SRCDIRS "./userio")
 set(COMPONENT_ADD_INCLUDEDIRS "")
 
 register_component()
+
+add_custom_target(
+    myCustomTarget
+    COMMAND make -C ${CMAKE_CURRENT_SOURCE_DIR}/userio/http_data
+)
+add_dependencies(all myCustomTarget)
