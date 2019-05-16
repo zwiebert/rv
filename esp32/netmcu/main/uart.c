@@ -38,7 +38,7 @@
 #define ECHO_TEST_CTS  (UART_PIN_NO_CHANGE)
 
 #define RX_BUF_SIZE 2048
-#define TX_BUF_SIZE 2048
+#define TX_BUF_SIZE 0
 
 
 int stm32_write(const char *data, unsigned data_len) {
@@ -56,7 +56,7 @@ void uart_setup()
     uart_config_t uart_config = {
         .baud_rate = 115200,
         .data_bits = UART_DATA_8_BITS,
-        .parity    = UART_PARITY_DISABLE,
+        .parity    = UART_PARITY_EVEN,
         .stop_bits = UART_STOP_BITS_1,
         .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
     };

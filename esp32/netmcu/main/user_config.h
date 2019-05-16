@@ -26,6 +26,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "userio/inout.h"
+#include "esp32/rom/ets_sys.h"
 
 #define ICACHE_FLASH_ATTR
 //#define vrbDebug 0

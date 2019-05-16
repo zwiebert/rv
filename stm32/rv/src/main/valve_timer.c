@@ -45,6 +45,9 @@ uint32_t valveTimer_setTimerDurationByMinutes(uint8_t channel, uint8_t minutes) 
 	if (!(channel < VALVE_TIMER_COUNT && minutes <= MAX_TIMER_MINUTES && curr_time > 0))
 		return 0;
 
+	if (!minutes) {
+		valveTimer_finishTimer(channel);
+	}
 
 	timers[channel].programmed_minutes = minutes;
 	timers[channel].start_time = curr_time;
