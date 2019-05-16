@@ -11,6 +11,12 @@
 #include "user_config.h"
 #include "userio/status_output.h"
 
+#ifdef DISTRIBUTION
+#define CONFIG_MQTT_CLIENT_ID "rv"
+#else
+#define CONFIG_MQTT_CLIENT_ID "rvdbg"
+#endif
+
 void io_mqtt_enable(bool enable);
 
 

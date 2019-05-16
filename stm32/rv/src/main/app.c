@@ -183,7 +183,7 @@ void dlb8_print_time(Dlb8 *obj, struct tm *tm) {
  	gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
  }
 
-static void timer_set(int8_t channel) {
+void timer_set(int8_t channel) {
 	static uint16_t set_mask;
 
 	if (channel >= 0) {
@@ -194,7 +194,7 @@ static void timer_set(int8_t channel) {
 	Mcp23017_putBits(&relay_16, set_mask, RELAY_ON);
 	dlb8_put_leds(dlb8_obj[0], GET_LOW_BYTE(set_mask), true);
 
-	for (int i = 0; i < 16; ++i) { //FIXME: number literal
+	for (int i = 0; i < VALVE_TIMER_COUNT; ++i) {
 		if (GET_BIT(set_mask, i)) {
 			display_print_timer(i);
 		}
@@ -264,7 +264,6 @@ uint8_t parse_timer_string(char *s, timer_args_T *result) {
 	return i;
 }
 
-
 void app() {
 	setup();
 puts("Hello");
@@ -285,7 +284,7 @@ puts("Hello");
 			}
 			timer_set(TIMER_SET_DONE);
 		}
-		button = dlb8_calculate_hold_buttons(dlb8_obj[0], 10);
+		button = dlb8_calculate_hold_buttons(dlb8_obj[0], 200);
 
 		if (button) {
 			printf("hold button: %x\n", button);
@@ -346,10 +345,14 @@ void XXuart_loop() {
 void loop(void) {
 	valveTimer_loop();
 	wpl_loop();
+#if 1
+	cli_loop();
+#else
 	char *line = get_commandline();
 	if (line) {
 		uint8_t ta_len = parse_timer_string(line, ta_buf);
 		set_timers(ta_buf, ta_len);
 	}
+#endif
 }
 

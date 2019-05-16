@@ -127,11 +127,37 @@
                 				
                 <buildArguments>-s -j xxx</buildArguments>
                 				
-                <buildTarget/>
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="Copy To Windows" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>win_cp.sh</buildCommand>
                 				
                 <stopOnError>true</stopOnError>
                 				
                 <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>false</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="win_copy" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>-j6</buildArguments>
+                				
+                <buildTarget>win_copy</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>true</useDefaultCommand>
                 				
                 <runAllBuilders>true</runAllBuilders>
                 			

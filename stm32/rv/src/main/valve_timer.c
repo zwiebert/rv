@@ -41,6 +41,15 @@ uint8_t valveTimer_getProgrammedMinutes(uint8_t channel) {
 	return timers[channel].programmed_minutes;
 }
 
+uint8_t valveTimer_getRemainingMinutes(uint8_t channel) {
+	if (timers[channel].programmed_minutes == 0)
+		return 0;
+
+	time_t now = time(0), start = timers[channel].start_time;
+	time_t elapsed = (now < start) ? 0 : now - start;
+	return timers[channel].programmed_minutes - (elapsed/60);
+}
+
 uint32_t valveTimer_setTimerDurationByMinutes(uint8_t channel, uint8_t minutes) {
 	if (!(channel < VALVE_TIMER_COUNT && minutes <= MAX_TIMER_MINUTES && curr_time > 0))
 		return 0;

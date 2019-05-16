@@ -17,19 +17,16 @@
 #include "userio/status_json.h"
 #include "userio/status_output.h"
 
-#define TOPIC_ROOT "tfmcu/"
+#define TOPIC_ROOT "rv/"
 #define TOPIC_CLI TOPIC_ROOT "cli"
 #define TOPIC_STATUS TOPIC_ROOT "status"
-#define TOPIC_PCT_END "/pct"
-#define TOPIC_PCT_MID "+"   // wildcard can be a, gm, agm (like: 23, 102030, 8090a023)
-#define TOPIC_PCT TOPIC_ROOT TOPIC_PCT_MID TOPIC_PCT_END
-#define TOPIC_CMD_END "/cmd"
-#define TOPIC_CMD_MID "+"
-#define TOPIC_CMD TOPIC_ROOT TOPIC_CMD_MID TOPIC_CMD_END
+#define TOPIC_DUR_END "/duration"
+#define TOPIC_DUR_MID "+"
+#define TOPIC_CMD TOPIC_ROOT TOPIC_DUR_MID TOPIC_DUR_END
 
 #define TAG_CLI "cli "
 #define TAG_CLI_LEN (sizeof(TAG_CLI) - 1)
-#define TAG_SEND "send "
+#define TAG_SEND "cmd "
 #define TAG_SEND_LEN (sizeof(TAG_SEND) - 1)
 #define TAG_CONFIG "config "
 #define TAG_CONFIG_LEN (sizeof(TAG_CONFIG) - 1)
@@ -63,7 +60,6 @@ void io_mqtt_enable(bool enable) {
 // implementation interface
 void io_mqtt_connected () {
   io_mqtt_subscribe(TOPIC_CLI, 0);
-  io_mqtt_subscribe(TOPIC_PCT, 0);
   io_mqtt_subscribe(TOPIC_CMD, 0);
   io_mqtt_publish(TOPIC_STATUS, "connected"); // for autocreate (ok???)
 }
@@ -102,39 +98,13 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
 
   so_tgt_set(SO_TGT_MQTT);
 
-  if (topic_endsWith(topic, topic_len, TOPIC_PCT_END)) {
-    char *line = set_commandline("x", 1);
-    const char *addr = topic + (sizeof TOPIC_ROOT - 1);
-    int addr_len = topic_len - ((sizeof TOPIC_ROOT - 1) + (sizeof TOPIC_PCT_END -1));
-
-    if (addr_len == 2) {
-      sprintf(line, "send g=%c m=%c p=%.*s", addr[0], addr[1], data_len, data);
-    } else if (addr_len == 6) {
-      sprintf(line, "send a=%.*s p=%.*s", 6, addr, data_len, data);
-    } else if (addr_len == 8) {
-      sprintf(line, "send a=%.*s g=%c m=%c p=%.*s", 6, addr, addr[6], addr[7], data_len, data);
-    } else {
-      return;  // wrong topic format in wildcard
-    }
-    cli_process_cmdline(line);
-
-  } else if (topic_endsWith(topic, topic_len, TOPIC_CMD_END)) {
-    char *line = set_commandline("x", 1);
-    const char *addr = topic + (sizeof TOPIC_ROOT - 1);
-    int addr_len = topic_len - ((sizeof TOPIC_ROOT - 1) + (sizeof TOPIC_CMD_END -1));
-
-    if (addr_len == 2) {
-      sprintf(line, "send g=%c m=%c c=%.*s", addr[0], addr[1], data_len, data);
-    } else if (addr_len == 6) {
-      sprintf(line, "send a=%.*s c=%.*s", 6, addr, data_len, data);
-    } else if (addr_len == 8) {
-      sprintf(line, "send a=%.*s g=%c m=%c c=%.*s", 6, addr, addr[6], addr[7], data_len, data);
-    } else {
-      return;  // wrong topic format in wildcard
-    }
-    cli_process_cmdline(line);
-
-  } else if (strlen(TOPIC_CLI) == topic_len && 0 == strncmp(topic, TOPIC_CLI, topic_len)) {
+	if (topic_endsWith(topic, topic_len, TOPIC_DUR_END)) {
+		char *line = set_commandline("x", 1);
+		const char *addr = topic + (sizeof TOPIC_ROOT - 1);
+		int addr_len = topic_len- ((sizeof TOPIC_ROOT - 1) + (sizeof TOPIC_DUR_END - 1));
+		sprintf(line, "cmd dur%.*s=%.*s", addr_len, addr, data_len, data);
+		cli_process_cmdline(line);
+	} else if (strlen(TOPIC_CLI) == topic_len && 0 == strncmp(topic, TOPIC_CLI, topic_len)) {
     if (strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {
       char *line;
       if ((line = set_commandline(data + TAG_CLI_LEN, data_len - TAG_CLI_LEN))) {

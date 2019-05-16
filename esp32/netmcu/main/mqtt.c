@@ -37,10 +37,8 @@
 static const char *TAG = "MQTT_EXAMPLE";
 
 #ifdef DISTRIBUTION
-#define CONFIG_MQTT_CLIENT_ID "tronferno42"
 #define D(x)
 #else
-#define CONFIG_MQTT_CLIENT_ID "tfdbg"
 #define D(x) x
 #endif
 

@@ -34,6 +34,7 @@ uint32_t valveTimer_incrementTimerDuration(uint8_t channel);
 uint32_t valveTimer_finishTimer(uint8_t channel);
 
 uint8_t valveTimer_getProgrammedMinutes(uint8_t channel);
+uint8_t valveTimer_getRemainingMinutes(uint8_t channel);
 
 void valveTimer_tick(void);
 void valveTimer_setup(void);
