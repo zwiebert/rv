@@ -13,7 +13,7 @@
 #include <libopencm3/stm32/gpio.h>
 #endif
 
-#include "int_macros.h"
+#include "main/misc/int_macros.h"
 
 gpio_pin_T Tm1638_clk_pin, Tm1638_dio_pin;
 

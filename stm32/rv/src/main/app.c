@@ -19,8 +19,10 @@
 #include "mcp23017.h"
 #include "rtc.h"
 #include "valve_timer.h"
-#include "int_macros.h"
+#include "misc/int_macros.h"
 #include "water_pump_logic.h"
+#include "peri/uart.h"
+#include "cli/cli.h"
 
 
 #include "../Libraries/tm1638/include/boards/dlb8.h"
@@ -176,24 +178,6 @@ void dlb8_print_time(Dlb8 *obj, struct tm *tm) {
  	rcc_clock_setup_in_hse_8mhz_out_72mhz();
  }
 
- static void serialPort_setup(void) {
- 	rcc_periph_clock_enable(RCC_GPIOA);
- 	rcc_periph_clock_enable(RCC_USART1);
- 	gpio_set_mode(GPIOA, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_USART1_TX);
-
- 	/* Setup UART parameters. */
- 	usart_set_baudrate(USART1, 115200);
- 	usart_set_databits(USART1, 8);
- 	usart_set_stopbits(USART1, USART_STOPBITS_1);
- 	usart_set_mode(USART1, USART_MODE_TX);
- 	usart_set_parity(USART1, USART_PARITY_NONE);
- 	usart_set_flow_control(USART1, USART_FLOWCONTROL_NONE);
-
- 	/* Finally enable the USART. */
- 	usart_enable(USART1);
- }
-
-
  static void led_setup(void) {
  	rcc_periph_clock_enable(RCC_GPIOC);
  	gpio_set_mode(GPIOC, GPIO_MODE_OUTPUT_2_MHZ, GPIO_CNF_OUTPUT_PUSHPULL, GPIO13);
@@ -235,7 +219,7 @@ static void timer_set(int8_t channel) {
 
  void setup() {
 		clock_setup();
-		serialPort_setup();
+		uart_setup();
 		i2c2_setup();
 		led_setup();
 		valveTimer_alarmCb = timer_alarm;
@@ -245,6 +229,7 @@ static void timer_set(int8_t channel) {
 		input_setup();
 		Mcp23017_construct_out(&relay_16, I2C2, Mcp23017_slave_address(0, 0, 0), RELAY_OFF);
 		wp_setup();
+
  }
 
  typedef struct {
@@ -282,11 +267,11 @@ uint8_t parse_timer_string(char *s, timer_args_T *result) {
 
 void app() {
 	setup();
-
+puts("Hello");
 
 
 	while (1) {
-		for (unsigned long i = 0; i < 450000; ++i) {
+		for (unsigned long i = 0; i < 4500; ++i) {
 			__asm__("nop");
 		}
 
@@ -327,7 +312,7 @@ void app() {
 			display_print_timers();
 
 		}
-
+loop();
 	}
 }
 
@@ -351,7 +336,7 @@ int _write(int fd, char *ptr, int len) {
 	return -1;
 }
 
-void uart_loop() {
+void XXuart_loop() {
 #if 0
 	uint8_t ta_len = parse_timer_string(tas, ta_buf);
 	set_timers(ta_buf, ta_len);
@@ -361,6 +346,10 @@ void uart_loop() {
 void loop(void) {
 	valveTimer_loop();
 	wpl_loop();
-	uart_loop();
+	char *line = get_commandline();
+	if (line) {
+		uint8_t ta_len = parse_timer_string(line, ta_buf);
+		set_timers(ta_buf, ta_len);
+	}
 }
 

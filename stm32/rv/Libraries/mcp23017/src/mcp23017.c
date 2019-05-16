@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 #include "mcp23017.h"
-#include "int_macros.h"
+#include "main/misc/int_macros.h"
 
 #include <libopencm3/stm32/i2c.h>
 #include <stdbool.h>
