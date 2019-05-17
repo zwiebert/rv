@@ -94,29 +94,31 @@ process_parmCmd(clpar p[], int len) {
 #include "freertos/task.h"
 
 // wait for response
-// data wil be writte to ext_buf from status_json.c which is allocated by the http_handler
+// data will be written to ext_buf from status_json.c which is allocated by the http_handler
 void cliCmd_waitForResponse() {
 #define WFR_TOTAL_MS 2000
 #define WFR_INTERVAL_MS 50
-  *ext_buf = '\0';
-  int n = 0;
-  while(1) {
-	extern void *pxCurrentTCB;
-	db_printf("(%p)\n", pxCurrentTCB);
-  D(db_printf("wait for response\n"));
-  for (int i=0; i < (WFR_TOTAL_MS / WFR_INTERVAL_MS); ++i) {
-	  db_printf("-");
-    vTaskDelay(WFR_INTERVAL_MS / portTICK_PERIOD_MS);
-	  db_printf(":");
-    n += stm32_read(ext_buf + n, ext_buf_size-1 - n);
-    if (n > 0) {
-      ext_buf[n] = '\0';
-      if (strchr(ext_buf, ';')) {
-        D(db_printf("from-cli: <%s>\n", ext_buf));
-        break;
-      }
+    *ext_buf = '\0';
+    int n = 0;
+
+    extern void *pxCurrentTCB;
+    db_printf("(%p)\n", pxCurrentTCB);
+    D(db_printf("wait for response\n"));
+    for (int i = 0; i < (WFR_TOTAL_MS / WFR_INTERVAL_MS); ++i) {
+        db_printf("-");
+        vTaskDelay(WFR_INTERVAL_MS / portTICK_PERIOD_MS);
+        db_printf(":");
+        n += stm32_read(ext_buf + n, ext_buf_size - 1 - n);
+        if (n > 0) {
+            ext_buf[n] = '\0';
+            char *sc = strchr(ext_buf, ';');
+            if (sc) {
+                *sc = '\0';
+                D(db_printf("cli_cmd(from stm32): <%s>\n", ext_buf));
+                break;
+            }
+        }
+
     }
-  }
-  }
-  D(db_printf("stop wait for response\n"));
+    D(db_printf("stop wait for response\n"));
 }

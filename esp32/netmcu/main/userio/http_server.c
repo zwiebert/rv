@@ -34,19 +34,21 @@ static bool isJson(const char *s, int s_len) {
   }
   return false;
 }
+
 #ifdef USE_JSON
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 static void hts_query_json(char *qstr) {
-	static char *query_string;
-	static cha
-	if (qstr) {
-		query_string = qstr;
-	} else if (query_string) {
-		  cli_process_json(query_string);
-		  query_string = 0;
-
-	}
-
-
+    static char *query_string;
+    if (qstr) {
+        query_string = qstr;
+        while (query_string) {
+            vTaskDelay(25 / portTICK_PERIOD_MS);
+        }
+    } else if (query_string) {
+        cli_process_json(query_string);
+        query_string = 0;
+    }
 }
 
 void hts_query(hts_query_t qtype, const char *qstr, int qstr_len) {
@@ -67,5 +69,8 @@ void hts_query(hts_query_t qtype, const char *qstr, int qstr_len) {
 //XXX so_tgt_default();
 }
 #endif
-#endif
 
+void httpServer_loop(void) {
+  hts_query_json(0);
+}
+#endif

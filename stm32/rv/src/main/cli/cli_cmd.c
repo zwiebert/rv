@@ -78,11 +78,9 @@ process_parmCmd(clpar p[], int len) {
 			for (int i = 0; i < VALVE_TIMER_COUNT; ++i) {
 				uint8_t mints = valveTimer_getProgrammedMinutes(i);
 				if (mints) {
-					sprintf(buf + strlen(buf), "\"%d\":%d,", KEY_DURATION_PREFIX, i, mints);
+					sprintf(buf + strlen(buf), "\"%s%d\":%d,", KEY_DURATION_PREFIX, i, mints);
 				}
 			}
-			if (*buf)
-				esp32_write(buf, strlen(buf) - 1);
 		}
 
 		if (wantsRemainingTimes) {
@@ -92,9 +90,10 @@ process_parmCmd(clpar p[], int len) {
 					sprintf(buf + strlen(buf), "\"%s%d\":%d,", KEY_REMAINING_PREFIX, i, mints);
 				}
 			}
-			if (*buf)
-				esp32_write(buf, strlen(buf) - 1);
 		}
+
+		if (*buf)
+			esp32_write(buf, strlen(buf) - 1); // no terminating comma
 
 		esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
 		*buf = '\0';

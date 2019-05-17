@@ -24,8 +24,8 @@ class AppState {
     updateHtml_zoneTable() {
         for (let i=0; i < ZONE_COUNT; ++i) {
             let sfx = i.toString();
-            let dur = 'id-zoneTimerDuration'+sfx;
-            let rem = 'id-zoneRemainingTime'+sfx;
+            let dur = 'id-zoneTimerDuration-'+sfx;
+            let rem = 'id-zoneRemainingTime-'+sfx;
             document.getElementById(dur).value = this.mZoneTimerDurations[i];
             document.getElementById(rem).value = this.mZoneRemainingTimes[i];
         }
@@ -85,7 +85,7 @@ class AppState {
                 this.mZoneTimerDurations[i] = (dur in data) ? data[dur] : 0;
                 this.mZoneRemainingTimes[i] = (rem in data) ? data[rem] : 0;
             }
-            updateHtml_zoneTable();
+            this.updateHtml_zoneTable();
         }
     }
 
