@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include "status_output.h"
 
+
 void so_json_config_reply(const char *key, const char *val, bool is_number);
 extern void (*s_json_config_out)(const char *s);
 void sj_timer2json_buf(char *dst, uint16_t dst_size, uint8_t g, uint8_t m, bool wildcard);
@@ -22,6 +23,8 @@ int sj_config2json_buf(char *dst, uint16_t dst_size, so_msg_t key);
 
 // set json buf to dst, so we can read back our json when created or an empty string if nothing was created
 // if dst is NULL, reset json buf to defaul
+extern char *ext_buf;
+extern uint16_t ext_buf_size;
 void sj_set_buf(char *dst, uint16_t dst_size);
 
 #endif /* SRC_USERIO_STATUS_JSON_H_ */

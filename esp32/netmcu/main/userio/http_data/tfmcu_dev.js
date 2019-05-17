@@ -4,6 +4,7 @@ var base = 'http://192.168.1.79'; //dev-delete-line//
 
 var tfmcu_config = {};
 let config_fetched = false;
+const ZONE_COUNT = 13;
 
 class AppState {
 
@@ -20,6 +21,15 @@ class AppState {
     getZoneTimerInterval(n) { return this.mZoneTimerIntervals[n]; }
     getZoneTimerDuration(n) { return this.mZoneTimerDurations[n]; }
 
+    updateHtml_zoneTable() {
+        for (let i=0; i < ZONE_COUNT; ++i) {
+            let sfx = i.toString();
+            let dur = 'id-zoneTimerDuration'+sfx;
+            let rem = 'id-zoneRemainingTime'+sfx;
+            document.getElementById(dur).value = this.mZoneTimerDurations[i];
+            document.getElementById(rem).value = this.mZoneRemainingTimes[i];
+        }
+    }
     updateAutomaticHtml() {
         let auto = this.auto;
         document.getElementById('tfti').value = ("f" in auto) ? auto.f : "";
@@ -65,6 +75,18 @@ class AppState {
         if ("position" in obj) {
             document.getElementById('spi').value = obj.position.p;
         }
+
+        if ("data" in obj) {
+            let data = obj.data;
+            for (let i=0; i < ZONE_COUNT; ++i) {
+                let sfx = i.toString();
+                let dur = 'dur'+sfx;
+                let rem = 'rem'+sfx;
+                this.mZoneTimerDurations[i] = (dur in data) ? data[dur] : 0;
+                this.mZoneRemainingTimes[i] = (rem in data) ? data[rem] : 0;
+            }
+            updateHtml_zoneTable();
+        }
     }
 
 
@@ -83,6 +105,13 @@ class AppState {
             }
         });
     }
+
+    fetchZoneData() {
+        var json = { to:"rv", cmd: { dur:"?", rem:"?" } };
+        var url = base+'/cmd.json';
+        postData(url, json);
+    }
+
 
 
     load() {
@@ -250,7 +279,9 @@ function onContentLoaded() {
     app_state.fetchConfig();
 
     writeHtml_timerTableDiv();
- 
+
+    document.getElementById("zrlb").onclick = () => app_state.fetchZoneData();
+
     document.getElementById("csvb").onclick = () => postConfig();
     document.getElementById("crlb").onclick = () => app_state.fetchConfig();
 

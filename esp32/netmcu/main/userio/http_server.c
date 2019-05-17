@@ -36,7 +36,17 @@ static bool isJson(const char *s, int s_len) {
 }
 #ifdef USE_JSON
 static void hts_query_json(char *qstr) {
-  cli_process_json(qstr);
+	static char *query_string;
+	static cha
+	if (qstr) {
+		query_string = qstr;
+	} else if (query_string) {
+		  cli_process_json(query_string);
+		  query_string = 0;
+
+	}
+
+
 }
 
 void hts_query(hts_query_t qtype, const char *qstr, int qstr_len) {

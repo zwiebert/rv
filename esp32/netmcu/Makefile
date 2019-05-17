@@ -7,7 +7,8 @@ xxx :
 	$(MAKE) -C main/userio/http_data
 	$(MAKE) all
 	
-win_copy: all
+win_copy: xxx
+	echo "copy files to windows"
 	./win_cp.sh
 
 PROJECT_NAME := netmcu

@@ -342,21 +342,6 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
 
     /////////////////////////////////////////////////////////////////////////////////
 
-
-  case SO_POS_PRINT_GMP: {
-    so_arg_gmp_t *a = arg;
-    io_puts("A:position:");
-    io_puts(" g="), io_putd(a->g);
-    io_puts(" m="), io_putd(a->m);
-    io_puts(" p="), io_putd(a->p), io_puts(";\n");
-    sj_gmp2json(a);
-#ifdef USE_MQTT
-    io_mqtt_publish_gmp(a);
-#endif
-  }
-    break;
-
-
   case SO_POS_begin:
     io_puts("U:position:start;\n");
     break;

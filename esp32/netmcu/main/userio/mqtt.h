@@ -21,9 +21,8 @@ void io_mqtt_enable(bool enable);
 
 
 #ifdef USE_MQTT
-void io_mqtt_publish_gmp(const so_arg_gmp_t *gmp);
 void io_mqtt_publish_config(const char *json);
-
+void io_mqtt_publish_status(const char *json);
 
 // low level wrapper to hide MQTT implementation
 void io_mqtt_create_and_start(void);
