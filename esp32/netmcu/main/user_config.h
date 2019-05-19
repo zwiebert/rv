@@ -20,6 +20,7 @@
 #define USE_SERIAL
 #define CONFIG_DICT
 
+#define DISTRIBUTION 1
 
 #include <stdbool.h>
 #include <stdint.h>

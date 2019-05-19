@@ -139,11 +139,29 @@
                 				
                 <buildCommand>win_cp.sh</buildCommand>
                 				
+                <buildArguments/>
+                				
                 <stopOnError>true</stopOnError>
                 				
                 <useDefaultCommand>false</useDefaultCommand>
                 				
                 <runAllBuilders>false</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="win_copy_release" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>-j6</buildArguments>
+                				
+                <buildTarget>win_copy_release</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>true</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
                 			
             </target>
             			

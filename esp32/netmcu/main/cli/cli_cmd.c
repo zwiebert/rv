@@ -13,7 +13,11 @@
 
 #include "uart.h"
 
+#ifndef DISTRIBUTION
 #define D(x) x
+#else
+#define D(x)
+#endif
 
 void cliCmd_waitForResponse();
 
@@ -100,12 +104,8 @@ void cliCmd_waitForResponse() {
 #define WFR_INTERVAL_MS 50
     *ext_buf = '\0';
     int n = 0;
-
-    extern void *pxCurrentTCB;
-    db_printf("(%p)\n", pxCurrentTCB);
     D(db_printf("wait for response\n"));
     for (int i = 0; i < (WFR_TOTAL_MS / WFR_INTERVAL_MS); ++i) {
-        db_printf("-");
         vTaskDelay(WFR_INTERVAL_MS / portTICK_PERIOD_MS);
         db_printf(":");
         n += stm32_read(ext_buf + n, ext_buf_size - 1 - n);

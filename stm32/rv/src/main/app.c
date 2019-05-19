@@ -212,7 +212,7 @@ void timer_set(int8_t channel) {
 
 	 Mcp23017_putBits(&relay_16, alarm_mask, RELAY_OFF);
 	 dlb8_put_leds(dlb8_obj[0], GET_LOW_BYTE(alarm_mask), false);
-	 dlb8_put_chars(dlb8_obj[0], GET_LOW_BYTE(alarm_mask), 'F', true);
+	 dlb8_put_chars(dlb8_obj[0], GET_LOW_BYTE(alarm_mask), '-', true);
 
 	 alarm_mask = 0;
  }

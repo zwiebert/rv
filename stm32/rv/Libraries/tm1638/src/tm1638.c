@@ -165,6 +165,10 @@ uint8_t Tm1638_char_to_7s(char c) {
 	case 'f':
 	case 'F':
 		return S7A | S7E | S7F | S7G;
+	case '-':
+	    return S7G;
+	case '_':
+		return S7D;
 
 	default:
 		return 0;
