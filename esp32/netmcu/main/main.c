@@ -9,6 +9,7 @@
 #include "user_config.h"
 #include "userio/http_server.h"
 #include "config/config.h"
+#include "main/rtc.h"
 
 void uart_setup(void);
 void ethernet_setup(void);
@@ -90,6 +91,7 @@ void app_main(void)
   setup_mqtt();
 #endif
 
+  rtc_setup();
 
 
   while (1) {
@@ -109,4 +111,3 @@ void  mcu_restart(void) {
   for (;;) {
   };
 }
-

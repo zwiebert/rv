@@ -17,7 +17,12 @@
 #include "userio/status_json.h"
 #include "userio/status_output.h"
 
+#ifdef DISTRIBUTION
 #define TOPIC_ROOT "rv/"
+#else
+#define TOPIC_ROOT "rvdb/"
+#endif
+
 #define TOPIC_CLI TOPIC_ROOT "cli"
 #define TOPIC_STATUS TOPIC_ROOT "status"
 #define TOPIC_DUR_END "/duration"

@@ -224,13 +224,22 @@ void Tm1638_clear_registers(Tm1638 *obj) {
 	Tm1638_write(obj, cmd, sizeof cmd, data, sizeof data, 0);
 }
 
+
+bool Tm1638_detect(Tm1638 *obj) {
+  bool dio_pullup_recognized;
+  my_pin_input_pull_down(Tm1638_dio_pin);
+  dio_pullup_recognized =  my_get_pin(Tm1638_dio_pin);
+  my_pin_output_open(Tm1638_dio_pin);
+  return dio_pullup_recognized;
+}
+
 uint32_t Tm1638_read(Tm1638 *obj) {
 	uint32_t result = 0;
 
 	Tm1638_strobe(obj, true);
 	Tm1638_write_byte(obj,
 			TM1638_CMD_TYPE_DATA_MANAGEMENT | TM1638_CMD_DIR_READ);
-	my_pin_input_float(Tm1638_dio_pin);
+	my_pin_input_pull_up(Tm1638_dio_pin);
 	twait();
 	for (int i = 0; i < 4; ++i) {
 		uint32_t data = Tm1638_read_byte(obj);

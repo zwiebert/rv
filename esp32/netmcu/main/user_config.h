@@ -21,6 +21,7 @@
 #define CONFIG_DICT
 
 #define DISTRIBUTION 1
+#define DISTRIBUTION 1
 
 #include <stdbool.h>
 #include <stdint.h>
