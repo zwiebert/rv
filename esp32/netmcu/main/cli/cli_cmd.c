@@ -38,6 +38,11 @@ const char help_parmCmd[]  =
 #define CMD_ASK_REMAINING_TIMES " rem=?"
 #define CMD_ASK_REMAINING_TIMES_LEN (sizeof CMD_ASK_REMAINING_TIMES - 1)
 
+#define KEY_STATUS_PREFIX "status"
+#define KEY_STATUS_PREFIX_LEN ((sizeof KEY_STATUS_PREFIX) - 1)
+#define CMD_ASK_STATUS " status=?;"
+#define CMD_ASK_STATUS_LEN (sizeof CMD_ASK_STATUS - 1)
+
 #define BUF_SIZE 128
 #define ZONE_COUNT 14
 #define MAX_DURATION 60
@@ -65,6 +70,10 @@ process_parmCmd(clpar p[], int len) {
 
     } else if (strcmp(key, "rem") == 0 && *val == '?') {
       strcat(buf, CMD_ASK_REMAINING_TIMES);
+      reqResponse = true;
+      hasCmdLine = true;
+    } else if (strcmp(key, "status") == 0 && *val == '?') {
+      strcat(buf, CMD_ASK_STATUS);
       reqResponse = true;
       hasCmdLine = true;
     } else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
@@ -107,7 +116,7 @@ void cliCmd_waitForResponse() {
     D(db_printf("wait for response\n"));
     for (int i = 0; i < (WFR_TOTAL_MS / WFR_INTERVAL_MS); ++i) {
         vTaskDelay(WFR_INTERVAL_MS / portTICK_PERIOD_MS);
-        db_printf(":");
+        D(db_printf(":"));
         n += stm32_read(ext_buf + n, ext_buf_size - 1 - n);
         if (n > 0) {
             ext_buf[n] = '\0';

@@ -16,7 +16,10 @@ void wpl_loop(void) {
 
 	if (wp_getError() != WP_ERR_NONE) {
 		if (wp_isUserButtonPressed()) {
+			if (wp_getError() == WP_ERR_MAX_ON_TIME)
+				wpl_increaseMaxOnTime();
 			wp_setError(WP_ERR_NONE);
+
 		}
 		return;
 	}

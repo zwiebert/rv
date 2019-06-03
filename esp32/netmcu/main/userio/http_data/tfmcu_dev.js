@@ -13,6 +13,9 @@ class AppState {
 	this.mZoneDescriptions = ["Rasen West","Kübel West", "Hochbeet Süd",0,0,0,0,0,0,0,0,0,0,0];
 	this.mZoneTimerIntervals = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 	this.mZoneTimerDurations = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+	this.mPressControlStatus = false;
+	this.mWaterPumpStatus = false;
+	this.mStm32Time = "";
     }
 
 
@@ -29,6 +32,11 @@ class AppState {
             document.getElementById(dur).value = this.mZoneTimerDurations[i];
             document.getElementById(rem).value = this.mZoneRemainingTimes[i];
         }
+    }
+    updateHtml_rvStatus() {
+        document.getElementById("id-pressControlStatus").checked = this.mPressControlStatus;
+        document.getElementById("id-waterPumpStatus").checked = this.mWaterPumpStatus;
+        document.getElementById("id-stm32Time").value = this.mStm32Time;
     }
     updateAutomaticHtml() {
         let auto = this.auto;
@@ -86,6 +94,12 @@ class AppState {
                 this.mZoneRemainingTimes[i] = (rem in data) ? data[rem] : 0;
             }
             this.updateHtml_zoneTable();
+	    
+	    this.mPressControlStatus = ("pc" in data && data.pc);
+	    this.mWaterPumpStatus = ("pump" in data && data.pump);
+	    this.mStm32Time = "time" in data ? data.time : "";
+	    this.updateHtml_rvStatus();
+	    
         }
     }
 
@@ -107,7 +121,7 @@ class AppState {
     }
 
     fetchZoneData() {
-        var json = { to:"rv", cmd: { dur:"?", rem:"?" } };
+        var json = { to:"rv", cmd: { dur:"?", rem:"?", status:"?" } };
         var url = base+'/cmd.json';
         postData(url, json);
     }
@@ -277,6 +291,7 @@ function onContentLoaded() {
     app_state = new AppState();
     app_state.load();
     app_state.fetchConfig();
+    app_state.fetchZoneData()
 
     writeHtml_timerTableDiv();
 

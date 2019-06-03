@@ -5,6 +5,8 @@
  *      Author: bertw
  */
 
+#include "user_config.h"
+
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/usart.h>
@@ -33,6 +35,24 @@ Dlb8 input[2];
 Dlb8 *dlb8_obj[2];
 
 void loop(void);
+
+#define DISABLE_ALL_PIN GPIO5
+#define DISABLE_ALL_PIN_PORT GPIOB
+
+void mcp23017_doReset() {
+	gpio_set(DISABLE_ALL_PIN_PORT, DISABLE_ALL_PIN);
+	for (unsigned long i = 0; i < 4500; ++i) {
+		__asm__("nop");
+	}
+	gpio_clear(DISABLE_ALL_PIN_PORT, DISABLE_ALL_PIN);
+}
+
+void atFault() {
+	gpio_set(DISABLE_ALL_PIN_PORT, DISABLE_ALL_PIN);
+}
+
+void atFault_setup() {
+}
 
 #if 1
 void display_print_timer(uint8_t n) {
@@ -118,16 +138,20 @@ void dlb8_print_time(Dlb8 *obj, struct tm *tm) {
 #endif
 
 static void input_setup(void) {
-#ifdef USE_DLB8
 	rcc_periph_clock_enable(RCC_GPIOB);
 	Tm1638_setup(GPIOB, GPIO13, GPIOB, GPIO14);
 	Tm1638_construct(&input[0].tm, GPIOB, GPIO15);
 	dlb8_obj[0] = &input[0];
 	Tm1638_construct(&input[1].tm, GPIOB, GPIO12);
 	dlb8_obj[1] = &input[1];
-#endif
 }
 
+bool i2c2_check() {
+	if (gpio_get(GPIOB, GPIO_I2C2_SDA))
+		return true;
+	ioExtender_setup(true);
+	return false;
+}
 static void i2c2_setup(void) {
 	/* Enable clocks for I2C2 and AFIO. */
 	rcc_periph_clock_enable(RCC_I2C2);
@@ -216,6 +240,19 @@ static void timer_alarm(int8_t channel) {
 	alarm_mask = 0;
 }
 
+void ioExtender_setup(bool re_init) {
+	if (!re_init) {
+		rcc_periph_clock_enable(RCC_GPIOB);
+		gpio_clear(DISABLE_ALL_PIN_PORT, DISABLE_ALL_PIN);
+		gpio_set_mode(DISABLE_ALL_PIN_PORT, GPIO_MODE_OUTPUT_2_MHZ,
+				GPIO_CNF_OUTPUT_PUSHPULL, DISABLE_ALL_PIN);
+	}
+
+	mcp23017_doReset();
+	Mcp23017_construct_out(&relay_16, I2C2, Mcp23017_slave_address(0, 0, 0),
+			RELAY_OFF);
+}
+
 void setup() {
 	clock_setup();
 	uart_setup();
@@ -226,10 +263,8 @@ void setup() {
 	valveTimer_setup();
 	rtc_setup();
 	input_setup();
-	Mcp23017_construct_out(&relay_16, I2C2, Mcp23017_slave_address(0, 0, 0),
-			RELAY_OFF);
+	ioExtender_setup(false);
 	wp_setup();
-
 }
 
 typedef struct {
@@ -338,6 +373,7 @@ void XXuart_loop() {
 	set_timers(ta_buf, ta_len);
 #endif
 }
+volatile int x;
 
 void loop(void) {
 	valveTimer_loop();
@@ -351,5 +387,11 @@ void loop(void) {
 		set_timers(ta_buf, ta_len);
 	}
 #endif
+
+	if (!i2c2_check()) {
+		puts("I2C had crashed. Reset");
+	}
+	if (x)
+	 atFault();
 }
 

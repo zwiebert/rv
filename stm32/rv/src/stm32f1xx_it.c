@@ -61,6 +61,8 @@ void NMI_Handler(void)
   */
 void HardFault_Handler(void)
 {
+  extern void atFault(void); //disable valves, water pump, etc.
+  atFault();
   /* Go to infinite loop when Hard Fault exception occurs */
   while (1)
   {

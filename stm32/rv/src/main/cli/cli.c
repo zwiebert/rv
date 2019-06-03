@@ -91,7 +91,8 @@ asc2bool(const char *s) {
 
 void ICACHE_FLASH_ATTR
 reply_success() {
-  reply_message(0, "ok");
+	puts("ok:");
+  //reply_message(0, "ok");
 }
 
 int ICACHE_FLASH_ATTR
@@ -118,7 +119,7 @@ struct {
   int (*process_parmX)(clpar p[], int len);
   const char *help;
 } parm_handlers[] = {
-     //   { "config", process_parmConfig, 0 },
+        { "config", process_parmConfig, 0 },
         { "cmd", process_parmCmd, 0 },
   };
 

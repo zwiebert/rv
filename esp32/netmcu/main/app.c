@@ -7,20 +7,20 @@
 char buf[BUF_SIZE];
 
 //#include "freertos/task.h"
-
+#define D(x)
 
 void loop(void) {
 	cli_loop();
         httpServer_loop();
 
-	db_printf(".");
+	D(db_printf("."));
 	int n = stm32_read(buf, BUF_SIZE-1);
 	if (n > 0) {
 		buf[n] = '\0';
 #ifdef USE_MQTT
 
 #endif
-		db_printf("from-stm32: <%s>\n", buf);
+		D(db_printf("from-stm32: <%s>\n", buf));
 	}
 
 

@@ -239,7 +239,7 @@ uint32_t Tm1638_read(Tm1638 *obj) {
 	Tm1638_strobe(obj, true);
 	Tm1638_write_byte(obj,
 			TM1638_CMD_TYPE_DATA_MANAGEMENT | TM1638_CMD_DIR_READ);
-	my_pin_input_pull_up(Tm1638_dio_pin);
+	my_pin_input_pull_down(Tm1638_dio_pin);
 	twait();
 	for (int i = 0; i < 4; ++i) {
 		uint32_t data = Tm1638_read_byte(obj);
