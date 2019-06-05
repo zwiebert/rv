@@ -6,6 +6,7 @@
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
    CONDITIONS OF ANY KIND, either express or implied.
 */
+#ifdef USE_LAN
 
 #define OLIMEX_ESP32_POE
 
@@ -213,3 +214,6 @@ void app_main()
     ESP_ERROR_CHECK(esp_eth_enable()) ;
 }
 #endif
+
+#endif // USE_LAN
+

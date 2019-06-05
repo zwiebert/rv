@@ -2,6 +2,9 @@
 #define cli_imp_h_
 #include "cli.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define CMD_BUF_SIZE 128
 extern char cmd_buf[CMD_BUF_SIZE];
@@ -66,4 +69,7 @@ void cli_print_json(const char *json); //FIXME
 
 void cli_process_json(char *json);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

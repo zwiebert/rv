@@ -18,6 +18,10 @@
 
 #define TIMER_SET_DONE -1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
 	uint32_t start_time;
 	uint32_t target_time;
@@ -39,5 +43,8 @@ uint8_t valveTimer_getRemainingMinutes(uint8_t channel);
 void valveTimer_tick(void);
 void valveTimer_setup(void);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* TIMER_H_ */

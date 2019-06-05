@@ -6,14 +6,16 @@
 
 #include "user_config.h"
 #include "cli_imp.h"
-#include "valve_timer.h"
 #include <stdio.h>
 
 #include "peri/uart.h"
 #include "water_pump.h"
+#include "rtc.h"
+#include "rv_timer.hh"
+#include "app_cxx.hh"
 
 #define warning_unknown_option(x)
-void timer_set(int8_t channel);
+extern "C" void timer_set(int8_t channel);
 
 #define KEY_DURATION_PREFIX "dur"
 #define KEY_DURATION_PREFIX_LEN ((sizeof KEY_DURATION_PREFIX) - 1)
@@ -69,7 +71,7 @@ process_parmCmd(clpar p[], int len) {
 		} else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
 			int channel = atoi(key + KEY_DURATION_PREFIX_LEN);
 			int duration = atoi(val);
-			valveTimer_setTimerDurationByMinutes(channel, duration);
+			rvt.set(channel, duration * 60)->run();
 			hasDuration = true;
 
 		} else {
@@ -78,31 +80,30 @@ process_parmCmd(clpar p[], int len) {
 	}
 
 	if (hasDuration) {
-		timer_set(TIMER_SET_DONE);
-		valveTimer_loop(); //XXX: to det immidiate result for dur=?
+		rvt.loop(); //XXX
 	}
 
 	if (wantsReply) {
 		esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
-
+#ifndef TODO
 		if (wantsDurations) {
-			for (int i = 0; i < VALVE_TIMER_COUNT; ++i) {
-				uint8_t mints = valveTimer_getProgrammedMinutes(i);
+			for (RvTimer *t = rvt.getTimerList().succ; t; t = t->succ) {
+				uint8_t mints = t->get_duration() / 60;
 				if (mints) {
-					sprintf(buf + strlen(buf), "\"%s%d\":%d,", KEY_DURATION_PREFIX, i, mints);
+					sprintf(buf + strlen(buf), "\"%s%d\":%d,", KEY_DURATION_PREFIX, t->getValveNumber(), mints);
 				}
 			}
 		}
 
 		if (wantsRemainingTimes) {
-			for (int i = 0; i < VALVE_TIMER_COUNT; ++i) {
-				uint8_t mints = valveTimer_getRemainingMinutes(i);
+			for (RvTimer *t = rvt.getTimerList().succ; t; t = t->succ) {
+				uint8_t mints = t->get_remaining() / 60;
 				if (mints) {
-					sprintf(buf + strlen(buf), "\"%s%d\":%d,", KEY_REMAINING_PREFIX, i, mints);
+					sprintf(buf + strlen(buf), "\"%s%d\":%d,", KEY_REMAINING_PREFIX, t->getValveNumber(), mints);
 				}
 			}
 		}
-
+#endif
 		if (wantsRelayPC && wp_isPressControlOn()) {
 			strcat(buf, "\"pc\":1,");
 		}

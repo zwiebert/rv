@@ -10,6 +10,8 @@
 #include "userio/http_server.h"
 #include "config/config.h"
 #include "main/rtc.h"
+#include "watch_dog.h"
+
 
 void uart_setup(void);
 void ethernet_setup(void);
@@ -20,6 +22,7 @@ void setup_ntp(void);
 void setup_storage(void);
 void setup_mqtt(void);
 void loop(void);
+void wifistation_setup(void);
 
 esp_err_t event_handler(void *ctx, system_event_t *event)
 {
@@ -60,6 +63,9 @@ void app_main(void)
     ESP_ERROR_CHECK( esp_event_loop_init(event_handler, NULL) );
 
 #ifdef USE_WLAN
+    wifistation_setup();
+#endif
+#if 0
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
     ESP_ERROR_CHECK( esp_wifi_set_storage(WIFI_STORAGE_RAM) );
@@ -71,6 +77,8 @@ void app_main(void)
             .bssid_set = false
         }
     };
+    strcpy ((char*)sta_config.sta.ssid, C.wifi_SSID);
+    strcpy ((char*)sta_config.sta.password, C.wifi_password);
     ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_STA, &sta_config) );
     ESP_ERROR_CHECK( esp_wifi_start() );
     ESP_ERROR_CHECK( esp_wifi_connect() );
@@ -90,7 +98,9 @@ void app_main(void)
 #ifdef USE_MQTT
   setup_mqtt();
 #endif
-
+#ifdef USE_WDG
+  watchDog_setup();
+#endif
   rtc_setup();
 
 

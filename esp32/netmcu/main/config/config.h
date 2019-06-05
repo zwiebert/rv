@@ -28,6 +28,10 @@ typedef struct {
 #ifdef USE_SERIAL
 	uint32_t mcu_serialBaud;
 #endif
+#ifdef USE_WLAN
+    char wifi_SSID[32];
+    char wifi_password[64];
+#endif
 #ifdef USE_HTTP
   char http_user[16];
   char http_password[31];

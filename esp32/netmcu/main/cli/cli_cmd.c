@@ -111,6 +111,8 @@ process_parmCmd(clpar p[], int len) {
 void cliCmd_waitForResponse() {
 #define WFR_TOTAL_MS 2000
 #define WFR_INTERVAL_MS 50
+    precond(ext_buf);
+
     *ext_buf = '\0';
     int n = 0;
     D(db_printf("wait for response\n"));

@@ -10,7 +10,15 @@
 
 #define MCU_ESP32
 
+#define BB // breadboard
+
+#ifdef BB
+#define USE_WLAN
+#else
 #define USE_LAN
+#define DISTRIBUTION 1
+#endif
+
 #define USE_HTTP
 #define USE_NTP
 #define USE_JSON
@@ -20,8 +28,10 @@
 #define USE_SERIAL
 #define CONFIG_DICT
 
-#define DISTRIBUTION 1
-#define DISTRIBUTION 1
+
+#define STM32_RESET_PIN  GPIO_NUM_5
+#define STM32_UART_TX_PIN  (GPIO_NUM_4)
+#define STM32_UART_RX_PIN  (GPIO_NUM_36)
 
 #include <stdbool.h>
 #include <stdint.h>

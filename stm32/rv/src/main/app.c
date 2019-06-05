@@ -24,6 +24,7 @@
 #include "water_pump_logic.h"
 #include "peri/uart.h"
 #include "cli/cli.h"
+#include "app_cxx.h"
 
 #include "../Libraries/tm1638/include/boards/dlb8.h"
 
@@ -240,6 +241,10 @@ static void timer_alarm(int8_t channel) {
 	alarm_mask = 0;
 }
 
+void app_switch_valve(int valve_number, bool state) {
+  Mcp23017_putBit(&relay_16, valve_number, state ? RELAY_ON :  RELAY_OFF);
+}
+
 void ioExtender_setup(bool re_init) {
 	if (!re_init) {
 		rcc_periph_clock_enable(RCC_GPIOB);
@@ -265,6 +270,7 @@ void setup() {
 	input_setup();
 	ioExtender_setup(false);
 	wp_setup();
+	cxx_setup();
 }
 
 typedef struct {
@@ -388,10 +394,11 @@ void loop(void) {
 	}
 #endif
 
+	cxx_loop();
+
 	if (!i2c2_check()) {
 		puts("I2C had crashed. Reset");
 	}
 	if (x)
 	 atFault();
 }
-

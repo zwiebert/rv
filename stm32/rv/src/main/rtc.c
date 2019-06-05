@@ -13,6 +13,7 @@
 #include "valve_timer.h"
 
 #include <time.h>
+#include "rtc.h"
 
 #define VT_TIMER_COUNT 16
 #define MAX_TIMER_MINUTES 60
@@ -24,6 +25,7 @@ void (*valveTimer_alarmCb)(int8_t channel);
 
 volatile uint32_t next_timer_value;
 volatile time_t curr_time;
+volatile unsigned run_time;
 volatile bool timer_rang, timer_noticed;
 
 
@@ -42,6 +44,7 @@ void RTC_IRQHandler(void)
 	/* Visual output. */
 	gpio_toggle(GPIOC, GPIO13);
 	curr_time = rtc_get_counter_val();
+	run_time += 1;
 
 	valveTimer_tick();
 }

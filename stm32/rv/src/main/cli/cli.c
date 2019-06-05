@@ -148,6 +148,12 @@ cli_process_cmdline(char *line) {
 void ICACHE_FLASH_ATTR cli_loop(void) {
   char *cmdline;
   if ((cmdline = get_commandline())) {
+#ifdef USE_WDG
+	  extern bool watchDog_checkCommandLine(const char *cmdLine);
+	  if (watchDog_checkCommandLine(cmdline)) {
+
+	  } else
+#endif
 #ifdef USE_JSON
     if (cmdline[0] == '{') {
      cli_process_json(cmdline);

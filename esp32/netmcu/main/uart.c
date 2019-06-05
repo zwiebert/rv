@@ -15,6 +15,7 @@
    CONDITIONS OF ANY KIND, either express or implied.
 */
 #include <stdio.h>
+#include "user_config.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/uart.h"
@@ -32,8 +33,13 @@
  * - Pin assignment: see defines below
  */
 
-#define ECHO_TEST_TXD  (GPIO_NUM_4)
-#define ECHO_TEST_RXD  (GPIO_NUM_36)
+#ifndef STM32_UART_TX_PIN
+#define STM32_UART_TX_PIN  (GPIO_NUM_4)
+#endif
+#ifndef STM32_UART_RX_PIN
+#define STM32_UART_RX_PIN  (GPIO_NUM_36)
+#endif
+
 #define ECHO_TEST_RTS  (UART_PIN_NO_CHANGE)
 #define ECHO_TEST_CTS  (UART_PIN_NO_CHANGE)
 
@@ -61,7 +67,7 @@ void uart_setup()
         .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
     };
     uart_param_config(UART_NUM_1, &uart_config);
-    uart_set_pin(UART_NUM_1, ECHO_TEST_TXD, ECHO_TEST_RXD, ECHO_TEST_RTS, ECHO_TEST_CTS);
+    uart_set_pin(UART_NUM_1, STM32_UART_TX_PIN, STM32_UART_RX_PIN, ECHO_TEST_RTS, ECHO_TEST_CTS);
     uart_driver_install(UART_NUM_1, RX_BUF_SIZE, TX_BUF_SIZE, 0, NULL, 0);
 
 

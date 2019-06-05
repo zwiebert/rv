@@ -4,16 +4,13 @@
  *  Created on: 03.05.2019
  *      Author: bertw
  */
+#include "user_config.h"
+#include <time.h>
 
 #include "valve_timer.h"
 #include "rtc.h"
 
-#include <libopencm3/stm32/rcc.h>
-#include <libopencm3/stm32/gpio.h>
-#include <libopencm3/stm32/rtc.h>
-#include <libopencm3/stm32/usart.h>
-#include <libopencm3/stm32/pwr.h>
-#include <libopencm3/cm3/nvic.h>
+
 
 #include <stdio.h>
 

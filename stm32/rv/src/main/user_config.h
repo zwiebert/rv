@@ -8,6 +8,8 @@
 #ifndef MAIN_USER_CONFIG_H_
 #define MAIN_USER_CONFIG_H_
 
+#define STM32F1
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -15,6 +17,7 @@
 
 #define USE_JSON
 //#define USE_DLB8
+#define USE_WDG
 
 #define ICACHE_FLASH_ATTR
 

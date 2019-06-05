@@ -13,6 +13,10 @@
 
 #define WP_MCP_MASK 0x0c
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // test if PressControl wants to turn on the pump
 bool wp_isPressControlOn(void);
 
@@ -47,5 +51,10 @@ wp_err_T wp_getError(void);
 
 
 void wp_setup(void);
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif /* WATER_PUMP_H_ */
