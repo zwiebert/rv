@@ -21,7 +21,7 @@ time_t last_call_time;
 #define RESET_PIN_MS 500
 
 #ifndef STM32_RESET_PIN
-#define STM32_RESET_PIN  GPIO_NUM_5
+#define STM32_RESET_PIN  GPIO_NUM_19
 #endif
 
 static void rebootSTM32() {

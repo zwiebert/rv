@@ -1,5 +1,5 @@
 var base = '';
-var base = 'http://192.168.1.79'; //dev-delete-line//
+var base = 'http://10.0.0.27'; //dev-delete-line//
 
 
 var tfmcu_config = {};
@@ -87,7 +87,7 @@ class AppState {
         if ("data" in obj) {
             let data = obj.data;
             for (let i=0; i < ZONE_COUNT; ++i) {
-                let sfx = i.toString();
+                let sfx = i.toString()+".0";
                 let dur = 'dur'+sfx;
                 let rem = 'rem'+sfx;
                 this.mZoneTimerDurations[i] = (dur in data) ? data[dur] : 0;

@@ -22,6 +22,10 @@
 void cliCmd_waitForResponse();
 
 
+#define ONE_MINUTE (60)
+#define ONE_HOUR (ONE_MINUTE * 60)
+#define ONE_DAY (ONE_HOUR * 24)
+
 const char help_parmCmd[]  =
     "durN=[0-60]      activate zone N for up to 60 minutes (0=off). Example: cmd dur3=45;\n"
     "dur=?            request durations of all activated zones\n"
@@ -77,15 +81,26 @@ process_parmCmd(clpar p[], int len) {
       reqResponse = true;
       hasCmdLine = true;
     } else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
-      int zone = atoi(key + KEY_DURATION_PREFIX_LEN);
-      int duration = atoi(val);
-      if (0 <= zone && zone < ZONE_COUNT  && 0 <= duration && duration <= MAX_DURATION) {
-    	  buf_idx += sprintf(buf + strlen(buf), " dur%d=%d", zone, duration);
-    	  hasCmdLine = true;
+      int zone=-1, timer_number=0;
+      sscanf((key + KEY_DURATION_PREFIX_LEN), "%d.%d", &zone, &timer_number);
+      if (strchr(val, ',')) {
+        float on = 0, off = 0;
+        int repeats = 0;
+        float period = 0;
+        sscanf(val, "%f,%f,%d,%f", &on, &off, &repeats, &period);
+        buf_idx += sprintf(buf + strlen(buf), " dur%d.%d=%d,%d,%d,%d", zone, timer_number, (int) (on * ONE_MINUTE), (int) (off * ONE_MINUTE), repeats,
+            (int) (period * (60 * ONE_HOUR)));
+        hasCmdLine = true;
       } else {
-    	  db_printf("error: out of range");
+        float duration = 0;
+        sscanf(val, "%f", &duration);
+        if (0 <= zone && zone < ZONE_COUNT && 0 <= duration && duration <= MAX_DURATION) {
+          buf_idx += sprintf(buf + strlen(buf), " dur%d.%d=%d", zone, timer_number, (int)(duration * 60));
+          hasCmdLine = true;
+        } else {
+          db_printf("error: out of range");
+        }
       }
-
     } else {
       warning_unknown_option(key);
     }

@@ -6,6 +6,7 @@
  */
 
 #include <ctype.h>
+//#include "lwip/apps/sntp/sntp.h"
 #include <lwip/apps/sntp.h>
 #include <lwip/apps/sntp_opts.h>
 #include <lwip/ip_addr.h>
@@ -18,9 +19,10 @@
 #include "esp_event_loop.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
+#include "uart.h"
 
 #define printf ets_printf
-#define D(x)
+#define D(x) x
 
 static void set_server_by_config() {
   int server_number = 0;
@@ -73,12 +75,31 @@ static void set_server_by_config() {
   sntp_init();
 }
 
+  volatile bool ntp_sync_done;
+
+  void sntp_sync_time_cb (struct timeval *tv) {
+      ets_printf("ntp synced: %ld\n", time(0));
+      ntp_sync_done = true;
+  }
+
 void setup_ntp(void) {
   static int once;
   if (once == 0) {
     once = 1;
     sntp_setoperatingmode(SNTP_OPMODE_POLL);
+    sntp_set_time_sync_notification_cb(sntp_sync_time_cb);
     set_server_by_config();
+
     D(ets_printf("server:<%s> <%s> <%s>\n",sntp_getservername(0), sntp_getservername(1), sntp_getservername(2)));
   }
+}
+
+void ntp_loop() {
+    if (ntp_sync_done) {
+        char buf[80];
+        sprintf(buf, "config time=%ld;", time(0));
+        D(ets_printf("to-strm32: <%s>", buf));
+        stm32_write(buf, strlen(buf));
+        ntp_sync_done = false;
+    }
 }

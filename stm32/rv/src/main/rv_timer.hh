@@ -1,6 +1,9 @@
 #ifndef RV_TIMER_HH
 #define RV_TIMER_HH
 
+#include "user_config.h"
+#include "misc/int_macros.h"
+
 #include <time.h>
 #ifdef MOD_TEST
 #include <iostream>
@@ -19,6 +22,9 @@ const int RV_MAX_LPH = 1200;
 extern int Lph[RV_VALVE_COUNT];
 
 typedef void (*switch_valve_cb)(int valve_number, bool state);
+typedef void (*switch_valves_cb)(uint16_t valve_bits, uint16_t valve_mask);
+
+
 
 class RvTimer;
 class RvTimers;
@@ -33,13 +39,17 @@ private:
 	bool mIsRunning = false, mIsOn = false;
 	int mDoneOn = 0;
 	int mValveNumber = -1;
+	int mTimerNumber=0; // multiple time per valve with different numbers
 	switch_valve_cb mSwitchValveCb = 0;
 public:
 	int getValveNumber() {
 		return mValveNumber;
 	}
-	bool match(int valve_number) {
-		return valve_number == mValveNumber;
+	int getTimerNumber() {
+		return mTimerNumber;
+	}
+	bool match(int valve_number, int id=0) {
+		return valve_number == mValveNumber && id == mTimerNumber;
 	}
 
 	void register_callback(switch_valve_cb cb, int valve_number) {
@@ -75,14 +85,15 @@ public:
 	int get_duration() { return mTimeOn; }
 	int get_remaining() { return isOn() ? mNextOnOff - time(0) : mTimeOn; }
 
-	void set(int on_duration, int off_duration, int repeats, int period) {
+	void set(int on_duration, int off_duration, int repeats, int period, int id) {
 		mTimeOn = on_duration;
 		mTimeOff = off_duration;
 		mRepeats = repeats;
 		mPeriod = period;
+		mTimerNumber = id;
 	}
-	void set(int on_duration) {
-		set(on_duration, 0, 0, 0);
+	void set(int on_duration, int id) {
+		set(on_duration, 0, 0, 0, id);
 	}
 
 	bool isReadyToRun() {
@@ -134,19 +145,26 @@ public:
 };
 
 class RvTimers {
+	static uint16_t valve_bits, valve_mask;
+	static void switch_valve_2(int valve_number, bool state) {
+		SET_BIT(valve_mask, valve_number);
+		if (state)
+			SET_BIT(valve_bits, valve_number);
+	}
 private:
-	int lph = 0;
+	int lph = 0; // XXX: don't count timers for the same valve more than once
 	RvTimer mTimers[RV_TIMER_COUNT];
 	RvTimer mFreeTimers, mUsedTimers;
 	switch_valve_cb mSvCb; // XXX
+	switch_valves_cb mSvsCb;
 
 public:
 	void timer_to_list(RvTimer *list, RvTimer *timer);
 
-	RvTimers(switch_valve_cb cb) :
-			mSvCb(cb) {
-		mFreeTimers.pred = &mFreeTimers; // pointer to tail
-		mUsedTimers.pred = &mUsedTimers; // pointer to tail
+	RvTimers(switch_valve_cb cb, switch_valves_cb cb2) :
+			mSvCb(cb), mSvsCb(cb2) {
+		mFreeTimers.pred = mFreeTimers.succ = &mFreeTimers; // pointer to tail
+		mUsedTimers.pred = mUsedTimers.succ = &mUsedTimers; // pointer to tail
 
 		for (int i = 0; i < RV_TIMER_COUNT; ++i) {
 			timer_to_list(&mFreeTimers, &mTimers[i]);
@@ -158,10 +176,10 @@ public:
 	}
 
 	RvTimer *set(int valve_number, int on_duration, int off_duration,
-			int repeats, int period) {
+			int repeats, int period, int id) {
 		RvTimer *timer = 0;
-		for (RvTimer *t = mUsedTimers.succ; t; t = t->succ) { // XXX: for now only allow one timer per valve
-			if (t->getValveNumber() == valve_number) {
+		for (RvTimer *t = mUsedTimers.succ; t != &mUsedTimers; t = t->succ) {
+			if (t->match(valve_number, id)) {
 				if (t->isOn())
 					lph -= Lph[valve_number];
 
@@ -179,20 +197,20 @@ public:
 		}
 
 		if (timer) {
-			timer->register_callback(mSvCb, valve_number);
-			timer->set(on_duration, off_duration, repeats, period);
+			timer->register_callback((mSvCb ? mSvCb : switch_valve_2), valve_number);
+			timer->set(on_duration, off_duration, repeats, period, id);
 			return timer;
 		}
 		return 0;
 	}
 
-	RvTimer *set(int valve_number, int on_duration) {
-		return set(valve_number, on_duration, 0, 0, 0);
+	RvTimer *set(int valve_number, int on_duration, int id=0) {
+		return set(valve_number, on_duration, 0, 0, 0, id);
 	}
 
-	void unset(int valve_number) {
-		for (RvTimer *t = mUsedTimers.succ; t; t = t->succ) {
-			if (t->match(valve_number)) {
+	void unset(int valve_number, int id) {
+		for (RvTimer *t = mUsedTimers.succ; t != &mUsedTimers; t = t->succ) {
+			if (t->match(valve_number, id)) {
 				timer_to_list(&mFreeTimers, t);
 			}
 		}
@@ -204,8 +222,8 @@ public:
 		return &mTimers[valve_number];
 	}
 public:
-	RvTimer &getTimerList() {
-		return mUsedTimers;
+	RvTimer *getTimerList() {
+		return &mUsedTimers;
 	}
 };
 

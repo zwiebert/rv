@@ -69,10 +69,18 @@ process_parmCmd(clpar p[], int len) {
 			wantsReply = wantsDurations = wantsRemainingTimes = wantsRelayPC = wantsRelayPump = wantsTime = true;
 
 		} else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
-			int channel = atoi(key + KEY_DURATION_PREFIX_LEN);
-			int duration = atoi(val);
-			rvt.set(channel, duration * 60)->run();
-			hasDuration = true;
+			int channel=-1, timer_number=0;
+			sscanf((key + KEY_DURATION_PREFIX_LEN), "%d.%d", &channel, &timer_number);
+			if (strchr(val, ',')) {
+				int on=0, off=0, repeats=0, period=0;
+				sscanf(val,"%d,%d,%d,%d", &on, &off, &repeats, &period);
+				rvt.set(channel, on, off, repeats, period, timer_number)->run();
+				hasDuration = true;
+			} else {
+				int duration = atoi(val);
+				rvt.set(channel, duration, timer_number)->run();
+				hasDuration = true;
+			}
 
 		} else {
 			warning_unknown_option(key);
@@ -81,25 +89,26 @@ process_parmCmd(clpar p[], int len) {
 
 	if (hasDuration) {
 		rvt.loop(); //XXX
+		esp32_write("dr\n", 3);
 	}
 
 	if (wantsReply) {
 		esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
 #ifndef TODO
 		if (wantsDurations) {
-			for (RvTimer *t = rvt.getTimerList().succ; t; t = t->succ) {
-				uint8_t mints = t->get_duration() / 60;
-				if (mints) {
-					sprintf(buf + strlen(buf), "\"%s%d\":%d,", KEY_DURATION_PREFIX, t->getValveNumber(), mints);
+			for (RvTimer *t = rvt.getTimerList()->succ; t != rvt.getTimerList(); t = t->succ) {
+				int secs = t->get_duration();
+				if (secs) {
+					sprintf(buf + strlen(buf), "\"%s%d.%d\":%d,", KEY_DURATION_PREFIX, t->getValveNumber(), t->getTimerNumber(), secs);
 				}
 			}
 		}
 
 		if (wantsRemainingTimes) {
-			for (RvTimer *t = rvt.getTimerList().succ; t; t = t->succ) {
-				uint8_t mints = t->get_remaining() / 60;
-				if (mints) {
-					sprintf(buf + strlen(buf), "\"%s%d\":%d,", KEY_REMAINING_PREFIX, t->getValveNumber(), mints);
+			for (RvTimer *t = rvt.getTimerList()->succ; t != rvt.getTimerList(); t = t->succ) {
+				int secs = t->get_remaining();
+				if (secs) {
+					sprintf(buf + strlen(buf), "\"%s%d.%d\":%d,", KEY_REMAINING_PREFIX, t->getValveNumber(), t->getTimerNumber(), secs);
 				}
 			}
 		}

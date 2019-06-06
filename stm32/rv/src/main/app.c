@@ -244,6 +244,9 @@ static void timer_alarm(int8_t channel) {
 void app_switch_valve(int valve_number, bool state) {
   Mcp23017_putBit(&relay_16, valve_number, state ? RELAY_ON :  RELAY_OFF);
 }
+void app_switch_valves(uint16_t valve_bits, uint16_t valve_mask) {
+	Mcp23017_putBits(&relay_16, valve_mask, ~valve_bits);
+}
 
 void ioExtender_setup(bool re_init) {
 	if (!re_init) {

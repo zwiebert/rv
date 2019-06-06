@@ -73,6 +73,8 @@ const char *TAG = "wifistation";
 
 static ip4_addr_t ip4_address;
 
+volatile static bool wifistation_connected;
+volatile static bool wifistation_disconnected;
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
         int32_t event_id, void* event_data) {
@@ -84,7 +86,8 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
         break;
 
     case WIFI_EVENT_STA_DISCONNECTED:
-        ipnet_disconnected();
+        wifistation_connected = false;
+        wifistation_disconnected = true;
         {
             if (RETRY_RECONNECT) {
                 ip4_address.addr = 0;
@@ -99,7 +102,6 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
     default:
         break;
     }
-    return ESP_OK;
 }
 
 /** Event handler for IP_EVENT_STA_GOT_IP */
@@ -117,7 +119,11 @@ static void got_ip_event_handler(void* arg, esp_event_base_t event_base,
     ESP_LOGI(TAG, "~~~~~~~~~~~");
 
     ip4_address = ip_info->ip;
-    ipnet_connected();
+
+    wifistation_disconnected = false;
+    wifistation_connected = true;
+
+
 }
 
 void
@@ -141,4 +147,14 @@ wifistation_setup(void) {
   ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
 
   user_set_station_config();
+}
+
+void wifistation_loop() {
+  if (wifistation_connected) {
+      ipnet_connected();
+      wifistation_connected = false;
+  } else if (wifistation_disconnected) {
+      ipnet_disconnected();
+      wifistation_disconnected = false;
+  }
 }

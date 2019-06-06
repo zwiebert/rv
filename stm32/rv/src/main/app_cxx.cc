@@ -11,8 +11,9 @@
 #include "watch_dog.hh"
 
 extern "C" void app_switch_valve(int valve_number, bool state);
+extern "C" void app_switch_valves(uint16_t valve_bits, uint16_t valve_mask);
 
-RvTimers rvt = RvTimers(app_switch_valve);
+RvTimers rvt = RvTimers(0, app_switch_valves);
 
 extern "C" void cxx_loop() {
 	rvt.loop();

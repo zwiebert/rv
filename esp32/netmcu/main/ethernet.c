@@ -6,6 +6,7 @@
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
    CONDITIONS OF ANY KIND, either express or implied.
 */
+#include "user_config.h"
 #ifdef USE_LAN
 
 #define OLIMEX_ESP32_POE
@@ -65,6 +66,8 @@
 #include "userio/ipnet.h"
 
 static ip4_addr_t ip4_address;
+volatile static bool ethernet_connected;
+volatile static bool ethernet_disconnected;
 
 static const char *TAG = "eth_example";
 
@@ -137,6 +140,8 @@ static void eth_event_handler(void* arg, esp_event_base_t event_base,
         break;
     case ETHERNET_EVENT_DISCONNECTED:
         ESP_LOGI(TAG, "Ethernet Link Down");
+        ethernet_connected = false;
+        ethernet_disconnected = true;
         break;
     case ETHERNET_EVENT_START:
         ESP_LOGI(TAG, "Ethernet Started");
@@ -164,7 +169,8 @@ static void got_ip_event_handler(void* arg, esp_event_base_t event_base,
     ESP_LOGI(TAG, "~~~~~~~~~~~");
 
     ip4_address = ip_info->ip;
-    ipnet_connected();
+    ethernet_disconnected = false;
+    ethernet_connected = true;
 }
 
 void ethernet_setup() {
@@ -185,8 +191,18 @@ void ethernet_setup() {
     ESP_ERROR_CHECK(esp_eth_enable()) ;
 }
 
+void ethernet_loop() {
+  if (ethernet_connected) {
+      ipnet_connected();
+      ethernet_connected = false;
+  } else if (ethernet_disconnected) {
+      ipnet_disconnected();
+      ethernet_disconnected = false;
+  }
+}
+
 void
-ipnet_addr_as_string(char *buf, unsigned buf_len) {
+ethernet_ipnet_addr_as_string(char *buf, unsigned buf_len) {
   ip4addr_ntoa_r(&ip4_address, buf, buf_len);
 }
 

@@ -48,7 +48,7 @@ process_parmConfig(clpar p[], int len) {
 #endif
 
     } else if (strcmp(key, "time") == 0) {
-    	curr_time = atol(val);
+    	rtc_set_counter_val(atol(val));
     } else {
       ++errors;
     }

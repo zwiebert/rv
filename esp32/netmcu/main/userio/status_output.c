@@ -353,7 +353,12 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   case SO_INET_PRINT_ADDRESS: {
 #if defined USE_LAN || defined USE_WLAN
     char buf[20];
+#ifdef USE_LAN
+    void ethernet_ipnet_addr_as_string();
+    ethernet_ipnet_addr_as_string(buf, 20);
+#else
     ipnet_addr_as_string(buf, 20);
+#endif
     io_puts("tf: ipaddr: "), io_puts(buf), io_puts(";\n");
 #endif
   }
