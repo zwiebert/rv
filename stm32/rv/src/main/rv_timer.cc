@@ -60,10 +60,7 @@ void RvTimers::loop() {
 
 void RvTimers::timer_to_list(RvTimer *list, RvTimer *timer) {
     // unlink from current list
-    if (timer->pred)
-    timer->pred->succ = timer->succ;
-    if (timer->succ)
-      timer->succ->pred = timer->pred;
+	timer->unlinkThis();
 
     // append to list
     RvTimer *tail = list->pred;

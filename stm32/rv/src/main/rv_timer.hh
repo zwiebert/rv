@@ -33,15 +33,37 @@ class RvTimer {
 	friend class RvTimers;
 public:
 	RvTimer *pred = 0, *succ = 0;
+	void unlinkThis() {
+		if (pred)
+			pred->succ = succ;
+		if (succ)
+			succ->pred = pred;
+	}
+	RvTimer *getNext() { return succ->mValveNumber == -2 ? 0 : succ; }
 private:
+	int mValveNumber = -1;
+	int mTimerNumber=0; // multiple time per valve with different numbers
+
 	int mTimeOn = 0, mTimeOff = 0, mRepeats = 0, mPeriod = 0;
+	bool isRunOnce() { return mTimeOn && !mTimeOff && !mRepeats && !mPeriod; }
+
+	int mTodSpanBegin = 0, mTodSpanEnd = 0;
+	bool hasTodSpan() { return mTodSpanBegin || mTodSpanEnd; }
+
 	time_t mNextRun = 0, mNextOnOff = 0;
 	bool mIsRunning = false, mIsOn = false;
 	int mDoneOn = 0;
-	int mValveNumber = -1;
-	int mTimerNumber=0; // multiple time per valve with different numbers
+
 	switch_valve_cb mSwitchValveCb = 0;
 public:
+	RvTimer(bool isListHead=false) {
+		if (isListHead) {
+			mValveNumber = -2;
+			this->pred = this->succ = this;
+		}
+	}
+	bool isListHead() { return mValveNumber == -2; }
+
 	int getValveNumber() {
 		return mValveNumber;
 	}
@@ -162,9 +184,7 @@ public:
 	void timer_to_list(RvTimer *list, RvTimer *timer);
 
 	RvTimers(switch_valve_cb cb, switch_valves_cb cb2) :
-			mSvCb(cb), mSvsCb(cb2) {
-		mFreeTimers.pred = mFreeTimers.succ = &mFreeTimers; // pointer to tail
-		mUsedTimers.pred = mUsedTimers.succ = &mUsedTimers; // pointer to tail
+		mFreeTimers(true),  mUsedTimers(true), mSvCb(cb), mSvsCb(cb2){
 
 		for (int i = 0; i < RV_TIMER_COUNT; ++i) {
 			timer_to_list(&mFreeTimers, &mTimers[i]);
@@ -178,7 +198,7 @@ public:
 	RvTimer *set(int valve_number, int on_duration, int off_duration,
 			int repeats, int period, int id) {
 		RvTimer *timer = 0;
-		for (RvTimer *t = mUsedTimers.succ; t != &mUsedTimers; t = t->succ) {
+		for (RvTimer *t = mUsedTimers.getNext(); t; t = t->getNext()) {
 			if (t->match(valve_number, id)) {
 				if (t->isOn())
 					lph -= Lph[valve_number];
@@ -209,7 +229,7 @@ public:
 	}
 
 	void unset(int valve_number, int id) {
-		for (RvTimer *t = mUsedTimers.succ; t != &mUsedTimers; t = t->succ) {
+		for (RvTimer *t = mUsedTimers.getNext(); t; t = t->getNext()) {
 			if (t->match(valve_number, id)) {
 				timer_to_list(&mFreeTimers, t);
 			}

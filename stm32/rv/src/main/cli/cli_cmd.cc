@@ -96,7 +96,7 @@ process_parmCmd(clpar p[], int len) {
 		esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
 #ifndef TODO
 		if (wantsDurations) {
-			for (RvTimer *t = rvt.getTimerList()->succ; t != rvt.getTimerList(); t = t->succ) {
+			for (RvTimer *t = rvt.getTimerList()->getNext(); t; t = t->getNext()) {
 				int secs = t->get_duration();
 				if (secs) {
 					sprintf(buf + strlen(buf), "\"%s%d.%d\":%d,", KEY_DURATION_PREFIX, t->getValveNumber(), t->getTimerNumber(), secs);
@@ -105,7 +105,7 @@ process_parmCmd(clpar p[], int len) {
 		}
 
 		if (wantsRemainingTimes) {
-			for (RvTimer *t = rvt.getTimerList()->succ; t != rvt.getTimerList(); t = t->succ) {
+			for (RvTimer *t = rvt.getTimerList()->getNext(); t; t = t->getNext()) {
 				int secs = t->get_remaining();
 				if (secs) {
 					sprintf(buf + strlen(buf), "\"%s%d.%d\":%d,", KEY_REMAINING_PREFIX, t->getValveNumber(), t->getTimerNumber(), secs);
