@@ -10,10 +10,9 @@
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/pwr.h>
 #include <libopencm3/cm3/nvic.h>
-#include "valve_timer.h"
+#include <real_time_clock.h>
 
 #include <time.h>
-#include "rtc.h"
 
 #define VT_TIMER_COUNT 16
 #define MAX_TIMER_MINUTES 60
@@ -45,8 +44,6 @@ void RTC_IRQHandler(void)
 	gpio_toggle(GPIOC, GPIO13);
 	curr_time = rtc_get_counter_val();
 	run_time += 1;
-
-	valveTimer_tick();
 }
 
 

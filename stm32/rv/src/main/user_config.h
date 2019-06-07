@@ -8,7 +8,9 @@
 #ifndef MAIN_USER_CONFIG_H_
 #define MAIN_USER_CONFIG_H_
 
+#ifndef STM32F1
 #define STM32F1
+#endif
 
 #include <stdbool.h>
 #include <stdint.h>

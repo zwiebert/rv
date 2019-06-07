@@ -14,12 +14,11 @@
 #include <libopencm3/stm32/f1/memorymap.h>
 #include <stdio.h>
 #include <errno.h>
+#include <real_time_clock.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
 #include "mcp23017.h"
-#include "rtc.h"
-#include "valve_timer.h"
 #include "misc/int_macros.h"
 #include "water_pump_logic.h"
 #include "peri/uart.h"
@@ -39,6 +38,9 @@ void loop(void);
 
 #define DISABLE_ALL_PIN GPIO5
 #define DISABLE_ALL_PIN_PORT GPIOB
+
+
+void ioExtender_setup(bool re_init);
 
 void mcp23017_doReset() {
 	gpio_set(DISABLE_ALL_PIN_PORT, DISABLE_ALL_PIN);
@@ -207,40 +209,6 @@ static void led_setup(void) {
 			GPIO13);
 }
 
-void timer_set(int8_t channel) {
-	static uint16_t set_mask;
-
-	if (channel >= 0) {
-		set_mask |= 1 << channel;
-		return;
-	}
-
-	Mcp23017_putBits(&relay_16, set_mask, RELAY_ON);
-	dlb8_put_leds(dlb8_obj[0], GET_LOW_BYTE(set_mask), true);
-
-	for (int i = 0; i < VALVE_TIMER_COUNT; ++i) {
-		if (GET_BIT(set_mask, i)) {
-			display_print_timer(i);
-		}
-	}
-	set_mask = 0;
-}
-
-static void timer_alarm(int8_t channel) {
-	static uint16_t alarm_mask;
-
-	if (channel >= 0) {
-		alarm_mask |= (1 << channel);
-		return;
-	}
-
-	Mcp23017_putBits(&relay_16, alarm_mask, RELAY_OFF);
-	dlb8_put_leds(dlb8_obj[0], GET_LOW_BYTE(alarm_mask), false);
-	dlb8_put_chars(dlb8_obj[0], GET_LOW_BYTE(alarm_mask), '-', true);
-
-	alarm_mask = 0;
-}
-
 void app_switch_valve(int valve_number, bool state) {
   Mcp23017_putBit(&relay_16, valve_number, state ? RELAY_ON :  RELAY_OFF);
 }
@@ -266,45 +234,11 @@ void setup() {
 	uart_setup();
 	i2c2_setup();
 	led_setup();
-	valveTimer_alarmCb = timer_alarm;
-	valveTimer_setCb = timer_set;
-	valveTimer_setup();
 	rtc_setup();
 	input_setup();
 	ioExtender_setup(false);
 	wp_setup();
 	cxx_setup();
-}
-
-typedef struct {
-	uint8_t channel;
-	uint8_t minutes;
-} timer_args_T;
-
-timer_args_T ta_buf[16];
-
-void set_timers(timer_args_T *ta, uint8_t ta_len) {
-	for (int i = 0; i < ta_len; ++i) {
-		valveTimer_setTimerDurationByMinutes(ta[i].channel, ta[i].minutes);
-	}
-	timer_set(TIMER_SET_DONE);
-}
-
-char tas[] = "3:5";
-uint8_t parse_timer_string(char *s, timer_args_T *result) {
-	uint8_t i = 0;
-
-	for (char *token = strtok(s, " "); token; token = strtok(NULL, " ")) {
-		char *dp = index(token, ':');
-		if (dp) {
-			*dp = '\0';
-			result[i].channel = atoi(token);
-			result[i].minutes = atoi(dp + 1);
-			*dp = ':';
-			++i;
-		}
-	}
-	return i;
 }
 
 void app() {
@@ -376,32 +310,14 @@ int _write(int fd, char *ptr, int len) {
 	return -1;
 }
 
-void XXuart_loop() {
-#if 0
-	uint8_t ta_len = parse_timer_string(tas, ta_buf);
-	set_timers(ta_buf, ta_len);
-#endif
-}
-volatile int x;
+
 
 void loop(void) {
-	valveTimer_loop();
 	wpl_loop();
-#if 1
 	cli_loop();
-#else
-	char *line = get_commandline();
-	if (line) {
-		uint8_t ta_len = parse_timer_string(line, ta_buf);
-		set_timers(ta_buf, ta_len);
-	}
-#endif
-
 	cxx_loop();
 
 	if (!i2c2_check()) {
 		puts("I2C had crashed. Reset");
 	}
-	if (x)
-	 atFault();
 }

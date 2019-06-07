@@ -1,3 +1,4 @@
+#include <real_time_clock.h>
 #include "user_config.h"
 
 #include <string.h>
@@ -10,7 +11,6 @@
 
 #include "peri/uart.h"
 #include "water_pump.h"
-#include "rtc.h"
 #include "rv_timer.hh"
 #include "app_cxx.hh"
 

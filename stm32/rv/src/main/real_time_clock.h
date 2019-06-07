@@ -8,6 +8,8 @@
 #ifndef RTC_H_
 #define RTC_H_
 
+#include "user_config.h"
+#include <libopencm3/stm32/rtc.h>
 #include <stdint.h>
 #include <time.h>
 

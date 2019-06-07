@@ -9,7 +9,7 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/memorymap.h>
-#include "rtc.h"
+#include "real_time_clock.h"
 
 #include "watch_dog.hh"
 #include "peri/uart.h"

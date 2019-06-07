@@ -5,11 +5,11 @@
  *      Author: bertw
  */
 
+#include <real_time_clock.h>
+#include <real_time_clock.h>
 #include "user_config.h"
 //#include "config/config.h"
-#include "main/rtc.h"
 #include "cli_imp.h"
-#include "rtc.h"
 
 #define ENABLE_RESTART 0 // allow software reset
 
