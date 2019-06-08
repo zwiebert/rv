@@ -18,4 +18,6 @@ void cli_process_cmdline(char *line);
 void cli_process_json(char *json);
 void cli_loop(void);
 
+bool cli_checkStm32CommandLine(const char *line);
+
 #endif /* CLI_H_ */

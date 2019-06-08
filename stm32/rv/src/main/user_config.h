@@ -21,6 +21,8 @@
 //#define USE_DLB8
 #define USE_WDG
 
+#define USE_BB
+
 #define ICACHE_FLASH_ATTR
 
 #endif /* MAIN_USER_CONFIG_H_ */

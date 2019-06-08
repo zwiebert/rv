@@ -94,6 +94,10 @@ int esp32_write(const char *data, unsigned data_len) {
 	return -1;
 }
 
+int esp32_puts(const char *s) {
+	return esp32_write(s, strlen(s));
+}
+
 int esp32_read(char *buf, unsigned buf_size) {
 	int i;
 

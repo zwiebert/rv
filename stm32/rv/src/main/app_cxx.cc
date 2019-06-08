@@ -14,8 +14,10 @@ extern "C" void app_switch_valve(int valve_number, bool state);
 extern "C" void app_switch_valves(uint16_t valve_bits, uint16_t valve_mask);
 
 RvTimers rvt = RvTimers(0, app_switch_valves);
+RainSensor rs;
 
 extern "C" void cxx_loop() {
+	rs.loop();
 	rvt.loop();
 #ifdef USE_WDG
 	watchDog_loop();

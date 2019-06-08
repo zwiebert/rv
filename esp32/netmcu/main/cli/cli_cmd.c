@@ -4,11 +4,13 @@
 
 
 #include "userio/inout.h"
+#include "userio/mqtt.h"
 #include "user_config.h"
 #include "cli_imp.h"
 #include "userio/status_output.h"
 #include "userio/status_json.h"
 #include "debug/debug.h"
+#include "misc/int_macros.h"
 #include <stdio.h>
 
 #include "uart.h"
@@ -87,9 +89,11 @@ process_parmCmd(clpar p[], int len) {
         float on = 0, off = 0;
         int repeats = 0;
         float period = 0;
-        sscanf(val, "%f,%f,%d,%f", &on, &off, &repeats, &period);
-        buf_idx += sprintf(buf + strlen(buf), " dur%d.%d=%d,%d,%d,%d", zone, timer_number, (int) (on * ONE_MINUTE), (int) (off * ONE_MINUTE), repeats,
-            (int) (period * (60 * ONE_HOUR)));
+        int dInterval = 0;
+        float dhBegin = 0, dhEnd;
+        sscanf(val, "%f,%f,%d,%f,%d,%f,%f", &on, &off, &repeats, &period, &dInterval, &dhBegin, &dhEnd);
+        buf_idx += sprintf(buf + strlen(buf), " dur%d.%d=%d,%d,%d,%d,%d,%d,%d", zone, timer_number, (int) (on * ONE_MINUTE), (int) (off * ONE_MINUTE), repeats,
+            (int) (period * (60 * ONE_HOUR)), dInterval, (int)(dhBegin * ONE_HOUR), (int)(dhEnd * ONE_HOUR));
         hasCmdLine = true;
       } else {
         float duration = 0;
@@ -147,4 +151,24 @@ void cliCmd_waitForResponse() {
 
     }
     D(db_printf("stop wait for response\n"));
+}
+
+#define STM32_STATUS "status "
+#define STM32_STATUS_LEN (sizeof (STM32_STATUS) - 1)
+
+bool cli_checkStm32CommandLine(const char *line) {
+  if (strncmp(line, STM32_STATUS, STM32_STATUS_LEN) == 0) {
+    unsigned valve_bits = 0, valve_mask = 0;
+    sscanf(line, "status valve-bits=%x valve-change-mask=%x;", &valve_bits, &valve_mask);
+    D(db_printf("valve_bits=%x, valve_mask=%x line=(%s)\n", valve_bits, valve_mask, line));
+
+    unsigned mask = valve_mask;
+    for (int i=0; mask; ++i, (mask >>= 1)) {
+      if (mask & 1) {
+        io_mqtt_publish_valve_status(i, GET_BIT(valve_bits, i));
+      }
+    }
+    return true;
+  }
+  return false;
 }

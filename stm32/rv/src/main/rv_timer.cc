@@ -19,16 +19,17 @@ int Lph[RV_VALVE_COUNT] = {
 uint16_t RvTimers::valve_bits;
 uint16_t RvTimers::valve_mask;
 
+
 void RvTimers::loop() {
 
 	valve_bits = valve_mask = 0;
 
-    for (RvTimer *t=mUsedTimers.succ; t != &mUsedTimers; t = t->succ) {
+    for (RvTimer *t=mRvTimers.mUsedTimers.getNext(); t; t = t->getNext()) {
 
 
       if (t->isDone()) {
         RvTimer *pred = t->pred;
-        timer_to_list(&mFreeTimers, t);
+        mRvTimers.timer_to_list(&mRvTimers.mFreeTimers, t);
         t = pred;
         continue;
       }
@@ -55,10 +56,9 @@ void RvTimers::loop() {
     	if (valve_mask && mSvsCb) {
     		mSvsCb(valve_bits, valve_mask);
     	}
-
   }
 
-void RvTimers::timer_to_list(RvTimer *list, RvTimer *timer) {
+void RvTimers::Timers::timer_to_list(RvTimer *list, RvTimer *timer) {
     // unlink from current list
 	timer->unlinkThis();
 

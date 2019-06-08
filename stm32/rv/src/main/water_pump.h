@@ -8,6 +8,8 @@
 #ifndef WATER_PUMP_H_
 #define WATER_PUMP_H_
 
+#include "user_config.h"
+
 #include <stdbool.h>
 #include <time.h>
 

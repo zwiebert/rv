@@ -13,6 +13,7 @@ char buf[BUF_SIZE];
 //#include "freertos/task.h"
 #define D(x) x
 
+
 void loop(void) {
     watchDog_loop();
     cli_loop();
@@ -34,7 +35,12 @@ void loop(void) {
     int n = stm32_read(buf, BUF_SIZE - 1);
     if (n > 0) {
         buf[n] = '\0';
-        watchDog_checkCommandLine(buf);
+
+        if (watchDog_checkCommandLine(buf)) {
+        } else if (cli_checkStm32CommandLine(buf)) {
+        }
+
+
 #ifdef USE_MQTT
 
 #endif

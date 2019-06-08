@@ -146,7 +146,7 @@ void wp_setup(void) {
 	wp_switchPcOutRelay(OFF);
 
  	rcc_periph_clock_enable(RCC_GPIOB);
-#if 1
+#ifndef USE_BB
  	gpio_set_mode(WP_PCIN_PORT, GPIO_MODE_INPUT, GPIO_CNF_INPUT_FLOAT, WP_PCIN_PIN);
  	gpio_set_mode(WP_UB_PORT, GPIO_MODE_INPUT, GPIO_CNF_INPUT_FLOAT, WP_UB_PIN);
 #else

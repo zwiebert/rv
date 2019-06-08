@@ -13,6 +13,7 @@ extern "C" {
 #endif
 
 int esp32_write(const char *data, unsigned data_len);
+int esp32_puts(const char *s);
 int esp32_read(char *buf, unsigned buf_size);
 int esp32_getc(void);
 void uart_setup(void);

@@ -1,18 +1,13 @@
+#include "user_config.h"
 #include <real_time_clock.h>
-#include "user_config.h"
-
 #include <string.h>
-
-
-
-#include "user_config.h"
 #include "cli_imp.h"
 #include <stdio.h>
-
 #include "peri/uart.h"
 #include "water_pump.h"
 #include "rv_timer.hh"
 #include "app_cxx.hh"
+#include "rain_sensor.hh"
 
 #define warning_unknown_option(x)
 extern "C" void timer_set(int8_t channel);
@@ -51,7 +46,7 @@ process_parmCmd(clpar p[], int len) {
 	char buf[BUF_SIZE] = "";
 
 	bool wantsDurations = false, wantsRemainingTimes = false, wantsReply = false, hasDuration = false,
-			wantsRelayPump = false, wantsRelayPC,
+			wantsRelayPump = false, wantsRelayPC = false, wantsRainSensor = false,
 			wantsTime = false;
 
 	for (arg_idx = 1; arg_idx < len; ++arg_idx) {
@@ -66,19 +61,19 @@ process_parmCmd(clpar p[], int len) {
 			wantsReply = wantsRemainingTimes = true;
 
 		} else if (strcmp(key, KEY_STATUS_PREFIX) == 0 && *val == '?') {
-			wantsReply = wantsDurations = wantsRemainingTimes = wantsRelayPC = wantsRelayPump = wantsTime = true;
+			wantsReply = wantsDurations = wantsRemainingTimes = wantsRelayPC = wantsRelayPump = wantsTime = wantsRainSensor = true;
 
 		} else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
 			int channel=-1, timer_number=0;
 			sscanf((key + KEY_DURATION_PREFIX_LEN), "%d.%d", &channel, &timer_number);
 			if (strchr(val, ',')) {
-				int on=0, off=0, repeats=0, period=0;
-				sscanf(val,"%d,%d,%d,%d", &on, &off, &repeats, &period);
-				rvt.set(channel, on, off, repeats, period, timer_number)->run();
+				RvTimer::SetArgs args;
+				sscanf(val,"%d,%d,%d,%d,%d,%d,%d", &args.on_duration, &args.off_duration, &args.repeats, &args.period, &args.mDaysInterval, &args.mTodSpanBegin, &args.mTodSpanEnd);
+				rvt.set(args, channel, timer_number)->scheduleRun();
 				hasDuration = true;
 			} else {
 				int duration = atoi(val);
-				rvt.set(channel, duration, timer_number)->run();
+				rvt.set(channel, duration, timer_number)->scheduleRun();
 				hasDuration = true;
 			}
 
@@ -121,11 +116,16 @@ process_parmCmd(clpar p[], int len) {
 			strcat(buf, "\"pump\":1,");
 		}
 
+		if (wantsRainSensor && rs.getState()) {
+			strcat(buf, "\"rain\":1,");
+		}
+
 		if (wantsTime) {
-			  time_t timer = time(NULL);
-			  struct tm t;
-			  localtime_r(&timer, &t);
-			  strftime(buf+strlen(buf), BUF_SIZE - strlen(buf), "\"time\":\"%FT%H:%M:%S\",", &t);
+			time_t timer = time(NULL);
+			struct tm t;
+			localtime_r(&timer, &t);
+			strftime(buf + strlen(buf), BUF_SIZE - strlen(buf),
+					"\"time\":\"%FT%H:%M:%S\",", &t);
 		}
 
 		if (*buf)

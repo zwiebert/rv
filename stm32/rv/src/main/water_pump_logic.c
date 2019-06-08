@@ -6,8 +6,8 @@
  */
 
 
+#include <valve_relays.h>
 #include "water_pump_logic.h"
-#include "valve_relays.h"
 
 static time_t wpl_max_on_time = WPL_MAX_ON_TIME_SHORT;
 #define WPL_RESET_MAX_ON_TIME_AFTER (ONE_HOUR)

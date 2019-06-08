@@ -43,13 +43,13 @@ void io_mqtt_publish_config(const char *s)  {
     io_mqtt_publish("tfmcu/config_out", s);
 }
 
-void io_mqtt_publish_gmp(const so_arg_gmp_t *gmp) {
-  char topic[64], data[16];
 
-  snprintf(topic, 64, "%s%u%u/pct_out", TOPIC_ROOT, gmp->g, gmp->m);
-  snprintf(data, 16, "%u", gmp->p);
+void io_mqtt_publish_valve_status(int valve_number, bool state) {
+  char topic[64]; //, data[16];
 
-  io_mqtt_publish(topic, data);
+  snprintf(topic, 64, "%szone/%d/valve", TOPIC_ROOT, valve_number);
+
+  io_mqtt_publish(topic, state ? "1" : "0");
 }
 
 void io_mqtt_enable(bool enable) {

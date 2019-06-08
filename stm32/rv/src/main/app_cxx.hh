@@ -8,7 +8,8 @@
 #ifndef MAIN_APP_CXX_HH_
 #define MAIN_APP_CXX_HH_
 
-extern RvTimers rvt;
+extern class RvTimers rvt;
+extern class RainSensor rs;
 
 
 #endif /* MAIN_APP_CXX_HH_ */

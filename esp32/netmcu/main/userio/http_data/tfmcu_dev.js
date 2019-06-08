@@ -15,6 +15,7 @@ class AppState {
 	this.mZoneTimerDurations = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 	this.mPressControlStatus = false;
 	this.mWaterPumpStatus = false;
+	this.mRainSensorStatus = false;
 	this.mStm32Time = "";
     }
 
@@ -36,6 +37,7 @@ class AppState {
     updateHtml_rvStatus() {
         document.getElementById("id-pressControlStatus").checked = this.mPressControlStatus;
         document.getElementById("id-waterPumpStatus").checked = this.mWaterPumpStatus;
+        document.getElementById("id-rainSensorStatus").checked = this.mRainSensorStatus;
         document.getElementById("id-stm32Time").value = this.mStm32Time;
     }
     updateAutomaticHtml() {
@@ -97,6 +99,7 @@ class AppState {
 	    
 	    this.mPressControlStatus = ("pc" in data && data.pc);
 	    this.mWaterPumpStatus = ("pump" in data && data.pump);
+	    this.mRainSensorStatus = ("rain" in data && data.rain);
 	    this.mStm32Time = "time" in data ? data.time : "";
 	    this.updateHtml_rvStatus();
 	    
@@ -269,11 +272,11 @@ function genHtml_timerTableRow(nmb, name) {
 	'<td>'+nmb+'</td><td>'+name+'</td><td><input type="number" min="0" max="60" value="0" id="id-zoneRemainingTime-'+nmb+'"></td>'+
 	'<td><input type="text" id="id-zoneTimerInterval-'+nmb+'" value="'+app_state.getZoneTimerInterval(nmb)+'"</td>'+
 	'<td><input type="number" min="0" max="60" id="id-zoneTimerDuration-'+nmb+'" value="'+app_state.getZoneTimerDuration(nmb)+'"</td>'+
-	'</tr>'
+	'</tr>';
 }
 
 function genHtml_timerTable(n) {
-    let html='<table><tr><th>Zone</th><th>Ort</th><th>Restlaufzeit</th><th>Timer Intervall</th><th>Timer Dauer</th></tr>'
+    let html='<table><tr><th>Zone</th><th>Ort</th><th>Restlaufzeit</th><th>Timer Intervall</th><th>Timer Dauer</th></tr>';
     for(let i=0; i < n; ++i) {
 	html+= genHtml_timerTableRow(i, app_state.getZoneDescription(i));
     }
@@ -291,7 +294,7 @@ function onContentLoaded() {
     app_state = new AppState();
     app_state.load();
     app_state.fetchConfig();
-    app_state.fetchZoneData()
+    app_state.fetchZoneData();
 
     writeHtml_timerTableDiv();
 
