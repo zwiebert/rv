@@ -29,7 +29,6 @@
 #define CONFIG_DICT
 #define USE_WDG
 #define USE_FS
-//#define USE_HTTP_GET
 #define USE_HTTP_CLIENT
 
 

@@ -9,7 +9,6 @@
 #include "cli_imp.h"
 #include "stm32.h"
 #include "stm32_bl.h"
-#include "http_get.h"
 #include "http_client.h"
 
 const char help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
@@ -44,9 +43,6 @@ process_parmMcu(clpar p[], int len) {
     } else if (strcmp(key, "rfw") == 0) {
        ets_printf("run firmware\n");
        stm32_runFirmware();
-    } else if (strcmp(key, "dl") == 0) {
-       ets_printf("download file\n");
-       httpGet_req("192.168.1.70", 8000, "/Makefile", "/spiffs/stm32fw");
     } else if (strcmp(key, "th") == 0) {
       ets_printf("test http_client\n");
       void httpClient_test();

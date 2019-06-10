@@ -6,7 +6,6 @@
 #include <time.h>
 #include <stdio.h>
 #include <stm32.h>
-#include "http_get.h"
 
 #define BUF_SIZE 2048
 
@@ -25,9 +24,6 @@ void loop(void) {
 #ifdef USE_LAN
   extern void ethernet_loop(void);
   ethernet_loop();
-#endif
-#ifdef USE_HTTP_GET
-  httpGet_loop();
 #endif
 #ifdef USE_NTP
   extern void ntp_loop(void);
