@@ -50,11 +50,13 @@
 #define RX_BUF_SIZE 2048
 #define TX_BUF_SIZE 0
 
-#define RESET_PIN_MS 500
+#define RESET_PIN_MS 1000
 
 typedef enum { STM32_MODE_NONE, STM32_MODE_FIRMWARE, STM32_MODE_BOOTLOADER } stm32_mode_T;
 
 static stm32_mode_T stm32_mode = STM32_MODE_NONE;
+
+bool stm32_isFirmwareRunning(void) { return stm32_mode == STM32_MODE_FIRMWARE; }
 
 void stm32_reset() {
     ets_printf("reboot stm32\n");
@@ -96,7 +98,7 @@ static void stm32_configSerial(stm32_mode_T mode) {
       .data_bits = UART_DATA_8_BITS,
       .parity    = UART_PARITY_DISABLE,
       .stop_bits = UART_STOP_BITS_1,
-      .flow_ctrl = UART_HW_FLOWCTRL_DISABLE
+      .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
   };
 
   if (stm32_mode == STM32_MODE_BOOTLOADER) {
@@ -131,7 +133,7 @@ void stm32_setup()
   GPIO_OUTPUT_SET(STM32_RESET_PIN, 1);
 
   GPIO_OUTPUT_SET(STM32_BOOT_PIN, 1);
-  gpio_set_direction(STM32_BOOT_PIN, GPIO_MODE_OUTPUT_OD);
+  gpio_set_direction(STM32_BOOT_PIN, GPIO_MODE_OUTPUT);
   GPIO_OUTPUT_SET(STM32_BOOT_PIN, 0);
 
   stm32_configSerial(STM32_MODE_FIRMWARE);

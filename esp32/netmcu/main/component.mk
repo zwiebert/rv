@@ -9,3 +9,4 @@
 COMPONENT_PRIV_INCLUDEDIRS = .
 COMPONENT_SRCDIRS+= ./userio ./config ./userio/http_data ./cli ./main ./misc
 
+COMPONENT_EMBED_TXTFILES := howsmyssl_com_root_cert.pem

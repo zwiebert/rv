@@ -101,6 +101,18 @@ void app_main(void)
 #ifdef USE_WDG
   watchDog_setup();
 #endif
+#ifdef USE_FS
+  void fs_setup(void);
+  fs_setup();
+#endif
+#ifdef  USE_HTTP_GET
+  void httpGet_setup(void);
+  httpGet_setup();
+#endif
+#ifdef  USE_HTTP_CLIENT
+  void httpClient_setup(void);
+  httpClient_setup();
+#endif
   rtc_setup();
 
 

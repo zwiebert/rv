@@ -32,7 +32,7 @@ bool watchDog_checkCommandLine(const char *cmdLine) {
 void watchDog_loop() {
     if (last_call_time + MAX_CALL_INTERVAL <= time(0) ) {
         last_call_time = time(0);
-        if (MAX_MISSING_CALLS < ++missing_call_count) {
+        if (stm32_isFirmwareRunning() && MAX_MISSING_CALLS < ++missing_call_count) {
            stm32_runFirmware();
            missing_call_count = 0;
         }
@@ -41,6 +41,5 @@ void watchDog_loop() {
 }
 
 void watchDog_setup() {
-
 
 }

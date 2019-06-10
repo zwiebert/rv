@@ -8,6 +8,9 @@
 #include "main/rtc.h"
 #include "cli_imp.h"
 #include "stm32.h"
+#include "stm32_bl.h"
+#include "http_get.h"
+#include "http_client.h"
 
 const char help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #if ENABLE_SPIFFS
@@ -32,9 +35,34 @@ process_parmMcu(clpar p[], int len) {
     } else if (strcmp(key, "rbl") == 0) {
        ets_printf("run bootloader\n");
        stm32_runBootLoader();
+    } else if (strcmp(key, "blstart") == 0) {
+      stm32Bl_doStart();
+    } else if (strcmp(key, "blgid") == 0) {
+      stm32Bl_getId();
+    } else if (strcmp(key, "blget") == 0) {
+      stm32Bl_get();
     } else if (strcmp(key, "rfw") == 0) {
        ets_printf("run firmware\n");
        stm32_runFirmware();
+    } else if (strcmp(key, "dl") == 0) {
+       ets_printf("download file\n");
+       httpGet_req("192.168.1.70", 8000, "/Makefile", "/spiffs/stm32fw");
+    } else if (strcmp(key, "th") == 0) {
+      ets_printf("test http_client\n");
+      void httpClient_test();
+      httpClient_test();
+
+    } else if (strcmp(key, "dlrvhex") == 0) {
+      ets_printf("download rv.hex\n");
+      httpClient_downloadFile(val, "/spiffs/rv.hex");
+      // mcu dlrvhex=http://192.168.1.70:8000/rv.hex;
+    } else if (strcmp(key, "dlrvbin") == 0) {
+      ets_printf("download rv.bin\n");
+      httpClient_downloadFile(val, "/spiffs/rv.bin");
+      // mcu dlrvbin=http://192.168.1.70:8000/rv.bin;
+    } else if (strcmp(key, "flrvbin") == 0) {
+       ets_printf("flash rv.bin\n");
+       stm32Bl_writeMemoryFromBinFile("/spiffs/rv.bin", 0x8000000);
 #if 0
     } else if (strcmp(key, "tm") == 0) {
 

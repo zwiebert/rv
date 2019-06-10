@@ -27,6 +27,10 @@
 #define POSIX_TIME
 #define USE_SERIAL
 #define CONFIG_DICT
+#define USE_WDG
+#define USE_FS
+//#define USE_HTTP_GET
+#define USE_HTTP_CLIENT
 
 
 #define STM32_RESET_PIN  (GPIO_NUM_33)
