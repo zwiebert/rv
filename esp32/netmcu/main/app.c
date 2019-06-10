@@ -5,7 +5,7 @@
 #include "watch_dog.h"
 #include <time.h>
 #include <stdio.h>
-#include <uart.h>
+#include <stm32.h>
 
 #define BUF_SIZE 2048
 

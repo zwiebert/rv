@@ -302,13 +302,14 @@ struct {
         { "config", process_parmConfig, help_parmConfig },
         { "help", process_parmHelp, help_parmHelp },
         { "cmd", process_parmCmd, help_parmCmd },
+        { "mcu", process_parmMcu, help_parmMcu },
 #if 0
 { "send", process_parmSend, help_parmSend },
 
 
 
 
-                      { "mcu", process_parmMcu, help_parmMcu },
+
                       { "timer", process_parmTimer, help_parmTimer },
                       { "auto", process_parmTimer, help_parmTimer }, // alias
 

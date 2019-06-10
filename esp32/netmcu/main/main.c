@@ -13,7 +13,7 @@
 #include "watch_dog.h"
 
 
-void uart_setup(void);
+void stm32_setup(void);
 void ethernet_setup(void);
 void setup_tcp_server(void);
 void tcps_loop(void);
@@ -87,7 +87,7 @@ void app_main(void)
     ethernet_setup();
 #endif
 #ifdef USE_SERIAL
-    uart_setup();
+    stm32_setup();
 #endif
 #ifdef USE_NTP
   setup_ntp();

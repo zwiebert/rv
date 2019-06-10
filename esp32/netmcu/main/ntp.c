@@ -11,9 +11,8 @@
 #include <lwip/apps/sntp_opts.h>
 #include <lwip/ip_addr.h>
 #include <esp32/rom/ets_sys.h>
+#include <stm32.h>
 #include <string.h>
-#include <uart.h>
-
 #include "user_config.h"
 #include "config/config.h"
 #include "esp_event.h"

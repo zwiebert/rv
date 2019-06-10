@@ -13,7 +13,7 @@
 #include "misc/int_macros.h"
 #include <stdio.h>
 
-#include <uart.h>
+#include <stm32.h>
 
 #ifndef DISTRIBUTION
 #define D(x) x
