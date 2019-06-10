@@ -32,107 +32,113 @@ extern "C" void timer_set(int8_t channel);
 #define JSON_SUFFIX "}};\n"
 #define JSON_SUFFIX_LEN ((sizeof JSON_SUFFIX) - 1)
 
-#define BUF_SIZE 256
+#define BUF_SIZE 2048
 
-
-const char help_parmCmd[]  =
-    "zone=[0-13]      zone number\n"
-    "duration=[0-60]  how long to irrigate\n"
-;
+const char help_parmCmd[] = "zone=[0-13]      zone number\n"
+    "duration=[0-60]  how long to irrigate\n";
 
 int ICACHE_FLASH_ATTR
 process_parmCmd(clpar p[], int len) {
-	int arg_idx;
-	char buf[BUF_SIZE] = "";
+  int arg_idx;
 
-	bool wantsDurations = false, wantsRemainingTimes = false, wantsReply = false, hasDuration = false,
-			wantsRelayPump = false, wantsRelayPC = false, wantsRainSensor = false,
-			wantsTime = false;
+  char *buf = (char*) malloc(BUF_SIZE);
+  if (!buf)
+    return -1;
+  *buf = '\0';
 
-	for (arg_idx = 1; arg_idx < len; ++arg_idx) {
-		const char *key = p[arg_idx].key, *val = p[arg_idx].val;
+  bool wantsDurations = false, wantsRemainingTimes = false, wantsReply = false, hasDuration = false, wantsRelayPump = false, wantsRelayPC = false,
+      wantsRainSensor = false, wantsTime = false, wantsTimers = false;
 
-		if (key == NULL) {
-			return -1;
-		} else if (strcmp(key, KEY_DURATION_PREFIX) == 0 && *val == '?') {
-			wantsReply = wantsDurations = true;
+  for (arg_idx = 1; arg_idx < len; ++arg_idx) {
+    const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
-		} else if (strcmp(key, KEY_REMAINING_PREFIX) == 0 && *val == '?') {
-			wantsReply = wantsRemainingTimes = true;
+    if (key == NULL) {
+      return -1;
+    } else if (strcmp(key, KEY_DURATION_PREFIX) == 0 && *val == '?') {
+      wantsReply = wantsDurations = true;
 
-		} else if (strcmp(key, KEY_STATUS_PREFIX) == 0 && *val == '?') {
-			wantsReply = wantsDurations = wantsRemainingTimes = wantsRelayPC = wantsRelayPump = wantsTime = wantsRainSensor = true;
+    } else if (strcmp(key, KEY_REMAINING_PREFIX) == 0 && *val == '?') {
+      wantsReply = wantsRemainingTimes = true;
 
-		} else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
-			int channel=-1, timer_number=0;
-			sscanf((key + KEY_DURATION_PREFIX_LEN), "%d.%d", &channel, &timer_number);
-			if (strchr(val, ',')) {
-				RvTimer::SetArgs args;
-				sscanf(val,"%d,%d,%d,%d,%d,%d,%d", &args.on_duration, &args.off_duration, &args.repeats, &args.period, &args.mDaysInterval, &args.mTodSpanBegin, &args.mTodSpanEnd);
-				rvt.set(args, channel, timer_number)->scheduleRun();
-				hasDuration = true;
-			} else {
-				int duration = atoi(val);
-				rvt.set(channel, duration, timer_number)->scheduleRun();
-				hasDuration = true;
-			}
+    } else if (strcmp(key, KEY_STATUS_PREFIX) == 0 && *val == '?') {
+      wantsReply = wantsDurations = wantsRemainingTimes = wantsRelayPC = wantsRelayPump = wantsTime = wantsRainSensor = wantsTimers = true;
 
-		} else {
-			warning_unknown_option(key);
-		}
-	}
+    } else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
+      int channel = -1, timer_number = 0;
+      sscanf((key + KEY_DURATION_PREFIX_LEN), "%d.%d", &channel, &timer_number);
+      if (strchr(val, ',')) {
+        RvTimer::SetArgs args;
+        sscanf(val, "%d,%d,%d,%d,%d,%d,%d", &args.on_duration, &args.off_duration, &args.repeats, &args.period, &args.mDaysInterval, &args.mTodSpanBegin,
+            &args.mTodSpanEnd);
+        rvt.set(args, channel, timer_number)->scheduleRun();
+        hasDuration = true;
+      } else {
+        int duration = atoi(val);
+        rvt.set(channel, duration, timer_number)->scheduleRun();
+        hasDuration = true;
+      }
 
-	if (hasDuration) {
-		rvt.loop(); //XXX
-		esp32_write("dr\n", 3);
-	}
+    } else {
+      warning_unknown_option(key);
+    }
+  }
 
-	if (wantsReply) {
-		esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
-#ifndef TODO
-		if (wantsDurations) {
-			for (RvTimer *t = rvt.getTimerList()->getNext(); t; t = t->getNext()) {
-				int secs = t->get_duration();
-				if (secs) {
-					sprintf(buf + strlen(buf), "\"%s%d.%d\":%d,", KEY_DURATION_PREFIX, t->getValveNumber(), t->getTimerNumber(), secs);
-				}
-			}
-		}
+  if (hasDuration) {
+    rvt.loop(); //XXX
+    esp32_write("dr\n", 3);
+  }
 
-		if (wantsRemainingTimes) {
-			for (RvTimer *t = rvt.getTimerList()->getNext(); t; t = t->getNext()) {
-				int secs = t->get_remaining();
-				if (secs) {
-					sprintf(buf + strlen(buf), "\"%s%d.%d\":%d,", KEY_REMAINING_PREFIX, t->getValveNumber(), t->getTimerNumber(), secs);
-				}
-			}
-		}
-#endif
-		if (wantsRelayPC && wp_isPressControlOn()) {
-			strcat(buf, "\"pc\":1,");
-		}
+  if (wantsReply) {
+    esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
 
-		if (wantsRelayPump && wp_isPumpOn()) {
-			strcat(buf, "\"pump\":1,");
-		}
+    for (RvTimer *t = rvt.getTimerList()->getNext(); t; t = t->getNext()) {
+      if (wantsDurations) {
+        int secs = t->get_duration();
+        if (secs) {
+          snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"%s%d.%d\":%d,", KEY_DURATION_PREFIX, t->getValveNumber(), t->getTimerNumber(), secs);
+        }
+      }
 
-		if (wantsRainSensor && rs.getState()) {
-			strcat(buf, "\"rain\":1,");
-		}
+      if (wantsRemainingTimes) {
+        int secs = t->get_remaining();
+        if (secs) {
+          snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"%s%d.%d\":%d,", KEY_REMAINING_PREFIX, t->getValveNumber(), t->getTimerNumber(), secs);
+        }
+      }
 
-		if (wantsTime) {
-			time_t timer = time(NULL);
-			struct tm t;
-			localtime_r(&timer, &t);
-			strftime(buf + strlen(buf), BUF_SIZE - strlen(buf),
-					"\"time\":\"%FT%H:%M:%S\",", &t);
-		}
+      if (wantsTimers) {
+        t->argsToJSON(buf + strlen(buf), BUF_SIZE - strlen(buf));
+        strcat(buf, ",");
+      }
 
-		if (*buf)
-			esp32_write(buf, strlen(buf) - 1); // no terminating comma
+    }
 
-		esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
-		*buf = '\0';
-	}
-	return 0;
+    if (wantsRelayPC && wp_isPressControlOn()) {
+      strcat(buf, "\"pc\":1,");
+    }
+
+    if (wantsRelayPump && wp_isPumpOn()) {
+      strcat(buf, "\"pump\":1,");
+    }
+
+    if (wantsRainSensor && rs.getState()) {
+      strcat(buf, "\"rain\":1,");
+    }
+
+    if (wantsTime) {
+      time_t timer = time(NULL);
+      struct tm t;
+      localtime_r(&timer, &t);
+      strftime(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"time\":\"%FT%H:%M:%S\",", &t);
+    }
+
+    if (*buf)
+      esp32_write(buf, strlen(buf) - 1); // no terminating comma
+
+    esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
+    *buf = '\0';
+  }
+
+  free(buf);
+  return 0;
 }

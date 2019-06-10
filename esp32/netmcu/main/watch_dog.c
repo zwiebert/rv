@@ -6,8 +6,8 @@
  */
 #include <time.h>
 #include "user_config.h"
-#include "uart.h"
 #include <string.h>
+#include <uart.h>
 
 
 #include "freertos/FreeRTOS.h"
@@ -21,7 +21,7 @@ time_t last_call_time;
 #define RESET_PIN_MS 500
 
 #ifndef STM32_RESET_PIN
-#define STM32_RESET_PIN  GPIO_NUM_19
+#define STM32_RESET_PIN  GPIO_NUM_33
 #endif
 
 static void rebootSTM32() {

@@ -94,10 +94,11 @@ time_t wp_getPumpOffDuration(void) {
 
 // get duration in seconds since the pump was last switched on
 time_t wp_getPumpOnDuration(void) {
+  time_t result = 0;
 	if (wp_isPumpOn() && last_on_time) { //XXX: remove test for current state?
-		return time(0) - last_on_time;
+	  result = time(0) - last_on_time;
 	}
-	return 0;
+	return result;
 }
 
 // switch on/off pump on (and set internal time stamps)

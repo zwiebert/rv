@@ -13,6 +13,7 @@ class AppState {
 	this.mZoneDescriptions = ["Rasen West","Kübel West", "Hochbeet Süd",0,0,0,0,0,0,0,0,0,0,0];
 	this.mZoneTimerIntervals = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 	this.mZoneTimerDurations = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+	this.mZoneTimers = {};
 	this.mPressControlStatus = false;
 	this.mWaterPumpStatus = false;
 	this.mRainSensorStatus = false;
@@ -30,8 +31,12 @@ class AppState {
             let sfx = i.toString();
             let dur = 'id-zoneTimerDuration-'+sfx;
             let rem = 'id-zoneRemainingTime-'+sfx;
+	    let tim = 'id-zoneTimerInterval-'+sfx;
+	    let timer = 'timer'+sfx+".0";
             document.getElementById(dur).value = this.mZoneTimerDurations[i];
             document.getElementById(rem).value = this.mZoneRemainingTimes[i];
+            document.getElementById(tim).value = (timer in this.mZoneTimers) ? JSON.stringify(this.mZoneTimers[timer]) : "-";
+	    
         }
     }
     updateHtml_rvStatus() {
@@ -88,12 +93,21 @@ class AppState {
 
         if ("data" in obj) {
             let data = obj.data;
+	    this.mZoneTimers = {};
             for (let i=0; i < ZONE_COUNT; ++i) {
                 let sfx = i.toString()+".0";
                 let dur = 'dur'+sfx;
                 let rem = 'rem'+sfx;
                 this.mZoneTimerDurations[i] = (dur in data) ? data[dur] : 0;
                 this.mZoneRemainingTimes[i] = (rem in data) ? data[rem] : 0;
+
+		for (let k=0; k < 10; ++k) {
+		    let sfx = i.toString()+'.'+k;
+		    let timer = 'timer'+sfx;
+		    if (timer in data) {
+			this.mZoneTimers[timer] = data[timer];
+		    }
+		}
             }
             this.updateHtml_zoneTable();
 	    
