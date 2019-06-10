@@ -9,6 +9,7 @@
 #include "cli_imp.h"
 #include "stm32.h"
 #include "stm32_bl.h"
+#include "stm32_ota.h"
 #include "http_client.h"
 
 const char help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
@@ -47,18 +48,15 @@ process_parmMcu(clpar p[], int len) {
       ets_printf("test http_client\n");
       void httpClient_test();
       httpClient_test();
-
-    } else if (strcmp(key, "dlrvhex") == 0) {
-      ets_printf("download rv.hex\n");
-      httpClient_downloadFile(val, "/spiffs/rv.hex");
-      // mcu dlrvhex=http://192.168.1.70:8000/rv.hex;
     } else if (strcmp(key, "dlrvbin") == 0) {
       ets_printf("download rv.bin\n");
-      httpClient_downloadFile(val, "/spiffs/rv.bin");
+      stm32Ota_firmwareDownload(val, STM32_FW_FILE_NAME);
       // mcu dlrvbin=http://192.168.1.70:8000/rv.bin;
     } else if (strcmp(key, "flrvbin") == 0) {
        ets_printf("flash rv.bin\n");
        stm32Bl_writeMemoryFromBinFile("/spiffs/rv.bin", 0x8000000);
+    } else if (strcmp(key, "flrv") == 0) {
+      stm32Ota_firmwareUpdate(STM32_FW_FILE_NAME);
 #if 0
     } else if (strcmp(key, "tm") == 0) {
 

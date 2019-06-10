@@ -49,6 +49,8 @@ process_parmConfig(clpar p[], int len) {
 
     } else if (strcmp(key, "time") == 0) {
     	rtc_set_counter_val(atol(val));
+    } else if (strcmp(key, "tz") == 0) {
+      setenv("TZ", val, 1);
     } else {
       ++errors;
     }

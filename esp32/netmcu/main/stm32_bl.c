@@ -58,7 +58,7 @@ int stm32Bl_recv(char *buf, int buf_size, int wait_ms) {
       DD(db_printf("stm32Bl: wait for response\n"));
       for (int i = 0; i < (WFR_TOTAL_MS / WFR_INTERVAL_MS); ++i) {
           vTaskDelay(WFR_INTERVAL_MS / portTICK_PERIOD_MS);
-          D(db_printf(":"));
+          DD(db_printf(":"));
           n += stm32_read(buf + n, buf_size - 1 - n);
           if (n > 0) {
             DD(db_printf("stm32Bl: %d bytes received\n", n));
@@ -74,16 +74,10 @@ bool stm32Bl_doStart(void) {
   char buf[16];
 
   stm32Bl_sendStart();
-  int n = stm32Bl_recv(buf, sizeof buf, 100);
-  if (n) {
-    D(db_printf("stm32Bl_doStart(): %d bytes received\n", n));
-    if (buf[0] == STM32_ACK) {
-      D(db_printf("stm32Bl_doStart(): connected\n"));
-      return true;
-    }
+  if (1 != stm32Bl_recv(buf, sizeof buf, 100) || buf[0] != STM32_ACK) {
+    return false;
   }
-
-  return false;
+  return true;
 }
 
 void stm32Bl_getId(void) {
@@ -221,11 +215,13 @@ bool stm32Bl_eraseFlashByFileSize(uint32_t startAddr, size_t size) {
 bool stm32Bl_writeMemoryFromBinFile(const char *srcFile, uint32_t addr) {
   struct stat statBuf;
   char buf[256];
-  int bytesWritten = 0;
+  size_t bytesWritten = 0;
+  size_t file_size = 0;
   int fd;
 
   if (0 <= (fd = open(srcFile, O_RDONLY))) {
     if (0 <= fstat(fd, &statBuf)) {
+      file_size = statBuf.st_size;
       if (stm32Bl_eraseFlashByFileSize(FLASH_START_ADDRESS, statBuf.st_size)) {
         while (1) {
           int n = read(fd, buf, 256);
@@ -249,7 +245,7 @@ bool stm32Bl_writeMemoryFromBinFile(const char *srcFile, uint32_t addr) {
     perror(0);
   }
   db_printf("bytes-written:%d\n", bytesWritten);
-  return false;
+  return bytesWritten == file_size;
 }
 
 

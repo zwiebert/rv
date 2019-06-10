@@ -239,6 +239,7 @@ void ioExtender_setup(bool re_init) {
 }
 
 void setup() {
+    setenv("TZ","CET-2", 1); //XXX
 	clock_setup();
 	uart_setup();
 	i2c2_setup();
