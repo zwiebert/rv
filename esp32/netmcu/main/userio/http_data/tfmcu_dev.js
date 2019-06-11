@@ -276,6 +276,49 @@ function postSendCommand(c=document.getElementById('send-c').value) {
     postData(url, tfmcu);
 }
 
+function rvFirmwareDownload() {
+    let fwUrl = document.getElementById("id-stm32FirmwareURL").value;
+    // TODO: validate URL here
+    var netmcu = {to:"tfmcu"};
+    netmcu.mcu = {
+	dlrvbin: fwUrl
+    };
+    let url = base+'/cmd.json';
+    console.log("url: "+url);
+    postData(url, netmcu);
+}
+
+function rvFirmwareFlash() {
+    var netmcu = {to:"tfmcu"};
+    netmcu.mcu = {
+	flrv: 1
+    };
+    let url = base+'/cmd.json';
+    console.log("url: "+url);
+    postData(url, netmcu);
+}
+
+function netFirmwareDownload() {
+    let fwUrl = document.getElementById("id-esp32FirmwareURL").value;
+    // TODO: validate URL here
+    var netmcu = {to:"tfmcu"};
+    netmcu.mcu = {
+	dlnetbin: fwUrl
+    };
+    let url = base+'/cmd.json';
+    console.log("url: "+url);
+    postData(url, netmcu);
+}
+
+function netFirmwareFlash() {
+    var netmcu = {to:"tfmcu"};
+    netmcu.mcu = {
+	flnet: 1
+    };
+    let url = base+'/cmd.json';
+    console.log("url: "+url);
+    postData(url, netmcu);
+}
 
 
 
@@ -314,6 +357,12 @@ function onContentLoaded() {
 
     document.getElementById("zrlb").onclick = () => app_state.fetchZoneData();
 
+    document.getElementById("rvdl").onclick = () => rvFirmwareDownload();
+    document.getElementById("rvfl").onclick = () => rvFirmwareFlash();
+
+    document.getElementById("netdl").onclick = () => netFirmwareDownload();
+    document.getElementById("netfl").onclick = () => netFirmwareFlash();
+    
     document.getElementById("csvb").onclick = () => postConfig();
     document.getElementById("crlb").onclick = () => app_state.fetchConfig();
 

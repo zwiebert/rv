@@ -52,6 +52,11 @@ process_parmMcu(clpar p[], int len) {
       ets_printf("download rv.bin\n");
       stm32Ota_firmwareDownload(val, STM32_FW_FILE_NAME);
       // mcu dlrvbin=http://192.168.1.70:8000/rv.bin;
+    } else if (strcmp(key, "dlnwrbin") == 0) {
+      ets_printf("download net.bin\n");
+      stm32Ota_firmwareDownload(val, STM32_FW_FILE_NAME);
+      // mcu dlrvbin=http://192.168.1.70:8000/rv.bin;
+
     } else if (strcmp(key, "flrvbin") == 0) {
        ets_printf("flash rv.bin\n");
        stm32Bl_writeMemoryFromBinFile("/spiffs/rv.bin", 0x8000000);
