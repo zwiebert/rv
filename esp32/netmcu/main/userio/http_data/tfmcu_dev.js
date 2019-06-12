@@ -4,13 +4,13 @@ var base = 'http://10.0.0.27'; //dev-delete-line//
 
 var tfmcu_config = {};
 let config_fetched = false;
-const ZONE_COUNT = 13;
+const ZONE_COUNT = 14;
 
 class AppState {
 
     constructor() {
 	this.mZoneRemainingTimes = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-	this.mZoneDescriptions = ["Rasen West","Kübel West", "Hochbeet Süd",0,0,0,0,0,0,0,0,0,0,0];
+	this.mZoneDescriptions = ["<enter names...>",0, 0,0,0,0,0,0,0,0,0,0,0,0];
 	this.mZoneTimerIntervals = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 	this.mZoneTimerDurations = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 	this.mZoneTimers = {};
@@ -32,10 +32,14 @@ class AppState {
             let dur = 'id-zoneTimerDuration-'+sfx;
             let rem = 'id-zoneRemainingTime-'+sfx;
 	    let tim = 'id-zoneTimerInterval-'+sfx;
+	    let name = 'id-zoneName-'+sfx;
+	    
 	    let timer = 'timer'+sfx+".0";
             document.getElementById(dur).value = this.mZoneTimerDurations[i];
             document.getElementById(rem).value = this.mZoneRemainingTimes[i];
             document.getElementById(tim).value = (timer in this.mZoneTimers) ? JSON.stringify(this.mZoneTimers[timer]) : "-";
+	    document.getElementById(name).value = this.mZoneDescriptions[i];
+	    
 	    
         }
     }
@@ -66,7 +70,6 @@ class AppState {
         down_elem.value = "";
 
         if ("daily" in auto) {
-            console.log("------");
             let d = auto.daily;
             let l = auto.daily.length;
             up_elem.value = d.startsWith("-") ? "" : d.substring(0,2)+":"+d.substring(2,4);
@@ -118,6 +121,15 @@ class AppState {
 	    this.updateHtml_rvStatus();
 	    
         }
+
+	if ("kvs" in obj) {
+	    let kvs = obj.kvs;
+	    for (let i=0; i < ZONE_COUNT; ++i) {
+		let key = "zn"+i.toString();
+		this.mZoneDescriptions[i] = (key in kvs) ? kvs[key] : "";
+	    }
+	    this.updateHtml_zoneTable();
+	}
     }
 
 
@@ -137,13 +149,21 @@ class AppState {
         });
     }
 
+    
+
+    
+
     fetchZoneData() {
         var json = { to:"rv", cmd: { dur:"?", rem:"?", status:"?" } };
         var url = base+'/cmd.json';
         postData(url, json);
     }
 
-
+    fetchZoneNames() {
+        var json = { to:"netmcu", kvs: { zn:"?" } };
+        var url = base+'/cmd.json';
+        postData(url, json);
+    }
 
     load() {
 
@@ -259,6 +279,29 @@ function postConfig() {
     }
 }
 
+function postZoneNames() {
+    let netmcu = {to:"netmcu"};
+    let kvs = {};
+    netmcu.kvs = kvs;
+
+    for (let i=0; i < ZONE_COUNT; ++i) {
+	let sfx = i.toString();
+	let key = 'zn'+sfx;
+	let id = 'id-zoneName-'+sfx;
+	let new_name =  document.getElementById(id).value;
+	let old_name = app_state.mZoneDescriptions[i];
+	if (old_name != new_name) {
+	    kvs[key] = new_name;
+	}
+    }
+
+    console.log(JSON.stringify(netmcu));
+    var url = base+'/cmd.json';
+    console.log("url: "+url);
+    postData(url, netmcu);
+}
+
+
 function postSendCommand(c=document.getElementById('send-c').value) {
     var tfmcu = {to:"tfmcu"};
     let g = app_state.g.toString();
@@ -312,7 +355,7 @@ function netFirmwareOTA() {
 
 function genHtml_timerTableRow(nmb, name) {
     return '<tr>'+
-	'<td>'+nmb+'</td><td>'+name+'</td><td><input type="number" min="0" max="60" value="0" id="id-zoneRemainingTime-'+nmb+'"></td>'+
+	'<td>'+nmb+'</td><td><input type="text" id="id-zoneName-'+nmb+'" value="'+name+'"></td><td><input type="number" min="0" max="60" value="0" id="id-zoneRemainingTime-'+nmb+'"></td>'+
 	'<td><input type="text" id="id-zoneTimerInterval-'+nmb+'" value="'+app_state.getZoneTimerInterval(nmb)+'"</td>'+
 	'<td><input type="number" min="0" max="60" id="id-zoneTimerDuration-'+nmb+'" value="'+app_state.getZoneTimerDuration(nmb)+'"</td>'+
 	'</tr>';
@@ -337,11 +380,13 @@ function onContentLoaded() {
     app_state = new AppState();
     app_state.load();
     app_state.fetchConfig();
+    app_state.fetchZoneNames();
     app_state.fetchZoneData();
 
     writeHtml_timerTableDiv();
 
-    document.getElementById("zrlb").onclick = () => app_state.fetchZoneData();
+    document.getElementById("zrlb").onclick = function() { app_state.fetchZoneNames(); app_state.fetchZoneData();}
+    document.getElementById("znsb").onclick = () => postZoneNames();
 
     document.getElementById("rvdl").onclick = () => rvFirmwareDownload();
     document.getElementById("rvfl").onclick = () => rvFirmwareFlash();

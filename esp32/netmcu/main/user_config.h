@@ -16,6 +16,11 @@
 #define USE_WLAN
 #define BB
 #elif defined BOARD_ESP32POE
+#define OLIMEX_ESP32_POE
+#define USE_LAN
+#define DISTRIBUTION 1
+#elif defined BOARD_ESP32GATEWAY
+#define OLIMEX_ESP32_GATEWAY
 #define USE_LAN
 #define DISTRIBUTION 1
 #else

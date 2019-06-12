@@ -9,8 +9,6 @@
 #include "user_config.h"
 #ifdef USE_LAN
 
-#define OLIMEX_ESP32_POE
-
 #ifdef OLIMEX_ESP32_POE
 
 #define CONFIG_PHY_LAN8720 1

@@ -72,6 +72,14 @@ uint16_t msgid;
 
 uint16_t msgid;
 
+const char *Obj_tag="";
+#define SET_OBJ_TAG(tag) Obj_tag=(tag)
+#define OBJ_TAG (Obj_tag+0)
+#define OBJ_TAG_TIMER "timer"
+#define OBJ_TAG_CONFIG "config"
+#define OBJ_TAG_MCU "mcu"
+#define OBJ_TAG_SEND "send"
+
 
 static void ICACHE_FLASH_ATTR cli_out_top_tag(void) {
     io_puts("tf: ");
@@ -85,47 +93,31 @@ static void ICACHE_FLASH_ATTR cli_out_reply_tag(void) {
   }
 }
 
-static void ICACHE_FLASH_ATTR cli_out_timer_tag(void) {
-    io_puts("timer: ");
+static void ICACHE_FLASH_ATTR cli_out_obj_tag(void) {
+    io_puts(OBJ_TAG), io_puts(":");
 }
 
-static void ICACHE_FLASH_ATTR cli_out_config_tag(void) {
-    io_puts("config:");
+static void ICACHE_FLASH_ATTR cli_out_start_reply(void) {
+  cli_out_top_tag();
+  cli_out_reply_tag();
+  cli_out_obj_tag();
 }
-
-static void ICACHE_FLASH_ATTR cli_out_send_tag(void) {
-    io_puts("send:");
-}
-
-static void ICACHE_FLASH_ATTR cli_out_mcu_tag(void) {
-    io_puts("mcu:");
-}
-
 
 
 static void ICACHE_FLASH_ATTR cli_out_start_timer_reply(void) {
-  cli_out_top_tag();
-  cli_out_reply_tag();
-  cli_out_timer_tag();
+  SET_OBJ_TAG(OBJ_TAG_TIMER);
+  cli_out_start_reply();
 }
 
 
 static void ICACHE_FLASH_ATTR cli_out_start_config_reply(void) {
-  cli_out_top_tag();
-  cli_out_reply_tag();
-  cli_out_config_tag();
+  SET_OBJ_TAG(OBJ_TAG_CONFIG);
+  cli_out_start_reply();
 }
 
 static void ICACHE_FLASH_ATTR cli_out_start_mcu_reply(void) {
-  cli_out_top_tag();
-  cli_out_reply_tag();
-  cli_out_mcu_tag();
-}
-
-static void ICACHE_FLASH_ATTR cli_out_start_config_bc(void) {
-  cli_out_top_tag();
-  //cli_out_reply_tag();
-  cli_out_config_tag();
+  SET_OBJ_TAG(OBJ_TAG_MCU);
+  cli_out_start_reply();
 }
 
 typedef void (*void_fun_ptr)(void);
@@ -160,6 +152,19 @@ static void ICACHE_FLASH_ATTR cli_out_entry(void_fun_ptr tag, const char *key, c
       io_puts(val);
     }
   }
+}
+
+void cli_out_set_config(void) {
+  SET_OBJ_TAG(OBJ_TAG_CONFIG);
+}
+void cli_out_set_x(const char *obj_tag) {
+  SET_OBJ_TAG(obj_tag);
+}
+
+void ICACHE_FLASH_ATTR cli_out_x_reply_entry(const char *key, const char *val, int len) {
+  if (!so_tgt_test_cli_text())
+    return;
+  cli_out_entry(cli_out_start_reply, key, val, len);
 }
 
 void ICACHE_FLASH_ATTR cli_out_timer_reply_entry(const char *key, const char *val, int len) {
@@ -303,6 +308,8 @@ struct {
         { "help", process_parmHelp, help_parmHelp },
         { "cmd", process_parmCmd, help_parmCmd },
         { "mcu", process_parmMcu, help_parmMcu },
+
+        { "kvs", process_parmKvs, help_parmKvs },
 #if 0
 { "send", process_parmSend, help_parmSend },
 
@@ -325,11 +332,13 @@ struct {
 int ICACHE_FLASH_ATTR
 process_parm(clpar p[], int len) {
   int i;
+  dbg_vpf(db_printf("process_parm: len=%d\n", len));
 
   for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
     if (strcmp(p[0].key, parm_handlers[i].parm) == 0)
       return parm_handlers[i].process_parmX(p, len);
   }
+  dbg_vpf(db_printf("error: no parm_handler for <%s>\n", p[0].key));
   return 0;
 }
 

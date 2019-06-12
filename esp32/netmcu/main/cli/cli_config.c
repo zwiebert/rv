@@ -5,6 +5,7 @@
 #include "cli_imp.h"
 #include "userio/mqtt.h"
 #include "userio/http_server.h"
+#include "kvstore.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 
@@ -239,9 +240,6 @@ process_parmConfig(clpar p[], int len) {
         default:
         break;
       }
-
-
-
 
 #ifdef ACCESS_GPIO
     } else if (strncmp(key, "gpio", 4) == 0) {

@@ -59,6 +59,8 @@ typedef enum {
   SO_CFG_end, // values between begin/end will be used for 'all=?'
   SO_CFG_GPIO_PIN,
 
+  SO_KVS_begin, SO_KVS_ZN_ALL, SO_KVS_end,  SO_KVS_ZN_SINGLE,
+
   SO_CFGPASSWD_OK, SO_CFGPASSWD_WRONG, SO_CFGPASSWD_MISSING,
 
   SO_TIMER_EVENT_PRINT,
