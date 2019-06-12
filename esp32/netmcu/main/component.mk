@@ -9,4 +9,16 @@
 COMPONENT_PRIV_INCLUDEDIRS = .
 COMPONENT_SRCDIRS+= ./userio ./config ./userio/http_data ./cli ./main ./misc
 
-COMPONENT_EMBED_TXTFILES := howsmyssl_com_root_cert.pem
+COMPONENT_EMBED_TXTFILES := howsmyssl_com_root_cert.pem ca_cert.pem
+
+ifdef BOARD_ESP32POE
+CFLAGS+=-DBOARD_ESP32POE
+else
+ifdef BOARD_ESP32GATEWAY
+CFLAGS+=-DBOARD_ESP32GATEWAY
+else
+CFLAGS+=-DBOARD_ESP32WLAN
+endif
+endif
+
+

@@ -68,7 +68,7 @@ process_parmCmd(clpar p[], int len) {
       sscanf((key + KEY_DURATION_PREFIX_LEN), "%d.%d", &channel, &timer_number);
       if (strchr(val, ',')) {
         RvTimer::SetArgs args;
-        sscanf(val, "%d,%d,%d,%d,%d,%d,%d", &args.on_duration, &args.off_duration, &args.repeats, &args.period, &args.mDaysInterval, &args.mTodSpanBegin,
+        sscanf(val, "%d,%d,%d,%d,%d,%d,%d,%d", &args.on_duration, &args.mIgnoreRainSensor, &args.off_duration, &args.repeats, &args.period, &args.mDaysInterval, &args.mTodSpanBegin,
             &args.mTodSpanEnd);
         rvt.set(args, channel, timer_number)->scheduleRun();
         hasDuration = true;

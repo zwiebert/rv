@@ -36,6 +36,7 @@ public:
   struct SetArgs {
     int on_duration = 0, off_duration = 0, repeats = 0, period = 0;
     int mDaysInterval = 0, mTodSpanBegin = 0, mTodSpanEnd = 0;
+    int mIgnoreRainSensor = false;
     char *toJSON(char *buf, int buf_size) {
       if (0 <= snprintf(buf, buf_size, "{\"don\":%d,\"doff\":%d,\"reps\":%d,\"per\":%d,\"di\":%d,\"sb\":%d,\"se\":%d}", on_duration, off_duration, repeats, period,
           mDaysInterval, mTodSpanBegin, mTodSpanEnd))
@@ -82,6 +83,8 @@ private:
   }
 
   bool isDisabledByRain() {
+    if (mArgs.mIgnoreRainSensor)
+      return false;
     if (rs.getState())
       return true; // raining now or was raining (adjust sensor directly)
 
@@ -194,7 +197,7 @@ public:
   void set(SetArgs &args, int id) {
     mTimerNumber = id;
     mArgs = args;
-    if (rs.getState() && !(args.period || args.mDaysInterval)) {
+    if (rs.getState() && !(args.period || args.mDaysInterval || args.mIgnoreRainSensor)) {
       mArgs.on_duration = 0; // force timer to stop
     }
   }
@@ -229,8 +232,15 @@ public:
     return mIsRunning && mNextOnOff && mNextOnOff < time(0);
   }
   bool shouldStopBecauseRain() {
-    return mIsRunning && mIsOn && rs.getState();
+    if (mArgs.mIgnoreRainSensor)
+      return false;
+    if (!(mIsRunning && !mIsOn))
+      return false;
+    if (!rs.getState())
+      return false;
+    return true;
   }
+
   bool isDone() {
     return !mIsRunning && mDoneOn >= mArgs.repeats && !mNextRun;
   }

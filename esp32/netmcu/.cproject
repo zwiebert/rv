@@ -114,8 +114,16 @@
             <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
             		
         </scannerConfigBuildInfo>
+        		
+        <scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.cross.base.2000868813.1475941662;cdt.managedbuild.toolchain.gnu.cross.base.2000868813.1475941662.;cdt.managedbuild.tool.gnu.cross.c.compiler.155055693;cdt.managedbuild.tool.gnu.c.compiler.input.1457891243">
+            			
+            <autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+            		
+        </scannerConfigBuildInfo>
         	
     </storageModule>
+    	
+    <storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
     	
     <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
         		
@@ -126,6 +134,8 @@
                 <buildCommand>make</buildCommand>
                 				
                 <buildArguments>-s -j xxx</buildArguments>
+                				
+                <buildTarget/>
                 				
                 <stopOnError>true</stopOnError>
                 				
@@ -138,6 +148,8 @@
             <target name="Copy To Windows" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
                 				
                 <buildCommand>win_cp.sh</buildCommand>
+                				
+                <buildArguments/>
                 				
                 <stopOnError>true</stopOnError>
                 				
@@ -184,6 +196,36 @@
                 <buildCommand>make</buildCommand>
                 				
                 <buildArguments>-s -j flash</buildArguments>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="netmcu-poe" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>-s -j  esp32poe</buildArguments>
+                				
+                <buildTarget/>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="netmcu-gateway" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>-s -j  esp32gateway</buildArguments>
                 				
                 <buildTarget/>
                 				

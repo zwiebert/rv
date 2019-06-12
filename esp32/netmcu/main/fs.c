@@ -5,6 +5,10 @@
  *      Author: bertw
  */
 
+#ifdef HALLOTEST
+#error
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <sys/unistd.h>

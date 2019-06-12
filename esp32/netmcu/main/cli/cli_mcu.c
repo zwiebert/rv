@@ -10,6 +10,7 @@
 #include "stm32.h"
 #include "stm32_bl.h"
 #include "stm32_ota.h"
+#include "ota.h"
 #include "http_client.h"
 
 const char help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
@@ -44,18 +45,14 @@ process_parmMcu(clpar p[], int len) {
     } else if (strcmp(key, "rfw") == 0) {
        ets_printf("run firmware\n");
        stm32_runFirmware();
-    } else if (strcmp(key, "th") == 0) {
-      ets_printf("test http_client\n");
-      void httpClient_test();
-      httpClient_test();
     } else if (strcmp(key, "dlrvbin") == 0) {
       ets_printf("download rv.bin\n");
       stm32Ota_firmwareDownload(val, STM32_FW_FILE_NAME);
       // mcu dlrvbin=http://192.168.1.70:8000/rv.bin;
-    } else if (strcmp(key, "dlnwrbin") == 0) {
-      ets_printf("download net.bin\n");
-      stm32Ota_firmwareDownload(val, STM32_FW_FILE_NAME);
-      // mcu dlrvbin=http://192.168.1.70:8000/rv.bin;
+    } else if (strcmp(key, "ota") == 0) {
+      ets_printf("do ota update from given URL\n");
+      ota_doUpdate(val);
+      // mcu ota=http://192.168.1.70:8000/netmcu.bin;
 
     } else if (strcmp(key, "flrvbin") == 0) {
        ets_printf("flash rv.bin\n");

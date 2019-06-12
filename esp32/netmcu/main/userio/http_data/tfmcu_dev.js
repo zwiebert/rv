@@ -298,31 +298,17 @@ function rvFirmwareFlash() {
     postData(url, netmcu);
 }
 
-function netFirmwareDownload() {
+function netFirmwareOTA() {
     let fwUrl = document.getElementById("id-esp32FirmwareURL").value;
     // TODO: validate URL here
     var netmcu = {to:"tfmcu"};
     netmcu.mcu = {
-	dlnetbin: fwUrl
+	ota: fwUrl
     };
     let url = base+'/cmd.json';
     console.log("url: "+url);
     postData(url, netmcu);
 }
-
-function netFirmwareFlash() {
-    var netmcu = {to:"tfmcu"};
-    netmcu.mcu = {
-	flnet: 1
-    };
-    let url = base+'/cmd.json';
-    console.log("url: "+url);
-    postData(url, netmcu);
-}
-
-
-
-
 
 function genHtml_timerTableRow(nmb, name) {
     return '<tr>'+
@@ -360,8 +346,7 @@ function onContentLoaded() {
     document.getElementById("rvdl").onclick = () => rvFirmwareDownload();
     document.getElementById("rvfl").onclick = () => rvFirmwareFlash();
 
-    document.getElementById("netdl").onclick = () => netFirmwareDownload();
-    document.getElementById("netfl").onclick = () => netFirmwareFlash();
+    document.getElementById("netota").onclick = () => netFirmwareOTA();
     
     document.getElementById("csvb").onclick = () => postConfig();
     document.getElementById("crlb").onclick = () => app_state.fetchConfig();

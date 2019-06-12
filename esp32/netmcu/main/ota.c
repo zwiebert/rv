@@ -1,6 +1,6 @@
 #include "user_config.h"
 #ifdef USE_OTA
-##include "freertos/FreeRTOS.h"
+#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 
@@ -27,7 +27,7 @@ static EventGroupHandle_t wifi_event_group;
    to the AP with an IP? */
 const int CONNECTED_BIT = BIT0;
 
-esp_err_t _http_event_handler(esp_http_client_event_t *evt)
+static esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 {
     switch(evt->event_id) {
         case HTTP_EVENT_ERROR:
@@ -55,57 +55,59 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
     return ESP_OK;
 }
 
-static esp_err_t event_handler(void *ctx, system_event_t *event)
-{
-    switch (event->event_id) {
-    case SYSTEM_EVENT_STA_START:
-        esp_wifi_connect();
-        break;
-    case SYSTEM_EVENT_STA_GOT_IP:
-        xEventGroupSetBits(wifi_event_group, CONNECTED_BIT);
-        break;
-    case SYSTEM_EVENT_STA_DISCONNECTED:
-        /* This is a workaround as ESP32 WiFi libs don't currently
-           auto-reassociate. */
-        esp_wifi_connect();
-        xEventGroupClearBits(wifi_event_group, CONNECTED_BIT);
-        break;
-    default:
-        break;
-    }
-    return ESP_OK;
-}
+static char *Firmware_url = 0;
 
 void simple_ota_example_task(void * pvParameter)
 {
-    ESP_LOGI(TAG, "Starting OTA example");
 
-    /* Wait for the callback to set the CONNECTED_BIT in the
-       event group.
-    */
-    xEventGroupWaitBits(wifi_event_group, CONNECTED_BIT,
-                        false, true, portMAX_DELAY);
-    ESP_LOGI(TAG, "Connected to WiFi network! Attempting to connect to server...");
+   // ESP_LOGI(TAG, "Starting OTA example");
 
     esp_http_client_config_t config = {
-        .url = CONFIG_FIRMWARE_UPGRADE_URL,
+        //.url = "http://192.168.1.70:8000/netmcu.bin",
+        .url = Firmware_url,
         .cert_pem = (char *)server_cert_pem_start,
         .event_handler = _http_event_handler,
     };
+    //vTaskDelete(NULL);
     esp_err_t ret = esp_https_ota(&config);
     if (ret == ESP_OK) {
         esp_restart();
     } else {
-        ESP_LOGE(TAG, "Firmware upgrade failed");
+       // ESP_LOGE(TAG, "Firmware upgrade failed");
     }
-    while (1) {
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
+    free(Firmware_url);
+    vTaskDelete(NULL);
+}
+
+bool ota_doUpdate(const char *firmware_url) {
+  Firmware_url = malloc(strlen(firmware_url)+1);
+  strcpy (Firmware_url, firmware_url);
+  xTaskCreate(&simple_ota_example_task, "ota_example_task", 16384, NULL, 5, NULL);
+  return false;
+}
+
+
+bool ota_doUpdateXX(const char *firmwareURL) {
+  ESP_LOGI(TAG, "Starting OTA example");
+
+   esp_http_client_config_t config = {
+       .url = firmwareURL,
+       .cert_pem = (char *)server_cert_pem_start,
+       .event_handler = _http_event_handler,
+   };
+   esp_err_t ret = esp_https_ota(&config);
+   if (ret == ESP_OK) {
+     ESP_LOGI(TAG, "Firmware upgrade succeeded");
+     return true;
+   }
+
+   ESP_LOGE(TAG, "Firmware upgrade failed");
+   return false; // XXX: always fails. Should we do restart outside this function?
 }
 
 void ota_setup()
 {
-    xTaskCreate(&simple_ota_example_task, "ota_example_task", 8192, NULL, 5, NULL);
+   //xTaskCreate(&simple_ota_example_task, "ota_example_task", 8192, NULL, 5, NULL);
 }
 
 #endif

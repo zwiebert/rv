@@ -50,24 +50,25 @@ void stm32Bl_sendAddress(uint32_t addr) {
 
 int stm32Bl_recv(char *buf, int buf_size, int wait_ms) {
 #define WFR_TOTAL_MS wait_ms
-  #define WFR_INTERVAL_MS 50
-    if (!buf)
-      return -1;
+#define WFR_INTERVAL_MS 50
+  if (!buf) {
+    return -1;
+  }
 
-      int n = 0;
-      DD(db_printf("stm32Bl: wait for response\n"));
-      for (int i = 0; i < (WFR_TOTAL_MS / WFR_INTERVAL_MS); ++i) {
-          vTaskDelay(WFR_INTERVAL_MS / portTICK_PERIOD_MS);
-          DD(db_printf(":"));
-          n += stm32_read(buf + n, buf_size - 1 - n);
-          if (n > 0) {
-            DD(db_printf("stm32Bl: %d bytes received\n", n));
-            return n;
-          }
+  int n = 0;
+  DD(db_printf("stm32Bl: wait for response\n"));
+  for (int i = 0; i < (WFR_TOTAL_MS / WFR_INTERVAL_MS); ++i) {
+    vTaskDelay(WFR_INTERVAL_MS / portTICK_PERIOD_MS);
+    DD(db_printf(":"));
+    n += stm32_read(buf + n, buf_size - 1 - n);
+    if (n > 0) {
+      DD(db_printf("stm32Bl: %d bytes received\n", n));
+      return n;
+    }
 
-      }
-      D(db_printf("stm32Bl: stop wait for response\n"));
-      return 0;
+  }
+  D(db_printf("stm32Bl: stop wait for response\n"));
+  return 0;
 }
 
 bool stm32Bl_doStart(void) {

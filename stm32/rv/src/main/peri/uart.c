@@ -22,6 +22,8 @@
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/cm3/scb.h>
 
+#include <string.h>
+
 #define RX_BUFSIZE 128
 static volatile uint8_t buf[RX_BUFSIZE];
 static volatile uint8_t head = 0, tail = 0;

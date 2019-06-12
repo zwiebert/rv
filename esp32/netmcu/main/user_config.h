@@ -10,13 +10,16 @@
 
 #define MCU_ESP32
 
-#define BB // breadboard
+//#define BB // breadboard
 
-#ifdef BB
+#ifdef BOARD_ESP32WLAN
 #define USE_WLAN
-#else
+#define BB
+#elif defined BOARD_ESP32POE
 #define USE_LAN
 #define DISTRIBUTION 1
+#else
+#error // no board defined
 #endif
 
 #define USE_HTTP
@@ -30,6 +33,7 @@
 #define USE_WDG
 #define USE_FS
 #define USE_HTTP_CLIENT
+#define USE_OTA
 
 
 #define STM32_RESET_PIN  (GPIO_NUM_33)
