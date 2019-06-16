@@ -39,6 +39,5 @@ bool stm32Ota_firmwareUpdate(const char *file_name) {
 }
 
 bool stm32Ota_firmwareDownload(const char *url, const char *file_name) {
-  httpClient_downloadFile(url, file_name);
-  return true; //XXX
+  return httpClient_downloadFile(url, file_name);
 }

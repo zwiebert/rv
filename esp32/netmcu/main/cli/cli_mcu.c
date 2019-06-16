@@ -55,7 +55,7 @@ process_parmMcu(clpar p[], int len) {
     } else if (strcmp(key, "rvota") == 0) {
       ets_printf("download rv.bin\n");
       if (stm32Ota_firmwareDownload(val, STM32_FW_FILE_NAME)) {
-        if (stm32Bl_writeMemoryFromBinFile("/spiffs/rv.bin", 0x8000000)) {
+        if (stm32Ota_firmwareUpdate(STM32_FW_FILE_NAME)) {
         } else {
           ++error_count;
         }

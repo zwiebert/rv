@@ -104,8 +104,9 @@ esp_err_t _http_event_handler(esp_http_client_event_t *evt)
 
 
 
-void httpClient_downloadFile(const char *srcUrl, const char *dstFile)
+bool httpClient_downloadFile(const char *srcUrl, const char *dstFile)
 {
+  bool result = true;
     esp_http_client_config_t config = {
         .url = srcUrl,
         .event_handler = _http_event_handler,
@@ -121,8 +122,10 @@ void httpClient_downloadFile(const char *srcUrl, const char *dstFile)
                 esp_http_client_get_content_length(client));
     } else {
         ESP_LOGE(TAG, "Error perform http request %s", esp_err_to_name(err));
+        result = false;
     }
     esp_http_client_cleanup(client);
+    return result;
 }
 
 void httpClient_setup()
