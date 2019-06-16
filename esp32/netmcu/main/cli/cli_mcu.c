@@ -29,6 +29,8 @@ process_parmMcu(clpar p[], int len) {
   char buf[24];
   int error_count = 0;
 
+  so_output_message(SO_MCU_begin, NULL);
+
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
@@ -170,7 +172,7 @@ process_parmMcu(clpar p[], int len) {
   }
 
   so_output_message(error_count ? SO_STATUS_ERROR : SO_STATUS_OK, 0);
-  cli_out_mcu_reply_entry(NULL, NULL, -1);
+  so_output_message(SO_MCU_end, NULL);
 
   return 0;
 }

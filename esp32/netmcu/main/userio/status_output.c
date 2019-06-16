@@ -168,6 +168,15 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     so_out_x_reply_entry_ss("status", "error");
     break;
 
+  case SO_MCU_begin: {
+    so_out_set_tag("mcu");
+  }
+    break;
+
+  case SO_MCU_end:
+    so_out_x_reply_entry_ss(0, 0);
+    break;
+
 
     /////////////////////////////////////////////////////////////////////////////////
   case SO_SEP_ENABLE:
