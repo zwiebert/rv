@@ -33,6 +33,7 @@
 
 #include "cli/cli.h"
 #include "config/config.h"
+#include "debug/debug.h"
 
 static const char *TAG = "MQTT_EXAMPLE";
 
@@ -115,9 +116,10 @@ void io_mqtt_unsubscribe(const char *topic) {
 void io_mqtt_publish(const char *topic, const char *data) {
   if (!client || !is_connected)
     return;
+#if 0
   if (!so_tgt_test(SO_TGT_MQTT))
     return;
-
+#endif
   D(ESP_LOGI(TAG, "MQTT_PUBLISH, topic=%s, data=%s", topic, data));
    int msg_id = esp_mqtt_client_publish(client, topic, data, 0, 1, 0);
 }

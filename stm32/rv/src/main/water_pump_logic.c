@@ -7,6 +7,7 @@
 
 #include <valve_relays.h>
 #include "water_pump_logic.h"
+#include "report.h"
 
 static time_t wpl_max_on_time = WPL_MAX_ON_TIME_SHORT;
 #define WPL_RESET_MAX_ON_TIME_AFTER (ONE_HOUR)
@@ -34,6 +35,7 @@ static bool checkForError() {
       if (wp_getError() == WP_ERR_MAX_ON_TIME)
         wpl_increaseMaxOnTime();
 
+      report_event("wp:error:cleared");
       wp_setError(WP_ERR_NONE);
       return false;
     } else {
@@ -48,6 +50,7 @@ static void ifPumpOn() {
     wp_switchPump(false);
   } else if (hasPumpRunTooLong()) {
     wp_setError(WP_ERR_MAX_ON_TIME);
+    report_event("wp:error:max_on_time");
   }
 }
 

@@ -47,7 +47,7 @@ process_parmCmd(clpar p[], int len) {
   *buf = '\0';
 
   bool wantsDurations = false, wantsRemainingTimes = false, wantsReply = false, hasDuration = false, wantsRelayPump = false, wantsRelayPC = false,
-      wantsRainSensor = false, wantsTime = false, wantsTimers = false;
+      wantsRainSensor = false, wantsTime = false, wantsTimers = false, wantsPumpRunTime = false;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -61,7 +61,7 @@ process_parmCmd(clpar p[], int len) {
       wantsReply = wantsRemainingTimes = true;
 
     } else if (strcmp(key, KEY_STATUS_PREFIX) == 0 && *val == '?') {
-      wantsReply = wantsDurations = wantsRemainingTimes = wantsRelayPC = wantsRelayPump = wantsTime = wantsRainSensor = wantsTimers = true;
+      wantsReply = wantsDurations = wantsRemainingTimes = wantsRelayPC = wantsRelayPump = wantsTime = wantsRainSensor = wantsTimers = wantsPumpRunTime = true;
 
     } else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
       int channel = -1, timer_number = 0;
@@ -119,6 +119,14 @@ process_parmCmd(clpar p[], int len) {
 
     if (wantsRelayPump && wp_isPumpOn()) {
       strcat(buf, "\"pump\":1,");
+    }
+
+    if (wantsPumpRunTime) {
+      if (wp_isPumpOn()) {
+        snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"p1d\":%lu,", wp_getPumpOnDuration());
+      } else {
+        snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"p0d\":%lu,", wp_getPumpOffDuration());
+      }
     }
 
     if (wantsRainSensor && rs.getState()) {

@@ -24,6 +24,8 @@ void io_mqtt_enable(bool enable);
 void io_mqtt_publish_config(const char *json);
 void io_mqtt_publish_status(const char *json);
 void io_mqtt_publish_valve_status(int valve_number, bool state);
+void io_mqtt_publish_rain_sensor_status(bool state);
+void io_mqtt_publish_stm32_event(const char *event);
 
 // low level wrapper to hide MQTT implementation
 void io_mqtt_create_and_start(void);

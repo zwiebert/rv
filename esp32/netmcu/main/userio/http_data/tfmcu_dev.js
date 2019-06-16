@@ -341,6 +341,18 @@ function rvFirmwareFlash() {
     postData(url, netmcu);
 }
 
+function rvFirmwareOTA() {
+    let fwUrl = document.getElementById("id-stm32FirmwareURL").value;
+    // TODO: validate URL here
+    var netmcu = {to:"tfmcu"};
+    netmcu.mcu = {
+	rvota: fwUrl
+    };
+    let url = base+'/cmd.json';
+    console.log("url: "+url);
+    postData(url, netmcu);
+}
+
 function netFirmwareOTA() {
     let fwUrl = document.getElementById("id-esp32FirmwareURL").value;
     // TODO: validate URL here
@@ -362,7 +374,7 @@ function genHtml_timerTableRow(nmb, name) {
 }
 
 function genHtml_timerTable(n) {
-    let html='<table><tr><th>Zone</th><th>Ort</th><th>Restlaufzeit</th><th>Timer Intervall</th><th>Timer Dauer</th></tr>';
+    let html='<table><tr><th>Zone</th><th>Name</th><th>Restlaufzeit</th><th>Timer Intervall</th><th>Timer Dauer</th></tr>';
     for(let i=0; i < n; ++i) {
 	html+= genHtml_timerTableRow(i, app_state.getZoneDescription(i));
     }
@@ -388,8 +400,7 @@ function onContentLoaded() {
     document.getElementById("zrlb").onclick = function() { app_state.fetchZoneNames(); app_state.fetchZoneData();}
     document.getElementById("znsb").onclick = () => postZoneNames();
 
-    document.getElementById("rvdl").onclick = () => rvFirmwareDownload();
-    document.getElementById("rvfl").onclick = () => rvFirmwareFlash();
+    document.getElementById("rvota").onclick = () => rvFirmwareOTA();
 
     document.getElementById("netota").onclick = () => netFirmwareOTA();
     

@@ -27,6 +27,7 @@ int ICACHE_FLASH_ATTR
 process_parmMcu(clpar p[], int len) {
   int arg_idx;
   char buf[24];
+  int error_count = 0;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -49,6 +50,16 @@ process_parmMcu(clpar p[], int len) {
       ets_printf("download rv.bin\n");
       stm32Ota_firmwareDownload(val, STM32_FW_FILE_NAME);
       // mcu dlrvbin=http://192.168.1.70:8000/rv.bin;
+    } else if (strcmp(key, "rvota") == 0) {
+      ets_printf("download rv.bin\n");
+      if (stm32Ota_firmwareDownload(val, STM32_FW_FILE_NAME)) {
+        if (stm32Bl_writeMemoryFromBinFile("/spiffs/rv.bin", 0x8000000)) {
+        } else {
+          ++error_count;
+        }
+      } else {
+        ++error_count;
+      }
     } else if (strcmp(key, "ota") == 0) {
       ets_printf("do ota update from given URL\n");
       ota_doUpdate(val);
@@ -158,6 +169,7 @@ process_parmMcu(clpar p[], int len) {
 
   }
 
+  so_output_message(error_count ? SO_STATUS_ERROR : SO_STATUS_OK, 0);
   cli_out_mcu_reply_entry(NULL, NULL, -1);
 
   return 0;

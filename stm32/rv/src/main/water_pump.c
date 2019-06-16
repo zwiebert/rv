@@ -10,6 +10,10 @@
 #include "mcp23017.h"
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/stm32/exti.h>
+#include "misc/int_macros.h"
+
 
 extern Mcp23017 relay_16;
 #define WP_RELAY_PIN 15  // on IO expander
@@ -48,8 +52,24 @@ static void wp_switchPcOutRelay(bool on) {
 	Mcp23017_putBit(&relay_16, WP_PCOUT_PIN, !on); // mains relay with NC contact
 }
 
+volatile static int Wp_is_press_control_unchanged;
+volatile static bool Wp_is_press_control;
+
 // test if PressControl wants to turn on the pump
 bool wp_isPressControlOn(void) {
+
+#if 1
+  return Wp_is_press_control;
+#elif 0
+  static bool state;
+  if (Wp_is_press_control_unchanged < 2) {
+    state = gpio_get(WP_PCIN_PORT, WP_PCIN_PIN) == 0;
+    ++Wp_is_press_control_unchanged;
+  }
+
+  return state;
+
+#else
 	static time_t last_pressed;
 	time_t now = time(0);
 	if (last_pressed + WP_PC_HOLD_TIME > now)
@@ -61,6 +81,7 @@ bool wp_isPressControlOn(void) {
 		last_pressed = now;
 
 	return result;
+#endif
 }
 
 // test if user has pressed the button to increase max-on-time or clear failure state
@@ -142,6 +163,39 @@ void wp_clearPcFailure(void) {
 	wp_switchPcOutRelay(OFF);
 }
 
+
+static void exti_setup(void)
+{
+
+
+    /* Enable AFIO clock. */
+    rcc_periph_clock_enable(RCC_AFIO);
+
+    /* Enable EXTI0 interrupt. */
+    nvic_enable_irq(NVIC_EXTI0_IRQ);
+
+    /* Configure the EXTI subsystem. */
+    exti_select_source(EXTI0, GPIOB);
+    exti_set_trigger(EXTI0, EXTI_TRIGGER_BOTH);
+    exti_enable_request(EXTI0);
+}
+
+void EXTI0_IRQHandler(void)
+{
+  Wp_is_press_control_unchanged = 0;
+    uint16_t exti_line_state = GPIOB_IDR;
+
+    if (GET_BIT(exti_line_state, 0)) {
+      Wp_is_press_control = false;
+    } else {
+      Wp_is_press_control = true;
+    }
+
+    exti_reset_request(EXTI0);
+}
+
+
+
 void wp_setup(void) {
 	wp_switchPump(OFF);
 	wp_switchPcOutRelay(OFF);
@@ -156,4 +210,7 @@ void wp_setup(void) {
  	gpio_set_mode(WP_UB_PORT, GPIO_MODE_INPUT, GPIO_CNF_INPUT_PULL_UPDOWN, WP_UB_PIN);
  	gpio_set(WP_UB_PORT, WP_UB_PIN); // pull up
 #endif
+
+ 	Wp_is_press_control =  gpio_get(WP_PCIN_PORT, WP_PCIN_PIN) == 0;
+ 	exti_setup();
 }

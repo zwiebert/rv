@@ -160,6 +160,15 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     so_print_startup_info();
     break;
 
+  case SO_STATUS_OK:
+    so_out_x_reply_entry_ss("status", "ok");
+    break;
+
+  case SO_STATUS_ERROR:
+    so_out_x_reply_entry_ss("status", "error");
+    break;
+
+
     /////////////////////////////////////////////////////////////////////////////////
   case SO_SEP_ENABLE:
     D(io_puts("sep enable\n"));

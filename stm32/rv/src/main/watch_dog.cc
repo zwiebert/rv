@@ -13,6 +13,7 @@
 
 #include "watch_dog.hh"
 #include "peri/uart.h"
+#include "report.h"
 
 static unsigned call_time, response_time;
 static unsigned missed_responses;

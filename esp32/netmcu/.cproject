@@ -236,6 +236,22 @@
                 <runAllBuilders>true</runAllBuilders>
                 			
             </target>
+            			
+            <target name="netmcu-esp32wlan" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>-s -j  esp32wlan</buildArguments>
+                				
+                <buildTarget/>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
             		
         </buildTargets>
         	

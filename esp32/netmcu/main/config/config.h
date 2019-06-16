@@ -21,7 +21,6 @@ enum verbosity {
 	vrbNone, vrb1, vrb2, vrb3, vrb4, vrbDebug
 };
 
-
 typedef struct {
 	enum verbosity app_verboseOutput;
 	char app_configPassword[16];

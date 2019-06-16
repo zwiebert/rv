@@ -24,6 +24,7 @@
 #include "peri/uart.h"
 #include "cli/cli.h"
 #include "app_cxx.h"
+#include "report.h"
 
 #include "../Libraries/tm1638/include/boards/dlb8.h"
 
@@ -253,7 +254,7 @@ void setup() {
 
 void app() {
 	setup();
-	puts("Hello");
+	report_event("mcu:started");
 
 	while (1) {
 		for (unsigned long i = 0; i < 4500; ++i) {
@@ -328,6 +329,7 @@ void loop(void) {
 	cxx_loop();
 
 	if (!i2c2_check()) {
+	    report_event("i2c:reset");
 		puts("I2C had crashed. Reset");
 	}
 }

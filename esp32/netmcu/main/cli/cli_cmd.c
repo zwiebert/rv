@@ -160,19 +160,6 @@ void cliCmd_waitForResponse() {
 #define STM32_STATUS "status "
 #define STM32_STATUS_LEN (sizeof (STM32_STATUS) - 1)
 
-bool cli_checkStm32CommandLine(const char *line) {
-  if (strncmp(line, STM32_STATUS, STM32_STATUS_LEN) == 0) {
-    unsigned valve_bits = 0, valve_mask = 0;
-    sscanf(line, "status valve-bits=%x valve-change-mask=%x;", &valve_bits, &valve_mask);
-    D(db_printf("valve_bits=%x, valve_mask=%x line=(%s)\n", valve_bits, valve_mask, line));
 
-    unsigned mask = valve_mask;
-    for (int i=0; mask; ++i, (mask >>= 1)) {
-      if (mask & 1) {
-        io_mqtt_publish_valve_status(i, GET_BIT(valve_bits, i));
-      }
-    }
-    return true;
-  }
-  return false;
-}
+
+

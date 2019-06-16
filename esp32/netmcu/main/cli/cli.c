@@ -310,6 +310,7 @@ struct {
         { "mcu", process_parmMcu, help_parmMcu },
 
         { "kvs", process_parmKvs, help_parmKvs },
+        { "status", process_parmStatus, help_None},
 #if 0
 { "send", process_parmSend, help_parmSend },
 
@@ -429,6 +430,16 @@ void ICACHE_FLASH_ATTR cli_loop(void) {
     cli_msg_ready();
     ready = true;
   }
+}
+
+bool cli_checkStm32CommandLine(char *line) {
+  char *terminator = &line[strlen(line)-1];
+  if (*terminator != ';') {
+    return false;
+  }
+  *terminator = '\0';
+  cli_process_cmdline(line);
+  return true;
 }
 
 #if TEST_MODULE_CLI

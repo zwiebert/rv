@@ -18,7 +18,7 @@
 #include <stdlib.h>
 
 #define USE_JSON
-#define USE_DLB8
+//#define USE_DLB8
 #define USE_WDG
 
 #define USE_BB
