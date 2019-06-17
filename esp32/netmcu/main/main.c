@@ -11,6 +11,7 @@
 #include "config/config.h"
 #include "main/rtc.h"
 #include "watch_dog.h"
+#include "stm32.h"
 
 
 void stm32_setup(void);
@@ -41,7 +42,9 @@ static int  es_io_getc(void) {
 
 void app_main(void)
 {
-
+#ifdef USE_SERIAL
+    stm32_setup();
+#endif
 	  esp_err_t err = nvs_flash_init();
 	  if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
 	    // NVS partition was truncated and needs to be erased
@@ -86,9 +89,7 @@ void app_main(void)
 #ifdef USE_LAN
     ethernet_setup();
 #endif
-#ifdef USE_SERIAL
-    stm32_setup();
-#endif
+
 #ifdef USE_NTP
   setup_ntp();
 #endif
@@ -115,6 +116,12 @@ void app_main(void)
 #endif
   rtc_setup();
 
+#if 0
+  esp_reset_reason_t rr = esp_reset_reason();
+  if (rr == ESP_RST_POWERON) {
+    stm32_reset(); // on power on reset STM32 because of undefined boot0 pin (add pull-down resistor)
+  }
+#endif
 
   while (1) {
 #ifdef USE_TCP
@@ -122,7 +129,7 @@ void app_main(void)
 #endif
     loop();
     vTaskDelay(25 / portTICK_PERIOD_MS);
-}
+  }
 
 }
 

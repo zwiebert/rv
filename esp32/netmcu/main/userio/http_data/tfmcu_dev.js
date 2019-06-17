@@ -6,6 +6,11 @@ var tfmcu_config = {};
 let config_fetched = false;
 const ZONE_COUNT = 14;
 
+const FW_UPD_STATE_NONE = 0;
+const FW_UPD_STATE_IN_PROGRESS = 1;
+const FW_UPD_STATE_DONE = 2;
+const FW_UPD_STATE_ERROR = -1;
+
 class AppState {
 
     constructor() {
@@ -18,6 +23,9 @@ class AppState {
 	this.mWaterPumpStatus = false;
 	this.mRainSensorStatus = false;
 	this.mStm32Time = "";
+
+	this.mStm32FwUpdState = FW_UPD_STATE_NONE;
+	this.mEsp32FwUpdState = FW_UPD_STATE_NONE;
     }
 
 
@@ -26,6 +34,29 @@ class AppState {
     getZoneTimerInterval(n) { return this.mZoneTimerIntervals[n]; }
     getZoneTimerDuration(n) { return this.mZoneTimerDurations[n]; }
 
+    setRvFwUpdState(state) {
+	this.mStm32FwUpdState = state;
+	this.updateHtml_fwUpd();
+    }
+
+    updateHtml_fwUpd() {
+	console.log("fwupd: ", this.mStm32FwUpdState);
+	let el = document.getElementById("id-rvFwUpdState");
+	switch (this.mStm32FwUpdState) {
+	case FW_UPD_STATE_NONE:
+	    el.innerHTML = "";
+	    break;
+	case FW_UPD_STATE_IN_PROGRESS:
+	    el.innerHTML = " ...firmware update in progress...";
+	    break;
+	case FW_UPD_STATE_DONE:
+	    el.innerHTML = " ...firmware update successfully done.";
+	    break;
+	case FW_UPD_STATE_ERROR:
+	    el.innerHTML = " ...firmware update FAILED.";
+	    break;   
+	}
+    }
     updateHtml_zoneTable() {
         for (let i=0; i < ZONE_COUNT; ++i) {
             let sfx = i.toString();
@@ -129,6 +160,15 @@ class AppState {
 		this.mZoneDescriptions[i] = (key in kvs) ? kvs[key] : "";
 	    }
 	    this.updateHtml_zoneTable();
+	}
+
+	if ("mcu" in obj) {
+	    let mcu = obj.mcu;
+	    if ("status" in mcu) {
+		if (this.mStm32FwUpdState == FW_UPD_STATE_IN_PROGRESS) {
+		    this.setRvFwUpdState((mcu.status == "ok") ? FW_UPD_STATE_DONE : FW_UPD_STATE_ERROR);
+		}
+	    }
 	}
     }
 
@@ -344,13 +384,14 @@ function rvFirmwareFlash() {
 function rvFirmwareOTA() {
     let fwUrl = document.getElementById("id-stm32FirmwareURL").value;
     // TODO: validate URL here
-    var netmcu = {to:"tfmcu"};
+    var netmcu = {to:"netmcu"};
     netmcu.mcu = {
 	rvota: fwUrl
     };
     let url = base+'/cmd.json';
     console.log("url: "+url);
     postData(url, netmcu);
+    app_state.setRvFwUpdState(FW_UPD_STATE_IN_PROGRESS);
 }
 
 function netFirmwareOTA() {
@@ -388,13 +429,25 @@ function writeHtml_timerTableDiv() {
 
 }
 
+function fetchVersions() {
+    var netmcu = {to:"netmcu"};
+    netmcu.cmd = {
+	"rv-version":"?"
+    };
+    
+    let url = base+'/cmd.json';
+    console.log("url: "+url);
+    postData(url, netmcu);
+}
+
 function onContentLoaded() {
     app_state = new AppState();
     app_state.load();
     app_state.fetchConfig();
     app_state.fetchZoneNames();
     app_state.fetchZoneData();
-
+    fetchVersions();
+    
     writeHtml_timerTableDiv();
 
     document.getElementById("zrlb").onclick = function() { app_state.fetchZoneNames(); app_state.fetchZoneData();}

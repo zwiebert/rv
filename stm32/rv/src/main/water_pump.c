@@ -13,7 +13,8 @@
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/stm32/exti.h>
 #include "misc/int_macros.h"
-
+#include "report.h"
+#include "real_time_clock.h"
 
 extern Mcp23017 relay_16;
 #define WP_RELAY_PIN 15  // on IO expander
@@ -44,7 +45,11 @@ static void delay_secs(unsigned secs) {
 
 // switch on/off main voltage of water pump
 static void wp_switchPumpRelay(bool on) {
-	Mcp23017_putBit(&relay_16, WP_RELAY_PIN, !on); // mains relay with NO contact
+  bool old_on = !Mcp23017_getBit(&relay_16, WP_RELAY_PIN, true);
+  Mcp23017_putBit(&relay_16, WP_RELAY_PIN, !on); // mains relay with NO contact
+  if (old_on != on) {
+    report_pump_status(on);
+  }
 }
 
 // switch on/off main voltage of PressControl
@@ -52,13 +57,46 @@ static void wp_switchPcOutRelay(bool on) {
 	Mcp23017_putBit(&relay_16, WP_PCOUT_PIN, !on); // mains relay with NC contact
 }
 
+#ifndef USE_PC_POLLING
+
 volatile static int Wp_is_press_control_unchanged;
 volatile static bool Wp_is_press_control;
+
+void EXTI0_IRQHandler(void)
+{
+  Wp_is_press_control_unchanged = 0;
+    uint16_t exti_line_state = GPIOB_IDR;
+
+    if (GET_BIT(exti_line_state, 0)) {
+      Wp_is_press_control = false;
+    } else {
+      Wp_is_press_control = true;
+    }
+
+    exti_reset_request(EXTI0);
+}
+
+static void exti_setup(void)
+{
+
+
+    /* Enable AFIO clock. */
+    rcc_periph_clock_enable(RCC_AFIO);
+
+    /* Enable EXTI0 interrupt. */
+    nvic_enable_irq(NVIC_EXTI0_IRQ);
+
+    /* Configure the EXTI subsystem. */
+    exti_select_source(EXTI0, GPIOB);
+    exti_set_trigger(EXTI0, EXTI_TRIGGER_BOTH);
+    exti_enable_request(EXTI0);
+}
+#endif
 
 // test if PressControl wants to turn on the pump
 bool wp_isPressControlOn(void) {
 
-#if 1
+#ifndef USE_PC_POLLING
   return Wp_is_press_control;
 #elif 0
   static bool state;
@@ -69,9 +107,27 @@ bool wp_isPressControlOn(void) {
 
   return state;
 
+#elif 1
+#define COUNTER 42
+  static int counter;
+  if (gpio_get(WP_PCIN_PORT, WP_PCIN_PIN)) {
+    if (counter < -COUNTER || --counter < (COUNTER >> 2)) {
+      return false;
+    } else {
+      return true;
+    }
+  } else {
+    if (counter > COUNTER || ++counter > COUNTER) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 #else
 	static time_t last_pressed;
-	time_t now = time(0);
+	time_t now = runTime();
+	if (now <= WP_PC_HOLD_TIME)
+	  return false; // after reset
 	if (last_pressed + WP_PC_HOLD_TIME > now)
 		return true;
 
@@ -87,7 +143,7 @@ bool wp_isPressControlOn(void) {
 // test if user has pressed the button to increase max-on-time or clear failure state
 bool wp_isUserButtonPressed(void) {
 	static time_t last_pressed;
-	time_t now = time(0);
+	time_t now = runTime();
 
 	if (last_pressed + WP_BUTTON_IGNORE_TIME > now)
 		return false;
@@ -107,8 +163,8 @@ bool wp_isPumpOn(void) {
 
 // get duration in seconds since the pump was last switched off
 time_t wp_getPumpOffDuration(void) {
-	if (!wp_isPumpOn() && last_off_time) { //XXX: remove test for current state?
-		return time(0) - last_off_time;
+	if (!wp_isPumpOn()) {
+		return runTime() - last_off_time;
 	}
 	return 0;
 }
@@ -116,8 +172,8 @@ time_t wp_getPumpOffDuration(void) {
 // get duration in seconds since the pump was last switched on
 time_t wp_getPumpOnDuration(void) {
   time_t result = 0;
-	if (wp_isPumpOn() && last_on_time) { //XXX: remove test for current state?
-	  result = time(0) - last_on_time;
+	if (wp_isPumpOn()) {
+	  result = runTime() - last_on_time;
 	}
 	return result;
 }
@@ -128,9 +184,9 @@ void wp_switchPump(bool on) {
 		on = OFF; // force pump off if error
 
 	if (on && !wp_isPumpOn())
-		last_on_time = time(0);
+		last_on_time = runTime();
 	else if (!on && wp_isPumpOn())
-		last_off_time = time(0);
+		last_off_time = runTime();
 
 	wp_switchPumpRelay(on);
 }
@@ -164,35 +220,8 @@ void wp_clearPcFailure(void) {
 }
 
 
-static void exti_setup(void)
-{
 
 
-    /* Enable AFIO clock. */
-    rcc_periph_clock_enable(RCC_AFIO);
-
-    /* Enable EXTI0 interrupt. */
-    nvic_enable_irq(NVIC_EXTI0_IRQ);
-
-    /* Configure the EXTI subsystem. */
-    exti_select_source(EXTI0, GPIOB);
-    exti_set_trigger(EXTI0, EXTI_TRIGGER_BOTH);
-    exti_enable_request(EXTI0);
-}
-
-void EXTI0_IRQHandler(void)
-{
-  Wp_is_press_control_unchanged = 0;
-    uint16_t exti_line_state = GPIOB_IDR;
-
-    if (GET_BIT(exti_line_state, 0)) {
-      Wp_is_press_control = false;
-    } else {
-      Wp_is_press_control = true;
-    }
-
-    exti_reset_request(EXTI0);
-}
 
 
 
@@ -211,6 +240,8 @@ void wp_setup(void) {
  	gpio_set(WP_UB_PORT, WP_UB_PIN); // pull up
 #endif
 
+#ifndef USE_PC_POLLING
  	Wp_is_press_control =  gpio_get(WP_PCIN_PORT, WP_PCIN_PIN) == 0;
  	exti_setup();
+#endif
 }

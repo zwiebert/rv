@@ -60,6 +60,14 @@ void io_mqtt_publish_rain_sensor_status(bool state) {
   io_mqtt_publish(topic, state ? "1" : "0");
 }
 
+void io_mqtt_publish_pump_status(bool state) {
+  char topic[64]; //, data[16];
+
+  snprintf(topic, 64, "%s/pump", TOPIC_STATUS);
+
+  io_mqtt_publish(topic, state ? "1" : "0");
+}
+
 void io_mqtt_publish_stm32_event(const char *event) {
   char topic[64]; //, data[16];
 

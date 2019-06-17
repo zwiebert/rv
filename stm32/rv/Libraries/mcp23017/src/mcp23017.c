@@ -179,7 +179,8 @@ uint16_t Mcp23017_getBits(Mcp23017 *obj, uint16_t bitMask, bool cached) {
 	if (!cached) {
 
 	}
-	return obj->mRegs[GPIO] & bitMask;
+	return (obj->mRegs[IODIR] & obj->mRegs[GPIO]) | (~obj->mRegs[IODIR] & obj->mRegs[OLAT]) & bitMask;
+	//return obj->mRegs[OLAT] & bitMask; // XXX FIXME
 }
 
 bool Mcp23017_forceWrite(Mcp23017 *obj) {

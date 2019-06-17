@@ -21,7 +21,7 @@ extern Mcp23017 relay_16;
 
 
  // mask of relays used for valves
-#define VALVE_RELAY_MASK (0x0f >> (16 - VALVE_TIMER_COUNT))
+#define VALVE_RELAY_MASK (0xffff >> (16 - VALVE_TIMER_COUNT))
 
  uint16_t valveRelay_getActiveValves();
 

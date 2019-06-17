@@ -46,8 +46,11 @@ const char help_parmCmd[]  =
 
 #define KEY_STATUS_PREFIX "status"
 #define KEY_STATUS_PREFIX_LEN ((sizeof KEY_STATUS_PREFIX) - 1)
-#define CMD_ASK_STATUS " status=?;"
+#define CMD_ASK_STATUS " status=?"
 #define CMD_ASK_STATUS_LEN (sizeof CMD_ASK_STATUS - 1)
+
+#define RV_VERSION "rv-version"
+#define CMD_ASK_VERSION " version=?"
 
 #define BUF_SIZE 128
 #define ZONE_COUNT 14
@@ -60,7 +63,7 @@ process_parmCmd(clpar p[], int len) {
   int buf_idx = sizeof(buf);
 
   bool hasCmdLine = false;
-  bool reqResponse = false, reqDurations = false, reqRemainingTimes = false;
+  bool reqResponse = false, reqDurations = false, reqRemainingTimes = false, reqVersion = false;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -72,6 +75,12 @@ process_parmCmd(clpar p[], int len) {
     } else if (strcmp(key, "dur") == 0 && *val == '?') {
       strcat(buf, CMD_ASK_DURATIONS);
       reqResponse = true;
+      hasCmdLine = true;
+
+    } else if (strcmp(key, RV_VERSION) == 0 && *val == '?') {
+      strcat(buf, CMD_ASK_VERSION);
+      reqResponse = true;
+      reqVersion = true;
       hasCmdLine = true;
 
     } else if (strcmp(key, "rem") == 0 && *val == '?') {

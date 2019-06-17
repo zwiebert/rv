@@ -9,6 +9,6 @@
 #include <valve_relays.h>
 
  uint16_t valveRelay_getActiveValves() {
-	 uint16_t result = Mcp23017_getBits(&relay_16, VALVE_RELAY_MASK, true);
+	 uint16_t result = VALVE_RELAY_MASK & ~Mcp23017_getBits(&relay_16, VALVE_RELAY_MASK, true);
 	 return result;
  }

@@ -121,6 +121,7 @@ struct {
 } parm_handlers[] = {
         { "config", process_parmConfig, 0 },
         { "cmd", process_parmCmd, 0 },
+        { "mcu", process_parmMcu, 0 },
   };
 
 int ICACHE_FLASH_ATTR

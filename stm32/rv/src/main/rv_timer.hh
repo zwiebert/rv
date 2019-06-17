@@ -38,7 +38,8 @@ public:
     int mDaysInterval = 0, mTodSpanBegin = 0, mTodSpanEnd = 0;
     int mIgnoreRainSensor = false;
     char *toJSON(char *buf, int buf_size) {
-      if (0 <= snprintf(buf, buf_size, "{\"don\":%d,\"doff\":%d,\"reps\":%d,\"per\":%d,\"di\":%d,\"sb\":%d,\"se\":%d}", on_duration, off_duration, repeats, period,
+      if (0 <= snprintf(buf, buf_size, "{\"d1\":%d,\"ir\":%d,\"d0\":%d,\"r\":%d,\"per\":%d,\"di\":%d,\"sb\":%d,\"se\":%d}",
+          on_duration, mIgnoreRainSensor, off_duration, repeats, period,
           mDaysInterval, mTodSpanBegin, mTodSpanEnd))
         return buf;
 
@@ -155,36 +156,8 @@ public:
     mNextRun = time(0);
   }
 
-  void stop() {
-    mIsRunning = false;
-    time_t now = time(0);
-    mNextOnOff = 0;
-    if (mIsOn) {
-      switch_valve(false);
-      mIsOn = false;
-      mLastRun = now;
-    }
+  void stop();
 
-    mNextRun = 0;
-
-    time_t nextPeriod = mArgs.period ? now + mArgs.period : 0;
-    if (nextPeriod)
-      mNextRun = nextPeriod;
-
-    if (mArgs.mDaysInterval) {
-      struct tm *tm = localtime(&now);
-      tm->tm_hour = mArgs.mTodSpanBegin / ONE_HOUR;
-      tm->tm_min = (mArgs.mTodSpanBegin % ONE_HOUR) / ONE_MINUTE;
-      tm->tm_sec = (mArgs.mTodSpanBegin % ONE_MINUTE);
-      time_t beginToday = mktime(tm);
-
-      time_t nextDay = mArgs.mDaysInterval ? beginToday + mArgs.mDaysInterval * ONE_DAY : 0;
-
-      if (nextDay && (!mNextRun || nextDay < mNextRun))
-        mNextRun = nextDay;
-    }
-
-  }
   void pause();
 
   int get_duration() {
@@ -254,24 +227,7 @@ public:
     return mIsRunning && !mIsOn;
   }
 
-  void changeOnOff() {
-    if (mIsOn) {
-      ++mDoneOn;
-      if (mDoneOn >= mArgs.repeats) {
-        mNextOnOff = 0;
-        stop();
-        return;
-      }
-    }
-
-    mIsOn = !mIsOn;
-    switch_valve(mIsOn);
-    if (mIsOn && mArgs.on_duration) {
-      mNextOnOff = time(0) + mArgs.on_duration;
-    } else if (!mIsOn && mArgs.off_duration) {
-      mNextOnOff = time(0) + mArgs.off_duration;
-    }
-  }
+  void changeOnOff();
 
   bool checkState() {
     if (isReadyToRun())

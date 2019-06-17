@@ -32,6 +32,8 @@ extern "C" void timer_set(int8_t channel);
 #define JSON_SUFFIX "}};\n"
 #define JSON_SUFFIX_LEN ((sizeof JSON_SUFFIX) - 1)
 
+#define KEY_VERSION "version"
+
 #define BUF_SIZE 2048
 
 const char help_parmCmd[] = "zone=[0-13]      zone number\n"
@@ -47,7 +49,7 @@ process_parmCmd(clpar p[], int len) {
   *buf = '\0';
 
   bool wantsDurations = false, wantsRemainingTimes = false, wantsReply = false, hasDuration = false, wantsRelayPump = false, wantsRelayPC = false,
-      wantsRainSensor = false, wantsTime = false, wantsTimers = false, wantsPumpRunTime = false;
+      wantsRainSensor = false, wantsTime = false, wantsTimers = false, wantsPumpRunTime = false, wantsVersion = false;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -77,6 +79,9 @@ process_parmCmd(clpar p[], int len) {
         rvt.set(channel, duration, timer_number)->scheduleRun();
         hasDuration = true;
       }
+
+    } else if (strcmp(key, KEY_VERSION) == 0 && *val == '?') {
+      wantsReply = wantsVersion = true;
 
     } else {
       warning_unknown_option(key);
@@ -138,6 +143,10 @@ process_parmCmd(clpar p[], int len) {
       struct tm t;
       localtime_r(&timer, &t);
       strftime(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"time\":\"%FT%H:%M:%S\",", &t);
+    }
+
+    if (wantsVersion) {
+      snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"version\":\"%s\",", VERSION);
     }
 
     if (*buf)
