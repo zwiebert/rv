@@ -259,6 +259,7 @@ void setup() {
 void app() {
 	setup();
 	report_event("mcu:started");
+    wp_clearPcFailure(); //
 
 	while (1) {
 		for (unsigned long i = 0; i < 4500; ++i) {
