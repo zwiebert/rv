@@ -25,6 +25,7 @@
 #include "cli/cli.h"
 #include "app_cxx.h"
 #include "report.h"
+#include "systick_1ms.h"
 
 #include "../Libraries/tm1638/include/boards/dlb8.h"
 
@@ -246,6 +247,7 @@ void ioExtender_setup(bool re_init) {
 void setup() {
     setenv("TZ","CET-2", 1); //XXX
 	clock_setup();
+	systick_setup();
 	uart_setup();
 	i2c2_setup();
 	led_setup();
