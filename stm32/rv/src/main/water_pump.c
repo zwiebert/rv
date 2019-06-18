@@ -109,17 +109,23 @@ bool wp_isPressControlOn(void) {
 
 #elif 1
 #define COUNTER 42
-  static int counter;
-  if (gpio_get(WP_PCIN_PORT, WP_PCIN_PIN)) {
-    if (counter < -COUNTER || --counter < (COUNTER >> 2)) {
+  static int counter, is_on;
+  if (gpio_get(WP_PCIN_PORT, WP_PCIN_PIN)) { // PC signals "off"
+    if (counter < -COUNTER || --counter < COUNTER || (is_on && counter < 0)) {
+      counter = -COUNTER;
+      is_on = false;
       return false;
     } else {
+      is_on = true;
       return true;
     }
-  } else {
-    if (counter > COUNTER || ++counter > COUNTER) {
+  } else { // PC signals "on"
+    if (counter > COUNTER || ++counter > COUNTER || (!is_on && counter > 0)) {
+      counter = +COUNTER;
+      is_on = true;
       return true;
     } else {
+      is_on = false;
       return false;
     }
   }
