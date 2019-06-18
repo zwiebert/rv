@@ -7,13 +7,32 @@
 
 #include <valve_relays.h>
 #include "water_pump_logic.h"
+#include "real_time_clock.h"
 #include "report.h"
 
 static time_t wpl_max_on_time = WPL_MAX_ON_TIME_SHORT;
 #define WPL_RESET_MAX_ON_TIME_AFTER (ONE_HOUR)
 
-static bool hasPumpRunTooLong() {
+#define VALVE_ACTIVE_DELAY 20
+static bool areValvesActive() {
+  static time_t last_time;
+  time_t now = runTime();
+
   if (valveRelay_getActiveValves()) {
+    last_time = now;
+    return true;
+  }
+
+  if (last_time + VALVE_ACTIVE_DELAY > now) {
+    return true;
+  }
+
+  return false;
+
+}
+
+static bool hasPumpRunTooLong() {
+  if (areValvesActive()) {
     if (wp_getPumpOnDuration() > WPL_MAX_ON_TIME_LONG) {
       return true;
     }
