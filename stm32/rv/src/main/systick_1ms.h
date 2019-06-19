@@ -14,7 +14,9 @@
 extern "C" {
 #endif
 
-uint64_t runTimeMs(void);
+uint64_t ms_runTime(void);
+bool ms_timeElapsed(uint64_t *last, int diff);
+
 void systick_setup(void);
 
 #ifdef __cplusplus

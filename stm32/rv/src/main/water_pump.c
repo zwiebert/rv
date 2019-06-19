@@ -15,6 +15,7 @@
 #include "misc/int_macros.h"
 #include "report.h"
 #include "real_time_clock.h"
+#include "systick_1ms.h"
 
 extern Mcp23017 relay_16;
 #define WP_RELAY_PIN 15  // on IO expander
@@ -94,7 +95,7 @@ static void exti_setup(void)
 #endif
 
 // test if PressControl wants to turn on the pump
-bool wp_isPressControlOn(void) {
+bool wp_isPressControlOn(bool *has_changed) {
 
 #ifndef USE_PC_POLLING
   return Wp_is_press_control;
@@ -108,41 +109,26 @@ bool wp_isPressControlOn(void) {
   return state;
 
 #elif 1
-#define COUNTER 42
-  static int counter, is_on;
-  if (gpio_get(WP_PCIN_PORT, WP_PCIN_PIN)) { // PC signals "off"
-    if (counter < -COUNTER || --counter < COUNTER || (is_on && counter < 0)) {
-      counter = -COUNTER;
-      is_on = false;
-      return false;
-    } else {
-      is_on = true;
-      return true;
-    }
-  } else { // PC signals "on"
-    if (counter > COUNTER || ++counter > COUNTER || (!is_on && counter > 0)) {
-      counter = +COUNTER;
-      is_on = true;
-      return true;
-    } else {
-      is_on = false;
-      return false;
-    }
+  static uint64_t last_change;
+  static bool is_on, want_change;
+  bool hasChanged = false;
+#define PC_DELAY_MS 250
+  bool sample_on = !gpio_get(WP_PCIN_PORT, WP_PCIN_PIN);
+  if (is_on == sample_on) {
+    want_change = false;
+  } else if (!want_change) {
+    want_change = true;
+    last_change = ms_runTime();
+  } else if (ms_timeElapsed(&last_change, PC_DELAY_MS)) {
+    is_on = sample_on;
+    want_change = false;
+    hasChanged = true;
   }
-#else
-	static time_t last_pressed;
-	time_t now = runTime();
-	if (now <= WP_PC_HOLD_TIME)
-	  return false; // after reset
-	if (last_pressed + WP_PC_HOLD_TIME > now)
-		return true;
 
-	bool result = gpio_get(WP_PCIN_PORT, WP_PCIN_PIN) == 0;
-
-	if (result)
-		last_pressed = now;
-
-	return result;
+  if (has_changed) {
+    *has_changed = hasChanged;
+  }
+  return is_on;
 #endif
 }
 

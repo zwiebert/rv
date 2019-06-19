@@ -65,7 +65,7 @@ static bool checkForError() {
 }
 
 static void ifPumpOn() {
-  if (!wp_isPressControlOn()) {
+  if (!wp_isPressControlOn(0)) {
     wp_switchPump(false);
   } else if (hasPumpRunTooLong()) {
     wp_setError(WP_ERR_MAX_ON_TIME);
@@ -88,7 +88,7 @@ static void checkRustProtection() {
 static void ifPumpOff() {
   checkResetMaxOnTime();
 
-  if (wp_isPressControlOn()) {
+  if (wp_isPressControlOn(0)) {
     wp_switchPump(true);
   } else {
     checkRustProtection();

@@ -118,7 +118,7 @@ process_parmCmd(clpar p[], int len) {
 
     }
 
-    if (wantsRelayPC && wp_isPressControlOn()) {
+    if (wantsRelayPC && wp_isPressControlOn(0)) {
       strcat(buf, "\"pc\":1,");
     }
 

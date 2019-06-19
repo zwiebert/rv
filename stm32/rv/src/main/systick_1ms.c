@@ -15,8 +15,17 @@
 
 volatile uint64_t run_time_ms;
 
-uint64_t runTimeMs(void) {
+uint64_t ms_runTime(void) {
   return run_time_ms;
+}
+
+bool ms_timeElapsed(uint64_t *last, int diff) {
+  uint64_t now = run_time_ms;
+  if (*last + diff >= now)
+    return false;
+
+  *last = now;
+  return true;
 }
 
 void SysTick_Handler(void)

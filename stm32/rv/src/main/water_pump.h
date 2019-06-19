@@ -20,7 +20,7 @@ extern "C" {
 #endif
 
 // test if PressControl wants to turn on the pump
-bool wp_isPressControlOn(void);
+bool wp_isPressControlOn(bool *has_changed);
 
 // test if user has pressed the button to increase max-on-time or clear failure state
 bool wp_isUserButtonPressed(void);
