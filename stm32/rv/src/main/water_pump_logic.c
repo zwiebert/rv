@@ -43,14 +43,15 @@ static bool hasPumpRunTooLong() {
 }
 
 static void checkUserButton() {
-  if (wp_isUserButtonPressed()) {
+  bool hasChanged = false;
+  if (wp_isUserButtonPressed(&hasChanged) && hasChanged) {
     wpl_increaseMaxOnTime();
   }
 }
 
 static bool checkForError() {
   if (wp_getError() != WP_ERR_NONE) {
-    if (wp_isUserButtonPressed()) {
+    if (wp_isUserButtonPressed(0)) {
       if (wp_getError() == WP_ERR_MAX_ON_TIME)
         wpl_increaseMaxOnTime();
 
@@ -75,6 +76,7 @@ static void ifPumpOn() {
 
 static void checkResetMaxOnTime() {
   if (wpl_max_on_time != WPL_MAX_ON_TIME_SHORT && wp_getPumpOffDuration() > WPL_RESET_MAX_ON_TIME_AFTER) {
+    report_event("wp:max_on_time:change_to_short");
     wpl_max_on_time = WPL_MAX_ON_TIME_SHORT;
   }
 }
@@ -96,6 +98,7 @@ static void ifPumpOff() {
 }
 
 void wpl_loop(void) {
+  wp_loop();
 
   if (checkForError())
     return;
@@ -115,5 +118,8 @@ time_t wpl_getMaxOnTime(void) {
 }
 
 void wpl_increaseMaxOnTime(void) {
+  if (wpl_max_on_time != WPL_MAX_ON_TIME_LONG) {
+    report_event("wp:max_on_time:change_to_long");
+  }
   wpl_max_on_time = WPL_MAX_ON_TIME_LONG;
 }

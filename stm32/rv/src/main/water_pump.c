@@ -36,6 +36,8 @@ extern Mcp23017 relay_16;
 static time_t last_on_time, last_off_time;
 static wp_err_T wp_error;
 
+static bool wp_pc_sample, wp_ub_sample;
+
 // busy-loop wait for N seconds
 static void delay_secs(unsigned secs) {
 	while (secs--)
@@ -113,7 +115,7 @@ bool wp_isPressControlOn(bool *has_changed) {
   static bool is_on, want_change;
   bool hasChanged = false;
 #define PC_DELAY_MS 250
-  bool sample_on = !gpio_get(WP_PCIN_PORT, WP_PCIN_PIN);
+  bool sample_on = !wp_pc_sample;
   if (is_on == sample_on) {
     want_change = false;
   } else if (!want_change) {
@@ -133,7 +135,8 @@ bool wp_isPressControlOn(bool *has_changed) {
 }
 
 // test if user has pressed the button to increase max-on-time or clear failure state
-bool wp_isUserButtonPressed(void) {
+bool wp_isUserButtonPressed(bool *has_changed) {
+#if 0
 	static time_t last_pressed;
 	time_t now = runTime();
 
@@ -146,6 +149,28 @@ bool wp_isUserButtonPressed(void) {
 		last_pressed = now;
 
 	return result;
+#else
+	  static uint64_t last_change;
+	  static bool is_on, want_change;
+	  bool hasChanged = false;
+	#define PC_DELAY_MS 250
+	  bool sample_on = !wp_ub_sample;
+	  if (is_on == sample_on) {
+	    want_change = false;
+	  } else if (!want_change) {
+	    want_change = true;
+	    last_change = ms_runTime();
+	  } else if (ms_timeElapsed(&last_change, PC_DELAY_MS)) {
+	    is_on = sample_on;
+	    want_change = false;
+	    hasChanged = true;
+	  }
+
+	  if (has_changed) {
+	    *has_changed = hasChanged;
+	  }
+	  return is_on;
+#endif
 }
 
 // test if pump is currently running
@@ -212,7 +237,14 @@ void wp_clearPcFailure(void) {
 }
 
 
-
+void wp_loop(void) {
+#if (WP_PCIN_PORT != WP_UB_PORT)
+#error "pins needs to be on the same port for this function to work"
+#endif
+  uint16_t portSample = gpio_get(WP_PCIN_PORT, WP_PCIN_PIN | WP_UB_PIN);
+  wp_pc_sample = (portSample & WP_PCIN_PIN) != 0;
+  wp_ub_sample = (portSample & WP_UB_PIN) != 0;
+}
 
 
 

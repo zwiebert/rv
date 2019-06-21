@@ -23,7 +23,7 @@ extern "C" {
 bool wp_isPressControlOn(bool *has_changed);
 
 // test if user has pressed the button to increase max-on-time or clear failure state
-bool wp_isUserButtonPressed(void);
+bool wp_isUserButtonPressed(bool *has_changed);
 
 // test if pump is currently running
 bool wp_isPumpOn(void);
@@ -52,6 +52,7 @@ void wp_setError(wp_err_T error);
 wp_err_T wp_getError(void);
 
 
+void wp_loop(void);
 void wp_setup(void);
 
 #ifdef __cplusplus
