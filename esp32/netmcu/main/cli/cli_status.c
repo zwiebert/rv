@@ -20,7 +20,7 @@
 #include "misc/int_macros.h"
 #include <stdio.h>
 
-#include <stm32.h>
+#include <stm32/stm32.h>
 
 #define D(x) x
 

@@ -7,7 +7,7 @@
 # please read the ESP-IDF documents if you need to do this.
 #
 COMPONENT_PRIV_INCLUDEDIRS = .
-COMPONENT_SRCDIRS+= ./userio ./config ./userio/http_data ./cli ./main ./misc
+COMPONENT_SRCDIRS+= ./userio ./config ./userio/http_data ./cli ./main ./misc ./stm32
 
 COMPONENT_EMBED_TXTFILES := howsmyssl_com_root_cert.pem ca_cert.pem
 

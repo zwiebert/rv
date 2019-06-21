@@ -7,9 +7,9 @@
 #include "userio/status_output.h"
 #include "main/rtc.h"
 #include "cli_imp.h"
-#include "stm32.h"
-#include "stm32_bl.h"
-#include "stm32_ota.h"
+#include "stm32/stm32.h"
+#include "stm32/stm32_bl.h"
+#include "stm32/stm32_ota.h"
 #include "ota.h"
 #include "http_client.h"
 

@@ -11,7 +11,7 @@
 #include "config/config.h"
 #include "main/rtc.h"
 #include "watch_dog.h"
-#include "stm32.h"
+#include "stm32/stm32.h"
 
 
 void stm32_setup(void);

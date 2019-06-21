@@ -22,8 +22,8 @@
 #include "user_config.h"
 
 
-#include "stm32.h"
-#include "stm32_bl.h"
+#include "stm32/stm32.h"
+#include "stm32/stm32_bl.h"
 #include "misc/int_macros.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
