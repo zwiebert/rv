@@ -7,7 +7,6 @@
    CONDITIONS OF ANY KIND, either express or implied.
 */
 #include "user_config.h"
-#ifdef USE_LAN
 
 #ifdef OLIMEX_ESP32_POE
 
@@ -33,6 +32,16 @@
 #define CONFIG_PHY_SMI_MDIO_PIN 18
 #define CONFIG_PARTITION_TABLE_SINGLE_APP 1
 
+#else // values to make it compile
+#define CONFIG_PHY_LAN8720 1
+#define CONFIG_PHY_ADDRESS 0
+#define CONFIG_PHY_CLOCK_GPIO17_OUT 1
+#define CONFIG_PHY_CLOCK_MODE 3
+#define CONFIG_PHY_USE_POWER_PIN 1
+#define CONFIG_PHY_POWER_PIN 12
+#define CONFIG_PHY_SMI_MDC_PIN 23
+#define CONFIG_PHY_SMI_MDIO_PIN 18
+#define CONFIG_PARTITION_TABLE_SINGLE_APP 1
 #endif
 
 #if CONFIG_PHY_LAN8720
@@ -63,7 +72,6 @@
 
 #include "userio/ipnet.h"
 
-static ip4_addr_t ip4_address;
 volatile static bool ethernet_connected;
 volatile static bool ethernet_disconnected;
 
@@ -167,6 +175,9 @@ static void got_ip_event_handler(void* arg, esp_event_base_t event_base,
     ESP_LOGI(TAG, "~~~~~~~~~~~");
 
     ip4_address = ip_info->ip;
+    ip4_gateway_address = ip_info->gw;
+    ip4_netmask = ip_info->netmask;
+
     ethernet_disconnected = false;
     ethernet_connected = true;
 }
@@ -177,6 +188,7 @@ void ethernet_setup() {
     config.gpio_config = eth_gpio_config_rmii;
     config.tcpip_input = tcpip_adapter_eth_input;
     config.clock_mode = CONFIG_PHY_CLOCK_MODE;
+    config.flow_ctrl_enable = false; // XXX
 #ifdef CONFIG_PHY_USE_POWER_PIN
     /* Replace the default 'power enable' function with an example-specific one
      that toggles a power GPIO. */
@@ -199,35 +211,6 @@ void ethernet_loop() {
   }
 }
 
-void
-ethernet_ipnet_addr_as_string(char *buf, unsigned buf_len) {
-  ip4addr_ntoa_r(&ip4_address, buf, buf_len);
-}
 
-#if 0
-void app_main()
-{
-    tcpip_adapter_init();
 
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-
-    eth_config_t config = DEFAULT_ETHERNET_PHY_CONFIG;
-    config.phy_addr = CONFIG_PHY_ADDRESS;
-    config.gpio_config = eth_gpio_config_rmii;
-    config.tcpip_input = tcpip_adapter_eth_input;
-    config.clock_mode = CONFIG_PHY_CLOCK_MODE;
-#ifdef CONFIG_PHY_USE_POWER_PIN
-    /* Replace the default 'power enable' function with an example-specific one
-     that toggles a power GPIO. */
-    config.phy_power_enable = phy_device_power_enable_via_gpio;
-#endif
-
-    ESP_ERROR_CHECK(esp_eth_init(&config));
-    ESP_ERROR_CHECK(esp_event_handler_register(ETH_EVENT, ESP_EVENT_ANY_ID, &eth_event_handler, NULL));
-    ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_ETH_GOT_IP, &got_ip_event_handler, NULL));
-    ESP_ERROR_CHECK(esp_eth_enable()) ;
-}
-#endif
-
-#endif // USE_LAN
 

@@ -12,7 +12,10 @@
 #include "main/rtc.h"
 #include "watch_dog.h"
 #include "stm32/stm32.h"
+#include "kvstore.h"
 
+#define KEY_BOOT_COUNTER "BOOT_CT"
+int32_t boot_counter;
 
 void stm32_setup(void);
 void ethernet_setup(void);
@@ -122,6 +125,10 @@ void app_main(void)
     stm32_reset(); // on power on reset STM32 because of undefined boot0 pin (add pull-down resistor)
   }
 #endif
+
+  if (kvs_get_int32(KEY_BOOT_COUNTER, &boot_counter) &&  kvs_store_int32(KEY_BOOT_COUNTER, ++boot_counter)) {
+
+  }
 
   while (1) {
 #ifdef USE_TCP

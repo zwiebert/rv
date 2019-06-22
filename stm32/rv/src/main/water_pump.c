@@ -16,6 +16,7 @@
 #include "report.h"
 #include "real_time_clock.h"
 #include "systick_1ms.h"
+#include "assert.h"
 
 extern Mcp23017 relay_16;
 #define WP_RELAY_PIN 15  // on IO expander
@@ -48,11 +49,14 @@ static void delay_secs(unsigned secs) {
 
 // switch on/off main voltage of water pump
 static void wp_switchPumpRelay(bool on) {
-  bool old_on = !Mcp23017_getBit(&relay_16, WP_RELAY_PIN, true);
+  static bool old_on;
+  //bool old_on = !Mcp23017_getBit(&relay_16, WP_RELAY_PIN, true);
   Mcp23017_putBit(&relay_16, WP_RELAY_PIN, !on); // mains relay with NO contact
   if (old_on != on) {
+    old_on = on;
     report_pump_status(on);
   }
+  assert(on == !Mcp23017_getBit(&relay_16, WP_RELAY_PIN, true));
 }
 
 // switch on/off main voltage of PressControl

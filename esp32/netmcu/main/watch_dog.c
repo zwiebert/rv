@@ -11,6 +11,10 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"
+#include "gw_ping.h"
+#include "debug/debug.h"
+
+#define D(x)
 
 int missing_call_count;
 time_t last_call_time;
@@ -30,16 +34,24 @@ bool watchDog_checkCommandLine(const char *cmdLine) {
 }
 
 void watchDog_loop() {
-    if (last_call_time + MAX_CALL_INTERVAL <= time(0) ) {
-        last_call_time = time(0);
+  time_t now = time(0);
+    if ((last_call_time + MAX_CALL_INTERVAL) <= now ) {
+        last_call_time = now; // missed call from STM32
         if (stm32_isFirmwareRunning() && MAX_MISSING_CALLS < ++missing_call_count) {
            stm32_runFirmware();
            missing_call_count = 0;
         }
     }
 
+#define PING_INTERVAL 10
+  static time_t last_ping_time;
+  if ((last_ping_time + PING_INTERVAL) <= now) {
+    last_ping_time = now;
+    ping_loop();
+  }
 }
 
 void watchDog_setup() {
+  ping_setup();
 
 }

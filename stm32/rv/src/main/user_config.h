@@ -21,7 +21,7 @@
 //#define USE_DLB8
 #define USE_WDG
 
-//#define USE_BB // use internal pull-up resistors when on bread-board
+#define USE_BB // use internal pull-up resistors when on bread-board
 
 #define USE_PC_POLLING
 

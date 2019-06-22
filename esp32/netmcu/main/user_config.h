@@ -10,24 +10,9 @@
 
 #define MCU_ESP32
 
-//#define BB // breadboard
-
-#ifdef BOARD_ESP32WLAN
-#define USE_WLAN
-#define BB
-#elif defined BOARD_ESP32POE
-#define OLIMEX_ESP32_POE
-#define USE_LAN
-#define DISTRIBUTION 1
-#elif defined BOARD_ESP32GATEWAY
-#define OLIMEX_ESP32_GATEWAY
-#define USE_LAN
-#define DISTRIBUTION 1
-#else
-#error // no board defined
-#endif
-
 #define USE_HTTP
+#define USE_LAN
+#define USE_WLAN
 #define USE_NTP
 #define USE_JSON
 #define USE_MQTT
@@ -39,6 +24,22 @@
 #define USE_FS
 #define USE_HTTP_CLIENT
 #define USE_OTA
+
+
+#ifdef BOARD_ESP32WLAN
+#undef USE_LAN
+#elif defined BOARD_ESP32POE
+#undef USE_WLAN
+#define OLIMEX_ESP32_POE
+#define DISTRIBUTION 1
+#elif defined BOARD_ESP32GATEWAY
+#undef USE_WLAN
+#define OLIMEX_ESP32_GATEWAY
+#define DISTRIBUTION 1
+#else
+#error // no board defined
+#endif
+
 
 
 #define STM32_RESET_PIN  (GPIO_NUM_33)

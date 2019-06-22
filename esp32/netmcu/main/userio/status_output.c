@@ -118,19 +118,26 @@ void so_out_x_reply_entry_ss(const char *key, const char *val) {
   if (so_cco) cli_out_x_reply_entry2(key, val);
   if (so_jco) so_json_x_reply(key, val, false);
 }
-
-void so_out_x_reply_entry_d(so_msg_t key, int val) {
+void so_out_x_reply_entry_sd(const char *key, int val) {
   char buf[20];
   itoa(val, buf, 10);
-  if (so_cco) cli_out_x_reply_entry2(gk(key), buf);
-  if (so_jco) so_json_x_reply(gk(key), buf, true);
+  if (so_cco) cli_out_x_reply_entry2(key, buf);
+  if (so_jco) so_json_x_reply(key, buf, true);
+}
+
+void so_out_x_reply_entry_sl(const char *key, int val) {
+  char buf[20];
+  ltoa(val, buf, 10);
+  if (so_cco) cli_out_x_reply_entry2(key, buf);
+  if (so_jco) so_json_x_reply(key, buf, true);
+}
+
+void so_out_x_reply_entry_d(so_msg_t key, int val) {
+  so_out_x_reply_entry_sd(gk(key), val);
 }
 
 void so_out_x_reply_entry_l(so_msg_t key, int val) {
-  char buf[20];
-  ltoa(val, buf, 10);
-  if (so_cco) cli_out_x_reply_entry2(gk(key), buf);
-  if (so_jco) so_json_x_reply(gk(key), buf, true);
+  so_out_x_reply_entry_sl(gk(key), val);
 }
 
 void so_out_x_reply_entry_lx(so_msg_t key, int val) {
@@ -170,6 +177,12 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
 
   case SO_MCU_begin: {
     so_out_set_tag("mcu");
+  }
+    break;
+
+  case SO_MCU_BOOT_COUNT: {
+    extern int32_t boot_counter;
+    so_out_x_reply_entry_sl("boot-count", boot_counter);
   }
     break;
 
@@ -248,9 +261,6 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   }
     break;
 
-  case SO_CFG_BAUD:
-    so_out_x_reply_entry_l(mt, C.mcu_serialBaud);
-    break;
   case SO_CFG_RTC:
     if (rtc_get_by_string(buf)) {
       so_out_x_reply_entry_s(mt, buf);
@@ -413,12 +423,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
   case SO_INET_PRINT_ADDRESS: {
 #if defined USE_LAN || defined USE_WLAN
     char buf[20];
-#ifdef USE_LAN
-    void ethernet_ipnet_addr_as_string();
-    ethernet_ipnet_addr_as_string(buf, 20);
-#else
     ipnet_addr_as_string(buf, 20);
-#endif
     io_puts("tf: ipaddr: "), io_puts(buf), io_puts(";\n");
 #endif
   }

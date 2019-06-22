@@ -11,7 +11,7 @@
 #include "driver/gpio.h"
 #include "string.h"
 
-#include "rom/uart.h"
+#include "esp32/rom/uart.h"
 
 #include "lwip/err.h"
 #include "lwip/sys.h"
@@ -73,7 +73,7 @@ const char *TAG = "wifistation";
 //#define RETRY_RECONNECT (s_retry_num < 255)
 #define RETRY_RECONNECT (1)
 
-static ip4_addr_t ip4_address;
+
 
 volatile static bool wifistation_connected;
 volatile static bool wifistation_disconnected;
@@ -120,17 +120,16 @@ static void got_ip_event_handler(void* arg, esp_event_base_t event_base,
     ESP_LOGI(TAG, "GW:" IPSTR, IP2STR(&ip_info->gw));
     ESP_LOGI(TAG, "~~~~~~~~~~~");
 
+
+
     ip4_address = ip_info->ip;
+    ip4_gateway_address = ip_info->gw;
+    ip4_netmask = ip_info->netmask;
 
     wifistation_disconnected = false;
     wifistation_connected = true;
 
 
-}
-
-void
-ipnet_addr_as_string(char *buf, unsigned buf_len) {
-  ip4addr_ntoa_r(&ip4_address, buf, buf_len);
 }
 
 void

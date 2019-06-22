@@ -76,7 +76,7 @@ typedef enum {
   SO_CMD_ZONE_ON, SO_CMD_ZONE_OFF,
   SO_CMD_end,
 
-  SO_MCU_begin, SO_MCU_end,
+  SO_MCU_begin, SO_MCU_BOOT_COUNT, SO_MCU_end,
   SO_STATUS_OK, SO_STATUS_ERROR,
 
 

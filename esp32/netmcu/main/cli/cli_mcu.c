@@ -13,6 +13,10 @@
 #include "ota.h"
 #include "http_client.h"
 
+
+#define KEY_BOOT_COUNT "boot-count"
+
+
 const char help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #if ENABLE_SPIFFS
     "spiffs=(format|test)\n"
@@ -22,6 +26,7 @@ const char help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #endif
         "up-time=?\n"
         "version=full\n";
+
 
 int ICACHE_FLASH_ATTR
 process_parmMcu(clpar p[], int len) {
@@ -36,6 +41,8 @@ process_parmMcu(clpar p[], int len) {
 
     if (key == NULL || val == NULL) {
       return -1;
+    } else if (strcmp(key, KEY_BOOT_COUNT) == 0 && *val == '?') {
+      so_output_message(SO_MCU_BOOT_COUNT, 0);
     } else if (strcmp(key, "rbl") == 0) {
        ets_printf("run bootloader\n");
        stm32_runBootLoader();

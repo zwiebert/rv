@@ -39,8 +39,6 @@ const char help_parmConfig[]  =
      "http-user=NAME    user name on server\n"
      "http-password=PW  user password on server\n"
 #endif
-    "longitude=(DEG|?)\n"
-    "latitude=(DEG|?)\n"
  #ifdef MDR_TIME
     "time-zone=(N|?)    time zone hour offset\n"
     "dst=(eu|0|1|?)     daylight saving time\n"
