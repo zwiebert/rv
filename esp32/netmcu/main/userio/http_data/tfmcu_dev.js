@@ -26,6 +26,8 @@ class AppState {
 
 	this.mStm32FwUpdState = FW_UPD_STATE_NONE;
 	this.mEsp32FwUpdState = FW_UPD_STATE_NONE;
+	this.mEsp32BootCount = 0;
+	this.mStm32Version = "";
     }
 
 
@@ -37,6 +39,14 @@ class AppState {
     setRvFwUpdState(state) {
 	this.mStm32FwUpdState = state;
 	this.updateHtml_fwUpd();
+    }
+
+    updateHtml_bootCount() {
+	document.getElementById("id-bootCount").innerHTML = this.mEsp32BootCount.toString();
+    }
+    
+    updateHtml_stm32Version() {
+	document.getElementById("id-stm32Version").innerHTML = this.mStm32Version;
     }
 
     updateHtml_fwUpd() {
@@ -57,6 +67,7 @@ class AppState {
 	    break;   
 	}
     }
+    
     updateHtml_zoneTable() {
         for (let i=0; i < ZONE_COUNT; ++i) {
             let sfx = i.toString();
@@ -70,16 +81,16 @@ class AppState {
             document.getElementById(rem).value = this.mZoneRemainingTimes[i];
             document.getElementById(tim).value = (timer in this.mZoneTimers) ? JSON.stringify(this.mZoneTimers[timer]) : "-";
 	    document.getElementById(name).value = this.mZoneDescriptions[i];
-	    
-	    
         }
     }
+    
     updateHtml_rvStatus() {
         document.getElementById("id-pressControlStatus").checked = this.mPressControlStatus;
         document.getElementById("id-waterPumpStatus").checked = this.mWaterPumpStatus;
         document.getElementById("id-rainSensorStatus").checked = this.mRainSensorStatus;
         document.getElementById("id-stm32Time").value = this.mStm32Time;
     }
+    
     updateAutomaticHtml() {
         let auto = this.auto;
         document.getElementById('tfti').value = ("f" in auto) ? auto.f : "";
@@ -127,29 +138,34 @@ class AppState {
 
         if ("data" in obj) {
             let data = obj.data;
-	    this.mZoneTimers = {};
-            for (let i=0; i < ZONE_COUNT; ++i) {
-                let sfx = i.toString()+".0";
-                let dur = 'dur'+sfx;
-                let rem = 'rem'+sfx;
-                this.mZoneTimerDurations[i] = (dur in data) ? data[dur] : 0;
-                this.mZoneRemainingTimes[i] = (rem in data) ? data[rem] : 0;
+	    if ("version" in data) {
+		this.mStm32Version = data.version;
+		this.updateHtml_stm32Version();
+	    } else {
+		this.mZoneTimers = {};
+		for (let i=0; i < ZONE_COUNT; ++i) {
+                    let sfx = i.toString()+".0";
+                    let dur = 'dur'+sfx;
+                    let rem = 'rem'+sfx;
+                    this.mZoneTimerDurations[i] = (dur in data) ? data[dur] : 0;
+                    this.mZoneRemainingTimes[i] = (rem in data) ? data[rem] : 0;
 
-		for (let k=0; k < 10; ++k) {
-		    let sfx = i.toString()+'.'+k;
-		    let timer = 'timer'+sfx;
-		    if (timer in data) {
-			this.mZoneTimers[timer] = data[timer];
+		    for (let k=0; k < 10; ++k) {
+			let sfx = i.toString()+'.'+k;
+			let timer = 'timer'+sfx;
+			if (timer in data) {
+			    this.mZoneTimers[timer] = data[timer];
+			}
 		    }
 		}
-            }
-            this.updateHtml_zoneTable();
-	    
-	    this.mPressControlStatus = ("pc" in data && data.pc);
-	    this.mWaterPumpStatus = ("pump" in data && data.pump);
-	    this.mRainSensorStatus = ("rain" in data && data.rain);
-	    this.mStm32Time = "time" in data ? data.time : "";
-	    this.updateHtml_rvStatus();
+		this.updateHtml_zoneTable();
+		
+		this.mPressControlStatus = ("pc" in data && data.pc);
+		this.mWaterPumpStatus = ("pump" in data && data.pump);
+		this.mRainSensorStatus = ("rain" in data && data.rain);
+		this.mStm32Time = "time" in data ? data.time : "";
+		this.updateHtml_rvStatus();
+	    }
 	    
         }
 
@@ -168,6 +184,10 @@ class AppState {
 		if (this.mStm32FwUpdState == FW_UPD_STATE_IN_PROGRESS) {
 		    this.setRvFwUpdState((mcu.status == "ok") ? FW_UPD_STATE_DONE : FW_UPD_STATE_ERROR);
 		}
+	    }
+	    if ("boot-count" in mcu) {
+		this.mEsp32BootCount = mcu["boot-count"];
+		this.updateHtml_bootCount();
 	    }
 	}
     }
@@ -440,6 +460,17 @@ function fetchVersions() {
     postData(url, netmcu);
 }
 
+function fetchBootCount() {
+    var netmcu = {to:"netmcu"};
+    netmcu.mcu = {
+	"boot-count":"?"
+    };
+    
+    let url = base+'/cmd.json';
+    console.log("url: "+url);
+    postData(url, netmcu);
+}
+
 function onContentLoaded() {
     app_state = new AppState();
     app_state.load();
@@ -447,6 +478,7 @@ function onContentLoaded() {
     app_state.fetchZoneNames();
     app_state.fetchZoneData();
     fetchVersions();
+    fetchBootCount();
     
     writeHtml_timerTableDiv();
 
