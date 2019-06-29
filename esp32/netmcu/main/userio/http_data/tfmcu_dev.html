@@ -9,56 +9,202 @@
     </script>
 
     <style>
+      * { font-size:100%; }
+
+      .tab {
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background-color: #f1f1f1;
+      }
+
+      /* Style the buttons that are used to open the tab content */
+      .tab button {
+      background-color: inherit;
+      float: left;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      transition: 0.3s;
+      font-size: 270%;
+
+      }
+
+      /* Change background color of buttons on hover */
+      .tab button:hover {
+      background-color: #ddd;
+      }
+
+      /* Create an active/current tablink class */
+      .tab button.active {
+      background-color: #ccc;
+      }
+
+      /* Style the tab content */
+      .tabcontent {
+      displayXX: none;
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-top: none;
+      }
+
+      .container {
+      border: 1px solid #ccc;
+      background-color: #eee;
+      font-size: 270%;
+      }
+
+      .cb {
+      width: 1em;
+      height: 1em;
+      }
+
+      input:focus {
+      font-size: 100%;
+      }
+
+
+      #senddiv {
+      background-color: #eee;
+      display: grid;
+      width: 100%;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: repeat(6, 1fr);
+      grid-template-areas:
+      "gi pi mi"
+      "gb pl mb"
+      ".  ub ."
+      ".  sb ."
+      ".  db ."
+      ;
+      justify-items: center;
+      align-items: center;
+      grid-gap=2px;
+      }
+
+      #configdiv { background-color: #eee;  }
+      #id-rvDiv { background-color: #eee; }
+
+      #id-fwDiv { background-color: #eee; }
+
+      @media only screen and (max-resolution: 96dpi )  {
+      .container, .tab button {
+      font-size: 200%;
+      }
+      }
+
+      @media (min-width: 1000px) {
+      .container {
+      font-size: 100%;
+      }
+      .tab button {
+      font-size: 100%;
+      }
+      #senddiv {
+      width: 500px;
+      }
+      }
+
+
+
+      .sb {width: 5em; margin: 2px; }
+
+      #sgb, #smb { border-radius: 40%; }
+      #sgi, #spi, #smi { width: 2.5em; height: 2em; text-align: center; }
+      #sgb, #smb { width: 2em; height: 2em; }
+
+      #ssb { font-size: 60%;  font-stretch: ultra-condensed; height: 4em; border-radius: 100% }
+      #sub, #sdb { font-size: 125%; border-radius: 100% }
+
+      #sgi { grid-area: gi; }
+      #sgb { grid-area: gb; }
+      #spi { grid-area: pi; }
+      #spl { grid-area: pl; }
+      #smi { grid-area: mi; }
+      #smb { grid-area: mb; }
+      #sub { grid-area: ub; }
+      #ssb { grid-area: sb; }
+      #sdb { grid-area: db; }
+
+      .conf-table label { padding: 2px; width: 50vw; margin-right: 6px;}
+      .conf-table .text { width: 100%; }
+      #cfg_gm-used_tr, #tf_tr { display: none; }
+
+
+      h3,h4 {
+      display: none;
+      text-align: center;
+      margin-top: 0px;
+      background-color: hsl(220, 60%, 60%); color: white;
+      grid-area: header; justify-self: stretch; align-self: start;
+      }
+
+
+
+      @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 1; }
+      50.01% { opacity: 0; }
+      100% { opacity: 0; }
+      }
+
 
     </style>
   </head>
   <body>
 
     <div class="tab">
-      <button class="tablinks" id="stb">Command</button>
-      <button class="tablinks" id="atb">Automatic</button>
-      <button class="tablinks" id="ctb">Configuration</button>
+      <button class="tablinks" id="atb">RV-MCU</button>
+      <button class="tablinks" id="ctb">Network-MCU</button>
+      <button class="tablinks" id="stb">Firmware-Update</button>
     </div>
 
 
+    <div id="id-rvDiv">
+      <div id="id-timer-table-div">
+      </div>
+      <label>PC<input type="checkbox" id="id-pressControlStatus"></label><br>
+      <label>Pump<input type="checkbox" id="id-waterPumpStatus"></label><br>
+      <label>Rain-Sensor<input type="checkbox" id="id-rainSensorStatus"></label><br>
 
-    <div id="id-timer-table-div">
+      <label>Time <input type="text" id="id-stm32Time"></label><br>
+      <button id="zrlb" type="button">Reload</button>
+      <button id="znsb" type="button">Save</button>
+      <br><br>
+      <ul>
+	<li><label>RV-Version: <span id="id-stm32Version"></span></label></li>
+      </ul>
     </div>
-    <label>PC<input type="checkbox" id="id-pressControlStatus"></label><br>
-    <label>Pump<input type="checkbox" id="id-waterPumpStatus"></label><br>
-    <label>Rain-Sensor<input type="checkbox" id="id-rainSensorStatus"></label><br>
 
-    <label>Time <input type="text" id="id-stm32Time"></label><br>
-    <button id="zrlb" type="button">Reload</button>
-    <button id="znsb" type="button">Save</button>
-    <br><br>
+    
+    <div id="id-fwDiv">
+      <h4>RV/NET Firmware Update</h4>
+      <label>STM32 URL <input type="text" id="id-stm32FirmwareURL" value="http://192.168.1.70:8000/rv.bin"><button id="rvota" type="button">Do Flash</button><span id="id-rvFwUpdState"></span></label><br>
+      <label>ESP32 URL <input type="text" id="id-esp32FirmwareURL" value="http://192.168.1.70:8000/netmcu.bin"> <button id="netota" type="button">Do Flash</button></label><br>
+    </div>
 
-    <h4>RV/NET Firmware Update</h4>
-    <label>STM32 URL <input type="text" id="id-stm32FirmwareURL" value="http://192.168.1.70:8000/rv.bin"><button id="rvota" type="button">Do Flash</button><span id="id-rvFwUpdState"></span></label><br>
-    <label>ESP32 URL <input type="text" id="id-esp32FirmwareURL" value="http://192.168.1.70:8000/netmcu.bin"> <button id="netota" type="button">Do Flash</button></label><br>
-     
 
-        <div id="configdiv">
+    
+    <div id="configdiv">
       <h3>Configuration</h3>
       <div  class="config" id="config-div">
         <p><strong style="animation: blink .75s linear 4;">...try to load configuration data from MCU...</strong></p>
-      <!-- configuration widgets. javascript output goes here -->
-    </div>
+	<!-- configuration widgets. javascript output goes here -->
+      </div>
 
- <br>
+      <br>
       <button id="crlb" type="button">Reload</button>
       <button id="csvb" type="button">Save</button>
       <br><br>
       <button id="mrtb" type="button">Restart MCU</button><br>
       <ul>
-      <li><label>NetMCU-Boot-Count: <span id="id-bootCount"></span></label></li>
-      <li><label>RV-Version: <span id="id-stm32Version"></span></label></li>
+	<li><label>NetMCU-Boot-Count: <span id="id-bootCount"></span></label></li>
       </ul>
     </div>
   </body>
 </html>
 <!--
-Local Variables:
-compile-command: "weblint tfmcu_dev.html"
-End:
--->
+    Local Variables:
+    compile-command: "weblint tfmcu_dev.html"
+    End:
+  -->

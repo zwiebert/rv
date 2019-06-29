@@ -30,6 +30,10 @@ class AppState {
 	this.mStm32Version = "";
     }
 
+    set tabVisibility(value) {
+	this.mTabVisibility = value;
+	tabSwitchVisibility(value);
+    }
 
     getZoneRemainingTime(n)  { return this.mZoneRemainingTimes[n]; }
     getZoneDescription(n) { return this.mZoneDescriptions[n]; }
@@ -471,12 +475,33 @@ function fetchBootCount() {
     postData(url, netmcu);
 }
 
+const VIS_NET = 0x01;
+const VIS_RV  = 0x02;
+const VIS_FIRMWARE = 0x04;
+
+
+function tabSwitchVisibility(mask) {
+    const NONE = "none";
+    const SHOW = "";
+    document.getElementById("id-rvDiv").style.display = (mask & VIS_RV) ? SHOW : NONE; 
+    document.getElementById("configdiv").style.display = (mask & VIS_NET) ? SHOW : NONE; 
+    document.getElementById("id-fwDiv").style.display = (mask & VIS_FIRMWARE) ? SHOW : NONE;
+
+    const BGC1 = "hsl(220, 60%, 60%)";
+    const BGC0 = "#eee"
+    document.getElementById("atb").style.backgroundColor =  (mask & VIS_RV) ? BGC1 : BGC0;
+    document.getElementById("ctb").style.backgroundColor =  (mask & VIS_NET) ? BGC1 : BGC0;
+    document.getElementById("stb").style.backgroundColor =  (mask & VIS_FIRMWARE) ? BGC1 : BGC0;
+
+}
+
 function onContentLoaded() {
     app_state = new AppState();
     app_state.load();
     app_state.fetchConfig();
     app_state.fetchZoneNames();
     app_state.fetchZoneData();
+    app_state.tabVisibility = VIS_RV;
     fetchVersions();
     fetchBootCount();
     
@@ -494,9 +519,9 @@ function onContentLoaded() {
 
     document.getElementById("mrtb").onclick = () => postMcuRestart();
 
-    document.getElementById("stb").onclick = () => app_state.tabIdx = 0;
-    document.getElementById("atb").onclick = () => app_state.tabIdx = 1;
-    document.getElementById("ctb").onclick = () => app_state.tabIdx = 2;
+    document.getElementById("stb").onclick = () => app_state.tabVisibility = VIS_FIRMWARE;
+    document.getElementById("atb").onclick = () => app_state.tabVisibility = VIS_RV;
+    document.getElementById("ctb").onclick = () => app_state.tabVisibility = VIS_NET;
 }
 
 /*
