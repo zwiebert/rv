@@ -8,6 +8,7 @@
 #include "real_time_clock.h"
 #include <time.h>
 #include <stdio.h>
+#include <string.h>
 #ifdef MOD_TEST
 #include <iostream>
 volatile time_t start_time;
@@ -30,41 +31,107 @@ typedef void (*switch_valves_cb)(uint16_t valve_bits, uint16_t valve_mask);
 class RvTimer;
 class RvTimers;
 
-class RvTimer {
-  friend class RvTimers;
+template <class T>
+struct Node {
 public:
-  struct SetArgs {
-    int on_duration = 0, off_duration = 0, repeats = 0, period = 0;
-    int mDaysInterval = 0, mTodSpanBegin = 0, mTodSpanEnd = 0;
-    int mIgnoreRainSensor = false;
-    char *toJSON(char *buf, int buf_size) {
-      if (0 <= snprintf(buf, buf_size, "{\"d1\":%d,\"ir\":%d,\"d0\":%d,\"r\":%d,\"per\":%d,\"di\":%d,\"sb\":%d,\"se\":%d}",
-          on_duration, mIgnoreRainSensor, off_duration, repeats, period,
-          mDaysInterval, mTodSpanBegin, mTodSpanEnd))
-        return buf;
+  bool mIsHead;
+  T *pred, *succ;
 
-      return 0;
-    }
-  };
+  Node<T>(T* head = 0) : mIsHead(head != 0), pred(head), succ(head) {
 
-public:
+  }
 
-  RvTimer *pred = 0, *succ = 0;
   void unlinkThis() {
     if (pred)
       pred->succ = succ;
     if (succ)
       succ->pred = pred;
   }
-  RvTimer *getNext() {
-    return succ->mValveNumber == -2 ? 0 : succ;
+
+  T *getNext() {
+    return succ->mIsHead ? 0 : succ;
   }
-private:
+
+  bool isListHead() {
+    return mIsHead;
+  }
+};
+
+template <class T>
+struct List : public Node<T> {
+
+  List<T>(): Node<T>((T*)this) {
+
+  }
+
+  void append(T *timer);
+
+};
+
+struct RvTimerData {
+public:
+  struct SetArgs {
+    int on_duration = 0, off_duration = 0, repeats = 0, period = 0;
+    int mDaysInterval = 0, mTodSpanBegin = 0, mTodSpanEnd = 0;
+    int mIgnoreRainSensor = false;
+#define SA_JSON_FMT "{\"d1\":%d,\"ir\":%d,\"d0\":%d,\"r\":%d,\"per\":%d,\"di\":%d,\"sb\":%d,\"se\":%d}"
+    char *toJSON(char *buf, int buf_size) {
+      if (0
+          <= snprintf(buf, buf_size, SA_JSON_FMT, on_duration, mIgnoreRainSensor,
+              off_duration, repeats, period, mDaysInterval, mTodSpanBegin, mTodSpanEnd))
+        return buf;
+
+      return 0;
+    }
+    SetArgs() {}
+    SetArgs(const char *json) {
+      json = strstr(json, "{\"d1\":");
+      if (json) {
+        sscanf(json, SA_JSON_FMT, &on_duration, &mIgnoreRainSensor, &off_duration, &repeats, &period, &mDaysInterval, &mTodSpanBegin, &mTodSpanEnd);
+      }
+    }
+  };
+protected:
+  SetArgs mArgs;
   int mValveNumber = -1;
   int mTimerNumber = 0; // multiple time per valve with different numbers
+  time_t mNextRun = 0;
+  time_t mLastRun = 0;
 
-  SetArgs mArgs;
+public:
+#define TD_JSON_PF_FMT "{\"vn\":%d,\"tn\":%d,\"nr\":%ld,\"lr\":%ld,\"args\":%s}"
+#define TD_JSON_SF_FMT "{\"vn\":%d,\"tn\":%d,\"nr\":%ld,\"lr\":%ld,"
+  char *toJSON(char *buf, int buf_size) {
+    char aBuf[128] = "";
+    const char *aJson = mArgs.toJSON(aBuf, sizeof aBuf);
 
+    if (0
+        <= snprintf(buf, buf_size, TD_JSON_PF_FMT, mValveNumber, mTimerNumber, (uint32_t)mNextRun, (uint32_t)mLastRun, aJson))
+      return buf;
+
+    return 0;
+  }
+
+  RvTimerData() {}
+  RvTimerData(const char *json): mArgs(json) {
+    uint32_t nextRun = 0, lastRun = 0; // long long currently not working with printf/scanf
+    sscanf(json, TD_JSON_SF_FMT, &mValveNumber, &mTimerNumber, &nextRun, &lastRun);
+    mNextRun = nextRun;
+    mLastRun = lastRun;
+  }
+};
+
+class RvTimer: public Node<RvTimer>, public RvTimerData  {
+  friend class RvTimers;
+
+private:
+  time_t mNextOnOff = 0;
+  bool mIsRunning = false, mIsOn = false;
+  int mDoneOn = 0;
+  switch_valve_cb mSwitchValveCb = 0;
+public:
+
+private:
   bool isRunOnce() {
     return mArgs.on_duration && !mArgs.off_duration && !mArgs.repeats && !mArgs.period;
   }
@@ -72,8 +139,6 @@ private:
     return mArgs.mTodSpanBegin || mArgs.mTodSpanEnd;
   }
 
-  time_t mNextRun = 0, mNextOnOff = 0;
-  time_t mLastRun = 0;
 
   bool isDisabledByInterval(time_t now = time(0)) {
 
@@ -104,16 +169,11 @@ private:
     return false;
   }
 
-  bool mIsRunning = false, mIsOn = false;
-  int mDoneOn = 0;
 
-  switch_valve_cb mSwitchValveCb = 0;
+
+
 public:
-  RvTimer(bool isListHead = false) {
-    if (isListHead) {
-      mValveNumber = -2;
-      this->pred = this->succ = this;
-    }
+  RvTimer() {
   }
   char *argsToJSON(char *buf, int buf_size) {
     if (0 <= snprintf(buf + strlen(buf), buf_size - strlen(buf), "\"timer%d.%d\":", getValveNumber(), getTimerNumber())) {
@@ -121,8 +181,12 @@ public:
     }
     return 0;
   }
-  bool isListHead() {
-    return mValveNumber == -2;
+
+  char *dataToJSON(char *buf, int buf_size) {
+    if (0 <= snprintf(buf + strlen(buf), buf_size - strlen(buf), "\"timer%d.%d\":", getValveNumber(), getTimerNumber())) {
+      return toJSON(buf + strlen(buf), buf_size - strlen(buf));
+    }
+    return 0;
   }
 
   int getValveNumber() {
@@ -241,6 +305,8 @@ public:
   }
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 class RvTimers {
   static uint16_t valve_bits, valve_mask;
   static void switch_valve_2(int valve_number, bool state) {
@@ -253,18 +319,16 @@ private:
 
   class Timers {
   private:
-    RvTimer mTimers[RV_TIMER_COUNT];
+    RvTimer mTimerPool[RV_TIMER_COUNT];
   public:
-    RvTimer mFreeTimers, mUsedTimers;
-    Timers() :
-        mFreeTimers(true), mUsedTimers(true) {
+    List<RvTimer> mFreeTimers, mUsedTimers;
+    Timers() {
 
       for (int i = 0; i < RV_TIMER_COUNT; ++i) {
-        timer_to_list(&mFreeTimers, &mTimers[i]);
+        mFreeTimers.append(&mTimerPool[i]);
       }
     }
 
-    void timer_to_list(RvTimer *list, RvTimer *timer);
   } mRvTimers;
 
   switch_valve_cb mSvCb; // XXX
@@ -298,7 +362,7 @@ public:
     if (!timer) {
       timer = mRvTimers.mFreeTimers.getNext();
       if (timer)
-        mRvTimers.timer_to_list(&mRvTimers.mUsedTimers, timer);
+        mRvTimers.mUsedTimers.append(timer);
     }
 
     if (timer) {
@@ -318,7 +382,7 @@ public:
   void unset(int valve_number, int id) {
     for (RvTimer *t = mRvTimers.mUsedTimers.getNext(); t; t = t->getNext()) {
       if (t->match(valve_number, id)) {
-        mRvTimers.timer_to_list(&mRvTimers.mFreeTimers, t);
+        mRvTimers.mFreeTimers.append(t);
       }
     }
   }
@@ -326,7 +390,7 @@ public:
   void loop();
 
 public:
-  RvTimer *getTimerList() {
+  List<RvTimer> *getTimerList() {
     return &mRvTimers.mUsedTimers;
   }
 };

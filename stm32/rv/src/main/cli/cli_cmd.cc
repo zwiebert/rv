@@ -128,9 +128,9 @@ process_parmCmd(clpar p[], int len) {
 
     if (wantsPumpRunTime) {
       if (wp_isPumpOn()) {
-        snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"p1d\":%lu,", wp_getPumpOnDuration());
+        snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"p1d\":%Lu,", wp_getPumpOnDuration());
       } else {
-        snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"p0d\":%lu,", wp_getPumpOffDuration());
+        snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"p0d\":%Lu,", wp_getPumpOffDuration());
       }
     }
 

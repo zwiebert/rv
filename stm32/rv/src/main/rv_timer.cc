@@ -1,5 +1,20 @@
 #include "rv_timer.hh"
 
+template <class T>
+  void List<T>::append(T *timer) {
+    // unlink from current list
+    timer->unlinkThis();
+
+    // append to list
+    RvTimer *tail = this->pred;
+    tail->succ = timer;
+    timer->pred = tail;
+
+    this->pred = timer; // timer is new list tail
+    timer->succ = (T*)this;
+  }
+
+
 int Lph[RV_VALVE_COUNT] = { 1000, //
     1000, //
     1000, //
@@ -16,6 +31,9 @@ int Lph[RV_VALVE_COUNT] = { 1000, //
 
 uint16_t RvTimers::valve_bits;
 uint16_t RvTimers::valve_mask;
+
+
+
 
 
 void RvTimer::changeOnOff() {
@@ -68,6 +86,7 @@ void RvTimer::stop() {
 
 }
 
+void *p;
 
 void RvTimers::loop() {
 
@@ -75,9 +94,16 @@ void RvTimers::loop() {
 
   for (RvTimer *t = mRvTimers.mUsedTimers.getNext(); t; t = t->getNext()) {
 
+#if 0
+    char json[256];
+    t->toJSON(json, sizeof json);
+     RvTimerData test = RvTimerData(json);
+     p = &test;
+#endif
+
     if (t->isDone()) {
       RvTimer *pred = t->pred;
-      mRvTimers.timer_to_list(&mRvTimers.mFreeTimers, t);
+      mRvTimers.mFreeTimers.append(t);
       t = pred;
       continue;
     }
@@ -109,15 +135,3 @@ void RvTimers::loop() {
   }
 }
 
-void RvTimers::Timers::timer_to_list(RvTimer *list, RvTimer *timer) {
-  // unlink from current list
-  timer->unlinkThis();
-
-  // append to list
-  RvTimer *tail = list->pred;
-  tail->succ = timer;
-  timer->pred = tail;
-
-  list->pred = timer; // timer is new list tail
-  timer->succ = list;
-}
