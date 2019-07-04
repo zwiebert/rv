@@ -1,11 +1,16 @@
 #ifndef RV_TIMER_HH
 #define RV_TIMER_HH
 
+
+
+
+
 #include <rain_sensor.hh>
 #include <app_cxx.hh>
 #include "user_config.h"
 #include "misc/int_macros.h"
 #include "real_time_clock.h"
+#include "water_pump.h"
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
@@ -68,6 +73,53 @@ struct List : public Node<T> {
 
 };
 
+class RvTimerPause {
+#define PAUSE_SECS_PER_LITER 4
+#define PAUSE_AFTER_LITER 100
+  int mLitersBeforePause = 0;
+  unsigned mLph = 0;
+  run_time_T mLastLphChange = 0;
+
+  unsigned pauseDuration() { return mLitersBeforePause * PAUSE_SECS_PER_LITER; }
+public:
+  unsigned getLph()  { return mLph; }
+  void lphChange(int lph) {
+    if (!lph)
+      return;
+
+
+    run_time_T now = runTime();
+    run_time_T dur = now - mLastLphChange;
+
+    if (mLph) {
+      mLitersBeforePause += (int)(((double)mLph / 3600.0) * (double)dur);
+    }
+
+    mLph += lph;
+    mLastLphChange = now;
+  }
+
+  bool needsPause(int zone = -1) {
+    if (mLitersBeforePause == 0)
+      return false;
+
+    run_time_T dur = pauseDuration();
+    run_time_T sinceLastLphChange = (runTime() - mLastLphChange);
+    run_time_T sinceLastPumpOff = wp_getPumpOffDuration();
+
+    if (dur > sinceLastLphChange)
+      return true;
+
+#if 1
+    if (dur > sinceLastPumpOff)
+      return true;
+#endif
+
+    mLitersBeforePause = 0;
+    return false;
+  }
+};
+
 struct RvTimerData {
 public:
   struct SetArgs {
@@ -123,15 +175,20 @@ public:
 
 class RvTimer: public Node<RvTimer>, public RvTimerData  {
   friend class RvTimers;
-
+  static RvTimerPause rvtp;
 private:
   time_t mNextOnOff = 0;
-  bool mIsRunning = false, mIsOn = false;
+  //bool mIsRunning = false, mIsOn = false;
   int mDoneOn = 0;
   switch_valve_cb mSwitchValveCb = 0;
 public:
+  typedef enum { SCR_NONE, SCR_RUN, SCR_ON_OFF, SCR_RAIN, SCR_PAUSE, SCR_UNPAUSE } sc_req_T;
+  typedef enum { STATE_OFF, STATE_RUN, STATE_PAUSED, STATE_ON, STATE_DONE } state_T;
+  state_T mState = STATE_OFF;
 
 private:
+  void changeState(state_T state);
+
   bool isRunOnce() {
     return mArgs.on_duration && !mArgs.off_duration && !mArgs.repeats && !mArgs.period;
   }
@@ -212,7 +269,7 @@ public:
 
   void run() {
     mNextOnOff = time(0);
-    mIsRunning = true;
+    mState = STATE_RUN;
     mDoneOn = 0;
   }
 
@@ -221,8 +278,9 @@ public:
   }
 
   void stop();
-
   void pause();
+  void unpause();
+
 
   int get_duration() {
     return mArgs.on_duration;
@@ -246,9 +304,11 @@ public:
   }
 
   bool isReadyToRun() {
-    time_t now = time(0);
-    if (mIsRunning)
+    if (mState != STATE_OFF)
       return false;
+
+    time_t now = time(0);
+
 
     if (mArgs.on_duration == 0)
       return true; // run this 0-timer, so it can be stopped and removed from list
@@ -265,13 +325,15 @@ public:
     return true;
    // return !mIsRunning && mNextRun && mNextRun < now && !isDisabledByRain() && !isDisabledByInterval(now) && !isDisabledByTimeOfDay(now);
   }
+
   bool isReadyToOnOff() {
-    return mIsRunning && mNextOnOff && mNextOnOff < time(0);
+    return (mState == STATE_RUN || mState == STATE_ON) && mNextOnOff && mNextOnOff < time(0);
   }
+
   bool shouldStopBecauseRain() {
     if (mArgs.mIgnoreRainSensor)
       return false;
-    if (!(mIsRunning && !mIsOn))
+    if (!isRunning())
       return false;
     if (!rs.getState())
       return false;
@@ -279,29 +341,60 @@ public:
   }
 
   bool isDone() {
-    return !mIsRunning && mDoneOn >= mArgs.repeats && !mNextRun;
+    if (mState == STATE_DONE)
+      return true;
+    if (mState != STATE_RUN && mDoneOn >= mArgs.repeats && !mNextRun)
+      return true;
+    return false;
   }
   bool isRunning() {
-    return mIsRunning;
+    return mState != STATE_OFF && mState != STATE_DONE;
   }
   bool isOn() {
-    return mIsRunning && mIsOn;
+    return mState == STATE_ON;
   }
   bool isOff() {
-    return mIsRunning && !mIsOn;
+    return mState != STATE_ON;
   }
 
   void changeOnOff();
 
-  bool checkState() {
-    if (isReadyToRun())
+  bool isNeedingPause() {
+    if (mState != STATE_RUN) // XXX: allow other states? (this needs calculation of paused times, and saving old state)
+      return false;
+    if (mState == STATE_PAUSED)
+      return false;
+
+    if (rvtp.needsPause(mValveNumber)) {
       return true;
-    if (isReadyToOnOff())
-      return true;
-    if (shouldStopBecauseRain())
-      return true;
+    }
 
     return false;
+  }
+
+  bool canUnpause() {
+    if (mState != STATE_PAUSED)
+      return false;
+
+    if (rvtp.needsPause(mValveNumber))
+      return false;
+
+    return true;
+  }
+
+  sc_req_T checkState() {
+    if (isNeedingPause())
+      return SCR_PAUSE;
+    if (isReadyToRun())
+      return SCR_RUN;
+    if (isReadyToOnOff())
+      return SCR_ON_OFF;
+    if (shouldStopBecauseRain())
+      return SCR_RAIN;
+    if (canUnpause())
+      return SCR_UNPAUSE;
+
+    return SCR_NONE;
   }
 };
 
@@ -315,7 +408,6 @@ class RvTimers {
       SET_BIT(valve_bits, valve_number);
   }
 private:
-  int lph = 0; // XXX: don't count timers for the same valve more than once
 
   class Timers {
   private:
@@ -350,10 +442,10 @@ public:
     for (RvTimer *t = mRvTimers.mUsedTimers.getNext(); t; t = t->getNext()) {
       if (t->match(valve_number, id)) {
         if (t->isOn())
-          lph -= Lph[valve_number];
+          RvTimer::rvtp.lphChange(-Lph[valve_number]);
+
 
         t->stop();
-
         timer = t;
         break;
       }

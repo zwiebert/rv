@@ -25,6 +25,8 @@ void wpl_loop(void);
 void wpl_increaseMaxOnTime(void);
 time_t wpl_getMaxOnTime(void);
 
+
+
 #ifdef __cplusplus
 }
 #endif

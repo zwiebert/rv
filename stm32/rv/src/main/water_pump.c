@@ -17,6 +17,7 @@
 #include "real_time_clock.h"
 #include "systick_1ms.h"
 #include "assert.h"
+#include "valve_relays.h"
 
 extern Mcp23017 relay_16;
 #define WP_RELAY_PIN 15  // on IO expander
@@ -34,7 +35,7 @@ extern Mcp23017 relay_16;
 #define WP_RUST_PROTECTION_RUN_TIME 2
 #define WP_PC_CLEAR_FAILURE_TIME 5
 
-static time_t last_on_time, last_off_time;
+static run_time_T last_on_time, last_off_time;
 static wp_err_T wp_error;
 
 static bool wp_pc_sample, wp_ub_sample;
@@ -102,6 +103,20 @@ static void exti_setup(void)
 
 // test if PressControl wants to turn on the pump
 bool wp_isPressControlOn(bool *has_changed) {
+#ifdef FAKE_PC
+  {
+    static bool is_on;
+
+    if (is_on != (valveRelay_getActiveValves() != 0)) {
+      if (has_changed) {
+        *has_changed = true;
+      }
+      is_on = !is_on;
+    }
+    return is_on;
+  }
+
+#endif
 
 #ifndef USE_PC_POLLING
   return Wp_is_press_control;
@@ -141,8 +156,8 @@ bool wp_isPressControlOn(bool *has_changed) {
 // test if user has pressed the button to increase max-on-time or clear failure state
 bool wp_isUserButtonPressed(bool *has_changed) {
 #if 0
-	static time_t last_pressed;
-	time_t now = runTime();
+	static run_time_T last_pressed;
+	run_time_T now = runTime();
 
 	if (last_pressed + WP_BUTTON_IGNORE_TIME > now)
 		return false;
@@ -183,7 +198,7 @@ bool wp_isPumpOn(void) {
 }
 
 // get duration in seconds since the pump was last switched off
-time_t wp_getPumpOffDuration(void) {
+run_time_T wp_getPumpOffDuration(void) {
 	if (!wp_isPumpOn()) {
 		return runTime() - last_off_time;
 	}
@@ -191,8 +206,8 @@ time_t wp_getPumpOffDuration(void) {
 }
 
 // get duration in seconds since the pump was last switched on
-time_t wp_getPumpOnDuration(void) {
-  time_t result = 0;
+run_time_T wp_getPumpOnDuration(void) {
+  run_time_T result = 0;
 	if (wp_isPumpOn()) {
 	  result = runTime() - last_on_time;
 	}

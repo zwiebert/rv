@@ -11,7 +11,7 @@
 #include "user_config.h"
 
 #include <stdbool.h>
-#include <time.h>
+#include "real_time_clock.h"
 
 #define WP_MCP_MASK 0x0c
 
@@ -29,10 +29,10 @@ bool wp_isUserButtonPressed(bool *has_changed);
 bool wp_isPumpOn(void);
 
 // get duration in seconds since the pump was last switched off
-time_t wp_getPumpOffDuration(void);
+run_time_T wp_getPumpOffDuration(void);
 
 // get duration in seconds since the pump was last switched on
-time_t wp_getPumpOnDuration(void);
+run_time_T wp_getPumpOnDuration(void);
 
 // switch on/off pump on (and set internal time stamps)
 void wp_switchPump(bool on);

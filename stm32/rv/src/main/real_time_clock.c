@@ -24,7 +24,7 @@ void (*valveTimer_alarmCb)(int8_t channel);
 
 volatile uint32_t next_timer_value;
 volatile time_t curr_time;
-volatile unsigned run_time;
+volatile run_time_T run_time;
 volatile bool timer_rang, timer_noticed;
 
 

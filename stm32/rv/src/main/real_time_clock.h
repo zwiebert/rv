@@ -23,8 +23,10 @@ extern "C" {
 
 void rtc_setup(void);
 
+typedef uint32_t run_time_T;
+
 extern volatile time_t curr_time;
-extern volatile unsigned run_time;
+extern volatile run_time_T run_time;
 
 #define runTime() (run_time + 0)
 

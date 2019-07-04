@@ -1,5 +1,8 @@
 #include "rv_timer.hh"
 
+#include "water_pump.h"
+
+
 template <class T>
   void List<T>::append(T *timer) {
     // unlink from current list
@@ -33,35 +36,61 @@ uint16_t RvTimers::valve_bits;
 uint16_t RvTimers::valve_mask;
 
 
+RvTimerPause RvTimer::rvtp;
+
+void RvTimer::changeState(state_T state) {
+  state_T oldState = mState;
+  if (oldState == state)
+    return;
 
 
-
-void RvTimer::changeOnOff() {
-    if (mIsOn) {
-      ++mDoneOn;
-      if (mDoneOn >= mArgs.repeats) {
-        mNextOnOff = 0;
-        stop();
-        return;
-      }
-    }
-
-    mIsOn = !mIsOn;
-    switch_valve(mIsOn);
-    if (mIsOn && mArgs.on_duration) {
-      mNextOnOff = time(0) + mArgs.on_duration;
-    } else if (!mIsOn && mArgs.off_duration) {
-      mNextOnOff = time(0) + mArgs.off_duration;
-    }
+  if (oldState == STATE_ON) {
+    switch_valve(false);
   }
 
+  switch (state) {
+  case STATE_ON:
+    switch_valve(true);
+    break;
+  case STATE_PAUSED:
+    break;
+  }
+
+  mState = state;
+}
+
+void RvTimer::changeOnOff() {
+
+  if (mState == STATE_ON) {
+
+    if (++mDoneOn >= mArgs.repeats) {
+      mNextOnOff = 0;
+      stop();
+      return;
+    } else {
+      mNextOnOff = time(0) + mArgs.off_duration;
+      changeState(STATE_RUN);
+    }
+
+  } else {
+    mNextOnOff = time(0) + mArgs.on_duration;
+    changeState(STATE_ON);
+  }
+}
+
+void RvTimer::pause() {
+  changeState(STATE_PAUSED);
+}
+
+void RvTimer::unpause() {
+  changeState(STATE_RUN);
+}
+
 void RvTimer::stop() {
-  mIsRunning = false;
+
   time_t now = time(0);
   mNextOnOff = 0;
-  if (mIsOn) {
-    switch_valve(false);
-    mIsOn = false;
+  if (mState == STATE_ON) {
     mLastRun = now;
   }
 
@@ -84,6 +113,7 @@ void RvTimer::stop() {
       mNextRun = nextDay;
   }
 
+  changeState(mNextRun ? STATE_OFF : STATE_DONE);
 }
 
 void *p;
@@ -110,24 +140,41 @@ void RvTimers::loop() {
 
     RvTimer &vt = *t;
 
-    if (vt.checkState()) {
-      if (vt.isReadyToOnOff()) {
-        if (vt.isOff()) { // ready to turn on
-          if (lph + Lph[vt.getValveNumber()] < RV_MAX_LPH) {
-            lph += Lph[vt.getValveNumber()];
-            vt.changeOnOff();
-          }
-        } else { // ready to turn off
+    switch (vt.checkState()) {
+
+    case RvTimer::SCR_ON_OFF:
+      if (vt.isOff()) { // ready to turn on
+        if (RvTimer::rvtp.getLph() + Lph[vt.getValveNumber()] < RV_MAX_LPH) {
+          RvTimer::rvtp.lphChange(+Lph[vt.getValveNumber()]);
           vt.changeOnOff();
-          lph -= Lph[vt.getValveNumber()];
         }
-      } else if (vt.isReadyToRun()) {
-        vt.run();
-      } else if (vt.shouldStopBecauseRain()) {
+      } else { // ready to turn off
         vt.changeOnOff();
-        lph -= Lph[vt.getValveNumber()];
+        RvTimer::rvtp.lphChange(-Lph[vt.getValveNumber()]);
       }
+      break;
+
+    case RvTimer::SCR_RAIN:
+      RvTimer::rvtp.lphChange(-Lph[vt.getValveNumber()]);
+      vt.changeOnOff();
+      break;
+
+    case RvTimer::SCR_RUN:
+      vt.run();
+      break;
+
+    case RvTimer::SCR_PAUSE:
+      vt.pause();
+      break;
+
+    case RvTimer::SCR_UNPAUSE:
+      vt.unpause();
+      break;
+
+    case RvTimer::SCR_NONE:
+      break;
     }
+
   }
 
   if (valve_mask && mSvsCb) {
