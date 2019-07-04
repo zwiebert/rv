@@ -19,7 +19,7 @@ esp32gateway :
 	$(MAKE) -C main/userio/http_data
 	$(MAKE) all BOARD_ESP32GATEWAY=1
 	
-win_copy: xxx
+win_copy:
 	echo "copy files to windows"
 	./win_cp.sh
 

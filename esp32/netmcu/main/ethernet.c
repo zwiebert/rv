@@ -8,53 +8,6 @@
 */
 #include "user_config.h"
 
-#ifdef OLIMEX_ESP32_POE
-
-#define CONFIG_PHY_LAN8720 1
-#define CONFIG_PHY_ADDRESS 0
-#define CONFIG_PHY_CLOCK_GPIO17_OUT 1
-#define CONFIG_PHY_CLOCK_MODE 3
-#define CONFIG_PHY_USE_POWER_PIN 1
-#define CONFIG_PHY_POWER_PIN 12
-#define CONFIG_PHY_SMI_MDC_PIN 23
-#define CONFIG_PHY_SMI_MDIO_PIN 18
-#define CONFIG_PARTITION_TABLE_SINGLE_APP 1
-
-#elif defined OLIMEX_ESP32_GATEWAY
-
-#define CONFIG_PHY_LAN8720 1
-#define CONFIG_PHY_ADDRESS 0
-#define CONFIG_PHY_CLOCK_GPIO17_OUT 1
-#define CONFIG_PHY_CLOCK_MODE 3
-#define CONFIG_PHY_USE_POWER_PIN 1
-#define CONFIG_PHY_POWER_PIN 5
-#define CONFIG_PHY_SMI_MDC_PIN 23
-#define CONFIG_PHY_SMI_MDIO_PIN 18
-#define CONFIG_PARTITION_TABLE_SINGLE_APP 1
-
-#else // values to make it compile
-#define CONFIG_PHY_LAN8720 1
-#define CONFIG_PHY_ADDRESS 0
-#define CONFIG_PHY_CLOCK_GPIO17_OUT 1
-#define CONFIG_PHY_CLOCK_MODE 3
-#define CONFIG_PHY_USE_POWER_PIN 1
-#define CONFIG_PHY_POWER_PIN 12
-#define CONFIG_PHY_SMI_MDC_PIN 23
-#define CONFIG_PHY_SMI_MDIO_PIN 18
-#define CONFIG_PARTITION_TABLE_SINGLE_APP 1
-#endif
-
-#if CONFIG_PHY_LAN8720
-#include "eth_phy/phy_lan8720.h"
-#define DEFAULT_ETHERNET_PHY_CONFIG phy_lan8720_default_ethernet_config
-#elif CONFIG_PHY_TLK110
-#include "eth_phy/phy_tlk110.h"
-#define DEFAULT_ETHERNET_PHY_CONFIG phy_tlk110_default_ethernet_config
-#elif CONFIG_PHY_IP101
-#include "eth_phy/phy_ip101.h"
-#define DEFAULT_ETHERNET_PHY_CONFIG phy_ip101_default_ethernet_config
-#endif
-
 #include <stdio.h>
 #include <string.h>
 #include "freertos/FreeRTOS.h"
@@ -72,8 +25,32 @@
 
 #include "userio/ipnet.h"
 
+#ifdef OLIMEX_ESP32_POE
+
+#define USE_PHY_LAN_8720
+#define PHY_ADDR 0
+#define CONFIG_PHY_USE_POWER_PIN 1
+#define CONFIG_PHY_POWER_PIN GPIO_NUM_12
+
+#elif defined OLIMEX_ESP32_GATEWAY
+
+#define USE_PHY_LAN_8720
+#define PHY_ADDR 0
+#define CONFIG_PHY_USE_POWER_PIN 1
+#define CONFIG_PHY_POWER_PIN GPIO_NUM_5
+
+#else
+#define USE_PHY_LAN_8720
+#define CONFIG_PHY_USE_POWER_PIN 1
+#define CONFIG_PHY_POWER_PIN GPIO_NUM_5
+#endif
+
+
 volatile static bool ethernet_connected;
 volatile static bool ethernet_disconnected;
+
+
+static esp_eth_handle_t s_eth_handle = NULL;
 
 static const char *TAG = "eth_example";
 
@@ -82,6 +59,9 @@ static const char *TAG = "eth_example";
 #define PIN_SMI_MDIO CONFIG_PHY_SMI_MDIO_PIN
 
 #ifdef CONFIG_PHY_USE_POWER_PIN
+
+static esp_err_t (*orig_pwrctl)(esp_eth_phy_t *phy, bool enable);
+
 /**
  * @brief re-define power enable func for phy
  *
@@ -91,36 +71,33 @@ static const char *TAG = "eth_example";
  * If this GPIO is not connected on your device (and PHY is always powered),
  * you can use the default PHY-specific power on/off function.
  */
-static void phy_device_power_enable_via_gpio(bool enable)
-{
-    assert(DEFAULT_ETHERNET_PHY_CONFIG.phy_power_enable);
+static esp_err_t phy_device_power_enable_via_gpio(esp_eth_phy_t *phy, bool enable) {
+  esp_err_t result = ESP_OK;
 
-    if (!enable) {
-        DEFAULT_ETHERNET_PHY_CONFIG.phy_power_enable(false);
-    }
+  gpio_pad_select_gpio(PIN_PHY_POWER);
+  gpio_set_direction(PIN_PHY_POWER, GPIO_MODE_OUTPUT);
 
-    gpio_pad_select_gpio(PIN_PHY_POWER);
-    gpio_set_direction(PIN_PHY_POWER, GPIO_MODE_OUTPUT);
-    if (enable == true) {
-        gpio_set_level(PIN_PHY_POWER, 1);
-        ESP_LOGI(TAG, "Power On Ethernet PHY");
-    } else {
-        gpio_set_level(PIN_PHY_POWER, 0);
-        ESP_LOGI(TAG, "Power Off Ethernet PHY");
-    }
-
+  if (enable) {
+    gpio_set_level(PIN_PHY_POWER, 1);
+    ESP_LOGI(TAG, "Power On Ethernet PHY");
     vTaskDelay(1); // Allow the power up/down to take effect, min 300us
-
-    if (enable) {
-        /* call the default PHY-specific power on function */
-        DEFAULT_ETHERNET_PHY_CONFIG.phy_power_enable(true);
+    if (orig_pwrctl) {
+      result = orig_pwrctl(phy, enable);
     }
+
+  } else {
+    if (orig_pwrctl) {
+      result = orig_pwrctl(phy, enable);
+    }
+    gpio_set_level(PIN_PHY_POWER, 0);
+    ESP_LOGI(TAG, "Power Off Ethernet PHY");
+  }
+
+  return result;
 }
 #endif
 
 /**
- * @brief gpio specific init
- *
  * @note RMII data pins are fixed in esp32:
  * TXD0 <=> GPIO19
  * TXD1 <=> GPIO22
@@ -130,11 +107,6 @@ static void phy_device_power_enable_via_gpio(bool enable)
  * CLK <=> GPIO0
  *
  */
-static void eth_gpio_config_rmii(void)
-{
-    phy_rmii_configure_data_interface_pins();
-    phy_rmii_smi_configure_pins(PIN_SMI_MDC, PIN_SMI_MDIO);
-}
 
 /** Event handler for Ethernet events */
 static void eth_event_handler(void* arg, esp_event_base_t event_base, 
@@ -183,22 +155,35 @@ static void got_ip_event_handler(void* arg, esp_event_base_t event_base,
 }
 
 void ethernet_setup() {
-    eth_config_t config = DEFAULT_ETHERNET_PHY_CONFIG;
-    config.phy_addr = CONFIG_PHY_ADDRESS;
-    config.gpio_config = eth_gpio_config_rmii;
-    config.tcpip_input = tcpip_adapter_eth_input;
-    config.clock_mode = CONFIG_PHY_CLOCK_MODE;
-    config.flow_ctrl_enable = false; // XXX
-#ifdef CONFIG_PHY_USE_POWER_PIN
-    /* Replace the default 'power enable' function with an example-specific one
-     that toggles a power GPIO. */
-    config.phy_power_enable = phy_device_power_enable_via_gpio;
-#endif
-
-    ESP_ERROR_CHECK(esp_eth_init(&config));
+  vTaskDelay(1000 / portTICK_PERIOD_MS);
+    ESP_ERROR_CHECK(tcpip_adapter_set_default_eth_handlers());
     ESP_ERROR_CHECK(esp_event_handler_register(ETH_EVENT, ESP_EVENT_ANY_ID, &eth_event_handler, NULL));
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_ETH_GOT_IP, &got_ip_event_handler, NULL));
-    ESP_ERROR_CHECK(esp_eth_enable()) ;
+
+    // Setup MAC
+    eth_mac_config_t mac_config = ETH_MAC_DEFAULT_CONFIG();
+    esp_eth_mac_t *mac = esp_eth_mac_new_esp32(&mac_config);
+
+    // Setup PHY
+    eth_phy_config_t phy_config = ETH_PHY_DEFAULT_CONFIG();
+#ifdef PHY_ADDR
+    phy_config.phy_addr = PHY_ADDR;
+#endif
+#ifdef USE_PHY_LAN_8720
+    esp_eth_phy_t *phy = esp_eth_phy_new_lan8720(&phy_config);
+#endif
+#ifdef CONFIG_PHY_USE_POWER_PIN
+    orig_pwrctl = phy->pwrctl;
+    phy->pwrctl = phy_device_power_enable_via_gpio;
+#endif
+
+
+
+
+    // Ethernet Driver
+    esp_eth_config_t config = ETH_DEFAULT_CONFIG(mac, phy);
+    ESP_ERROR_CHECK(esp_eth_driver_install(&config, &s_eth_handle));
+
 }
 
 void ethernet_loop() {
