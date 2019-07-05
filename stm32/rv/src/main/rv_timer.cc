@@ -3,21 +3,6 @@
 #include "water_pump.h"
 
 
-template <class T>
-  void List<T>::append(T *timer) {
-    // unlink from current list
-    timer->unlinkThis();
-
-    // append to list
-    RvTimer *tail = this->pred;
-    tail->succ = timer;
-    timer->pred = tail;
-
-    this->pred = timer; // timer is new list tail
-    timer->succ = (T*)this;
-  }
-
-
 int Lph[RV_VALVE_COUNT] = { 1000, //
     1000, //
     1000, //

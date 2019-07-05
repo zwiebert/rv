@@ -17,23 +17,25 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define USE_JSON
-//#define USE_DLB8
-#define USE_WDG
-
+#ifdef BUILD_DEBUG
 #define USE_BB // use internal pull-up resistors when on bread-board
-
-#ifdef USE_BB
-#define FAKE_PC
-#endif
-
-#define USE_PC_POLLING
-
-#ifdef USE_BB
-#define VERSION "rv(bb)-" __DATE__
+#define FAKE_PC // fake pressure control input when valves are active
+#define VERSION "rv(breadboard)-" __DATE__ " " __TIME__
+//#error "debug"
+#elif defined BUILD_RELEASE
+//#error "release"
+#define VERSION "rv(release)-" __DATE__ " " __TIME__
+#elif defined BUILD_CELLAR
+//#error "cellar"
+#define VERSION "rv(cellar)-" __DATE__ " " __TIME__
 #else
-#define VERSION "rv-" __DATE__
+#error "build version missing"
 #endif
+
+
+#define USE_JSON
+#define USE_WDG
+#define USE_PC_POLLING
 
 #define ICACHE_FLASH_ATTR
 

@@ -42,7 +42,19 @@ struct List : public Node<T> {
 
   }
 
-  void append(T *timer);
+  void append(T *timer) {
+    // unlink from current list
+    timer->unlinkThis();
+
+    // append to list
+    T *tail = this->pred;
+    tail->succ = timer;
+    timer->pred = tail;
+
+    this->pred = timer; // timer is new list tail
+    timer->succ = (T*) this;
+  }
+
 
 };
 
