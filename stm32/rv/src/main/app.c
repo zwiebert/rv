@@ -41,6 +41,8 @@ void loop(void);
 #define DISABLE_ALL_PIN GPIO5
 #define DISABLE_ALL_PIN_PORT GPIOB
 
+#define IIC_CHECK_EMS 11 // check IIC bus every 2048ms
+
 
 void ioExtender_setup(bool re_init);
 
@@ -330,13 +332,16 @@ int _write(int fd, char *ptr, int len) {
 
 
 
-void loop(void) {
-	wpl_loop();
-	cli_loop();
-	cxx_loop();
 
-	if (!i2c2_check()) {
-	    report_event("i2c:reset");
-		puts("I2C had crashed. Reset");
-	}
+void loop(void) {
+  wpl_loop();
+  cli_loop();
+  cxx_loop();
+
+  if (ms_timePulse(IIC_CHECK_EMS)) {
+    if (!i2c2_check()) {
+      report_event("i2c:reset");
+      puts("I2C had crashed. Reset");
+    }
+  }
 }

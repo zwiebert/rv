@@ -19,6 +19,7 @@ uint64_t ms_runTime(void) {
   return run_time_ms;
 }
 
+
 bool ms_timeElapsed(uint64_t *last, int diff) {
   uint64_t now = run_time_ms;
   if (*last + diff >= now)

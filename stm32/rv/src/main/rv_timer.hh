@@ -1,16 +1,14 @@
 #ifndef RV_TIMER_HH
 #define RV_TIMER_HH
 
-
-
-
-
-#include <rain_sensor.hh>
-#include <app_cxx.hh>
+#include "rain_sensor.hh"
+#include "app_cxx.hh"
 #include "user_config.h"
 #include "misc/int_macros.h"
 #include "real_time_clock.h"
 #include "water_pump.h"
+#include "list.hh"
+
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
@@ -36,42 +34,6 @@ typedef void (*switch_valves_cb)(uint16_t valve_bits, uint16_t valve_mask);
 class RvTimer;
 class RvTimers;
 
-template <class T>
-struct Node {
-public:
-  bool mIsHead;
-  T *pred, *succ;
-
-  Node<T>(T* head = 0) : mIsHead(head != 0), pred(head), succ(head) {
-
-  }
-
-  void unlinkThis() {
-    if (pred)
-      pred->succ = succ;
-    if (succ)
-      succ->pred = pred;
-  }
-
-  T *getNext() {
-    return succ->mIsHead ? 0 : succ;
-  }
-
-  bool isListHead() {
-    return mIsHead;
-  }
-};
-
-template <class T>
-struct List : public Node<T> {
-
-  List<T>(): Node<T>((T*)this) {
-
-  }
-
-  void append(T *timer);
-
-};
 
 class RvTimerPause {
 #define PAUSE_SECS_PER_LITER 4

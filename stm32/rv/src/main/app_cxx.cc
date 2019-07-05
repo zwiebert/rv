@@ -9,6 +9,7 @@
 #include "rv_timer.hh"
 #include "app_cxx.h"
 #include "watch_dog.hh"
+#include "systick_1ms.h"
 
 extern "C" void app_switch_valve(int valve_number, bool state);
 extern "C" void app_switch_valves(uint16_t valve_bits, uint16_t valve_mask);
@@ -16,11 +17,19 @@ extern "C" void app_switch_valves(uint16_t valve_bits, uint16_t valve_mask);
 RvTimers rvt = RvTimers(0, app_switch_valves);
 RainSensor rs;
 
+#define RVT_LOOP_EMS  9  // 2^n  (9 == 512)
+#define WD_LOOP_EMS 10 // 1024
+
 extern "C" void cxx_loop() {
-	rs.loop();
-	rvt.loop();
+
+  if (ms_timePulse(RVT_LOOP_EMS)) {
+    rs.loop();
+    rvt.loop();
+  }
 #ifdef USE_WDG
-	watchDog_loop();
+  if (ms_timePulse(WD_LOOP_EMS)) {
+    watchDog_loop();
+  }
 #endif
 }
 
