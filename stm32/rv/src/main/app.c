@@ -27,6 +27,8 @@
 #include "report.h"
 #include "systick_1ms.h"
 
+#include "test/test.h"
+
 #include "../Libraries/tm1638/include/boards/dlb8.h"
 
 Mcp23017 relay_16;
@@ -62,18 +64,6 @@ void atFault_setup() {
 }
 
 #if 1
-void display_print_timer(uint8_t n) {
-	char buf[8] = " ";
-	uint8_t minutes = valveTimer_getProgrammedMinutes(n);
-	if (minutes)
-		itoa(minutes, buf, 10);
-	dlb8_put_chars(dlb8_obj[n < 8 ? 0 : 1], 1 << n, buf[0], minutes >= 10);
-}
-
-void display_print_timers() {
-	for (int i = 0; i < 16; ++i)
-		display_print_timer(i);
-}
 
 void dlb8_print_date(Dlb8 *obj, struct tm *tm) {
 	uint8_t digit = 0;
@@ -218,7 +208,7 @@ static void led_setup(void) {
 
 void app_switch_valve(int valve_number, bool state) {
   bool old_bit = !Mcp23017_getBit(&relay_16, valve_number, true);
-  Mcp23017_putBit(&relay_16, valve_number, state ? RELAY_ON : RELAY_OFF);
+  Mcp23017_putBit(&relay_16, valve_number, (state ? RELAY_ON : RELAY_OFF) != 0);
   if (old_bit != state) {
     report_valve_status((1 << valve_number), (1 << valve_number));
   }
@@ -247,17 +237,20 @@ void ioExtender_setup(bool re_init) {
 }
 
 void setup() {
-    setenv("TZ","CET-2", 1); //XXX
-	clock_setup();
-	systick_setup();
-	uart_setup();
-	i2c2_setup();
-	led_setup();
-	rtc_setup();
-	input_setup();
-	ioExtender_setup(false);
-	wp_setup();
-	cxx_setup();
+  setenv("TZ", "CET-2", 1); //XXX
+  clock_setup();
+  systick_setup();
+  uart_setup();
+  i2c2_setup();
+  led_setup();
+  rtc_setup();
+  input_setup();
+  ioExtender_setup(false);
+  wp_setup();
+  cxx_setup();
+#ifdef USE_TEST
+  test_setup();
+#endif
 }
 
 void app() {
@@ -334,6 +327,17 @@ int _write(int fd, char *ptr, int len) {
 
 
 void loop(void) {
+#ifdef USE_TEST
+  {
+    static testRes_T tr;
+    if (tr == TR_RUNNING) {
+      tr = test_loop();
+      if (tr == TR_FAILED) {
+        while(1) { }
+      }
+    }
+  }
+#endif
   wpl_loop();
   cli_loop();
   cxx_loop();

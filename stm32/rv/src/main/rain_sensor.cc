@@ -30,29 +30,6 @@ RainSensor::RainSensor() {
 #endif
 }
 
-
-#define WP_RAIN_SENSOR_DEBOUNCE_SECS 15
-static bool rainSensor_isRainSensorActive(void) {
-    static time_t last_pressed, last_released;
-    time_t now = time(0);
-
-
-
-    if (last_released <= last_pressed && last_pressed + WP_RAIN_SENSOR_DEBOUNCE_SECS > now)
-        return false;
-
-    if (last_pressed <= last_released && last_released + WP_RAIN_SENSOR_DEBOUNCE_SECS > now)
-        return true;
-
-    bool result = gpio_get(RAIN_SENSOR_PORT, RAIN_SENSOR_PIN);  // rain-sensor contact is normally closed (dry)
-    if (result)
-        last_pressed = now;
-    else
-        last_released = now;
-
-    return result;
-}
-
 bool RainSensor::getState(time_t delay) {
 	bool result = false;
 	if (!delay)

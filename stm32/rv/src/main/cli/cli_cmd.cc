@@ -63,7 +63,7 @@ process_parmCmd(clpar p[], int len) {
       wantsReply = wantsRemainingTimes = true;
 
     } else if (strcmp(key, KEY_STATUS_PREFIX) == 0 && *val == '?') {
-      wantsReply = wantsDurations = wantsRemainingTimes = wantsRelayPC = wantsRelayPump = wantsTime = wantsRainSensor = wantsTimers = wantsPumpRunTime = true;
+      wantsReply = wantsDurations = wantsRemainingTimes = wantsRelayPC = wantsRelayPump = wantsTime = wantsRainSensor = wantsPumpRunTime = true;
 
     } else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
       int channel = -1, timer_number = 0;

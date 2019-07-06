@@ -17,6 +17,11 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define USE_TEST
+#define USE_JSON
+#define USE_WDG
+#define USE_PC_POLLING
+
 #ifdef BUILD_DEBUG
 #define USE_BB // use internal pull-up resistors when on bread-board
 #define FAKE_PC // fake pressure control input when valves are active
@@ -24,18 +29,18 @@
 //#error "debug"
 #elif defined BUILD_RELEASE
 //#error "release"
+#undef USE_TEST
 #define VERSION "rv(release)-" __DATE__ " " __TIME__
 #elif defined BUILD_CELLAR
 //#error "cellar"
+#undef USE_TEST
 #define VERSION "rv(cellar)-" __DATE__ " " __TIME__
 #else
 #error "build version missing"
 #endif
 
 
-#define USE_JSON
-#define USE_WDG
-#define USE_PC_POLLING
+
 
 #define ICACHE_FLASH_ATTR
 

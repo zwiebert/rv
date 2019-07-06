@@ -3,18 +3,19 @@
 #include "water_pump.h"
 
 
-int Lph[RV_VALVE_COUNT] = { 1000, //
-    1000, //
-    1000, //
-    1000, //
-    1000, //
-    1000, //
-    1000, //
-    1000, //
-    1000, //
-    1000, //
-    1000, //
-    1000, //
+int Lph[RV_VALVE_COUNT] = {
+    1000, //0
+    1000, //1
+    1000, //2
+    1000, //3
+    1000, //4
+    1000, //5
+    1000, //6
+    1000, //7
+    1000, //8
+    1000, //9
+    1000, //10
+    1000, //11
     };
 
 uint16_t RvTimers::valve_bits;
@@ -31,13 +32,20 @@ void RvTimer::changeState(state_T state) {
 
   if (oldState == STATE_ON) {
     switch_valve(false);
+    rvtp.lphChange(-Lph[getValveNumber()]);
   }
 
   switch (state) {
   case STATE_ON:
     switch_valve(true);
+    rvtp.lphChange(+Lph[getValveNumber()]);
     break;
   case STATE_PAUSED:
+    break;
+
+  case STATE_OFF:
+  case STATE_RUN:
+  case STATE_DONE:
     break;
   }
 
@@ -130,17 +138,14 @@ void RvTimers::loop() {
     case RvTimer::SCR_ON_OFF:
       if (vt.isOff()) { // ready to turn on
         if (RvTimer::rvtp.getLph() + Lph[vt.getValveNumber()] < RV_MAX_LPH) {
-          RvTimer::rvtp.lphChange(+Lph[vt.getValveNumber()]);
           vt.changeOnOff();
         }
       } else { // ready to turn off
         vt.changeOnOff();
-        RvTimer::rvtp.lphChange(-Lph[vt.getValveNumber()]);
       }
       break;
 
     case RvTimer::SCR_RAIN:
-      RvTimer::rvtp.lphChange(-Lph[vt.getValveNumber()]);
       vt.changeOnOff();
       break;
 
