@@ -338,7 +338,7 @@ void loop(void) {
   cli_loop();
   cxx_loop();
 
-  if (ms_timePulse(IIC_CHECK_EMS)) {
+  {
     if (!i2c2_check()) {
       report_event("i2c:reset");
       puts("I2C had crashed. Reset");

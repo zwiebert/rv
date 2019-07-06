@@ -135,8 +135,6 @@
                 				
                 <buildArguments>-s -j xxx</buildArguments>
                 				
-                <buildTarget/>
-                				
                 <stopOnError>true</stopOnError>
                 				
                 <useDefaultCommand>false</useDefaultCommand>
@@ -148,8 +146,6 @@
             <target name="Copy To Windows" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
                 				
                 <buildCommand>win_cp.sh</buildCommand>
-                				
-                <buildArguments/>
                 				
                 <stopOnError>true</stopOnError>
                 				
@@ -211,8 +207,6 @@
                 				
                 <buildArguments>-s -j  esp32poe</buildArguments>
                 				
-                <buildTarget/>
-                				
                 <stopOnError>true</stopOnError>
                 				
                 <useDefaultCommand>false</useDefaultCommand>
@@ -227,8 +221,6 @@
                 				
                 <buildArguments>-s -j  esp32gateway</buildArguments>
                 				
-                <buildTarget/>
-                				
                 <stopOnError>true</stopOnError>
                 				
                 <useDefaultCommand>false</useDefaultCommand>
@@ -241,7 +233,7 @@
                 				
                 <buildCommand>make</buildCommand>
                 				
-                <buildArguments>-s -j  esp32wlan</buildArguments>
+                <buildArguments>-s -j6  -B esp32wlan</buildArguments>
                 				
                 <buildTarget/>
                 				

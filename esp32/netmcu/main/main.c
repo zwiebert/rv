@@ -91,9 +91,7 @@ void app_main(void) {
 #endif
   rtc_setup();
 
-  if (kvs_get_int32(KEY_BOOT_COUNTER, &boot_counter) && kvs_store_int32(KEY_BOOT_COUNTER, ++boot_counter)) {
-
-  }
+  kvs_get_int32(KEY_BOOT_COUNTER, &boot_counter),  kvs_store_int32(KEY_BOOT_COUNTER, ++boot_counter);
 
   while (1) {
     loop();

@@ -17,19 +17,18 @@ extern "C" void app_switch_valves(uint16_t valve_bits, uint16_t valve_mask);
 RvTimers rvt = RvTimers(0, app_switch_valves);
 RainSensor rs;
 
-#define RVT_LOOP_EMS  9  // 2^n  (9 == 512)
-#define WD_LOOP_EMS 10 // 1024
+#define RVT_LOOP_MS  500
+#define WD_LOOP_MS 1000
 
 extern "C" void cxx_loop() {
 
-  if (ms_timePulse(RVT_LOOP_EMS)) {
+  if (ms_checkMst(MST_rvtLoop, RVT_LOOP_MS)) {
     rs.loop();
     rvt.loop();
   }
+
 #ifdef USE_WDG
-  if (ms_timePulse(WD_LOOP_EMS)) {
     watchDog_loop();
-  }
 #endif
 }
 

@@ -13,12 +13,17 @@
 #include <libopencm3/cm3/systick.h>
 
 
+#include "systick_1ms.h"
+
+
+
 volatile uint64_t run_time_ms;
 
 uint64_t ms_runTime(void) {
   return run_time_ms;
 }
 
+volatile int ms_tableMst[MST_size];
 
 bool ms_timeElapsed(uint64_t *last, int diff) {
   uint64_t now = run_time_ms;
@@ -29,9 +34,11 @@ bool ms_timeElapsed(uint64_t *last, int diff) {
   return true;
 }
 
-void SysTick_Handler(void)
-{
+void SysTick_Handler(void) {
   ++run_time_ms;
+  for (int i = 0; i < MST_size; ++i) {
+    --ms_tableMst[i];
+  }
 }
 
 void systick_setup(void) {
