@@ -55,8 +55,6 @@ static esp_eth_handle_t s_eth_handle = NULL;
 static const char *TAG = "eth_example";
 
 #define PIN_PHY_POWER CONFIG_PHY_POWER_PIN
-#define PIN_SMI_MDC CONFIG_PHY_SMI_MDC_PIN
-#define PIN_SMI_MDIO CONFIG_PHY_SMI_MDIO_PIN
 
 #ifdef CONFIG_PHY_USE_POWER_PIN
 
@@ -159,6 +157,12 @@ void ethernet_setup() {
     ESP_ERROR_CHECK(tcpip_adapter_set_default_eth_handlers());
     ESP_ERROR_CHECK(esp_event_handler_register(ETH_EVENT, ESP_EVENT_ANY_ID, &eth_event_handler, NULL));
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_ETH_GOT_IP, &got_ip_event_handler, NULL));
+
+#ifdef CONFIG_PHY_USE_POWER_PIN
+    gpio_pad_select_gpio(PIN_PHY_POWER);
+    gpio_set_direction(PIN_PHY_POWER, GPIO_MODE_OUTPUT);
+    gpio_set_level(PIN_PHY_POWER, 1);
+#endif
 
     // Setup MAC
     eth_mac_config_t mac_config = ETH_MAC_DEFAULT_CONFIG();

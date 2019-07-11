@@ -30,6 +30,7 @@
 #undef USE_LAN
 #elif defined BOARD_ESP32POE
 #undef USE_WLAN
+#define STM32_BOOT_PIN_REVERSE
 #define OLIMEX_ESP32_POE
 #define DISTRIBUTION 1
 #elif defined BOARD_ESP32GATEWAY

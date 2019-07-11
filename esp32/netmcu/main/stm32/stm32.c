@@ -22,6 +22,11 @@
 #include "driver/gpio.h"
 #include "debug/debug.h"
 
+#ifndef STM32_BOOT_PIN_REVERSE
+#define STM32_SET_BOOT_PIN(high) GPIO_OUTPUT_SET(STM32_BOOT_PIN, (high));
+#else
+#define STM32_SET_BOOT_PIN(high) GPIO_OUTPUT_SET(STM32_BOOT_PIN, !(high));
+#endif
 
 #define D(x) x
 
@@ -114,13 +119,13 @@ static void stm32_configSerial(stm32_mode_T mode) {
 }
 
 void stm32_runBootLoader() {
-  GPIO_OUTPUT_SET(STM32_BOOT_PIN, 1);
+  STM32_SET_BOOT_PIN(1);
   stm32_reset();
   stm32_configSerial(STM32_MODE_BOOTLOADER);
 }
 
 void stm32_runFirmware() {
-  GPIO_OUTPUT_SET(STM32_BOOT_PIN, 0);
+  STM32_SET_BOOT_PIN(0);
   stm32_reset();
   stm32_configSerial(STM32_MODE_FIRMWARE);
 }
@@ -128,13 +133,16 @@ void stm32_runFirmware() {
 
 void stm32_setup()
 {
+
+  gpio_pad_select_gpio(STM32_RESET_PIN);
   GPIO_OUTPUT_SET(STM32_RESET_PIN, 1);
   gpio_set_direction(STM32_RESET_PIN, GPIO_MODE_OUTPUT_OD);
   GPIO_OUTPUT_SET(STM32_RESET_PIN, 1);
 
-  GPIO_OUTPUT_SET(STM32_BOOT_PIN, 0);
-  gpio_set_direction(STM32_BOOT_PIN, GPIO_MODE_OUTPUT);
-  GPIO_OUTPUT_SET(STM32_BOOT_PIN, 0);
+  gpio_pad_select_gpio(STM32_BOOT_PIN);
+  STM32_SET_BOOT_PIN(0);
+  gpio_set_direction(STM32_BOOT_PIN, GPIO_MODE_OUTPUT_OD);
+  STM32_SET_BOOT_PIN(0);
 
   stm32_configSerial(STM32_MODE_FIRMWARE);
 

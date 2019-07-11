@@ -16,7 +16,6 @@ class AppState {
     constructor() {
 	this.mZoneRemainingTimes = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 	this.mZoneDescriptions = ["<enter names...>",0, 0,0,0,0,0,0,0,0,0,0,0,0];
-	this.mZoneTimerIntervals = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 	this.mZoneTimerDurations = [0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 	this.mZoneTimers = {};
 	this.mPressControlStatus = false;
@@ -37,7 +36,6 @@ class AppState {
 
     getZoneRemainingTime(n)  { return this.mZoneRemainingTimes[n]; }
     getZoneDescription(n) { return this.mZoneDescriptions[n]; }
-    getZoneTimerInterval(n) { return this.mZoneTimerIntervals[n]; }
     getZoneTimerDuration(n) { return this.mZoneTimerDurations[n]; }
 
     setRvFwUpdState(state) {
@@ -71,19 +69,23 @@ class AppState {
 	    break;   
 	}
     }
+
+    formatTimeToMS(time) {
+	return ~~(time/60)+':' + ~~(time%60);
+    }
     
     updateHtml_zoneTable() {
+	console.log("test");
         for (let i=0; i < ZONE_COUNT; ++i) {
             let sfx = i.toString();
             let dur = 'id-zoneTimerDuration-'+sfx;
             let rem = 'id-zoneRemainingTime-'+sfx;
-	    let tim = 'id-zoneTimerInterval-'+sfx;
-	    let name = 'id-zoneName-'+sfx;
-	    
+	    let name = 'id-zoneName-'+sfx;	    
 	    let timer = 'timer'+sfx+".0";
-            document.getElementById(dur).value = this.mZoneTimerDurations[i];
-            document.getElementById(rem).value = this.mZoneRemainingTimes[i];
-            document.getElementById(tim).value = (timer in this.mZoneTimers) ? JSON.stringify(this.mZoneTimers[timer]) : "-";
+
+	    console.log(dur);
+            document.getElementById(dur).value = (this.mZoneTimerDurations[i] / 60.0).toFixed(2);
+            document.getElementById(rem).value = (this.mZoneRemainingTimes[i] / 60.0).toFixed(2);
 	    document.getElementById(name).value = this.mZoneDescriptions[i];
         }
     }
@@ -307,6 +309,12 @@ function postMcuRestart() {
     postData(url, json);
 }
 
+function postRvMcuRestart() {
+    var json = { to:"tfmcu", mcu: { rfw:"1" } };
+    var url = base+'/cmd.json';
+    postData(url, json);
+}
+
 function postConfig() {
     let tfmcu = Object.assign({},tfmcu_config);
     var cfg = tfmcu.config;
@@ -432,14 +440,15 @@ function netFirmwareOTA() {
 
 function genHtml_timerTableRow(nmb, name) {
     return '<tr>'+
-	'<td>'+nmb+'</td><td><input type="text" id="id-zoneName-'+nmb+'" value="'+name+'"></td><td><input type="number" min="0" max="60" value="0" id="id-zoneRemainingTime-'+nmb+'"></td>'+
-	'<td><input type="text" id="id-zoneTimerInterval-'+nmb+'" value="'+app_state.getZoneTimerInterval(nmb)+'"</td>'+
+	'<td>'+nmb+'</td>'+
+        '<td><input type="text" id="id-zoneName-'+nmb+'" value="'+name+'"></td>'+
 	'<td><input type="number" min="0" max="60" id="id-zoneTimerDuration-'+nmb+'" value="'+app_state.getZoneTimerDuration(nmb)+'"</td>'+
+	'<td><input type="number" min="0" max="60" value="0" id="id-zoneRemainingTime-'+nmb+'"></td>'+
 	'</tr>';
 }
 
 function genHtml_timerTable(n) {
-    let html='<table><tr><th>Zone</th><th>Name</th><th>Restlaufzeit</th><th>Timer Intervall</th><th>Timer Dauer</th></tr>';
+    let html='<table><tr><th>Zone</th><th>Name</th></th><th>Dauer</th><th>Rest</th></tr>';
     for(let i=0; i < n; ++i) {
 	html+= genHtml_timerTableRow(i, app_state.getZoneDescription(i));
     }
@@ -448,8 +457,7 @@ function genHtml_timerTable(n) {
 }
 
 function writeHtml_timerTableDiv() {
-    console.log("test");
-    document.getElementById("id-timer-table-div").innerHTML = genHtml_timerTable(14);
+    document.getElementById("id-timer-table-div").innerHTML = genHtml_timerTable(ZONE_COUNT);
 
 }
 
@@ -496,6 +504,7 @@ function tabSwitchVisibility(mask) {
 }
 
 function onContentLoaded() {
+    console.log("onContentLoaded()");
     app_state = new AppState();
     app_state.load();
     app_state.fetchConfig();
@@ -509,6 +518,8 @@ function onContentLoaded() {
 
     document.getElementById("zrlb").onclick = function() { app_state.fetchZoneNames(); app_state.fetchZoneData();}
     document.getElementById("znsb").onclick = () => postZoneNames();
+
+        document.getElementById("rvrstb").onclick = () => postRvMcuRestart();
 
     document.getElementById("rvota").onclick = () => rvFirmwareOTA();
 

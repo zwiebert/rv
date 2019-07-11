@@ -205,7 +205,9 @@
                 				
                 <buildCommand>make</buildCommand>
                 				
-                <buildArguments>-s -j  esp32poe</buildArguments>
+                <buildArguments>-s -j 6 esp32poe</buildArguments>
+                				
+                <buildTarget/>
                 				
                 <stopOnError>true</stopOnError>
                 				
