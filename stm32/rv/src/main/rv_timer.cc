@@ -44,7 +44,9 @@ void RvTimer::changeState(state_T state) {
     break;
 
   case STATE_OFF:
+    break;
   case STATE_RUN:
+    break;
   case STATE_DONE:
     break;
   }
@@ -113,7 +115,7 @@ void *p;
 
 void RvTimers::loop() {
 
-  valve_bits = valve_mask = 0;
+
 
   for (RvTimer *t = mRvTimers.mUsedTimers.getNext(); t; t = t->getNext()) {
 
@@ -126,7 +128,7 @@ void RvTimers::loop() {
 
     if (t->isDone()) {
       RvTimer *pred = t->pred;
-      mRvTimers.mFreeTimers.append(t);
+      mRvTimers.delete_timer(t);
       t = pred;
       continue;
     }
@@ -169,6 +171,7 @@ void RvTimers::loop() {
 
   if (valve_mask && mSvsCb) {
     mSvsCb(valve_bits, valve_mask);
+    valve_bits = valve_mask = 0;
   }
 }
 

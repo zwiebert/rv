@@ -10,9 +10,7 @@
 #include "app_cxx.h"
 #include "watch_dog.hh"
 #include "systick_1ms.h"
-
-extern "C" void app_switch_valve(int valve_number, bool state);
-extern "C" void app_switch_valves(uint16_t valve_bits, uint16_t valve_mask);
+#include "valve_relays.h"
 
 RvTimers rvt = RvTimers(0, app_switch_valves);
 RainSensor rs;

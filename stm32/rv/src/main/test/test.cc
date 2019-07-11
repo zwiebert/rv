@@ -20,6 +20,10 @@ testData_T tds[TD_RV_count] = {
     {testRvTimer_loop, },
 };
 
+extern "C" testRes_T tr_failed() {
+  return TR_FAILED; // set debugger breakpoint here
+}
+
 extern "C" enum test_res test_loop() {
   int countFailed = 0;
   int countSucceeded = 0;

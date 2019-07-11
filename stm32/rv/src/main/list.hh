@@ -8,7 +8,6 @@
 #ifndef MAIN_LIST_HH_
 #define MAIN_LIST_HH_
 
-
 template <class T>
 struct Node {
 public:
@@ -19,13 +18,6 @@ public:
 
   }
 
-  void unlinkThis() {
-    if (pred)
-      pred->succ = succ;
-    if (succ)
-      succ->pred = pred;
-  }
-
   T *getNext() {
     return succ->mIsHead ? 0 : succ;
   }
@@ -33,27 +25,48 @@ public:
   bool isListHead() {
     return mIsHead;
   }
+
 };
 
 template <class T>
 struct List : public Node<T> {
+  int mLength = 0;
 
   List<T>(): Node<T>((T*)this) {
 
   }
 
-  void append(T *timer) {
-    // unlink from current list
-    timer->unlinkThis();
+  void append(T *obj) {
+    ++mLength;
 
-    // append to list
     T *tail = this->pred;
-    tail->succ = timer;
-    timer->pred = tail;
+    tail->succ = obj;
+    obj->pred = tail;
 
-    this->pred = timer; // timer is new list tail
-    timer->succ = (T*) this;
+    this->pred = obj; // obj is new list tail
+    obj->succ = (T*) this;
+
   }
+
+  void remove(T *obj) {
+    --mLength;
+    if (obj->pred)
+      obj->pred->succ = obj->succ;
+    if (obj->succ)
+      obj->succ->pred = obj->pred;
+  }
+
+  T *pop() {
+    T *obj = this->succ->mIsHead ? 0 : this->succ;
+    if (obj)
+      remove(obj);
+    return obj;
+  }
+
+  size_t length() {
+    return mLength;
+  }
+
 
 
 };

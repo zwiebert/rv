@@ -230,13 +230,19 @@ public:
   }
 
   void run() {
+    if (mState == STATE_DONE)
+      return;
     mNextOnOff = time(0);
-    mState = STATE_RUN;
+    changeState(STATE_RUN);
     mDoneOn = 0;
   }
 
-  void scheduleRun() {
+  RvTimer *scheduleRun() {
+    if (mState == STATE_DONE)
+      return this;
+
     mNextRun = time(0);
+    return this;
   }
 
   void stop();
@@ -383,12 +389,31 @@ private:
       }
     }
 
+    RvTimer *get_timer() {
+      RvTimer *res = mFreeTimers.pop();
+      if (res)
+        mUsedTimers.append(res);
+      return res;
+    }
+
+    void delete_timer(RvTimer *t) {
+      mUsedTimers.remove(t);
+      *t = RvTimer();  // re-init
+      mFreeTimers.append(t);
+    }
+
+    unsigned get_used_count() { return mUsedTimers.length(); }
+    unsigned get_free_count() { return mFreeTimers.length(); }
+
   } mRvTimers;
 
   switch_valve_cb mSvCb; // XXX
   switch_valves_cb mSvsCb;
 
 public:
+
+  unsigned get_used_count() { return mRvTimers.get_used_count(); }
+  unsigned get_free_count() { return mRvTimers.get_free_count(); }
 
   RvTimers(switch_valve_cb cb, switch_valves_cb cb2) :
       mSvCb(cb), mSvsCb(cb2) {
@@ -400,31 +425,25 @@ public:
   }
 
   RvTimer *set(RvTimer::SetArgs &args, int valve_number, int id) {
-    RvTimer *timer = 0;
     for (RvTimer *t = mRvTimers.mUsedTimers.getNext(); t; t = t->getNext()) {
       if (t->match(valve_number, id)) {
-        if (t->isOn())
-          RvTimer::rvtp.lphChange(-Lph[valve_number]);
-
-
-        t->stop();
-        timer = t;
+        t->changeState(RvTimer::STATE_DONE);
         break;
       }
     }
 
-    if (!timer) {
-      timer = mRvTimers.mFreeTimers.getNext();
-      if (timer)
-        mRvTimers.mUsedTimers.append(timer);
+    RvTimer *timer = mRvTimers.get_timer();
+    if (!timer)
+      return 0;
+
+    if (args.on_duration == 0) {
+      timer->changeState(RvTimer::STATE_DONE);
     }
 
-    if (timer) {
-      timer->register_callback((mSvCb ? mSvCb : switch_valve_2), valve_number);
-      timer->set(args, id);
-      return timer;
-    }
-    return 0;
+    timer->register_callback((mSvCb ? mSvCb : switch_valve_2), valve_number);
+    timer->set(args, id);
+    return timer;
+
   }
 
   RvTimer *set(int valve_number, int on_duration, int id = 0) {
@@ -436,7 +455,7 @@ public:
   void unset(int valve_number, int id) {
     for (RvTimer *t = mRvTimers.mUsedTimers.getNext(); t; t = t->getNext()) {
       if (t->match(valve_number, id)) {
-        mRvTimers.mFreeTimers.append(t);
+        mRvTimers.delete_timer(t);
       }
     }
   }

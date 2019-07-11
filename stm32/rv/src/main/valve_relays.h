@@ -17,6 +17,12 @@
 extern "C" {
 #endif
 
+void app_switch_valve(int valve_number, bool state);
+void app_switch_valves(uint16_t valve_bits, uint16_t valve_mask);
+
+#define RELAY_ON MCP23017_PORT_PINS_LOW
+#define RELAY_OFF MCP23017_PORT_PINS_HIGH
+
 extern Mcp23017 relay_16;
 
 

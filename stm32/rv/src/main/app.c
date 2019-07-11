@@ -26,14 +26,13 @@
 #include "app_cxx.h"
 #include "report.h"
 #include "systick_1ms.h"
+#include "valve_relays.h"
 
 #include "test/test.h"
 
 #include "../Libraries/tm1638/include/boards/dlb8.h"
 
 Mcp23017 relay_16;
-#define RELAY_ON MCP23017_PORT_PINS_LOW
-#define RELAY_OFF MCP23017_PORT_PINS_HIGH
 
 Dlb8 input[2];
 Dlb8 *dlb8_obj[2];
@@ -206,22 +205,6 @@ static void led_setup(void) {
 
 
 
-void app_switch_valve(int valve_number, bool state) {
-  bool old_bit = !Mcp23017_getBit(&relay_16, valve_number, true);
-  Mcp23017_putBit(&relay_16, valve_number, (state ? RELAY_ON : RELAY_OFF) != 0);
-  if (old_bit != state) {
-    report_valve_status((1 << valve_number), (1 << valve_number));
-  }
-}
-
-void app_switch_valves(uint16_t valve_bits, uint16_t valve_mask) {
-  uint16_t old_bits = ~Mcp23017_getBits(&relay_16, valve_mask, true);
-  Mcp23017_putBits(&relay_16, valve_mask, ~valve_bits);
-
-  if ((valve_mask &= (old_bits ^ valve_bits))) { // report modified bits only
-    report_valve_status(valve_bits, valve_mask);
-  }
-}
 
 void ioExtender_setup(bool re_init) {
 	if (!re_init) {

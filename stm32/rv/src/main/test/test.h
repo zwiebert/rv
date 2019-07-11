@@ -15,6 +15,8 @@ extern "C" {
 
 typedef enum test_res { TR_RUNNING, TR_FAILED, TR_SUCCEEDED, TR_NOT_IMPLEMENTED } testRes_T;
 
+testRes_T tr_failed();
+
 testRes_T test_loop();
 void test_setup();
 

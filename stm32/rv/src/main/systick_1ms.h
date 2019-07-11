@@ -15,7 +15,11 @@ extern "C" {
 #endif
 
 // table of timers with 1ms resolution
-enum ms_tableMst {MST_rvtLoop, MST_size};
+enum ms_tableMst {MST_rvtLoop,
+#ifdef USE_TEST
+  MST_testLoop,
+#endif
+  MST_size};
 extern volatile int ms_tableMst[MST_size]; // timers will decrement each ms
 #define ms_loadMst(idx, n) (ms_tableMst[(idx)] = (n)) // load timer with milliseconds (positive integer)
 #define ms_testMst(idx) (ms_tableMst[(idx)] < 0) // test if timer became negative

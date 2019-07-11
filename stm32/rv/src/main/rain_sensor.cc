@@ -15,7 +15,9 @@
 #define RAIN_SENSOR_PORT GPIOB
 #define RAIN_SENSOR_PIN GPIO8
 
-
+#ifdef USE_TEST
+bool rs_forceRain;
+#endif
 
 time_t RainSensorOffTime;
 
@@ -31,6 +33,11 @@ RainSensor::RainSensor() {
 }
 
 bool RainSensor::getState(time_t delay) {
+#ifdef USE_TEST
+  if (rs_forceRain)
+    return true;
+#endif
+
 	bool result = false;
 	if (!delay)
 	    result = gpio_get(RAIN_SENSOR_PORT, RAIN_SENSOR_PIN); //rainSensor_isRainSensorActive();
