@@ -105,7 +105,7 @@ process_parmCmd(clpar p[], int len) {
         sscanf(val, "%f,%d,%f,%d,%f,%d,%f,%f", &on, &ignoreRainSensor, &off, &repeats, &period, &dInterval, &dhBegin, &dhEnd);
 
         buf_idx += sprintf(buf + strlen(buf), " dur%d.%d=%d,%d,%d,%d,%d,%d,%d,%d", zone, timer_number, (int) (on * ONE_MINUTE), ignoreRainSensor, (int) (off * ONE_MINUTE), repeats,
-            (int) (period * (60 * ONE_HOUR)), dInterval, (int)(dhBegin * ONE_HOUR), (int)(dhEnd * ONE_HOUR));
+            (int) (period * ONE_HOUR), dInterval, (int)(dhBegin * ONE_HOUR), (int)(dhEnd * ONE_HOUR));
 
         hasCmdLine = true;
       } else {

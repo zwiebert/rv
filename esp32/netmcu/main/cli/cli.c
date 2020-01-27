@@ -47,7 +47,7 @@ db_puts("process parm");
 
 
 int reply_failure(void) { return 0;}
-uint16_t msgid;
+u16 msgid;
 
 
 #else
@@ -70,7 +70,7 @@ uint16_t msgid;
 #define ENABLE_TIMER_WDAY_KEYS 0  // allow timer mon=T tue=T sun=T  additional to weekly=TTTTTTT  (a waste of resources)
 #define FSB_PLAIN_REPEATS 2  // send plain commands 1+N times (if 0, send only once without repeating)
 
-uint16_t msgid;
+u16 msgid;
 
 const char *Obj_tag="";
 #define SET_OBJ_TAG(tag) Obj_tag=(tag)
@@ -154,10 +154,11 @@ static void ICACHE_FLASH_ATTR cli_out_entry(void_fun_ptr tag, const char *key, c
   }
 }
 
-void cli_out_set_config(void) {
+void  ICACHE_FLASH_ATTR cli_out_set_config(void) {
   SET_OBJ_TAG(OBJ_TAG_CONFIG);
 }
-void cli_out_set_x(const char *obj_tag) {
+
+void  ICACHE_FLASH_ATTR cli_out_set_x(const char *obj_tag) {
   SET_OBJ_TAG(obj_tag);
 }
 
@@ -233,8 +234,8 @@ void ICACHE_FLASH_ATTR cli_msg_ready(void) {
   io_puts("\nready:\n");
 }
 
-void ICACHE_FLASH_ATTR reply_id_message(uint16_t id, const char *tag, const char *msg) {
-  uint16_t old_id = msgid;
+void ICACHE_FLASH_ATTR reply_id_message(u16 id, const char *tag, const char *msg) {
+  u16 old_id = msgid;
   if (!so_tgt_test_cli_text())
     return;
 

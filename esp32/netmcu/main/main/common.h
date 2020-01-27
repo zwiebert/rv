@@ -32,7 +32,7 @@ typedef bool logicLevel;
 
 #include "debug/debug.h"
 
-void mcu_delay_us(uint16_t us);
+void mcu_delay_us(u16 us);
 void mcu_restart(void);
 
 

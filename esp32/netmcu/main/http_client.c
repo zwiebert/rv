@@ -25,7 +25,7 @@
 #include "esp_system.h"
 #include "nvs_flash.h"
 #include "esp_event.h"
-#include "tcpip_adapter.h"
+#include "esp_netif.h"
 #include "esp_http_client.h"
 #include "http_client.h"
 

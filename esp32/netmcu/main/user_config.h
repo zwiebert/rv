@@ -54,8 +54,17 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include "userio/inout.h"
 #include "esp32/rom/ets_sys.h"
+
+typedef uint8_t u8;
+typedef int8_t i8;
+typedef uint16_t u16;
+typedef int16_t i16;
+typedef uint32_t u32;
+typedef int32_t i32;
+
+#include "userio/inout.h"
+
 
 #define ICACHE_FLASH_ATTR
 //#define vrbDebug 0

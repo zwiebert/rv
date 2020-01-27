@@ -46,7 +46,7 @@ class AppState {
     updateHtml_bootCount() {
 	document.getElementById("id-bootCount").innerHTML = this.mEsp32BootCount.toString();
     }
-    
+
     updateHtml_stm32Version() {
 	document.getElementById("id-stm32Version").innerHTML = this.mStm32Version;
     }
@@ -66,21 +66,21 @@ class AppState {
 	    break;
 	case FW_UPD_STATE_ERROR:
 	    el.innerHTML = " ...firmware update FAILED.";
-	    break;   
+	    break;
 	}
     }
 
     formatTimeToMS(time) {
 	return ~~(time/60)+':' + ~~(time%60);
     }
-    
+
     updateHtml_zoneTable() {
 	console.log("test");
         for (let i=0; i < ZONE_COUNT; ++i) {
             let sfx = i.toString();
             let dur = 'id-zoneTimerDuration-'+sfx;
             let rem = 'id-zoneRemainingTime-'+sfx;
-	    let name = 'id-zoneName-'+sfx;	    
+	    let name = 'id-zoneName-'+sfx;
 	    let timer = 'timer'+sfx+".0";
 
 	    console.log(dur);
@@ -89,14 +89,14 @@ class AppState {
 	    document.getElementById(name).value = this.mZoneDescriptions[i];
         }
     }
-    
+
     updateHtml_rvStatus() {
         document.getElementById("id-pressControlStatus").checked = this.mPressControlStatus;
         document.getElementById("id-waterPumpStatus").checked = this.mWaterPumpStatus;
         document.getElementById("id-rainSensorStatus").checked = this.mRainSensorStatus;
         document.getElementById("id-stm32Time").value = this.mStm32Time;
     }
-    
+
     updateAutomaticHtml() {
         let auto = this.auto;
         document.getElementById('tfti').value = ("f" in auto) ? auto.f : "";
@@ -165,14 +165,14 @@ class AppState {
 		    }
 		}
 		this.updateHtml_zoneTable();
-		
+
 		this.mPressControlStatus = ("pc" in data && data.pc);
 		this.mWaterPumpStatus = ("pump" in data && data.pump);
 		this.mRainSensorStatus = ("rain" in data && data.rain);
 		this.mStm32Time = "time" in data ? data.time : "";
 		this.updateHtml_rvStatus();
 	    }
-	    
+
         }
 
 	if ("kvs" in obj) {
@@ -215,9 +215,9 @@ class AppState {
         });
     }
 
-    
 
-    
+
+
 
     fetchZoneData() {
         var json = { to:"rv", cmd: { dur:"?", rem:"?", status:"?" } };
@@ -466,7 +466,7 @@ function fetchVersions() {
     netmcu.cmd = {
 	"rv-version":"?"
     };
-    
+
     let url = base+'/cmd.json';
     console.log("url: "+url);
     postData(url, netmcu);
@@ -477,7 +477,7 @@ function fetchBootCount() {
     netmcu.mcu = {
 	"boot-count":"?"
     };
-    
+
     let url = base+'/cmd.json';
     console.log("url: "+url);
     postData(url, netmcu);
@@ -491,12 +491,12 @@ const VIS_FIRMWARE = 0x04;
 function tabSwitchVisibility(mask) {
     const NONE = "none";
     const SHOW = "";
-    document.getElementById("id-rvDiv").style.display = (mask & VIS_RV) ? SHOW : NONE; 
-    document.getElementById("configdiv").style.display = (mask & VIS_NET) ? SHOW : NONE; 
+    document.getElementById("id-rvDiv").style.display = (mask & VIS_RV) ? SHOW : NONE;
+    document.getElementById("configdiv").style.display = (mask & VIS_NET) ? SHOW : NONE;
     document.getElementById("id-fwDiv").style.display = (mask & VIS_FIRMWARE) ? SHOW : NONE;
 
     const BGC1 = "hsl(220, 60%, 60%)";
-    const BGC0 = "#eee"
+    const BGC0 = "#eee";
     document.getElementById("atb").style.backgroundColor =  (mask & VIS_RV) ? BGC1 : BGC0;
     document.getElementById("ctb").style.backgroundColor =  (mask & VIS_NET) ? BGC1 : BGC0;
     document.getElementById("stb").style.backgroundColor =  (mask & VIS_FIRMWARE) ? BGC1 : BGC0;
@@ -513,10 +513,10 @@ function onContentLoaded() {
     app_state.tabVisibility = VIS_RV;
     fetchVersions();
     fetchBootCount();
-    
+
     writeHtml_timerTableDiv();
 
-    document.getElementById("zrlb").onclick = function() { app_state.fetchZoneNames(); app_state.fetchZoneData();}
+    document.getElementById("zrlb").onclick = function() { app_state.fetchZoneNames(); app_state.fetchZoneData();};
     document.getElementById("znsb").onclick = () => postZoneNames();
 
         document.getElementById("rvrstb").onclick = () => postRvMcuRestart();
@@ -524,7 +524,7 @@ function onContentLoaded() {
     document.getElementById("rvota").onclick = () => rvFirmwareOTA();
 
     document.getElementById("netota").onclick = () => netFirmwareOTA();
-    
+
     document.getElementById("csvb").onclick = () => postConfig();
     document.getElementById("crlb").onclick = () => app_state.fetchConfig();
 

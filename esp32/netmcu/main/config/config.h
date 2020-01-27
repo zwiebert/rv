@@ -25,7 +25,7 @@ typedef struct {
 	enum verbosity app_verboseOutput;
 	char app_configPassword[16];
 #ifdef USE_SERIAL
-	uint32_t mcu_serialBaud;
+	u32 mcu_serialBaud;
 #endif
 #ifdef USE_WLAN
     char wifi_SSID[32];
@@ -34,13 +34,13 @@ typedef struct {
 #ifdef USE_HTTP
   char http_user[16];
   char http_password[31];
-  int8_t http_enable;
+  i8 http_enable;
 #endif
 #ifdef USE_MQTT
   char mqtt_url[64];
   char mqtt_user[16];
   char mqtt_password[31];
-  int8_t mqtt_enable;
+  i8 mqtt_enable;
 #endif
 #ifdef USE_POSIX_TIME
   char geo_tz[32];
@@ -53,8 +53,8 @@ typedef struct {
 
 extern config C;
 
-void read_config(uint32_t mask);  // restore C from persistent storage
-void save_config(uint32_t mask);  // save C to persistent storage
+void read_config(u32 mask);  // restore C from persistent storage
+void save_config(u32 mask);  // save C to persistent storage
 
 enum {
 CB_RECV,

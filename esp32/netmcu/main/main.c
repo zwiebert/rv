@@ -2,7 +2,7 @@
 #include "esp_wifi.h"
 #include "esp_system.h"
 #include "esp_event.h"
-#include "esp_event_loop.h"
+#include "esp_event.h"
 #include "nvs_flash.h"
 #include "driver/gpio.h"
 
@@ -15,7 +15,7 @@
 #include "kvstore.h"
 
 #define KEY_BOOT_COUNTER "BOOT_CT"
-int32_t boot_counter;
+i32 boot_counter;
 
 
 void loop(void);
@@ -54,9 +54,9 @@ void app_main(void) {
   read_config(~0);
   io_puts("\r\n\r\n");
 
-  tcpip_adapter_init();
-
-  ESP_ERROR_CHECK(esp_event_loop_init(event_handler, NULL));
+  esp_netif_init();
+  // Create default event loop that running in background
+  ESP_ERROR_CHECK(esp_event_loop_create_default());
 
 #ifdef USE_WLAN
   void wifistation_setup(void);

@@ -5,7 +5,7 @@
 #include "esp_wifi.h"
 #include "esp_system.h"
 #include "esp_event.h"
-#include "esp_event_loop.h"
+#include "esp_event.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "driver/gpio.h"
@@ -60,7 +60,7 @@ user_set_station_config(void) {
 
 #if 0
 void wst_reconnect(void) {
-  uint8_t status = wifi_station_get_connect_status();
+  u8 status = wifi_station_get_connect_status();
   io_printf_fun("wifi state: %d\n", (int) 0xff & status);
 
   //wifi_station_connect();
@@ -79,7 +79,7 @@ volatile static bool wifistation_connected;
 volatile static bool wifistation_disconnected;
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
-        int32_t event_id, void* event_data) {
+        i32 event_id, void* event_data) {
 
     switch (event_id) {
 
@@ -108,7 +108,7 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
 
 /** Event handler for IP_EVENT_STA_GOT_IP */
 static void got_ip_event_handler(void* arg, esp_event_base_t event_base,
-        int32_t event_id, void* event_data) {
+        i32 event_id, void* event_data) {
 
     ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
     const tcpip_adapter_ip_info_t* ip_info = &event->ip_info;
@@ -138,7 +138,7 @@ wifistation_setup(void) {
 
   s_wifi_event_group = xEventGroupCreate();
 
-  tcpip_adapter_init();
+  esp_netif_init();
 
   ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL));
   ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &got_ip_event_handler, NULL));

@@ -31,7 +31,7 @@
 
 #define D(x)
 
-uint8_t so_target;
+u8 so_target;
 
 //key strings used for parsing and printing config commands by CLI/HTTP/MQTT
 //keys must be in same order as their SO_CFG_xxx counterparts in so_msg_t
@@ -53,9 +53,9 @@ bool out_js = true;
 
 char *ICACHE_FLASH_ATTR ftoa(float f, char *buf, int n) {
   int i;
-  int32_t mult;
-  uint32_t rop;
-  int16_t lop = (int16_t) f;
+  i32 mult;
+  u32 rop;
+  i16 lop = (i16) f;
   char *s = buf;
 
   itoa(lop, s, 10);
@@ -69,7 +69,7 @@ char *ICACHE_FLASH_ATTR ftoa(float f, char *buf, int n) {
   for (i = 0; i < n; ++i)
     mult *= 10;
 
-  rop = (uint32_t) (f * mult);
+  rop = (u32) (f * mult);
   ltoa(rop, s, 10);
 
   return buf;
@@ -158,7 +158,7 @@ void so_out_x_reply_entry_f(so_msg_t key, float val, int n) {
 static void so_print_startup_info(void);
 
 void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
-  static uint16_t pras_msgid, cuas_msgid;
+  static u16 pras_msgid, cuas_msgid;
   char buf[64];
   int i;
 
@@ -181,7 +181,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
     break;
 
   case SO_MCU_BOOT_COUNT: {
-    extern int32_t boot_counter;
+    extern i32 boot_counter;
     so_out_x_reply_entry_sl("boot-count", boot_counter);
   }
     break;
@@ -345,7 +345,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
       if (is_gpio_number_usable(gpio_number, true)) {
         ps[0] = pin_state_args[C.gpio[gpio_number]];
       }
-      cli_out_x_reply_entry2(key, ps);
+      so_out_x_reply_entry_ss(key, ps);
     }
 #endif
     break;
@@ -371,7 +371,7 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
 
     /////////////////////////////////////////////////////////////////////////////////
   case SO_CUAS_START:
-    cuas_msgid = *(uint16_t *) arg;
+    cuas_msgid = *(u16 *) arg;
     io_puts("U: Press Stop on the Fernotron central unit\n");
     break;
   case SO_CUAS_TIMEOUT:
@@ -386,11 +386,11 @@ void ICACHE_FLASH_ATTR so_output_message(so_msg_t mt, void *arg) {
 
     /////////////////////////////////////////////////////////////////////////////////
   case SO_PRAS_START_LISTENING:
-    pras_msgid = *(uint16_t *) arg;
+    pras_msgid = *(u16 *) arg;
     io_puts("U:pras: start listening at RF\n");
     break;
   case SO_PRAS_STOP_LISTENING:
-    if (arg && *(uint16_t *) arg) {
+    if (arg && *(u16 *) arg) {
       io_puts("U:pras: success\n");
     } else {
       io_puts("U:pras: failure\n");

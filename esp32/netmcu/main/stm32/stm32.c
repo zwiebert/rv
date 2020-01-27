@@ -75,7 +75,7 @@ int stm32_write(const char *data, unsigned data_len) {
 }
 
 int stm32_read(char *buf, unsigned buf_size) {
-	 return uart_read_bytes(UART_NUM_1, (uint8_t *)buf, buf_size, 20 / portTICK_RATE_MS);
+	 return uart_read_bytes(UART_NUM_1, (u8 *)buf, buf_size, 20 / portTICK_RATE_MS);
 }
 
 

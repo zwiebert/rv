@@ -13,13 +13,13 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
-#include "esp_event_loop.h"
+#include "esp_event.h"
 #include "esp_err.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_eth.h"
 #include "esp32/rom/gpio.h"
-#include "tcpip_adapter.h"
+#include "esp_netif.h"
 #include "driver/gpio.h"
 #include "driver/periph_ctrl.h"
 
@@ -108,7 +108,7 @@ static esp_err_t phy_device_power_enable_via_gpio(esp_eth_phy_t *phy, bool enabl
 
 /** Event handler for Ethernet events */
 static void eth_event_handler(void* arg, esp_event_base_t event_base, 
-                              int32_t event_id, void* event_data)
+                              i32 event_id, void* event_data)
 {
     switch (event_id) {
     case ETHERNET_EVENT_CONNECTED:
@@ -132,7 +132,7 @@ static void eth_event_handler(void* arg, esp_event_base_t event_base,
 
 /** Event handler for IP_EVENT_ETH_GOT_IP */
 static void got_ip_event_handler(void* arg, esp_event_base_t event_base, 
-                                 int32_t event_id, void* event_data)
+                                 i32 event_id, void* event_data)
 {
     ip_event_got_ip_t* event = (ip_event_got_ip_t*) event_data;
     const tcpip_adapter_ip_info_t* ip_info = &event->ip_info;

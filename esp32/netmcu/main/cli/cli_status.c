@@ -41,7 +41,7 @@ process_parmStatus(clpar p[], int len) {
   int arg_idx;
 
   bool hasValveBits = false, hasValveChangeMask = false, hasRainSensor = false;
-  uint32_t valveBits = 0, valveChangeMask = 0;
+  u32 valveBits = 0, valveChangeMask = 0;
   bool rainSensor = 0;
 
 
@@ -71,7 +71,7 @@ process_parmStatus(clpar p[], int len) {
   }
 
   if (hasValveBits && hasValveChangeMask) {
-    uint32_t mask = valveChangeMask;
+    u32 mask = valveChangeMask;
     for (int i=0; mask; ++i, (mask >>= 1)) {
       if (mask & 1) {
         io_mqtt_publish_valve_status(i, GET_BIT(valveBits, i));

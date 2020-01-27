@@ -1,5 +1,5 @@
 #include <esp_wifi.h>
-#include <esp_event_loop.h>
+#include <esp_event.h>
 #include <esp_log.h>
 #include <esp_system.h>
 #include <nvs_flash.h>
@@ -88,7 +88,7 @@ esp_err_t post_handler_json(httpd_req_t *req) {
   }
 
   {
-    uint16_t json_size = 512;
+    u16 json_size = 512;
     char *json = malloc(json_size);
     if (json) {
       sj_set_buf(json, json_size);  // reply json will now be created in our buffer
@@ -121,7 +121,7 @@ esp_err_t get_handler_config_json(httpd_req_t *req) {
 
   httpd_resp_set_type(req, "application/json");
   {
-    uint16_t js_size = 512;
+    u16 js_size = 512;
     char *js = malloc(js_size);
     if (js) {
       if (sj_config2json_buf(js, js_size, SO_CFG_all) >= 0)

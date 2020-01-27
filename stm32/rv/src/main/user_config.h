@@ -23,6 +23,7 @@
 #define USE_PC_POLLING
 
 #ifdef BUILD_DEBUG
+#undef USE_TEST
 #define USE_BB // use internal pull-up resistors when on bread-board
 #define FAKE_PC // fake pressure control input when valves are active
 #define VERSION "rv(breadboard)-" __DATE__ " " __TIME__

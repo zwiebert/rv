@@ -110,7 +110,7 @@ process_parmConfig(clpar p[], int len) {
 
 
         case SO_CFG_BAUD: {
-          uint32_t baud = strtoul(val, NULL, 10);
+          u32 baud = strtoul(val, NULL, 10);
           C.mcu_serialBaud = baud;
           save_config(CONFIG_BAUD);
         }

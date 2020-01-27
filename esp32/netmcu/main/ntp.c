@@ -16,7 +16,7 @@
 #include "user_config.h"
 #include "config/config.h"
 #include "esp_event.h"
-#include "esp_event_loop.h"
+#include "esp_event.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
 

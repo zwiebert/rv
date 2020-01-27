@@ -33,14 +33,14 @@ char json_buf[JSON_BUF_SIZE];
 int json_idx;
 
 char *ext_buf;
-uint16_t ext_buf_size;
+u16 ext_buf_size;
 
 #define BUF (ext_buf ? ext_buf : json_buf)
 #define BUF_SIZE (ext_buf ? ext_buf_size : JSON_BUF_SIZE)
 #define USE_CALLBACK (!ext_buf && s_json_config_out)
 #define DO_CALLBACK() s_json_config_out(BUF);
 
-void sj_set_buf(char *dst, uint16_t dst_size) {
+void sj_set_buf(char *dst, u16 dst_size) {
   if (dst) {
     *dst = '\0';
     ext_buf = dst;
@@ -91,7 +91,7 @@ void so_json_x_reply(const char *key, const char *val, bool is_number) {
   D(ets_printf("json_idx: %u, buf: %s\n", json_idx, BUF));
 }
 
-int sj_config2json_buf(char *dst, uint16_t dst_size, so_msg_t key) {
+int sj_config2json_buf(char *dst, u16 dst_size, so_msg_t key) {
 
   sj_set_buf(dst,dst_size);
   so_output_message(SO_CFG_all, "j");
@@ -101,12 +101,12 @@ int sj_config2json_buf(char *dst, uint16_t dst_size, so_msg_t key) {
 }
 
 
-const char *ICACHE_FLASH_ATTR sj_timer2json(uint8_t g, uint8_t m) {
+const char *ICACHE_FLASH_ATTR sj_timer2json(u8 g, u8 m) {
   sj_timer2json_buf(BUF, BUF_SIZE, g, m, true);
   return json_buf;
 }
 
-char *sj_gmp2json_buf(char *dst, uint16_t dst_size, so_arg_gmp_t *gmp) {
+char *sj_gmp2json_buf(char *dst, u16 dst_size, so_arg_gmp_t *gmp) {
   sprintf(dst, "{\"from\":\"tfmcu\",\"position\":{\"g\":%u,\"m\":%u,\"p\":%u}}", gmp->g, gmp->m, gmp->p);
   return dst;
 }

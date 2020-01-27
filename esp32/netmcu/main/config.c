@@ -52,7 +52,7 @@ config C = {
 
 #ifdef CONFIG_DICT
 
-void read_config(uint32_t mask) {
+void read_config(u32 mask) {
   esp_err_t err = 0;
   nvs_handle handle;
   size_t len;
@@ -62,7 +62,7 @@ void read_config(uint32_t mask) {
 
 
     if (mask & CONFIG_VERBOSE) {
-      int8_t temp;
+      i8 temp;
       if (ESP_OK == nvs_get_i8(handle, "C_VERBOSE", &temp))
         C.app_verboseOutput = temp;
     }
@@ -103,7 +103,7 @@ void read_config(uint32_t mask) {
       (len = sizeof C.mqtt_password), nvs_get_str(handle, "C_MQTT_PASSWD", C.mqtt_password, &len);
     }
     if (mask & CONFIG_MQTT_ENABLE) {
-      int8_t temp;
+      i8 temp;
       if (ESP_OK == nvs_get_i8(handle, "C_MQTT_ENABLE", &temp))
         C.mqtt_enable = temp;
     }
@@ -116,7 +116,7 @@ void read_config(uint32_t mask) {
       (len = sizeof C.http_password), nvs_get_str(handle, "C_HTTP_PASSWD", C.http_password, &len);
     }
     if (mask & CONFIG_HTTP_ENABLE) {
-      int8_t temp;
+      i8 temp;
       if (ESP_OK == nvs_get_i8(handle, "C_HTTP_ENABLE", &temp))
         C.http_enable = temp;
     }
@@ -127,11 +127,10 @@ void read_config(uint32_t mask) {
 
 }
 
-void save_config(uint32_t mask) {
+void save_config(u32 mask) {
   esp_err_t err = 0;
   nvs_handle handle;
-  size_t len;
-  
+
   if ((err = nvs_open(CFG_NAMESPACE, NVS_READWRITE, &handle)) == ESP_OK) {
 
     if (mask & CONFIG_VERBOSE) {

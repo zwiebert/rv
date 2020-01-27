@@ -42,7 +42,7 @@ bool kvs_get_string(const char *key, char *buf, size_t buf_size) {
   return err == ESP_OK;
 }
 
-bool kvs_store_int32(const char *key, int32_t val) {
+bool kvs_store_int32(const char *key, i32 val) {
   esp_err_t err = 0;
   nvs_handle handle;
 
@@ -54,10 +54,9 @@ bool kvs_store_int32(const char *key, int32_t val) {
   return err == ESP_OK;
 }
 
-bool kvs_get_int32(const char *key, int32_t *dest) {
+bool kvs_get_int32(const char *key, i32 *dest) {
   esp_err_t err = 0;
   nvs_handle handle;
-  size_t len;
 
   if ((err = nvs_open("kvs", NVS_READONLY, &handle)) == ESP_OK) {
     nvs_get_i32(handle, key, dest);

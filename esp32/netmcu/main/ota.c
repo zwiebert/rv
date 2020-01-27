@@ -6,7 +6,7 @@
 
 #include "esp_system.h"
 #include "esp_wifi.h"
-#include "esp_event_loop.h"
+#include "esp_event.h"
 #include "esp_log.h"
 #include "esp_ota_ops.h"
 #include "esp_http_client.h"
@@ -16,11 +16,8 @@
 #include "nvs_flash.h"
 
 static const char *TAG = "simple_ota_example";
-extern const uint8_t server_cert_pem_start[] asm("_binary_ca_cert_pem_start");
-extern const uint8_t server_cert_pem_end[] asm("_binary_ca_cert_pem_end");
-
-/* FreeRTOS event group to signal when we are connected & ready to make a request */
-static EventGroupHandle_t wifi_event_group;
+extern const u8 server_cert_pem_start[] asm("_binary_ca_cert_pem_start");
+extern const u8 server_cert_pem_end[] asm("_binary_ca_cert_pem_end");
 
 /* The event group allows multiple bits for each event,
    but we only care about one event - are we connected
@@ -86,28 +83,9 @@ bool ota_doUpdate(const char *firmware_url) {
   return false;
 }
 
-
-bool ota_doUpdateXX(const char *firmwareURL) {
-  ESP_LOGI(TAG, "Starting OTA example");
-
-   esp_http_client_config_t config = {
-       .url = firmwareURL,
-       .cert_pem = (char *)server_cert_pem_start,
-       .event_handler = _http_event_handler,
-   };
-   esp_err_t ret = esp_https_ota(&config);
-   if (ret == ESP_OK) {
-     ESP_LOGI(TAG, "Firmware upgrade succeeded");
-     return true;
-   }
-
-   ESP_LOGE(TAG, "Firmware upgrade failed");
-   return false; // XXX: always fails. Should we do restart outside this function?
-}
-
 void ota_setup()
 {
-   //xTaskCreate(&simple_ota_example_task, "ota_example_task", 8192, NULL, 5, NULL);
+
 }
 
 #endif

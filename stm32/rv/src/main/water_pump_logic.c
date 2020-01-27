@@ -12,6 +12,7 @@
 
 static time_t wpl_max_on_time = WPL_MAX_ON_TIME_SHORT;
 #define WPL_RESET_MAX_ON_TIME_AFTER (ONE_HOUR)
+static uint32_t wpl_increaseMaxOnTimeTime;
 
 #define VALVE_ACTIVE_DELAY 20
 static bool areValvesActive() {
@@ -75,7 +76,9 @@ static void ifPumpOn() {
 }
 
 static void checkResetMaxOnTime() {
-  if (wpl_max_on_time != WPL_MAX_ON_TIME_SHORT && wp_getPumpOffDuration() > WPL_RESET_MAX_ON_TIME_AFTER) {
+  if (wpl_max_on_time != WPL_MAX_ON_TIME_SHORT
+      && wpl_increaseMaxOnTimeTime + runTime() > WPL_RESET_MAX_ON_TIME_AFTER
+      && wp_getPumpOffDuration() > WPL_RESET_MAX_ON_TIME_AFTER) {
     report_event("wp:max_on_time:change_to_short");
     wpl_max_on_time = WPL_MAX_ON_TIME_SHORT;
   }
@@ -83,6 +86,7 @@ static void checkResetMaxOnTime() {
 
 static void checkRustProtection() {
   if (wp_getPumpOffDuration() > WPL_MAX_OFF_TIME) {
+      report_event("wp:rust_protection:run");
       wp_shortRunPumpForProtection();
   }
 }
@@ -122,4 +126,5 @@ void wpl_increaseMaxOnTime(void) {
     report_event("wp:max_on_time:change_to_long");
   }
   wpl_max_on_time = WPL_MAX_ON_TIME_LONG;
+  wpl_increaseMaxOnTimeTime = runTime();
 }

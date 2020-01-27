@@ -7,6 +7,7 @@
 
 
 #include <valve_relays.h>
+#include "report.h"
 
  uint16_t valveRelay_getActiveValves() {
 	 uint16_t result = VALVE_RELAY_MASK & ~Mcp23017_getBits(&relay_16, VALVE_RELAY_MASK, true);

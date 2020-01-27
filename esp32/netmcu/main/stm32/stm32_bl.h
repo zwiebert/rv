@@ -34,17 +34,17 @@ typedef enum {
 
 void stm32Bl_sendStart(void);
 void stm32Bl_sendCommand(stm32_cmd_T cmd);
-void stm32Bl_sendAddress(uint32_t addr);
+void stm32Bl_sendAddress(u32 addr);
 int stm32Bl_recv(char *buf, int buf_size, int wait_ms);
 
 bool stm32Bl_doStart(void);
 void stm32Bl_getId(void);
 void stm32Bl_get(void);
-bool stm32Bl_doEraseFlash(int start_page, uint8_t page_count);
-bool stm32Bl_doWriteMemory(uint32_t dst_addr, char *data, size_t data_len);
+bool stm32Bl_doEraseFlash(int start_page, u8 page_count);
+bool stm32Bl_doWriteMemory(u32 dst_addr, char *data, size_t data_len);
 
-bool stm32Bl_writeMemoryFromBinFile(const char *srcFile, uint32_t addr);
-bool stm32Bl_eraseFlashByFileSize(uint32_t addr, size_t size);
+bool stm32Bl_writeMemoryFromBinFile(const char *srcFile, u32 addr);
+bool stm32Bl_eraseFlashByFileSize(u32 addr, size_t size);
 
 
 #endif /* MAIN_STM32_BL_H_ */

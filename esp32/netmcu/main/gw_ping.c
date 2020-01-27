@@ -15,7 +15,7 @@
 #include "freertos/event_groups.h"
 #include "esp_wifi.h"
 #include "esp_log.h"
-#include "esp_event_loop.h"
+#include "esp_event.h"
 #include "nvs_flash.h"
 #include "lwip/inet.h"
 #include "lwip/ip4_addr.h"
@@ -29,10 +29,10 @@
 
 int ping_init(void);
 
-uint32_t ping_count = 4;  //how many pings per report
-uint32_t ping_timeout = 1000; //mS till we consider it timed out
-uint32_t ping_delay = 500; //mS between pings
-uint32_t waiting_results = 0;
+u32 ping_count = 4;  //how many pings per report
+u32 ping_timeout = 1000; //mS till we consider it timed out
+u32 ping_delay = 500; //mS between pings
+u32 waiting_results = 0;
 
 
 static int recv_count;
@@ -54,10 +54,10 @@ static void ping_send() {
   ip4addr_ntoa_r(&ip4_gateway_address, buf, sizeof buf);
   D(printf("ping to address: %s\n", buf));
 
-  esp_ping_set_target(PING_TARGET_IP_ADDRESS_COUNT, &ping_count, sizeof(uint32_t));
-  esp_ping_set_target(PING_TARGET_RCV_TIMEO, &ping_timeout, sizeof(uint32_t));
-  esp_ping_set_target(PING_TARGET_DELAY_TIME, &ping_delay, sizeof(uint32_t));
-  esp_ping_set_target(PING_TARGET_IP_ADDRESS, &ip4_gateway_address.addr, sizeof(uint32_t));
+  esp_ping_set_target(PING_TARGET_IP_ADDRESS_COUNT, &ping_count, sizeof(u32));
+  esp_ping_set_target(PING_TARGET_RCV_TIMEO, &ping_timeout, sizeof(u32));
+  esp_ping_set_target(PING_TARGET_DELAY_TIME, &ping_delay, sizeof(u32));
+  esp_ping_set_target(PING_TARGET_IP_ADDRESS, &ip4_gateway_address.addr, sizeof(u32));
   esp_ping_set_target(PING_TARGET_RES_FN, &pingResults, sizeof(pingResults));
   waiting_results = 1;
   ping_init();
