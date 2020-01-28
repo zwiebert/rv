@@ -14,6 +14,8 @@
 #include <stm32/stm32.h>
 #include <string.h>
 #include "user_config.h"
+
+#ifdef USE_NTP
 #include "config/config.h"
 #include "esp_event.h"
 #include "esp_event.h"
@@ -102,3 +104,5 @@ void ntp_loop() {
         ntp_sync_done = false;
     }
 }
+#endif
+

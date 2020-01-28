@@ -10,11 +10,12 @@
 #include "userio/status_output.h"
 #include "http_server.h"
 #include "config/config.h"
+#include "esp_netif.h"
 
 
 
 
-ip4_addr_t ip4_address, ip4_gateway_address, ip4_netmask;
+esp_ip4_addr_t ip4_address, ip4_gateway_address, ip4_netmask;
 
 void
 ipnet_addr_as_string(char *buf, unsigned buf_len) {

@@ -33,6 +33,31 @@ static int es_io_getc(void) {
   return getchar();
 }
 
+void main_setup_ip_dependent() {
+  static int once;
+  if (!once) {
+    once = 1;
+
+#ifdef USE_NTP
+  void setup_ntp(void);
+  setup_ntp();
+#endif
+#ifdef USE_MQTT
+  void setup_mqtt(void);
+  setup_mqtt();
+#endif
+#ifdef  USE_HTTP_GET
+  void httpGet_setup(void);
+  httpGet_setup();
+#endif
+#ifdef  USE_HTTP_CLIENT
+  void httpClient_setup(void);
+  httpClient_setup();
+#endif
+  }
+
+}
+
 void app_main(void) {
 #ifdef USE_SERIAL
   void stm32_setup(void);
@@ -66,14 +91,7 @@ void app_main(void) {
     void ethernet_setup(void);
     ethernet_setup();
 #endif
-#ifdef USE_NTP
-  void setup_ntp(void);
-  setup_ntp();
-#endif
-#ifdef USE_MQTT
-  void setup_mqtt(void);
-  setup_mqtt();
-#endif
+    main_setup_ip_dependent();
 #ifdef USE_WDG
   watchDog_setup();
 #endif
@@ -81,14 +99,7 @@ void app_main(void) {
   void fs_setup(void);
   fs_setup();
 #endif
-#ifdef  USE_HTTP_GET
-  void httpGet_setup(void);
-  httpGet_setup();
-#endif
-#ifdef  USE_HTTP_CLIENT
-  void httpClient_setup(void);
-  httpClient_setup();
-#endif
+
   rtc_setup();
 
   kvs_get_int32(KEY_BOOT_COUNTER, &boot_counter),  kvs_store_int32(KEY_BOOT_COUNTER, ++boot_counter);

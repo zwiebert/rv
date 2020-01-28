@@ -8,9 +8,8 @@
 #ifndef SRC_MAIN_IPNET_H_
 #define SRC_MAIN_IPNET_H_
 
-#include "lwip/ip4_addr.h"
-
-extern ip4_addr_t ip4_address, ip4_gateway_address, ip4_netmask;
+#include "esp_netif.h"
+extern esp_ip4_addr_t ip4_address, ip4_gateway_address, ip4_netmask;
 
 // interface implemented by mcu specific code
 void ipnet_addr_as_string(char *buf, unsigned buf_len);
