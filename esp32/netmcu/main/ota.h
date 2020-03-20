@@ -8,7 +8,7 @@
 #ifndef MAIN_OTA_H_
 #define MAIN_OTA_H_
 
-#include <stdbool.h>
+#include "user_config.h"
 
 // downloads firmwareUpdate into OTA partion
 // if success you should can call esp_restart() to run the new firwmare

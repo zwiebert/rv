@@ -28,8 +28,6 @@
 #define D(x)
 #endif
 
-
-
 // WIFI Station ////////////////////////////////////////
 
 /* FreeRTOS event group to signal when we are connected*/
@@ -38,6 +36,8 @@ static EventGroupHandle_t s_wifi_event_group;
 /* The event group allows multiple bits for each event, but we only care about one event
  * - are we connected to the AP with an IP? */
 const int WIFI_CONNECTED_BIT = BIT0;
+
+extern esp_ip4_addr_t ip4_address, ip4_gateway_address, ip4_netmask;
 
 
 void
@@ -106,16 +106,12 @@ static void got_ip_event_handler(void* arg, esp_event_base_t event_base,
     ESP_LOGI(TAG, "GW:" IPSTR, IP2STR(&ip_info->gw));
     ESP_LOGI(TAG, "~~~~~~~~~~~");
 
-
-
     ip4_address = ip_info->ip;
     ip4_gateway_address = ip_info->gw;
     ip4_netmask = ip_info->netmask;
 
     wifistation_disconnected = false;
     wifistation_connected = true;
-
-
 }
 
 void

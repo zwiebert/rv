@@ -91,7 +91,6 @@ void app_main(void) {
     void ethernet_setup(void);
     ethernet_setup();
 #endif
-    main_setup_ip_dependent();
 #ifdef USE_WDG
   watchDog_setup();
 #endif
