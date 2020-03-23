@@ -1,15 +1,22 @@
 # Edit following two lines to set component requirements (see docs)
-set(COMPONENT_REQUIRES )
-set(COMPONENT_PRIV_REQUIRES )
+#set(COMPONENT_REQUIRES )
+#set(COMPONENT_PRIV_REQUIRES )
 
-set(COMPONENT_SRC "main.c app.c ethernet.c uart.c")
-set(COMPONENT_SRCDIRS "./userio")
-set(COMPONENT_ADD_INCLUDEDIRS "")
+#set(COMPONENT_SRC "main.c app.c ethernet.c uart.c")
+set(COMPONENT_SRCDIRS ".")
 
-register_component()
 
-add_custom_target(
-    myCustomTarget
-    COMMAND make -C ${CMAKE_CURRENT_SOURCE_DIR}/userio/http_data
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
+if(DEFINED ENV{DISTRO})
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISTRIBUTION")
+endif()
+if(DEFINED ENV{FLAVOR_LAN})
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFLAVOR_LAN")
+endif()
+
+register_component(
+  #  INCLUDE_DIRS .  
+  #  PRIV_INCLUDE_DIRS "." 
+    REQUIRES  app_config
+    PRIV_REQUIRES net
 )
-add_dependencies(all myCustomTarget)

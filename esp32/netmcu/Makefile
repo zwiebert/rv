@@ -3,22 +3,67 @@
 # project subdirectory.
 #
 .PHONY: xxx win_copy win_copy_release esp32wlan esp32poe esp32gateway
-xxx :
-	$(MAKE) -C main/userio/http_data
-	$(MAKE) all
-	
-esp32poe :
-	$(MAKE) -C main/userio/http_data
-	$(MAKE) all BOARD_ESP32POE=1
 
-esp32wlan :
-	$(MAKE) -C main/userio/http_data
-	$(MAKE) all BOARD_ESP32WLAN=1
+.PHONY: esp32-wlan esp32-lan esp32-flash esp32-flash-ocd esp32-flash-app esp32-flash-app-ocd
 
-esp32gateway :
-	$(MAKE) -C main/userio/http_data
-	$(MAKE) all BOARD_ESP32GATEWAY=1
-	
+default: print-help
+
+ifdef V
+esp32_build_opt_verbose = -v
+endif
+ifndef BUILD_BASE
+esp32_build_cmd := idf.py $(esp32_build_opt_verbose) -C .
+esp32_build_dir := ./build
+else
+esp32_build_cmd := idf.py $(esp32_build_opt_verbose) -C . -B $(BUILD_BASE)
+esp32_build_dir := $(BUILD_BASE)
+endif
+esp32_ocd_sh :=  sh $(realpath ./esp32_ocd.sh)
+
+.PHONY: http_content http_proxy
+http_content :
+	cd components/http_server_content/webapp && make
+http_proxy:
+	cd components/http_server_content/webapp && make proxy
+
+
+
+esp32_tgts_auto := menuconfig clean fullclean app
+define GEN_RULE
+.PHONY: esp32-$(1)
+esp32-$(1):
+	$(esp32_build_cmd) $(1)
+endef
+$(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
+
+esp32-wlan: http_content
+	$(esp32_build_cmd) reconfigure all
+esp32-lan: http_content
+	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
+esp32-flash: http_content
+	$(esp32_build_cmd) -p /dev/ttyUSB0 flash
+
+
+
+
+esp32-flash-ocd: http_content
+	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash)
+esp32-flash-app-ocd: http_content
+	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash_app)
+esp32-ocd:
+	$(esp32_ocd_sh) server
+esp32-ocd-loop:
+	$(esp32_ocd_sh) server_loop
+
+IPADDR ?= 192.168.1.79
+
+tcpterm:
+	socat -d -d -v pty,link=/tmp/ttyVirtual0,raw,echo=0,unlink-close,waitslave tcp:$(IPADDR):7777,forever,reuseaddr&
+	gtkterm -p /tmp/ttyVirtual0 -c tcpterm
+
+
+
+
 win_copy:
 	echo "copy files to windows"
 	./win_cp.sh
@@ -26,8 +71,3 @@ win_copy:
 win_copy_release:
 	$(MAKE) clean
 	$(MAKE) win_copy DISTRIBUTION=1
-	
-PROJECT_NAME := netmcu
-
-include $(IDF_PATH)/make/project.mk
-
