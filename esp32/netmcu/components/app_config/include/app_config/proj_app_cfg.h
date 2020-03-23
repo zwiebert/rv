@@ -2,7 +2,7 @@
 #ifndef PROJ_APP_CONFIG_H_
 #define PROJ_APP_CONFIG_H_
 
-#define APP_VERSION "0.3.0"
+#define APP_VERSION "0.5.0"
 
 #define USE_HTTP
 #define USE_LAN
