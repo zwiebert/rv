@@ -15,8 +15,6 @@
 #include "cli_imp.h"
 #include "cli_app.h"
 #include "userio/status_json.h"
-#include "fernotron/fsb.h"
-
 
 
 static void test_commandline() {

@@ -1,0 +1,3 @@
+[submodule "esp32/netmcu/components-mcu"]
+	path = esp32/netmcu/components-mcu
+	url = https://github.com/zwiebert/components-mcu.git

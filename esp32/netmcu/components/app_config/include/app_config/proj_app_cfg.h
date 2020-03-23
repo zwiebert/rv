@@ -42,4 +42,8 @@
 #define MCU_TYPE "esp32"
 #define ISO_BUILD_TIME (__DATE__ "T" __TIME__)
 
+#ifndef CONFIG_LOG_DEFAULT_LEVEL
+#define CONFIG_LOG_DEFAULT_LEVEL 3
+#endif
+
 #endif /* PROJ_APP_CONFIG_H_ */
