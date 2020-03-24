@@ -365,6 +365,8 @@
                 				
                 <buildCommand>make</buildCommand>
                 				
+                <buildArguments>V=1</buildArguments>
+                				
                 <buildTarget>esp32-lan</buildTarget>
                 				
                 <stopOnError>true</stopOnError>
@@ -436,6 +438,22 @@
                 <buildCommand>make</buildCommand>
                 				
                 <buildTarget>esp32-wlan esp32-flash-app-ocd</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="esp32-fullclean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments/>
+                				
+                <buildTarget>esp32-fullclean</buildTarget>
                 				
                 <stopOnError>true</stopOnError>
                 				

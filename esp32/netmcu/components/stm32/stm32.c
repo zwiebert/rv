@@ -21,12 +21,10 @@
 #include "driver/uart.h"
 #include "driver/gpio.h"
 #include "debug/debug.h"
+#include "config/config.h"
 
-#ifndef STM32_BOOT_PIN_REVERSE
-#define STM32_SET_BOOT_PIN(high) GPIO_OUTPUT_SET(STM32_BOOT_PIN, (high));
-#else
-#define STM32_SET_BOOT_PIN(high) GPIO_OUTPUT_SET(STM32_BOOT_PIN, !(high));
-#endif
+
+#define STM32_SET_BOOT_PIN(level) GPIO_OUTPUT_SET(STM32_BOOT_PIN, (!level != !C.stm32_inv_bootpin));
 
 #define D(x) x
 

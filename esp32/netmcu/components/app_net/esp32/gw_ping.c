@@ -67,9 +67,6 @@ static void ping_send() {
 }
 
 void ping_loop() {
-  extern bool has_networking;
-  if (!has_networking)
-    return;
   if (recv_count) {
     recv_count = 0;
     ping_error_count = 0;
@@ -83,6 +80,3 @@ void ping_loop() {
   ping_send();
 }
 
-void ping_setup() {
-
-}

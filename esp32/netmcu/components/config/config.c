@@ -40,6 +40,7 @@ config C = {
 #ifdef POSIX_TIME
   .geo_tz = MY_GEO_TZ,
 #endif
+  .stm32_inv_bootpin = MY_STM32_INV_BOOTPIN,
 };
 
 void mcu_read_config(uint32_t mask);
@@ -70,4 +71,19 @@ void read_config_all() {
   read_config(~0UL);
 }
 
+void config_forceNetworkConfig(enum board board) {
+  switch (board) {
+  case board_ESP32_WLAN:
+    C.network = nwWlanSta;
+    break;
+  case board_OLIMEX_POE:
+    C.network = nwLan;
+    C.stm32_inv_bootpin = true;
+    C.lan_pwr_gpio = 12;
+    C.lan_phy = lanPhyLAN8270;
+    break;
+  case board_OLIMEX_GATEWAY:
+    break;
+  }
+}
 

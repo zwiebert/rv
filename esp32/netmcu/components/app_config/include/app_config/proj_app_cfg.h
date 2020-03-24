@@ -7,6 +7,7 @@
 #define USE_HTTP
 #define USE_LAN
 #define USE_WLAN
+#define USE_WLAN_AP
 #define USE_NTP
 #define USE_JSON
 #define USE_MQTT
@@ -45,5 +46,13 @@
 #ifndef CONFIG_LOG_DEFAULT_LEVEL
 #define CONFIG_LOG_DEFAULT_LEVEL 3
 #endif
+
+#define USE_AP_FALLBACK
+#define CHECK_NETWORK_INTERVAL 15
+#define PING_INTERVAL 10
+#define LOOP_PERIODIC_INTERVAL_MS 100
+#define LOOP_INTERVAL_MS 25
+
+enum board { board_ESP32_WLAN, board_OLIMEX_POE, board_OLIMEX_GATEWAY, };
 
 #endif /* PROJ_APP_CONFIG_H_ */

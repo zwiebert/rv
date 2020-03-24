@@ -56,6 +56,7 @@ typedef struct {
   enum lanPhy lan_phy;
   int8_t lan_pwr_gpio;
 #endif
+  uint8_t stm32_inv_bootpin;
 
 } config;
 
@@ -86,7 +87,7 @@ CB_TIZO,
 #ifdef USE_NETWORK
   CB_NETWORK_CONNECTION, CB_LAN_PHY, CB_LAN_PWR_GPIO,
 #endif
-
+  CB_STM32_INV_BOOTPIN,
 
 //-----------
   CB_size

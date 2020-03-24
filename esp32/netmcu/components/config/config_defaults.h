@@ -54,13 +54,7 @@
 #endif
 #endif
 
-#ifndef MY_GEO_DST
-#ifdef CONFIG_MY_GEO_DST
-#define MY_GEO_DST CONFIG_MY_GEO_DST
-#else
-#define MY_GEO_DST dstEU
-#endif
-#endif
+
 
 #ifndef MY_WIFI_SSID
 #ifdef CONFIG_MY_WIFI_SSID
@@ -174,6 +168,11 @@
 #ifndef MY_LAN_PWR_GPIO
 #define MY_LAN_PWR_GPIO 5
 #endif
+
+#ifndef MY_STM32_INV_BOOTPIN
+#define MY_STM32_INV_BOOTPIN 1
+#endif
+
 
 /*
  esp-idf: kconfig does not support float numbers...

@@ -131,7 +131,7 @@ process_parmCmd(clpar p[], int len) {
 
   if (hasCmdLine) {
     strcat(buf, ";\n");
-    db_printf("cmd2stm32: <%s>\n", buf);
+    dbg_vpf(db_printf("cmd2stm32: <%s>\n", buf));
     if (xSemaphoreTakeRecursive(uart_mutex, portMAX_DELAY)) {
       stm32_write(buf, strlen(buf));
       if (reqResponse) {

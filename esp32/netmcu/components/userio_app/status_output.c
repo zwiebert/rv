@@ -144,6 +144,23 @@ void so_output_message(so_msg_t mt, void *arg) {
       so_out_x_reply_entry_s(mt, buf);
     }
     break;
+#ifdef USE_NETWORK
+  case SO_CFG_NETWORK:
+    so_out_x_reply_entry_s(mt, cfg_args_network[C.network]);
+    break;
+#endif
+#ifdef USE_LAN
+  case SO_CFG_LAN_PHY:
+    so_out_x_reply_entry_s(mt, cfg_args_lanPhy[C.lan_phy]);
+    break;
+  case SO_CFG_LAN_PWR_GPIO:
+    so_out_x_reply_entry_d(mt, C.lan_pwr_gpio);
+    break;
+#else
+  case SO_CFG_LAN_PHY:
+  case SO_CFG_LAN_PWR_GPIO:
+    break;
+#endif
 #ifdef USE_WLAN
   case SO_CFG_WLAN_SSID:
     so_out_x_reply_entry_s(mt, C.wifi_SSID);

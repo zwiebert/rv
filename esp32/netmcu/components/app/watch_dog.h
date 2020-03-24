@@ -12,6 +12,5 @@
 
 bool watchDog_checkCommandLine(const char *cmdLine);
 void watchDog_loop();
-void watchDog_setup();
 
 #endif /* MAIN_WATCH_DOG_H_ */

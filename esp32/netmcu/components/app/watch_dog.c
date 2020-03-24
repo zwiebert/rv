@@ -40,15 +40,5 @@ void watchDog_loop() {
            missing_call_count = 0;
         }
     }
-
-#define PING_INTERVAL 10
-  static time_t last_ping_time;
-  if ((last_ping_time + PING_INTERVAL) <= now) {
-    last_ping_time = now;
-    ping_loop();
-  }
 }
 
-void watchDog_setup() {
-  ping_setup();
-}

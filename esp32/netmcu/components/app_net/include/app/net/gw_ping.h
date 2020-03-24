@@ -9,6 +9,5 @@
 #define MAIN_GW_PING_H_
 
 void ping_loop();
-void ping_setup();
 
 #endif /* MAIN_GW_PING_H_ */

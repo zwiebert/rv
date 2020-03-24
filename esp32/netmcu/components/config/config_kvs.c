@@ -42,6 +42,7 @@ static void nvsBlob(void *handle, const char *key, void *dst, size_t dst_len, bo
 #define nvs_dt(DT, mbit, key, val) if (GET_BIT(mask,mbit)) { if (write) { kvs_set_##DT(handle, key, val); } else { val = kvs_get_##DT(handle, key, val, 0); } }
 #define nvs_i8(mbit, key,val) nvs_dt(i8, mbit, key, val)
 #define nvs_u32(mbit, key,val) nvs_dt(u32, mbit, key, val)
+#define nvs_u8(mbit, key,val) nvs_dt(u8, mbit, key, val)
 
 static void rw_config(void *handle, u32 mask, bool write) {
 #ifdef CONFIG_IGORE_MASK
@@ -80,6 +81,7 @@ static void rw_config(void *handle, u32 mask, bool write) {
 #ifdef USE_POSIX_TIME
   nvs_s(CB_TZ, "C_TZ", C.geo_tz);
 #endif
+  nvs_u8(CB_STM32_INV_BOOTPIN, "C_INV_BP", C.stm32_inv_bootpin);
 }
 
 
