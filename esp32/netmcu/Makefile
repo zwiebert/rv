@@ -20,9 +20,11 @@ esp32_build_dir := $(BUILD_BASE)
 endif
 esp32_ocd_sh :=  sh $(realpath ./esp32_ocd.sh)
 
-.PHONY: http_content http_proxy
+.PHONY: http_content http_content_lan http_proxy
 http_content :
-	cd components/http_server_content/webapp && make
+	cd components/http_server_content/webapp && make -B
+http_content_lan :
+	cd components/http_server_content/webapp && make -B FLAVOR_LAN=1
 http_proxy:
 	cd components/http_server_content/webapp && make proxy
 
@@ -38,17 +40,17 @@ $(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 esp32-wlan: http_content
 	$(esp32_build_cmd) reconfigure all
-esp32-lan: http_content
+esp32-lan: http_content_lan
 	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
-esp32-flash: http_content
+esp32-flash: 
 	$(esp32_build_cmd) -p /dev/ttyUSB0 flash
 
 
 
 
-esp32-flash-ocd: http_content
+esp32-flash-ocd: 
 	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash)
-esp32-flash-app-ocd: http_content
+esp32-flash-app-ocd: 
 	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash_app)
 esp32-ocd:
 	$(esp32_ocd_sh) server
