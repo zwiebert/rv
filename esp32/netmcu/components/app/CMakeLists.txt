@@ -15,6 +15,6 @@ idf_component_register(
     INCLUDE_DIRS "./include" ../.. 
     PRIV_INCLUDE_DIRS . "./include/app" ../../main
     REQUIRES userio main 
-    PRIV_REQUIRES storage net misc_time
+    PRIV_REQUIRES storage net
                   esp_https_ota
 )

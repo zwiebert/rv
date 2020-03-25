@@ -71,7 +71,9 @@ void appEsp32_main(void) {
   tmr_loopPeriodic_start();
   while (1) {
     loop();
+#ifndef USE_EG
     vTaskDelay(pdMS_TO_TICKS(LOOP_INTERVAL_MS));
+#endif
   }
 }
 

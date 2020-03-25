@@ -2,7 +2,7 @@
 
 void ntpApp_sync_time_cb(struct timeval *tv) {
   ets_printf("ntp synced: %ld\n", time(0));
-  SET_BIT(loop_flags, lf_syncStm32Time);
+  lf_setBit(lf_syncStm32Time);
 }
 
 void ntpApp_setup(void) {
@@ -38,6 +38,9 @@ void main_setup_ip_dependent() {
 
 void mcu_init() {
   uart_mutex = xSemaphoreCreateRecursiveMutex();
+#ifdef USE_EG
+  loop_eventBits_setup();
+#endif
 
 #ifdef USE_SERIAL
   void stm32_setup(void);
@@ -52,11 +55,11 @@ void mcu_init() {
 
   ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-  SET_BIT(loop_flags_periodic, lf_loopWatchDog);
-  SET_BIT(loop_flags_periodic, lf_loopCli);
-  SET_BIT(loop_flags_periodic, lf_loopStm32);
+  lfPer_setBit(lf_loopWatchDog);
+  lfPer_setBit(lf_loopCli);
+  lfPer_setBit(lf_loopStm32);
 #ifdef USE_TCPS
-  SET_BIT(loop_flags_periodic, lf_loopTcpServer);
+  lfPer_setBit(lf_loopTcpServer);
 #endif
 
 #ifdef USE_NETWORK
@@ -65,7 +68,7 @@ void mcu_init() {
   case nwWlanSta:
     esp_netif_init();
     wifistation_setup();
-    SET_BIT(loop_flags_periodic, lf_loopWifiStation);
+    lfPer_setBit(lf_loopWifiStation);
     break;
 #endif
 #ifdef USE_WLAN_AP
@@ -79,7 +82,7 @@ void mcu_init() {
   case nwLan:
     esp_netif_init();
     ethernet_setup(C.lan_phy, C.lan_pwr_gpio);
-    SET_BIT(loop_flags_periodic, lf_loopEthernet);
+    lfPer_setBit(lf_loopEthernet);
 #endif
     break;
   default:

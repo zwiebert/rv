@@ -20,6 +20,7 @@
 #define USE_HTTP_CLIENT
 #define USE_OTA
 //#define USE_TCPS
+#define USE_EG
 
 #define USE_MUTEX
 #define USE_NETWORK

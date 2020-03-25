@@ -1,6 +1,11 @@
 #include "main.h"
 
+EventGroupHandle_t loop_event_group;
+#define EVT_BITS  ((1 << lf_Len) - 1)
+
+#ifndef USE_EG
 volatile uint32_t loop_flags;
+#endif
 uint32_t loop_flags_periodic;
 
 typedef void (*lfa_funT)(void);
@@ -21,6 +26,7 @@ static const lfa_funT lfa_table[lf_Len] = {
 #endif
     stm32loop, cli_loop, };
 
+#ifndef USE_EG
 void loop_checkFlags() {
   u32 lf = loop_flags;
   for (int i = 0; lf; ++i, (lf >>= 1)) {
@@ -31,19 +37,32 @@ void loop_checkFlags() {
 
     if (lfa_table[i])
       (lfa_table[i])();
-
-    switch (i) {
-    case lf_createWifiAp:
-      break;
-    default:
-      break;
-    }
   }
 }
+#else
+void loop_eventBits_setup() {
+  loop_event_group = xEventGroupCreate();
+}
+u32 loop_eventBits_wait() {
+  EventBits_t bits = xEventGroupWaitBits(loop_event_group, EVT_BITS, pdTRUE, pdFALSE, portMAX_DELAY);
+  return bits;
+}
+
+void loop_eventBits_check() {
+  u32 lf = loop_eventBits_wait();
+  for (int i = 0; lf; ++i, (lf >>= 1)) {
+    if (!GET_BIT(lf, 0))
+      continue;
+
+    if (lfa_table[i])
+      (lfa_table[i])();
+  }
+}
+#endif
 
 static void tmr_checkNetwork_cb(TimerHandle_t xTimer) {
   if (!wifi_ap_active && !ipnet_isConnected()) {
-    SET_BIT(loop_flags, lf_createWifiAp);
+    lf_setBit(lf_createWifiAp);
   }
 }
 
@@ -58,7 +77,7 @@ void tmr_checkNetwork_start() {
 
 static void tmr_pingLoop_cb(TimerHandle_t xTimer) {
   if (!wifi_ap_active) {
-    SET_BIT(loop_flags, lf_pingLoop);
+    lf_setBit(lf_pingLoop);
   }
 }
 
@@ -72,7 +91,7 @@ void tmr_pingLoop_start() {
 }
 
 static void tmr_loopPeriodic_cb(TimerHandle_t xTimer) {
-  loop_flags |= loop_flags_periodic;
+  lf_setBits(loop_flags_periodic);
 }
 
 void tmr_loopPeriodic_start() {
@@ -92,6 +111,10 @@ void stm32loop() {
 }
 
 void loop(void) {
+#ifdef USE_EG
+  loop_eventBits_check();
+#else
   loop_checkFlags();
+#endif
 }
 

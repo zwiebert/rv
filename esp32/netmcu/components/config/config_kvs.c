@@ -57,9 +57,6 @@ static void rw_config(void *handle, u32 mask, bool write) {
   nvs_s(CB_NTP_SERVER, "C_NTP_SERVER", C.ntp_server);
 #endif
   nvs_s(CB_CFG_PASSWD, "C_CFG_PASSWD", C.app_configPassword);
-#ifndef POSIX_TIME
-    nvs_s(CB_TIZO, "C_TIZO", C.geo_timezone);
-#endif
 #ifdef USE_MQTT
   nvs_s(CB_MQTT_URL, "C_MQTT_URL", C.mqtt_url);
   nvs_s(CB_MQTT_USER, "C_MQTT_USER", C.mqtt_user);
@@ -82,6 +79,7 @@ static void rw_config(void *handle, u32 mask, bool write) {
   nvs_s(CB_TZ, "C_TZ", C.geo_tz);
 #endif
   nvs_u8(CB_STM32_INV_BOOTPIN, "C_INV_BP", C.stm32_inv_bootpin);
+  nvs_i8(CB_VERBOSE, "C_VERBOSE", C.app_verboseOutput);
 }
 
 
