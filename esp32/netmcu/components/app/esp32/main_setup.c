@@ -10,6 +10,14 @@ void ntpApp_setup(void) {
   ntp_setup();
 }
 
+void lfa_gotIpAddr_cb() {
+  lf_setBit(lf_gotIpAddr);
+}
+void lfa_lostIpAddr_cb() {
+  lf_setBit(lf_lostIpAddr);
+}
+
+
 void main_setup_ip_dependent() {
   static int once;
   if (!once) {
@@ -62,13 +70,14 @@ void mcu_init() {
   lfPer_setBit(lf_loopTcpServer);
 #endif
 
+  ipnet_cbRegister_gotIpAddr(lfa_gotIpAddr_cb);
+  ipnet_cbRegister_lostIpAddr(lfa_lostIpAddr_cb);
 #ifdef USE_NETWORK
   switch (C.network) {
 #ifdef USE_WLAN
   case nwWlanSta:
     esp_netif_init();
     wifistation_setup();
-    lfPer_setBit(lf_loopWifiStation);
     break;
 #endif
 #ifdef USE_WLAN_AP
@@ -82,7 +91,6 @@ void mcu_init() {
   case nwLan:
     esp_netif_init();
     ethernet_setup(C.lan_phy, C.lan_pwr_gpio);
-    lfPer_setBit(lf_loopEthernet);
 #endif
     break;
   default:
@@ -94,7 +102,7 @@ void mcu_init() {
 #ifdef USE_AP_FALLBACK
   tmr_checkNetwork_start();
 #endif
-#ifdef USE_MUTEX
+#ifdef USE_CLI_MUTEX
   void mutex_setup(void);
   mutex_setup();
 #endif

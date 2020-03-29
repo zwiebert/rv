@@ -22,6 +22,15 @@ void lfa_syncStm32Time(void) {
   stm32_write(buf, strlen(buf));
 }
 
+void lfa_gotIpAddr(void) {
+  ipnet_connected();
+}
+void lfa_lostIpAddr(void) {
+  ipnet_disconnected();
+}
+
+
+
 static void stm32_processInputLine(char *line) {
   if (watchDog_checkCommandLine(line)) {
     return; // command-line consumed by watch-dog

@@ -12,6 +12,6 @@ idf_component_register(
     INCLUDE_DIRS . "./include" 
     PRIV_INCLUDE_DIRS "./include/stm32" ../../main/
     REQUIRES ""  
-    PRIV_REQUIRES app_config app_net debug
+    PRIV_REQUIRES app_config app_net debug config
                   spiffs
 )
