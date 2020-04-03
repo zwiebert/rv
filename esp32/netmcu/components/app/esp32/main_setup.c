@@ -1,4 +1,5 @@
 #include "main.h"
+#include "config/config.h"
 
 void ntpApp_sync_time_cb(struct timeval *tv) {
   ets_printf("ntp synced: %ld\n", time(0));
@@ -7,7 +8,7 @@ void ntpApp_sync_time_cb(struct timeval *tv) {
 
 void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb(ntpApp_sync_time_cb);
-  ntp_setup();
+  ntp_setup(cfg_getNtpClient());
 }
 
 void lfa_gotIpAddr_cb() {
@@ -27,7 +28,7 @@ void main_setup_ip_dependent() {
     ntpApp_setup();
 #endif
 #ifdef USE_MQTT
-    io_mqttApp_setup();
+    io_mqttApp_setup(cfg_getMqttClient());
 #endif
 #ifdef  USE_HTTP_GET
   void httpGet_setup(void);
@@ -56,7 +57,7 @@ void mcu_init() {
 #endif
 
   kvs_setup();
-  txtio_setup();
+  txtio_setup(cfg_getTxtio());
   config_setup();
 
   io_puts("\r\n\r\n");
@@ -77,7 +78,7 @@ void mcu_init() {
 #ifdef USE_WLAN
   case nwWlanSta:
     esp_netif_init();
-    wifistation_setup();
+    wifistation_setup(cfg_getWlan());
     break;
 #endif
 #ifdef USE_WLAN_AP
@@ -90,7 +91,7 @@ void mcu_init() {
 #ifdef USE_LAN
   case nwLan:
     esp_netif_init();
-    ethernet_setup(C.lan_phy, C.lan_pwr_gpio);
+    ethernet_setup(cfg_getLan());
 #endif
     break;
   default:

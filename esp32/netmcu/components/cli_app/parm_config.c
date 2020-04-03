@@ -160,8 +160,8 @@ process_parmConfig(clpar p[], int len) {
 #endif
 #ifdef USE_WLAN
         case SO_CFG_WLAN_SSID: {
-          if (strlen(val) < sizeof (C.wifi_SSID)) {
-            strcpy (C.wifi_SSID, val);
+          if (strlen(val) < sizeof (C.wifi.SSID)) {
+            strcpy (C.wifi.SSID, val);
             save_config_item(CB_WIFI_SSID);
           } else {
             cli_replyFailure();
@@ -170,8 +170,8 @@ process_parmConfig(clpar p[], int len) {
         break;
 
         case SO_CFG_WLAN_PASSWORD: {
-          if (strlen(val) < sizeof (C.wifi_password)) {
-            strcpy (C.wifi_password, val);
+          if (strlen(val) < sizeof (C.wifi.password)) {
+            strcpy (C.wifi.password, val);
             save_config_item(CB_WIFI_PASSWD);
           } else {
             cli_replyFailure();
@@ -186,7 +186,7 @@ process_parmConfig(clpar p[], int len) {
            u8 i;
            for (i=0; i < lanPhyLEN; ++i) {
              if (strcasecmp(val, cfg_args_lanPhy[i]) == 0) {
-               C.lan_phy = i;
+               C.lan.phy = i;
                save_config_item(CB_LAN_PHY);
                success = true;
                break;
@@ -198,15 +198,15 @@ process_parmConfig(clpar p[], int len) {
          break;
         case SO_CFG_LAN_PWR_GPIO: {
           NODEFAULT();
-          C.lan_pwr_gpio = atoi(val);
+          C.lan.pwr_gpio = atoi(val);
           save_config_item(CB_LAN_PWR_GPIO);
         }
         break;
 #endif // USE_LAN
 #ifdef USE_NTP
         case SO_CFG_NTP_SERVER: {
-          if (strlen(val) < sizeof (C.ntp_server)) {
-            strcpy (C.ntp_server, val);
+          if (strlen(val) < sizeof (C.ntp.server)) {
+            strcpy (C.ntp.server, val);
             save_config_item(CB_NTP_SERVER);
           } else {
             cli_replyFailure();
@@ -217,15 +217,15 @@ process_parmConfig(clpar p[], int len) {
 
 #ifdef USE_MQTT
         case SO_CFG_MQTT_ENABLE: {
-          C.mqtt_enable = (*val == '1') ? 1 : 0;
-          io_mqtt_enable(C.mqtt_enable);
+          C.mqtt.enable = (*val == '1') ? 1 : 0;
+          io_mqtt_enable(C.mqtt.enable);
           save_config_item(CB_MQTT_ENABLE);
         }
         break;
 
         case SO_CFG_MQTT_PASSWORD: {
-          if (strlen(val) < sizeof (C.mqtt_password)) {
-            strcpy (C.mqtt_password, val);
+          if (strlen(val) < sizeof (C.mqtt.password)) {
+            strcpy (C.mqtt.password, val);
             save_config_item(CB_MQTT_PASSWD);
           } else {
             cli_replyFailure();
@@ -235,8 +235,8 @@ process_parmConfig(clpar p[], int len) {
         break;
 
         case SO_CFG_MQTT_USER: {
-          if (strlen(val) < sizeof (C.mqtt_user)) {
-            strcpy (C.mqtt_user, val);
+          if (strlen(val) < sizeof (C.mqtt.user)) {
+            strcpy (C.mqtt.user, val);
             save_config_item(CB_MQTT_USER);
           } else {
             cli_replyFailure();
@@ -245,8 +245,8 @@ process_parmConfig(clpar p[], int len) {
         break;
 
         case SO_CFG_MQTT_URL: {
-          if (strlen(val) < sizeof (C.mqtt_url)) {
-            strcpy (C.mqtt_url, val);
+          if (strlen(val) < sizeof (C.mqtt.url)) {
+            strcpy (C.mqtt.url, val);
             save_config_item(CB_MQTT_URL);
           } else {
             cli_replyFailure();
@@ -257,15 +257,15 @@ process_parmConfig(clpar p[], int len) {
 
 #ifdef USE_HTTP
         case SO_CFG_HTTP_ENABLE: {
-          C.http_enable = (*val == '1') ? 1 : 0;
-          hts_enable_http_server(C.http_enable);
+          C.http.enable = (*val == '1') ? 1 : 0;
+          hts_enable_http_server(C.http.enable);
           save_config_item(CB_HTTP_ENABLE);
         }
         break;
 
         case SO_CFG_HTTP_PASSWORD: {
-          if (strlen(val) < sizeof (C.http_password)) {
-            strcpy (C.http_password, val);
+          if (strlen(val) < sizeof (C.http.password)) {
+            strcpy (C.http.password, val);
             save_config_item(CB_HTTP_PASSWD);
           } else {
             cli_replyFailure();
@@ -275,8 +275,8 @@ process_parmConfig(clpar p[], int len) {
         break;
 
         case SO_CFG_HTTP_USER: {
-          if (strlen(val) < sizeof (C.http_user)) {
-            strcpy (C.http_user, val);
+          if (strlen(val) < sizeof (C.http.user)) {
+            strcpy (C.http.user, val);
             save_config_item(CB_HTTP_USER);
           } else {
             cli_replyFailure();

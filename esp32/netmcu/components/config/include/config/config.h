@@ -9,12 +9,22 @@
 #define MAIN_CONFIG_CONFIG_H_
 
 #include "app_config/proj_app_cfg.h"
+#ifdef USE_LAN
 #include "net/ethernet.h"
-
-
-enum verbosity {
-	vrbNone, vrb1, vrb2, vrb3, vrb4, vrbDebug
-};
+#endif
+#ifdef USE_MQTT
+#include "net/mqtt/mqtt.h"
+#endif
+#ifdef USE_WLAN
+#include "net/wifistation.h"
+#endif
+#ifdef USE_HTTP
+#include "net/http/server/http_server.h"
+#endif
+#ifdef USE_NTP
+#include "net/ntp.h"
+#endif
+#include <stdint.h>
 
 #ifdef USE_NETWORK
 enum nwConnection {
@@ -26,35 +36,28 @@ typedef struct {
 	enum verbosity app_verboseOutput;
 	char app_configPassword[16];
 #ifdef USE_SERIAL
-	u32 mcu_serialBaud;
+	uint32_t mcu_serialBaud;
 #endif
 #ifdef USE_WLAN
-    char wifi_SSID[32];
-    char wifi_password[64];
-#endif
-#ifdef USE_HTTP
-  char http_user[16];
-  char http_password[31];
-  i8 http_enable;
+  struct cfg_wlan wifi;
 #endif
 #ifdef USE_MQTT
-  char mqtt_url[64];
-  char mqtt_user[16];
-  char mqtt_password[31];
-  i8 mqtt_enable;
+  struct cfg_mqtt mqtt;
+#endif
+#ifdef USE_HTTP
+  struct cfg_http http;
 #endif
 #ifdef USE_POSIX_TIME
   char geo_tz[32];
 #endif
 #ifdef USE_NTP
-  char ntp_server[64];
+  struct cfg_ntp ntp;
 #endif
 #ifdef USE_NETWORK
   enum nwConnection network;
 #endif
 #ifdef USE_LAN
-  enum lanPhy lan_phy;
-  int8_t lan_pwr_gpio;
+  struct cfg_lan lan;
 #endif
   uint8_t stm32_inv_bootpin;
 
@@ -62,7 +65,12 @@ typedef struct {
 
 extern config C;
 
-
+#define cfg_getWlan() &C.wifi
+#define cfg_getLan() &C.lan
+#define cfg_getMqttClient() &C.mqtt
+#define cfg_getHttpServer() &C.http
+#define cfg_getNtpClient() &C.ntp
+#define cfg_getTxtio() (struct cfg_txtio *)&C.app_verboseOutput
 
 enum configItem {
   CB_VERBOSE,

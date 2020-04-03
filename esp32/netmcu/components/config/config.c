@@ -20,22 +20,19 @@
 
 config C = {
 #ifdef USE_WLAN
-  .wifi_SSID = MY_WIFI_SSID,
-  .wifi_password = MY_WIFI_PASSWORD,
+    .wifi = { .SSID = MY_WIFI_SSID, .password = MY_WIFI_PASSWORD, },
 #endif
 #ifdef USE_MQTT
-  .mqtt_url = MY_MQTT_URL,
-  .mqtt_user = MY_MQTT_USER,
-  .mqtt_password = MY_MQTT_PASSWORD,
-  MY_MQTT_ENABLE,
+    .mqtt = { .url = MY_MQTT_URL, .user = MY_MQTT_USER, .password = MY_MQTT_PASSWORD, .enable = MY_MQTT_ENABLE, },
 #endif
 #ifdef USE_HTTP
-  .http_user = MY_HTTP_USER,
-  .http_password = MY_HTTP_PASSWORD,
-  .http_enable = MY_HTTP_ENABLE,
+    .http = { .user = MY_HTTP_USER, .password = MY_HTTP_PASSWORD, .enable = MY_HTTP_ENABLE, },
+#endif
+#ifdef USE_LAN
+    .lan = { .phy = MY_LAN_PHY, .pwr_gpio = MY_LAN_PWR_GPIO, },
 #endif
 #ifdef USE_NTP
-  .ntp_server = MY_NTP_SERVER,
+  .ntp = { .server = MY_NTP_SERVER },
 #endif
 #ifdef POSIX_TIME
   .geo_tz = MY_GEO_TZ,
@@ -79,8 +76,8 @@ void config_forceNetworkConfig(enum board board) {
   case board_OLIMEX_POE:
     C.network = nwLan;
     C.stm32_inv_bootpin = true;
-    C.lan_pwr_gpio = 12;
-    C.lan_phy = lanPhyLAN8270;
+    C.lan.pwr_gpio = 12;
+    C.lan.phy = lanPhyLAN8270;
     break;
   case board_OLIMEX_GATEWAY:
     break;

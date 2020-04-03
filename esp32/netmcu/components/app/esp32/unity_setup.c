@@ -26,7 +26,7 @@ void unity_suiteSetUp() {
 
   mutex_setup();
   kvs_setup();
-  txtio_setup();
+  txtio_setup(cfg_getTxtio());
   stor_setup();
 #endif
 

@@ -145,8 +145,9 @@ void io_mqttApp_published(int msg_id) {
 #define CONFIG_MQTT_CLIENT_ID "rvdbg"
 #endif
 
-void io_mqttApp_setup() {
-  io_mqtt_setup(CONFIG_MQTT_CLIENT_ID);
+
+void io_mqttApp_setup(struct cfg_mqtt *cfg_mqtt) {
+  io_mqtt_setup(CONFIG_MQTT_CLIENT_ID, cfg_mqtt);
 }
 
 
