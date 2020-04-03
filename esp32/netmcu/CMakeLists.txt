@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.5)
 
 set(PROJECT_NAME "tronferno-mcu")
 
-set(EXTRA_COMPONENT_DIRS ./components-mcu/components ./local/components-mcu/components)
+set(EXTRA_COMPONENT_DIRS ./components-mcu/components)
 
 set(COMPONENTS
     app app_config cli_app config net_http_server http_server_content net_mqtt_app stm32 userio_app 

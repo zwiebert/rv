@@ -7,7 +7,6 @@
 
 #include <esp_http_server.h>
 
-#include "net/http/server/http_server.h"
 #include "userio/status_json.h"
 #include "config/config.h"
 #include "cli/mutex.h"
@@ -70,16 +69,14 @@ static esp_err_t handle_uri_doc_post(httpd_req_t *req) {
   static struct  {
     const char *key, *txt;
   } help_txt_map [] = {
-#if 0
-    { "cliparm_cmd", cli_help_parmSend},
-    { "cliparm_", cli_help_parmTimer},
-    { "cliparm_config", cli_help_parmConfig},
-    { "cliparm_mcu", cli_help_parmMcu},
-    { "cliparm_pair", cli_help_parmPair},
-    { "cliparm_shpref", cli_help_parmShpref},
-    { "cliparm_help", cli_help_parmHelp},
-#endif
+      { "cliparm_cmd", cli_help_parmCmd},
+      { "cliparm_config", cli_help_parmConfig},
+      { "cliparm_help", cli_help_parmHelp},
+      { "cliparm_mcu", cli_help_parmMcu},
+      { "cliparm_kvs", cli_help_parmKvs},
+    //  { "cliparm_status", cli_help_parmStatus},
   };
+#define HELP_TXT_MAP_LENGTH (sizeof(help_txt_map) / sizeof(help_txt_map[0]))
 
   if (!check_access_allowed(req))
     return ESP_FAIL;
@@ -88,7 +85,7 @@ static esp_err_t handle_uri_doc_post(httpd_req_t *req) {
     return ESP_FAIL;
   }
 
-  for (i = 0; i < (sizeof(help_txt_map) / sizeof(help_txt_map[0])); ++i) {
+  for (i = 0; i < HELP_TXT_MAP_LENGTH; ++i) {
     if (strncmp(buf, help_txt_map[i].key, ret) == 0) {
       httpd_resp_sendstr(req, help_txt_map[i].txt);
       httpd_resp_set_type(req, "text/plain;charset=\"ISO-8859-1\"");
