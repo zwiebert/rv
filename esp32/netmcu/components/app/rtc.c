@@ -158,8 +158,8 @@ rtc_setup() {
 
 #else
 
-  set_zone(ONE_HOUR * C.geo_timezone); //* C.timezone);
- //obsolete: set_position(C.geo_latitude * ONE_DEGREE, C.geo_longitude * ONE_DEGREE);
+  set_zone(ONE_HOUR * C.astro.geo_timezone); //* C.timezone);
+ //obsolete: set_position(C.astro.geo_latitude * ONE_DEGREE, C.astro.geo_longitude * ONE_DEGREE);
 
   switch (C.geo_dST) {
 

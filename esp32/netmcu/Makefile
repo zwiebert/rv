@@ -2,11 +2,12 @@
 # This is a project Makefile. It is assumed the directory this Makefile resides in is a
 # project subdirectory.
 #
-.PHONY: xxx win_copy win_copy_release esp32wlan esp32poe esp32gateway
+.PHONY: xxx win_copy win_copy_release esp32wlan esp32poe esp32gateway clean
 
 .PHONY: esp32-wlan esp32-lan esp32-flash esp32-flash-ocd esp32-flash-app esp32-flash-app-ocd
 
 default: print-help
+clean: esp32-clean
 
 ifdef V
 esp32_build_opt_verbose = -v

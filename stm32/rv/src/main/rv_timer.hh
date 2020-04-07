@@ -36,7 +36,7 @@ class RvTimers;
 
 
 class RvTimerPause {
-#define PAUSE_SECS_PER_LITER 4
+#define PAUSE_SECS_PER_LITER 8
 #define PAUSE_AFTER_LITER 100
   int mLitersBeforePause = 0;
   unsigned mLph = 0;
