@@ -8,7 +8,9 @@ endif()
 if(DEFINED ENV{FLAVOR_LAN})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFLAVOR_LAN")
 endif()
-
+if(DEFINED ENV{CELLAR})
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DCELLAR")
+endif()
 
 idf_component_register(
     SRCS ${srcs}

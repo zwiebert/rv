@@ -28,7 +28,7 @@
 
 #define STM32_RESET_PIN  (GPIO_NUM_33)
 #define STM32_BOOT_PIN (GPIO_NUM_32)
-
+#define STM32_BOOT_PIN_INV C.stm32_inv_bootpin
 #define STM32_UART_TX_PIN  (GPIO_NUM_4)
 #define STM32_UART_RX_PIN  (GPIO_NUM_36)
 

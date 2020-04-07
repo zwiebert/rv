@@ -1,5 +1,6 @@
 #include "main.h"
 #include "config/config.h"
+#include "stm32/stm32.h"
 
 void ntpApp_sync_time_cb(struct timeval *tv) {
   ets_printf("ntp synced: %ld\n", time(0));
@@ -52,8 +53,16 @@ void mcu_init() {
 #endif
 
 #ifdef USE_SERIAL
-  void stm32_setup(void);
-  stm32_setup();
+  struct cfg_stm32 *cfg_stm32 = calloc(1, sizeof (struct cfg_stm32));
+  assert(cfg_stm32);
+  *cfg_stm32 = (struct cfg_stm32) {
+      .uart_tx_gpio = STM32_UART_TX_PIN,
+      .uart_rx_gpio = STM32_UART_RX_PIN,
+      .boot_gpio_is_inverse = STM32_BOOT_PIN_INV,
+      .boot_gpio = STM32_BOOT_PIN,
+      .reset_gpio = STM32_RESET_PIN,
+  };
+  stm32_setup(cfg_stm32);
 #endif
 
   kvs_setup();

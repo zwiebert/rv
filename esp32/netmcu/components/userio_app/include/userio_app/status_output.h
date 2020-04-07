@@ -50,7 +50,7 @@ typedef enum {
 
 } so_msg_t;
 
-void so_output_message(so_msg_t mt, void *arg);
+void so_output_message(so_msg_t mt, const void *arg);
 so_msg_t so_parse_config_key(const char *k);
 
 

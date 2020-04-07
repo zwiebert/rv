@@ -12,7 +12,7 @@
 #include "stm32/stm32_bl.h"
 #include "stm32/stm32_ota.h"
 #include "app/ota.h"
-#include "app/net/http_client.h"
+#include "net/http_client.h"
 
 
 #define KEY_BOOT_COUNT "boot-count"
@@ -32,7 +32,6 @@ const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 int
 process_parmMcu(clpar p[], int len) {
   int arg_idx;
-  char buf[24];
   int error_count = 0;
 
   so_output_message(SO_MCU_begin, NULL);

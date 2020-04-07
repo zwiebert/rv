@@ -34,7 +34,7 @@ u8 so_target;
 
 
 
-void so_output_message(so_msg_t mt, void *arg) {
+void so_output_message(so_msg_t mt, const void *arg) {
   char buf[64];
   int i;
 

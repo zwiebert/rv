@@ -1,4 +1,4 @@
-set(srcs esp32/http_client.c esp32/gw_ping.c) 
+set(srcs esp32/gw_ping.c) 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
 
