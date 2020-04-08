@@ -16,6 +16,7 @@ const char * const cfg_keys[SO_CFG_size] = {
     "tz", "verbose",
     "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password",
     "http-enable", "http-user", "http-password",
+    "stm32-bootgpio-inv"
 };
 
 #ifdef USE_NETWORK
@@ -72,6 +73,7 @@ const char cli_help_parmConfig[]  =
 #ifdef ACCESS_GPIO
     "gpioN=(i|p|o|0|1|d|?) Set gpio pin as input (i,p) or output (o,0,1) or use default\n"
 #endif
+    "stm32-bootgpio-inv   Invert Boot-Pin for STM32 OTA\n"
 //  "set-expert-password=\n"
 ;
 
@@ -294,6 +296,12 @@ process_parmConfig(clpar p[], int len) {
           rtc_setup();
           save_config_item(CB_TZ);
 #endif
+        }
+        break;
+
+        case SO_CFG_STM32_BOOTGPIO_INV: {
+          if (set_optInt(C.stm32_inv_bootpin, (*val == '1'), CB_STM32_INV_BOOTPIN))
+            hasChanged_httpServer = true;
         }
         break;
 

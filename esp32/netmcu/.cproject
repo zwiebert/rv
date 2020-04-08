@@ -243,6 +243,8 @@
                         						
                         <entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="components"/>
                         						
+                        <entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="components-mcu"/>
+                        						
                         <entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="main"/>
                         						
                         <entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sensitive"/>

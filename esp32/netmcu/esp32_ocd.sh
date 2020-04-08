@@ -17,15 +17,19 @@ openocd -f ~/esp/ft2232.cfg -f /usr/local/share/openocd/scripts/board/esp-wroom-
 }
 
 run_server() {
+    echo "Run Server"
     $ocd_cmd
 }
 
 kill_server() {
+    echo "kill server"
     killall -s SIGINT openocd
 }
 
 ocd_wait() {
-        tail --pid=$(pgrep openocd) -f /dev/null
+    echo "Wait..."
+    tail --pid=$(pgrep openocd) -f /dev/null
+    echo "..done"
 
 }
 

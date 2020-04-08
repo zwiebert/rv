@@ -19,7 +19,8 @@
 #define USE_FS
 #define USE_HTTP_CLIENT
 #define USE_OTA
-//#define USE_TCPS
+#define USE_STM32OTA
+#define USE_TCPS_TASK
 #define USE_EG
 
 #define USE_CLI_MUTEX

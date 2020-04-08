@@ -9,6 +9,8 @@ const FW_UPD_STATE_IN_PROGRESS = 1;
 const FW_UPD_STATE_DONE = 2;
 const FW_UPD_STATE_ERROR = -1;
 
+function dbLog(msg) {  console.log(msg); }
+
 class AppState {
 
   constructor() {
@@ -132,7 +134,7 @@ class AppState {
     }
   }
 
-  handleFetchedData(obj) {
+  http_handleResponses(obj) {
     console.log("reply-json: "+JSON.stringify(obj));
 
     if ("config" in obj) {
@@ -202,6 +204,57 @@ class AppState {
 	this.mEsp32BootCount = mcu["boot-count"];
 	this.updateHtml_bootCount();
       }
+      if ("ota-state" in mcu) {
+        let e = document.getElementById("netota_progress_div");
+        switch(mcu["ota-state"]) {
+        case 0: // none
+
+          break;
+        case 1: // run
+          document.getElementById("netota_progress_bar").value = (++netota_progressCounter).toString();
+          break;
+        case 2: // fail
+          e.innerHTML += "<br><strong>Update failed<br><br></strong>";
+          break;
+        case 3: // done
+          document.getElementById("netota_progress_bar").value = document.getElementById("netota_progress_bar").max;
+          e.innerHTML += '<br><strong>Update succeeded <button type="button" onClick="req_mcuRestart()">Reboot ESP32 MCU</button><br><br></strong>';
+          break;
+        }
+        if (netota_isInProgress && mcu["ota-state"] != 1) {
+          clearInterval(netota_intervalID);
+          netota_progressCounter = 0;
+          netota_isInProgress = false;
+          document.getElementById("netota_controls").style.display = "";
+        }
+
+      }
+
+      if ("stm32ota-state" in mcu) {
+        let e = document.getElementById("stm32ota_progress_div");
+        switch(mcu["stm32ota-state"]) {
+        case 0: // none
+
+          break;
+        case 1: // run
+          document.getElementById("stm32ota_progress_bar").value = (++stm32ota_progressCounter).toString();
+          break;
+        case 2: // fail
+          e.innerHTML += "<br><strong>Update failed<br><br></strong>";
+          break;
+        case 3: // done
+          document.getElementById("stm32ota_progress_bar").value = document.getElementById("stm32ota_progress_bar").max;
+          e.innerHTML += '<br><strong>Update succeeded <button type="button" onClick="postRvMcuRestart()">Reboot STM32 MCU</button><br><br></strong>';
+          break;
+        }
+        if (stm32ota_isInProgress && mcu["stm32ota-state"] != 1) {
+          clearInterval(stm32ota_intervalID);
+          stm32ota_progressCounter = 0;
+          stm32ota_isInProgress = false;
+          document.getElementById("stm32ota_controls").style.display = "";
+        }
+
+      }
     }
   }
 
@@ -209,7 +262,7 @@ class AppState {
   fetchConfig() {
     var json = { to:"tfmcu", config: { all:"?" } };
     var url = base+'/cmd.json';
-    postData(url, json);
+    http_postRequest(url, json);
 
   }
 
@@ -220,13 +273,13 @@ class AppState {
   fetchZoneData() {
     var json = { to:"rv", cmd: { dur:"?", rem:"?", status:"?" } };
     var url = base+'/cmd.json';
-    postData(url, json);
+    http_postRequest(url, json);
   }
 
   fetchZoneNames() {
     var json = { to:"netmcu", kvs: { zn:"?" } };
     var url = base+'/cmd.json';
-    postData(url, json);
+    http_postRequest(url, json);
   }
 
 }
@@ -294,41 +347,85 @@ function updateHtmlByConfigData(cfg) {
   });
 }
 
+function http_postRequest(url = '', data = {}) {
+  dbLog("post-json: "+JSON.stringify(data));
 
-function postData(url = '', data = {}) {
-  // Default options are marked with *
-  console.log("post-json: "+JSON.stringify(data));
-  return fetch(url, {
-    method: "POST", // *GET, POST, PUT, DELETE, etc.
-    //mode: "cors", // no-cors, cors, *same-origin
-    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-    // credentials: "same-origin", // include, *same-origin, omit
+  const fetch_data = {
+    method: "POST",
+    cache: "no-cache",
     headers: {
       "Content-Type": "application/json",
     },
-    redirect: "follow", // manual, *follow, error
-    referrer: "no-referrer", // no-referrer, *client
-    body: JSON.stringify(data), // body data type must match "Content-Type" header
-  })
-    .then(response => {
-      if(response.ok) {
-        response.json().then(json => {
-          ast.handleFetchedData(json);
-        });
-      }
-    });
-}
+    referrer: "no-referrer",
+    body: JSON.stringify(data),
+  };
 
-function postMcuRestart() {
+
+
+  return fetch(url, fetch_data)
+
+    .then(response => {
+      if(!response.ok) {
+        console.log("error");
+        throw new Error("network repsonse failed");
+      }
+      return response.json();
+    })
+
+    .then((json) => ast.http_handleResponses(json))
+
+    .catch((error) => {
+      console.log("error: http_postRequest(): ", error);
+    });
+
+}
+// -------------- restart/reload -----------------
+const reload_Progress = {
+    ivId: 0,
+    ms: 1000,
+    count: 12,
+    counter: 0,
+    divs: ["stm32ota_restart_div","netota_restart_div", "config_restart_div" ],
+  };
+  function req_reloadTick() {
+    const rpr = reload_Progress;
+
+    if (++rpr.counter > rpr.count) {
+      location.reload();
+      clearInterval(rpr.ivId); // may be useless after reload...
+    } else {
+      document.getElementById("reload_progress_bar").value = rpr.counter;
+    }
+  }
+  function req_reloadStart() {
+    const rpr = reload_Progress;
+    let e = null;
+    for (let div of rpr.divs) {
+      let e = document.getElementById(div);
+      if (e.offsetParent === null)
+        continue;
+
+      let html = '<strong>Wait for MCU to restart...</strong><br>';
+      html += '<progress id="reload_progress_bar" value="0" max="'+rpr.count.toString()+'">0%</progress>';
+      e.innerHTML = html;
+      rpr.ivId = setInterval(req_reloadTick, rpr.ms);
+      break;
+    }
+
+  }
+
+function req_mcuRestart() {
   var json = { to:"tfmcu", config: { restart:"1" } };
-  var url = base+'/cmd.json';
-  postData(url, json);
+  var url = '/cmd.json';
+  http_postRequest(url, json);
+  req_reloadStart();
+  //setTimeout(function(){ location.reload(); }, 10000);
 }
 
 function postRvMcuRestart() {
   var json = { to:"tfmcu", mcu: { rfw:"1" } };
   var url = base+'/cmd.json';
-  postData(url, json);
+  http_postRequest(url, json);
 }
 
 function postConfig() {
@@ -363,7 +460,7 @@ function postConfig() {
     console.log(JSON.stringify(tfmcu));
     var url = base+'/cmd.json';
     console.log("url: "+url);
-    postData(url, tfmcu);
+    http_postRequest(url, tfmcu);
   }
 }
 
@@ -386,7 +483,7 @@ function postZoneNames() {
   console.log(JSON.stringify(netmcu));
   var url = base+'/cmd.json';
   console.log("url: "+url);
-  postData(url, netmcu);
+  http_postRequest(url, netmcu);
 }
 
 
@@ -404,7 +501,7 @@ function postSendCommand(c=document.getElementById('send-c').value) {
   console.log(JSON.stringify(tfmcu));
   var url = base+'/cmd.json';
   console.log("url: "+url);
-  postData(url, tfmcu);
+  http_postRequest(url, tfmcu);
 }
 
 function rvFirmwareDownload() {
@@ -416,7 +513,7 @@ function rvFirmwareDownload() {
   };
   let url = base+'/cmd.json';
   console.log("url: "+url);
-  postData(url, netmcu);
+  http_postRequest(url, netmcu);
 }
 
 function rvFirmwareFlash() {
@@ -426,7 +523,7 @@ function rvFirmwareFlash() {
   };
   let url = base+'/cmd.json';
   console.log("url: "+url);
-  postData(url, netmcu);
+  http_postRequest(url, netmcu);
 }
 
 function rvFirmwareOTA() {
@@ -434,26 +531,77 @@ function rvFirmwareOTA() {
   // TODO: validate URL here
   var netmcu = {to:"netmcu"};
   netmcu.mcu = {
-    rvota: fwUrl
+    stm32ota: fwUrl
   };
   let url = base+'/cmd.json';
   console.log("url: "+url);
-  postData(url, netmcu);
+  http_postRequest(url, netmcu);
   ast.setRvFwUpdState(FW_UPD_STATE_IN_PROGRESS);
 }
 
-function netFirmwareOTA() {
-  let fwUrl = document.getElementById("id-esp32FirmwareURL").value;
-  // TODO: validate URL here
+//----------------- firmware div ---------------
+var stm32ota_intervalID = 0;
+var stm32ota_isInProgress = false;
+var stm32ota_progressCounter = 0;
+function stm32ota_FetchFeedback() {
   var netmcu = {to:"tfmcu"};
   netmcu.mcu = {
-    ota: fwUrl
+    "stm32ota":"?"
   };
-  let url = base+'/cmd.json';
-  console.log("url: "+url);
-  postData(url, netmcu);
+  let url = '/cmd.json';
+  dbLog("url: "+url);
+  http_postRequest(url, netmcu);
 }
 
+const stm32otaName_master = 'github-master';
+const stm32otaName_beta = 'github-beta';
+function stm32FirmwareOTA(ota_name) {
+  if (stm32ota_isInProgress)
+    return;
+  var netmcu = {to:"tfmcu"};
+  netmcu.mcu = {
+    stm32ota: ota_name
+  };
+  let url = '/cmd.json';
+  dbLog("url: "+url);
+  http_postRequest(url, netmcu);
+  document.getElementById("stm32ota_progress_div").innerHTML = "<strong>Firmware is updating...<br></strong>" + '<progress id="stm32ota_progress_bar" value="0" max="30">70 %</progress>';
+  stm32ota_intervalID = setInterval(stm32ota_FetchFeedback, 1000);
+  stm32ota_isInProgress = true;
+  document.getElementById("stm32ota_controls").style.display = "none";
+}
+//----------------- firmware div ---------------
+var netota_intervalID = 0;
+var netota_isInProgress = false;
+var netota_progressCounter = 0;
+function netota_FetchFeedback() {
+  var netmcu = {to:"tfmcu"};
+  netmcu.mcu = {
+    "ota":"?"
+  };
+  let url = '/cmd.json';
+  dbLog("url: "+url);
+  http_postRequest(url, netmcu);
+}
+
+const otaName_master = 'github-master';
+const otaName_beta = 'github-beta';
+function netFirmwareOTA(ota_name) {
+  if (netota_isInProgress)
+    return;
+  var netmcu = {to:"tfmcu"};
+  netmcu.mcu = {
+    ota: ota_name
+  };
+  let url = '/cmd.json';
+  dbLog("url: "+url);
+  http_postRequest(url, netmcu);
+  document.getElementById("netota_progress_div").innerHTML = "<strong>Firmware is updating...<br></strong>" + '<progress id="netota_progress_bar" value="0" max="30">70 %</progress>';
+  netota_intervalID = setInterval(netota_FetchFeedback, 1000);
+  netota_isInProgress = true;
+  document.getElementById("netota_controls").style.display = "none";
+}
+//----------------------------
 function genHtml_timerTableRow(nmb, name) {
   return '<tr>'+
     '<td>'+nmb+'</td>'+
@@ -485,7 +633,7 @@ function fetchVersions() {
 
   let url = base+'/cmd.json';
   console.log("url: "+url);
-  postData(url, netmcu);
+  http_postRequest(url, netmcu);
 }
 
 function fetchBootCount() {
@@ -496,7 +644,7 @@ function fetchBootCount() {
 
   let url = base+'/cmd.json';
   console.log("url: "+url);
-  postData(url, netmcu);
+  http_postRequest(url, netmcu);
 }
 
 const VIS_NET = 0x01;
@@ -602,15 +750,18 @@ function onContentLoaded() {
 
   document.getElementById("rvrstb").onclick = () => postRvMcuRestart();
 
-  document.getElementById("rvota").onclick = () => rvFirmwareOTA();
-
-  document.getElementById("netota").onclick = () => netFirmwareOTA();
-
   document.getElementById("csvb").onclick = () => postConfig();
   document.getElementById("crlb").onclick = () => ast.fetchConfig();
 
-  document.getElementById("mrtb").onclick = () => postMcuRestart();
+  document.getElementById("mrtb").onclick = () => req_mcuRestart();
 
+  document.getElementById("stm32ota").onclick = () => stm32FirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);//dev-distro-delete-line//
+  document.getElementById("stm32ota_master").onclick = () => stm32FirmwareOTA(otaName_master);
+  document.getElementById("stm32ota_beta").onclick = () => stm32FirmwareOTA(otaName_beta);
+  
+  document.getElementById("netota").onclick = () => netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);//dev-distro-delete-line//
+  document.getElementById("netota_master").onclick = () => netFirmwareOTA(otaName_master);
+  document.getElementById("netota_beta").onclick = () => netFirmwareOTA(otaName_beta);
 }
 
 /*

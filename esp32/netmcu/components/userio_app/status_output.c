@@ -10,6 +10,7 @@
 
 #include "app/common.h"
 #include "app/ota.h"
+#include "stm32/stm32_ota.h"
 #include "app/rtc.h"
 #include "cli_app/cli_config.h"
 #include "cli_app/cli_imp.h" // FIXME?
@@ -84,6 +85,17 @@ void so_output_message(so_msg_t mt, const void *arg) {
   case SO_MCU_OTA_STATE:
 #ifdef USE_OTA
     so_out_x_reply_entry_sd("ota-state", ota_getState());
+#endif
+    break;
+
+  case SO_MCU_STM32OTA:
+#ifdef USE_OTA
+    so_out_x_reply_entry_ss("stm32ota-url", arg);
+#endif
+    break;
+  case SO_MCU_STM32OTA_STATE:
+#ifdef USE_OTA
+    so_out_x_reply_entry_sd("stm32ota-state", stm32ota_getState());
 #endif
     break;
 
@@ -235,6 +247,11 @@ void so_output_message(so_msg_t mt, const void *arg) {
       so_out_x_reply_entry_ss(key, ps);
     }
 #endif
+    break;
+
+    case SO_CFG_STM32_BOOTGPIO_INV: {
+      so_out_x_reply_entry_d(mt, C.stm32_inv_bootpin ? 1 : 0);
+    }
     break;
 
   case SO_CFG_begin:

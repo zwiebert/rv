@@ -18,6 +18,9 @@
 
 #define D(x) 
 
+const bool always_true = true;
+const bool always_false;
+
 config C = {
 #ifdef USE_WLAN
     .wifi = { .SSID = MY_WIFI_SSID, .password = MY_WIFI_PASSWORD, },

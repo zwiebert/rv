@@ -69,6 +69,31 @@ process_parmMcu(clpar p[], int len) {
       } else {
         ++error_count;
       }
+    } else if (strcmp(key, "rvfl") == 0) {
+      stm32Ota_firmwareUpdate(STM32_FW_FILE_NAME);
+#ifdef USE_STM32OTA
+    } else if (strcmp(key, "stm32ota") == 0) {
+      if (*val == '?') {
+        so_output_message(SO_MCU_STM32OTA_STATE, 0);
+#ifdef STM32OTA_FWURL_MASTER
+      } else if (strcmp(val, "github-master") == 0) {
+        so_output_message(SO_MCU_STM32OTA, STM32OTA_FWURL_MASTER);
+        stm32ota_doUpdate(STM32OTA_FWURL_MASTER);
+#endif
+#ifdef STM32OTA_FWURL_BETA
+      } else if (strcmp(val, "github-beta") == 0) {
+        so_output_message(SO_STM32MCU_OTA, STM32OTA_FWURL_BETA);
+        stm32ota_doUpdate(STM32OTA_FWURL_BETA);
+#endif
+      } else {
+#ifdef DISTRIBUTION
+        ets_printf("forbidden: ota update from given URL\n");
+#else
+        ets_printf("doing ota update from given URL\n");
+        stm32ota_doUpdate(val);
+#endif
+      }
+#endif
 #ifdef USE_OTA
     } else if (strcmp(key, "ota") == 0) {
       if (*val == '?') {

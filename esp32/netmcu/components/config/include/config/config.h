@@ -64,13 +64,15 @@ typedef struct {
 } config;
 
 extern config C;
+extern const bool always_true, always_false;
 
 #define cfg_getWlan() &C.wifi
 #define cfg_getLan() &C.lan
 #define cfg_getMqttClient() &C.mqtt
 #define cfg_getHttpServer() &C.http
 #define cfg_getNtpClient() &C.ntp
-#define cfg_getTxtio() (struct cfg_txtio *)&C.app_verboseOutput
+#define cfg_getTxtio() (const struct cfg_txtio *)&C.app_verboseOutput
+#define cfg_getTcpsServer() (const struct cfg_tcps *)&always_true
 
 enum configItem {
   CB_VERBOSE,

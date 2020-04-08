@@ -180,10 +180,38 @@
 
     
     <div id="id-fwDiv">
-      <h4>RV/NET Firmware Update</h4>
-      <label>STM32 URL <input type="text" id="id-stm32FirmwareURL" value="http://192.168.1.70:8000/rv.bin"><button id="rvota" type="button">Do Flash</button><span id="id-rvFwUpdState"></span></label><br>
-      <label>ESP32 URL <input type="text" id="id-esp32FirmwareURL" value="http://192.168.1.70:8000/netmcu.bin"> <button id="netota" type="button">Do Flash</button></label><br>
-    </div>
+      <h4>--RV/NET Firmware Update</h4>
+      
+     <h5>RV STM32 OTA Firmware Update</h5>
+
+          <div id="stm32ota_controls">
+          <ul>
+            <li><label><button id="stm32ota_master" type="button">Do flash latest firmware</button></label><br><br></li>
+            <li><label><button id="stm32ota_beta" type="button">Do Flash latest beta firmware</button></label><br><br></li>
+            <li><label><button id="stm32ota" type="button">Do flash firmware from given URL</button> <input type="text" id="id-stm32FirmwareURL" value="http://192.168.1.70:8000/rv.bin"> </label><br><br></li> <!--dev-distro-delete-line-->
+          </ul>
+        </div>
+        <div id="stm32ota_progress_div"></div>
+        <div id="stm32ota_restart_div"></div>
+        
+        <h5>NetMCU ESP32 OTA Firmware Update</h5>
+        <div id="netota_controls">
+          <ul>
+            <li><label><button id="netota_master" type="button">Do flash latest firmware</button></label><br><br></li>
+            <li><label><button id="netota_beta" type="button">Do Flash latest beta firmware</button></label><br><br></li>
+            <li><label><button id="netota" type="button">Do flash firmware from given URL</button> <input type="text" id="id-esp32FirmwareURL" value="http://192.168.1.70:8000/netmcu.bin"> </label><br><br></li> <!--dev-distro-delete-line-->
+          </ul>
+        </div>
+        <div id="netota_progress_div"></div>
+        <div id="netota_restart_div"></div>
+
+        <h4>Firmware Info</h4>
+        <ul>
+          <li>MCU type: <span id="id_chip"></span></li>
+          <li>firmware version: <span id="id_firmware"></span></li>
+          <li>firmware build date: <span id="id_buildTime"></span></li>
+        </ul>
+   </div>
 
 
     
@@ -199,6 +227,7 @@
       <button id="csvb" type="button">Save</button>
       <br><br>
       <button id="mrtb" type="button">Restart MCU</button><br>
+      <div id="config_restart_div"></div>
       <ul>
 	<li><label>NetMCU-Boot-Count: <span id="id-bootCount"></span></label></li>
       </ul>

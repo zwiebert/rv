@@ -42,6 +42,12 @@ void main_setup_ip_dependent() {
 #ifdef USE_TCPS
   tcps_startServer();
 #endif
+#ifdef USE_TCPS_TASK
+  tcpCli_setup_task(cfg_getTcpsServer());
+#endif
+#ifdef USE_HTTP
+  hts_setup(cfg_getHttpServer());
+#endif
   }
   tmr_pingLoop_start();
 }
@@ -51,6 +57,10 @@ void mcu_init() {
 #ifdef USE_EG
   loop_eventBits_setup();
 #endif
+
+  kvs_setup();
+  txtio_setup(cfg_getTxtio());
+  config_setup();
 
 #ifdef USE_SERIAL
   struct cfg_stm32 *cfg_stm32 = calloc(1, sizeof (struct cfg_stm32));
@@ -64,10 +74,6 @@ void mcu_init() {
   };
   stm32_setup(cfg_stm32);
 #endif
-
-  kvs_setup();
-  txtio_setup(cfg_getTxtio());
-  config_setup();
 
   io_puts("\r\n\r\n");
 
