@@ -1,5 +1,15 @@
 var base = '';
 
+const FETCH_CONFIG = 1;
+const FETCH_ZONE_NAMES = 2;
+const FETCH_ZONE_DATA = 4;
+const FETCH_VERSION = 8;
+const FETCH_BOOT_COUNT = 16;
+const FETCH_ALIASES_START_PAIRING = 32;
+const FETCH_ALIASES_START_UNPAIRING = 64;
+const FETCH_SHUTTER_PREFS = 128;
+const FETCH_GMU = 256;
+
 var tfmcu_config = {};
 let config_fetched = false;
 const ZONE_COUNT = 14;
@@ -10,6 +20,13 @@ const FW_UPD_STATE_DONE = 2;
 const FW_UPD_STATE_ERROR = -1;
 
 function dbLog(msg) {  console.log(msg); }
+
+function add_kv(root,cmd,key,val) {
+  if (!(cmd in root))
+    root[cmd] = {};
+
+  root[cmd][key] = val;
+}
 
 class AppState {
 
@@ -30,10 +47,13 @@ class AppState {
     this.mEsp32BootCount = 0;
     this.mStm32Version = "";
 
+    this.load_fetch = 0;
+
 
   }
   load() {
     this.tabIdx = this.mTabIdx;
+    this.http_fetchByMask(this.load_fetch);
     this.tabVisibility = this.mTabVisibility;
   }
 
@@ -92,7 +112,6 @@ class AppState {
       let name = 'id-zoneName-'+sfx;
       let timer = 'timer'+sfx+".0";
 
-      console.log(dur);
       document.getElementById(dur).value = (this.mZoneTimerDurations[i] / 60.0).toFixed(2);
       document.getElementById(rem).value = (this.mZoneRemainingTimes[i] / 60.0).toFixed(2);
       document.getElementById(name).value = this.mZoneDescriptions[i];
@@ -139,10 +158,10 @@ class AppState {
 
     if ("config" in obj) {
       if (config_fetched) {
-        updateHtmlByConfigData(obj.config);
+        mcuConfig_updHtml(obj.config);
       } else {
         config_fetched = true;
-        document.getElementById("config-div").innerHTML = buildHtmlByConfigData(obj.config);
+        document.getElementById("config-div").innerHTML = mcuConfigTable_genHtml(obj.config);
       }
       tfmcu_config = obj;
     }
@@ -195,6 +214,15 @@ class AppState {
 
     if ("mcu" in obj) {
       let mcu = obj.mcu;
+      if ("chip" in mcu) {
+        document.getElementById("id_chip").innerHTML = mcu.chip;
+      }
+      if ("firmware" in mcu) {
+        document.getElementById("id_firmware").innerHTML = mcu.firmware;
+      }
+      if ("build-time" in mcu) {
+        document.getElementById("id_buildTime").innerHTML = mcu["build-time"];
+      }
       if ("status" in mcu) {
 	if (this.mStm32FwUpdState == FW_UPD_STATE_IN_PROGRESS) {
 	  this.setRvFwUpdState((mcu.status == "ok") ? FW_UPD_STATE_DONE : FW_UPD_STATE_ERROR);
@@ -259,27 +287,61 @@ class AppState {
   }
 
 
-  fetchConfig() {
-    var json = { to:"tfmcu", config: { all:"?" } };
-    var url = base+'/cmd.json';
-    http_postRequest(url, json);
 
-  }
+  http_fetchByMask(mask) {
+    let tfmcu = {to:"tfmcu"};
+
+    if (mask & FETCH_CONFIG)
+      tfmcu.config = { all: "?" };
+
+    if (mask & FETCH_GMU)
+      tfmcu.config = { 'gm-used': "?" };
+
+    if (mask & FETCH_VERSION) {
+      tfmcu.mcu = { version:"?" };
+      add_kv(tfmcu,"cmd","rv-version","?");
+    }
 
 
+    if (mask & FETCH_ZONE_NAMES)
+      tfmcu.kvs = { zn:"?" };
+
+    if (mask & FETCH_ZONE_DATA) {
+      add_kv(tfmcu,"cmd","dur","?");
+      add_kv(tfmcu,"cmd","rem","?");
+      add_kv(tfmcu,"cmd","status","?");
+    }
 
 
+    if (mask & FETCH_BOOT_COUNT)
+      tfmcu.mcu = {
+        "boot-count":"?"
+      };
 
-  fetchZoneData() {
-    var json = { to:"rv", cmd: { dur:"?", rem:"?", status:"?" } };
-    var url = base+'/cmd.json';
-    http_postRequest(url, json);
-  }
+    if (mask & FETCH_ALIASES_START_PAIRING)
+      tfmcu.pair = {
+        a: "?",
+        g: this.g,
+        m: this.m,
+        c: "pair"
+      };
+    if (mask & FETCH_ALIASES_START_UNPAIRING)
+      tfmcu.pair = {
+        a: "?",
+        g: this.g,
+        m: this.m,
+        c: "unpair"
+      };
 
-  fetchZoneNames() {
-    var json = { to:"netmcu", kvs: { zn:"?" } };
-    var url = base+'/cmd.json';
-    http_postRequest(url, json);
+    if (mask & FETCH_SHUTTER_PREFS)
+      tfmcu.shpref = {
+        g: this.g,
+        m: this.m,
+        c: "read",
+      };
+
+    let url = '/cmd.json';
+    http_postRequest(url, tfmcu);
   }
 
 }
@@ -287,7 +349,7 @@ class AppState {
 let ast;
 
 
-function buildConfigTableRowHtml(name,value) {
+function configTr_genHtml(name,value) {
   if (name.endsWith("-enable")) {
     console.log("value: "+value);
     return '<td><label class="config-label">'+name+
@@ -324,16 +386,16 @@ function buildConfigTableRowHtml(name,value) {
 }
 
 
-function buildHtmlByConfigData(cfg) {
+function mcuConfigTable_genHtml(cfg) {
   var html ="<table class=\"conf-table\";\">";
   Object.keys(cfg).forEach (function (key, idx) {
-    html += '<tr id="cfg_'+key+'_tr">'+buildConfigTableRowHtml(key, cfg[key])+'</tr>'+"\n";
+    html += '<tr id="cfg_'+key+'_tr">'+configTr_genHtml(key, cfg[key])+'</tr>'+"\n";
   });
   html +='</table>';
   return html;
 }
 
-function updateHtmlByConfigData(cfg) {
+function mcuConfig_updHtml(cfg) {
   Object.keys(cfg).forEach (function (key, idx) {
     let el = document.getElementById('cfg_'+key);
 
@@ -625,53 +687,11 @@ function writeHtml_timerTableDiv() {
 
 }
 
-function fetchVersions() {
-  var netmcu = {to:"netmcu"};
-  netmcu.cmd = {
-    "rv-version":"?"
-  };
-
-  let url = base+'/cmd.json';
-  console.log("url: "+url);
-  http_postRequest(url, netmcu);
-}
-
-function fetchBootCount() {
-  var netmcu = {to:"netmcu"};
-  netmcu.mcu = {
-    "boot-count":"?"
-  };
-
-  let url = base+'/cmd.json';
-  console.log("url: "+url);
-  http_postRequest(url, netmcu);
-}
-
-const VIS_NET = 0x01;
-const VIS_RV  = 0x02;
-const VIS_FIRMWARE = 0x04;
-
-
-function tabSwitchVisibility(mask) {
-  const NONE = "none";
-  const SHOW = "";
-  document.getElementById("id-rvDiv").style.display = (mask & VIS_RV) ? SHOW : NONE;
-  document.getElementById("configdiv").style.display = (mask & VIS_NET) ? SHOW : NONE;
-  document.getElementById("id-fwDiv").style.display = (mask & VIS_FIRMWARE) ? SHOW : NONE;
-
-  const BGC1 = "hsl(220, 60%, 60%)";
-  const BGC0 = "#eee";
-  document.getElementById("atb").style.backgroundColor =  (mask & VIS_RV) ? BGC1 : BGC0;
-  document.getElementById("ctb").style.backgroundColor =  (mask & VIS_NET) ? BGC1 : BGC0;
-  document.getElementById("stb").style.backgroundColor =  (mask & VIS_FIRMWARE) ? BGC1 : BGC0;
-
-}
-
 //--------------- nav tabs ------------------
-const tabs = [
-  { 'text':'RV', 'div_id':['id-rvDiv'], fetch_gm:0},
-  { 'text':'Config', 'div_id':['configdiv'], fetch:0 },
-  { 'text':'Firmware', 'div_id':['id-fwDiv'], fetch_init:0},
+let tabs = [
+  { 'text':'RV', 'div_id':['id-rvDiv'], fetch:(FETCH_ZONE_DATA), fetch_init:(FETCH_ZONE_NAMES|FETCH_VERSION) },
+  { 'text':'Config', 'div_id':['configdiv'], fetch:(FETCH_CONFIG|FETCH_BOOT_COUNT) },
+  { 'text':'Firmware', 'div_id':['id-fwDiv'], fetch_init:FETCH_VERSION},
 
 ];
 let div_ids = [];
@@ -699,6 +719,7 @@ function navTabs_updHtml(idx) {
 
   if ('fetch_init' in nt) {
     fetch |= nt.fetch_init;
+    nt.fetch_init = 0;
   }
   if ('fetch' in nt) {
     fetch |= nt.fetch;
@@ -736,29 +757,23 @@ function onContentLoaded() {
 
   ast = new AppState();
   ast.load();
-  ast.fetchConfig();
-  ast.fetchZoneNames();
-  ast.fetchZoneData();
-
-  fetchVersions();
-  fetchBootCount();
 
   writeHtml_timerTableDiv();
 
-  document.getElementById("zrlb").onclick = function() { ast.fetchZoneNames(); ast.fetchZoneData();};
+  document.getElementById("zrlb").onclick = function() { ast.http_fetchByMask(FETCH_ZONE_DATA|FETCH_ZONE_NAMES); };
   document.getElementById("znsb").onclick = () => postZoneNames();
 
   document.getElementById("rvrstb").onclick = () => postRvMcuRestart();
 
   document.getElementById("csvb").onclick = () => postConfig();
-  document.getElementById("crlb").onclick = () => ast.fetchConfig();
+  document.getElementById("crlb").onclick = () => ast.http_fetchByMask(FETCH_CONFIG);
 
   document.getElementById("mrtb").onclick = () => req_mcuRestart();
 
-  document.getElementById("stm32ota").onclick = () => stm32FirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);//dev-distro-delete-line//
+  document.getElementById("stm32ota").onclick = () => stm32FirmwareOTA(document.getElementById("id-stm32FirmwareURL").value);//dev-distro-delete-line//
   document.getElementById("stm32ota_master").onclick = () => stm32FirmwareOTA(otaName_master);
   document.getElementById("stm32ota_beta").onclick = () => stm32FirmwareOTA(otaName_beta);
-  
+
   document.getElementById("netota").onclick = () => netFirmwareOTA(document.getElementById("id-esp32FirmwareURL").value);//dev-distro-delete-line//
   document.getElementById("netota_master").onclick = () => netFirmwareOTA(otaName_master);
   document.getElementById("netota_beta").onclick = () => netFirmwareOTA(otaName_beta);
