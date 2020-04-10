@@ -18,7 +18,7 @@
 #include "userio/status_json.h"
 #include "userio_app/status_output.h"
 
-#ifdef DISTRIBUTION
+#if defined DISTRIBUTION || defined CELLAR
 #define TOPIC_ROOT "rv/"
 #else
 #define TOPIC_ROOT "rvdb/"

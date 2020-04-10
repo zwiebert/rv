@@ -36,6 +36,7 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
     httpd_resp_sendstr(req, sj_get_json());
 
     sj_free_buffer();
+    mutex_cliGive();
   }
 
   return ESP_OK;

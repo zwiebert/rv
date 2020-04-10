@@ -29,7 +29,7 @@ extern "C" void timer_set(int8_t channel);
 
 #define JSON_PREFIX "\"data\":{"
 #define JSON_PREFIX_LEN ((sizeof JSON_PREFIX) - 1)
-#define JSON_SUFFIX "};\n"
+#define JSON_SUFFIX "}\n"
 #define JSON_SUFFIX_LEN ((sizeof JSON_SUFFIX) - 1)
 
 #define KEY_VERSION "version"

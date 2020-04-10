@@ -161,18 +161,18 @@ void cliCmd_waitForResponse() {
   for (int i = 0; i < (WFR_TOTAL_MS / WFR_INTERVAL_MS); ++i) {
     vTaskDelay(WFR_INTERVAL_MS / portTICK_PERIOD_MS);
     D(db_printf(":"));
-    n += stm32_read(buf + n, buf_size - 1 - n);
+    n = stm32_read(buf, buf_size - 1);
     if (n > 0) {
       buf[n] = '\0';
-      char *sc = strchr(buf, ';');
+      char *sc = strchr(buf, '\n');
       if (sc) {
         *sc = ',';
         sc[1] = '\0';
       }
       sj_cat_to_buf(buf);
+      D(db_printf("cli_cmd(from stm32): <%s>\n", buf));
       if (sc) {
         *sc = '\0';
-        D(db_printf("cli_cmd(from stm32): <%s>\n", buf));
         break;
       }
     }

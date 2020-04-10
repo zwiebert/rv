@@ -66,7 +66,7 @@ void so_output_message(so_msg_t mt, const void *arg) {
   case SO_MCU_VERSION: {
     so_out_x_reply_entry_ss("chip", MCU_TYPE);
 
-    so_out_x_reply_entry_ss("firmware", strcat(strcpy(buf, "tronferno-mcu-"), APP_VERSION));
+    so_out_x_reply_entry_ss("firmware", strcat(strcpy(buf, "rv-netmcu-"), APP_VERSION));
 
     char *p = strcpy(buf, ISO_BUILD_TIME);
     do

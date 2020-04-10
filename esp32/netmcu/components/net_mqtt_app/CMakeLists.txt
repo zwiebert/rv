@@ -6,6 +6,10 @@ if(DEFINED ENV{DISTRO})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISTRIBUTION")
 endif()
 
+if(DEFINED ENV{CELLAR})
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DCELLAR")
+endif()
+
 idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 

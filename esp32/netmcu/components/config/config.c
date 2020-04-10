@@ -41,6 +41,7 @@ config C = {
   .geo_tz = MY_GEO_TZ,
 #endif
   .stm32_inv_bootpin = MY_STM32_INV_BOOTPIN,
+  .network = MY_NETWORK_CONNECTION,
 };
 
 void mcu_read_config(uint32_t mask);
