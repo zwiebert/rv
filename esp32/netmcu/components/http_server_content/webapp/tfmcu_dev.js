@@ -10,7 +10,6 @@ const FETCH_ALIASES_START_UNPAIRING = 64;
 const FETCH_SHUTTER_PREFS = 128;
 const FETCH_GMU = 256;
 
-var tfmcu_config = {};
 let config_fetched = false;
 const ZONE_COUNT = 14;
 
@@ -46,7 +45,7 @@ class AppState {
     this.mEsp32FwUpdState = FW_UPD_STATE_NONE;
     this.mEsp32BootCount = 0;
     this.mStm32Version = "";
-
+    this.tfmcu_config = {};
     this.load_fetch = 0;
 
 
@@ -157,13 +156,18 @@ class AppState {
     console.log("reply-json: "+JSON.stringify(obj));
 
     if ("config" in obj) {
-      if (config_fetched) {
-        mcuConfig_updHtml(obj.config);
-      } else {
-        config_fetched = true;
-        document.getElementById("config-div").innerHTML = mcuConfigTable_genHtml(obj.config);
+      let config = obj.config;
+      this.tfmcu_config = Object.assign(this.tfmcu_config, config);
+
+      if (!document.getElementById("cfg_table_id")) {
+        if ("verbose" in config) {
+          document.getElementById("config-div").innerHTML = mcuConfigTable_genHtml(obj.config);
+        }
       }
-      tfmcu_config = obj;
+      
+      if (document.getElementById("cfg_table_id")) {
+        mcuConfig_updHtml(obj.config);
+      }
     }
 
     if ("position" in obj) {
@@ -387,7 +391,7 @@ function configTr_genHtml(name,value) {
 
 
 function mcuConfigTable_genHtml(cfg) {
-  var html ="<table class=\"conf-table\";\">";
+  var html ='<table id="cfg_table_id" class="conf-table">';
   Object.keys(cfg).forEach (function (key, idx) {
     html += '<tr id="cfg_'+key+'_tr">'+configTr_genHtml(key, cfg[key])+'</tr>'+"\n";
   });
@@ -490,15 +494,16 @@ function postRvMcuRestart() {
   http_postRequest(url, json);
 }
 
-function postConfig() {
-  let tfmcu = Object.assign({},tfmcu_config);
-  var cfg = tfmcu.config;
+function mcuConfig_fromHtml_toMcu() {
+  const cfg = ast.tfmcu_config;
+
   var new_cfg = {};
   var has_changed = false;
+
   Object.keys(cfg).forEach (function (key, idx) {
     let new_val = 0;
     let el = document.getElementById('cfg_'+key);
-    console.log("key: "+key);
+    dbLog("key: "+key);
 
     switch(el.type) {
     case 'checkbox':
@@ -511,21 +516,16 @@ function postConfig() {
     if (new_val != old_val) {
       new_cfg[key] = new_val;
       has_changed = true;
-      console.log(key);
+      dbLog(key);
     }
   });
 
   if (has_changed) {
     new_cfg.all = "?";
-    tfmcu.config = new_cfg;
-
-    console.log(JSON.stringify(tfmcu));
-    var url = base+'/cmd.json';
-    console.log("url: "+url);
-    http_postRequest(url, tfmcu);
+    var url = '/cmd.json';
+    http_postRequest(url, { config: new_cfg });
   }
 }
-
 function postZoneNames() {
   let netmcu = {to:"netmcu"};
   let kvs = {};
@@ -765,7 +765,7 @@ function onContentLoaded() {
 
   document.getElementById("rvrstb").onclick = () => postRvMcuRestart();
 
-  document.getElementById("csvb").onclick = () => postConfig();
+  document.getElementById("csvb").onclick = () => mcuConfig_fromHtml_toMcu();
   document.getElementById("crlb").onclick = () => ast.http_fetchByMask(FETCH_CONFIG);
 
   document.getElementById("mrtb").onclick = () => req_mcuRestart();

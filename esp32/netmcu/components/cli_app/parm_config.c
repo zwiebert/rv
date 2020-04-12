@@ -14,7 +14,7 @@ const char * const cfg_keys[SO_CFG_size] = {
     "rtc", "network",
     "wlan-ssid", "wlan-password", "lan-phy", "lan-pwr-gpio", "ntp-server",
     "tz", "verbose",
-    "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password",
+    "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password", "mqtt-client-id",
     "http-enable", "http-user", "http-password",
     "stm32-bootgpio-inv"
 };
@@ -55,6 +55,7 @@ const char cli_help_parmConfig[]  =
      "mqtt-url=URL      broker/server URL (e.g. mqtt://192.168.1.42:7777)\n"
      "mqtt-user=NAME    user name on server\n"
      "mqtt-password=PW  user password on server\n"
+     "mqtt-client-id=CID  default: rv\n"
 #endif
 #ifdef USE_HTTP
      "http-enable=(0|1) enable HTTP\n"
@@ -254,6 +255,16 @@ process_parmConfig(clpar p[], int len) {
         case SO_CFG_MQTT_URL: {
           if (isValid_optStr(C.mqtt.url, val)) {
             if (set_optStr(C.mqtt.url, val, CB_MQTT_URL))
+              hasChanged_mqttClient = true;
+          } else {
+            cli_replyFailure();
+          }
+        }
+          break;
+
+        case SO_CFG_MQTT_CLIENT_ID: {
+          if (isValid_optStr(C.mqtt.client_id, val)) {
+            if (set_optStr(C.mqtt.client_id, val, CB_MQTT_CLIENT_ID))
               hasChanged_mqttClient = true;
           } else {
             cli_replyFailure();

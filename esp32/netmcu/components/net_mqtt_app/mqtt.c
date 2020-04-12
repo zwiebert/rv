@@ -18,11 +18,8 @@
 #include "userio/status_json.h"
 #include "userio_app/status_output.h"
 
-#if defined DISTRIBUTION || defined CELLAR
+
 #define TOPIC_ROOT "rv/"
-#else
-#define TOPIC_ROOT "rvdb/"
-#endif
 
 #define TOPIC_CLI TOPIC_ROOT "cli"
 #define TOPIC_STATUS TOPIC_ROOT "status"
@@ -50,7 +47,7 @@ void io_mqtt_publish_valve_status(int valve_number, bool state) {
 
   snprintf(topic, 64, "%szone/%d/valve", TOPIC_ROOT, valve_number);
 
-  io_mqtt_publish(topic, state ? "1" : "0");
+  io_mqtt_publish(topic, state ? "on" : "off");
 }
 
 void io_mqtt_publish_rain_sensor_status(bool state) {
@@ -58,7 +55,7 @@ void io_mqtt_publish_rain_sensor_status(bool state) {
 
   snprintf(topic, 64, "%s/rain", TOPIC_STATUS);
 
-  io_mqtt_publish(topic, state ? "1" : "0");
+  io_mqtt_publish(topic, state ? "on" : "off");
 }
 
 void io_mqtt_publish_pump_status(bool state) {
@@ -66,7 +63,7 @@ void io_mqtt_publish_pump_status(bool state) {
 
   snprintf(topic, 64, "%s/pump", TOPIC_STATUS);
 
-  io_mqtt_publish(topic, state ? "1" : "0");
+  io_mqtt_publish(topic, state ? "on" : "off");
 }
 
 void io_mqtt_publish_stm32_event(const char *event) {
@@ -138,16 +135,8 @@ void io_mqttApp_unsubscribed(const char *topic, int topic_len) {
 void io_mqttApp_published(int msg_id) {
 }
 
-
-#ifdef DISTRIBUTION
-#define CONFIG_MQTT_CLIENT_ID "rv"
-#else
-#define CONFIG_MQTT_CLIENT_ID "rvdbg"
-#endif
-
-
 void io_mqttApp_setup(struct cfg_mqtt *cfg_mqtt) {
-  io_mqtt_setup(CONFIG_MQTT_CLIENT_ID, cfg_mqtt);
+  io_mqtt_setup(cfg_mqtt);
 }
 
 

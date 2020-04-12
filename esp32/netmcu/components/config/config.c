@@ -26,7 +26,7 @@ config C = {
     .wifi = { .SSID = MY_WIFI_SSID, .password = MY_WIFI_PASSWORD, },
 #endif
 #ifdef USE_MQTT
-    .mqtt = { .url = MY_MQTT_URL, .user = MY_MQTT_USER, .password = MY_MQTT_PASSWORD, .enable = MY_MQTT_ENABLE, },
+    .mqtt = { .url = MY_MQTT_URL, .user = MY_MQTT_USER, .password = MY_MQTT_PASSWORD, .client_id = MY_MQTT_CLIENT_ID, .enable = MY_MQTT_ENABLE, },
 #endif
 #ifdef USE_HTTP
     .http = { .user = MY_HTTP_USER, .password = MY_HTTP_PASSWORD, .enable = MY_HTTP_ENABLE, },
