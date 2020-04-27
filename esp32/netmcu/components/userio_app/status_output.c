@@ -33,13 +33,17 @@
 
 u8 so_target;
 
-
+bool so_output_message2(so_msg_t mt, const void *arg);
 
 void so_output_message(so_msg_t mt, const void *arg) {
   char buf[64];
   int i;
 
+  if (so_output_message2(mt, arg))
+    return;
+
   switch (mt) {
+
   case SO_FW_START_MSG_PRINT:
     so_print_startup_info();
     break;
@@ -156,87 +160,16 @@ void so_output_message(so_msg_t mt, const void *arg) {
       so_out_x_reply_entry_s(mt, buf);
     }
     break;
-#ifdef USE_NETWORK
   case SO_CFG_NETWORK:
-    so_out_x_reply_entry_s(mt, cfg_args_network[C.network]);
-    break;
+#ifdef USE_NETWORK
+    so_out_x_reply_entry_s(mt, cfg_args_network[config_read_item_i8(CB_NETWORK_CONNECTION, MY_NETWORK_CONNECTION)]);
 #endif
-#ifdef USE_LAN
-  case SO_CFG_LAN_PHY:
-    so_out_x_reply_entry_s(mt, cfg_args_lanPhy[C.lan.phy]);
     break;
-  case SO_CFG_LAN_PWR_GPIO:
-    so_out_x_reply_entry_d(mt, C.lan.pwr_gpio);
-    break;
-#else
-  case SO_CFG_LAN_PHY:
-  case SO_CFG_LAN_PWR_GPIO:
-    break;
-#endif
-#ifdef USE_WLAN
-  case SO_CFG_WLAN_SSID:
-    so_out_x_reply_entry_s(mt, C.wifi.SSID);
-    break;
-  case SO_CFG_WLAN_PASSWORD:
-    so_out_x_reply_entry_s(mt, *C.wifi.password ? "*" : "");
-    break;
-#endif
-#ifdef USE_NTP
-  case SO_CFG_NTP_SERVER:
-    so_out_x_reply_entry_s(mt, C.ntp.server);
-    break;
-#endif
-#ifdef USE_MQTT
-  case SO_CFG_MQTT_ENABLE:
-    so_out_x_reply_entry_d(mt, C.mqtt.enable ? 1 : 0);
-    break;
-  case SO_CFG_MQTT_URL:
-    so_out_x_reply_entry_s(mt, C.mqtt.url);
-    break;
-  case SO_CFG_MQTT_USER:
-    so_out_x_reply_entry_s(mt, C.mqtt.user);
-    break;
-  case SO_CFG_MQTT_PASSWORD:
-    so_out_x_reply_entry_s(mt, *C.mqtt.password ? "*" : "");
-    break;
-  case SO_CFG_MQTT_CLIENT_ID:
-    so_out_x_reply_entry_s(mt, C.mqtt.client_id);
-    break;
-
-#else
-  case SO_CFG_MQTT_ENABLE:
-  case SO_CFG_MQTT_URL:
-  case SO_CFG_MQTT_USER:
-  case SO_CFG_MQTT_PASSWORD:
-  case SO_CFG_MQTT_CLIENT_ID:
-    break;
-#endif
-
-#ifdef USE_HTTP
-  case SO_CFG_HTTP_ENABLE:
-    so_out_x_reply_entry_d(mt, C.http.enable ? 1 : 0);
-    break;
-  case SO_CFG_HTTP_USER:
-    so_out_x_reply_entry_s(mt, C.http.user);
-    break;
-  case SO_CFG_HTTP_PASSWORD:
-    so_out_x_reply_entry_s(mt, *C.http.password ? "*" : "");
-    break;
-#else
-  case SO_CFG_HTTP_ENABLE:
-  case SO_CFG_HTTP_USER:
-  case SO_CFG_HTTP_PASSWORD:
-    break;
-#endif
-
-  case SO_CFG_VERBOSE:
-    so_out_x_reply_entry_d(mt, C.app_verboseOutput);
-    break;
-    case SO_CFG_TZ:
+  case SO_CFG_TZ:
 #ifdef POSIX_TIME
-      so_out_x_reply_entry_s(mt, C.geo_tz);
+    so_out_x_reply_entry_s(mt, config_read_item_s(CB_TZ, buf, sizeof buf, MY_GEO_TZ));
 #endif
-    break;
+  break;
 
 
     case SO_CFG_GPIO_PIN:

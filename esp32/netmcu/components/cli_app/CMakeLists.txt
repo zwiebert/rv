@@ -1,6 +1,6 @@
 set(srcs cli.c  cli_out.c
     parm_cmd.c
-    parm_config.c
+    parm_config.c parm_config_switch.c
     parm_help.c
     parm_kvs.c
     parm_mcu.c

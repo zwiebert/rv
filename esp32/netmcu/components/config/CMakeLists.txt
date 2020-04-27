@@ -1,4 +1,4 @@
-set(srcs config.c config_kvs.c)
+set(srcs config.c config_kvs.c config_comps.c)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
 
@@ -15,6 +15,6 @@ endif()
 idf_component_register(SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 
     PRIV_INCLUDE_DIRS "./include/config" ../../main
-    REQUIRES  app txtio key_value_store
+    REQUIRES  app txtio key_value_store config_kvs
     
 )

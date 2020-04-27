@@ -59,7 +59,7 @@ void loop_eventBits_check() {
 #endif
 
 static void tmr_checkNetwork_cb(TimerHandle_t xTimer) {
-  if (!wifi_ap_active && !ipnet_isConnected()) {
+  if (!ipnet_isConnected()) {
     lf_setBit(lf_createWifiAp);
   }
 }

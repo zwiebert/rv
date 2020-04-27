@@ -7,12 +7,21 @@
 
 SemaphoreHandle_t uart_mutex;
 i32 boot_counter;
-bool wifi_ap_active;
+#define WIFI_AP_SSID "rv"
+#define WIFI_AP_PASSWD "12345678"
 
+bool wifi_ap_active;
 void lfa_createWifiAp() {
-  esp_netif_init();
-  wifiAp_setup("rv", "12345678");
-  wifi_ap_active = true;
+  if (!wifi_ap_active) {
+    wifi_ap_active = true;
+    wifiAp_setup(WIFI_AP_SSID, WIFI_AP_PASSWD);
+
+    struct cfg_tcps cfg_tcps = { .enable = true };
+    tcpCli_setup(&cfg_tcps);
+
+    struct cfg_http cfg_http = { .enable = true };
+    hts_setup(&cfg_http);
+  }
 }
 
 void lfa_syncStm32Time(void) {
