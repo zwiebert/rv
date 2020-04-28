@@ -18,13 +18,12 @@
 #define CFG_NAMESPACE "Tronferno"
 #define CFG_KEY "global.C"
 
+const char *config_keys[] = {};
+
 bool config_item_modified(enum configItem item) {
   kvshT h;
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
     switch (item) {
-    case CB_VERBOSE:
-      config_setup_txtio();
-      break;
     default:
       break;
     }

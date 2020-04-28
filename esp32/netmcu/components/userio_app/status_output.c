@@ -162,12 +162,12 @@ void so_output_message(so_msg_t mt, const void *arg) {
     break;
   case SO_CFG_NETWORK:
 #ifdef USE_NETWORK
-    so_out_x_reply_entry_s(mt, cfg_args_network[config_read_item_i8(CB_NETWORK_CONNECTION, MY_NETWORK_CONNECTION)]);
+    so_out_x_reply_entry_s(mt, cfg_args_network[config_read_network_connection()]);
 #endif
     break;
   case SO_CFG_TZ:
 #ifdef POSIX_TIME
-    so_out_x_reply_entry_s(mt, config_read_item_s(CB_TZ, buf, sizeof buf, MY_GEO_TZ));
+    so_out_x_reply_entry_s(mt, config_read_tz(buf, sizeof buf));
 #endif
   break;
 
@@ -188,7 +188,7 @@ void so_output_message(so_msg_t mt, const void *arg) {
     break;
 
     case SO_CFG_STM32_BOOTGPIO_INV: {
-      so_out_x_reply_entry_d(mt, C.stm32_inv_bootpin ? 1 : 0);
+      so_out_x_reply_entry_d(mt, read_config_stm32_inv_bootpin());
     }
     break;
 

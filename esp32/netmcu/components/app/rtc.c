@@ -152,7 +152,7 @@ time_t rtc_timezone_in_secs() {
 void 
 rtc_setup() {
   char buf[64];
-  setenv("TZ", config_read_item_s(CB_TZ, buf, sizeof buf, MY_GEO_TZ), 1);
+  setenv("TZ", config_read_tz(buf, sizeof buf), 1);
   tzset();
 }
 

@@ -10,7 +10,7 @@
 
 #include "app_config/proj_app_cfg.h"
 #include "config_kvs/config.h"
-#include "config_defaults.h"
+
 
 #ifdef USE_LAN
 #include "net/ethernet.h"
@@ -51,6 +51,7 @@ typedef struct {
 extern config C;
 
 enum configAppItem {
+  CBA_start = CB_size - 1,
   CB_CFG_PASSWD, CB_LONGITUDE, CB_LATITUDE,
   CB_TZ,
 #ifdef USE_NETWORK
@@ -75,5 +76,10 @@ void read_config(uint32_t mask);
 void config_setup_global();
 void config_setup_mqttAppClient();
 bool config_item_modified(enum configItem item);
+
+const char *config_read_tz(char *d, unsigned d_size);
+enum nwConnection  config_read_network_connection();
+bool read_config_stm32_inv_bootpin();
+
 
 #endif /* MAIN_CONFIG_CONFIG_H_ */
