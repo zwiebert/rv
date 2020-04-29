@@ -52,8 +52,7 @@ extern config C;
 
 enum configAppItem {
   CBA_start = CB_size - 1,
-  CB_CFG_PASSWD, CB_LONGITUDE, CB_LATITUDE,
-  CB_TZ,
+  CB_CFG_PASSWD,  CB_TZ,
 #ifdef USE_NETWORK
   CB_NETWORK_CONNECTION,
 #endif

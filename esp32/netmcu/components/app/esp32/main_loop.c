@@ -22,7 +22,9 @@ static const lfa_funT lfa_table[lf_Len] = {
 #ifdef USE_TCPS
     tcps_loop,
 #endif
-    stm32loop, cli_loop, };
+    stm32loop, cli_loop,
+    lfa_mcuRestart,
+};
 
 #ifndef USE_EG
 void loop_checkFlags() {

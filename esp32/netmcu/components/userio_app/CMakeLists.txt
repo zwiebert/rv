@@ -14,5 +14,5 @@ idf_component_register(
     INCLUDE_DIRS . "./include" 
     PRIV_INCLUDE_DIRS "./include/userio_app" ../../main 
     REQUIRES userio 
-    PRIV_REQUIRES  app cli_app net_mqtt_app misc
+    PRIV_REQUIRES  app cli_app net_mqtt_app misc debug
     )

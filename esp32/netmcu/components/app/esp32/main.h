@@ -72,7 +72,7 @@ enum loop_flagbits {
   lf_loopTcpServer,
 #endif
   lf_loopCli, lf_loopStm32,
-
+  lf_mcuRestart,
   //-------------
   lf_Len
 };
@@ -87,6 +87,7 @@ void lfa_createWifiAp(void);
 void lfa_syncStm32Time(void);
 void lfa_gotIpAddr(void);
 void lfa_lostIpAddr(void);
+void lfa_mcuRestart(void);
 void stm32loop(void);
 void loop(void);
 void tmr_checkNetwork_start();

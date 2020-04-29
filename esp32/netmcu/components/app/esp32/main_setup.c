@@ -2,6 +2,10 @@
 #include "config/config.h"
 #include "stm32/stm32.h"
 
+void loop_setBit_mcuRestart() {
+  lf_setBit(lf_mcuRestart);
+}
+
 void ntpApp_sync_time_cb(struct timeval *tv) {
   ets_printf("ntp synced: %ld\n", time(0));
   lf_setBit(lf_syncStm32Time);
@@ -86,6 +90,9 @@ void mcu_init() {
   ipnet_cbRegister_gotIpAddr(lfa_gotIpAddr_cb);
   ipnet_cbRegister_lostIpAddr(lfa_lostIpAddr_cb);
 
+void loop_setBit_mcuRestart() {
+  lf_setBit(lf_mcuRestart);
+}
 #ifdef USE_NETWORK
 #ifdef USE_AP_FALLBACK
   esp_netif_init();
@@ -122,6 +129,10 @@ void mcu_init() {
   mutex_setup();
 #endif
 
+#ifdef USE_AP_FALLBACK
+  if (C.network != nwWlanAp)
+    tmr_checkNetwork_start();
+#endif
   ////Orig
 
   io_puts("\r\n\r\n");

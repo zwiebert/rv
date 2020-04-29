@@ -9,6 +9,7 @@
 #include "app/kvstore.h"
 #include "misc/int_macros.h"
 #include "misc/int_types.h"
+#include "app/loop.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 
@@ -126,8 +127,12 @@ process_parmConfig(clpar p[], int len) {
 
 #if ENABLE_RESTART
     } else if (strcmp(key, "restart") == 0) {
+#ifdef MCU_ESP32
+      loop_setBit_mcuRestart();
+#else
       extern void  mcu_restart(void);
       mcu_restart();
+#endif
 #endif
 
     } else if (strcmp(key, "all") == 0) {
