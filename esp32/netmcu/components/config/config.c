@@ -34,6 +34,6 @@ const char* config_read_tz(char *d, unsigned d_size) {
 }
 #endif
 
-bool read_config_stm32_inv_bootpin() {
+bool config_read_stm32_inv_bootpin() {
   return !!config_read_item_i8(CB_STM32_INV_BOOTPIN, MY_STM32_INV_BOOTPIN);
 }

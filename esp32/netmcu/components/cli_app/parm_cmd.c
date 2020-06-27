@@ -69,7 +69,7 @@ process_parmCmd(clpar p[], int len) {
   int buf_idx = sizeof(buf);
 
   bool hasCmdLine = false;
-  bool reqResponse = false, reqDurations = false, reqRemainingTimes = false, reqVersion = false;
+  bool reqResponse = false;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -86,7 +86,6 @@ process_parmCmd(clpar p[], int len) {
     } else if (strcmp(key, RV_VERSION) == 0 && *val == '?') {
       strcat(buf, CMD_ASK_VERSION);
       reqResponse = true;
-      reqVersion = true;
       hasCmdLine = true;
 
     } else if (strcmp(key, "rem") == 0 && *val == '?') {

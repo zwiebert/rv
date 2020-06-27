@@ -188,7 +188,7 @@ void so_output_message(so_msg_t mt, const void *arg) {
     break;
 
     case SO_CFG_STM32_BOOTGPIO_INV: {
-      so_out_x_reply_entry_d(mt, read_config_stm32_inv_bootpin());
+      so_out_x_reply_entry_d(mt, config_read_stm32_inv_bootpin());
     }
     break;
 

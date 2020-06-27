@@ -7,7 +7,10 @@ set(PROJECT_NAME "tronferno-mcu")
 set(EXTRA_COMPONENT_DIRS ./components-mcu/components)
 
 set(COMPONENTS
-    app app_config cli_app config net_http_server http_server_content net_mqtt_app stm32 userio_app 
+    app app_config cli_app config  http_server_content net_mqtt_app userio_app
+    
+    stm32 config_kvs net_http_server
+     
 	bootloader esptool_py partition_table soc log spi_flash micro-ecc main efuse driver esp_rom  
 )
 
