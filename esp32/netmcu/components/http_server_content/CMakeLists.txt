@@ -11,6 +11,7 @@ idf_component_register(
     INCLUDE_DIRS . "./include"
     PRIV_INCLUDE_DIRS "./include/http_server_content"
     REQUIRES ""
-    PRIV_REQUIRES cli_app config misc userio
+    PRIV_REQUIRES cli_app cli config misc userio net_http_server
+                  mbedtls
     EMBED_TXTFILES "./webapp/tfmcu.html" "./webapp/tfmcu.js"
    )

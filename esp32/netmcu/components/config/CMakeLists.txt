@@ -15,6 +15,6 @@ endif()
 idf_component_register(SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 
     PRIV_INCLUDE_DIRS "./include/config" ../../main
-    REQUIRES  app txtio key_value_store config_kvs
-    
+    REQUIRES app_config config_kvs net net_http_server net_mqtt
+    PRIV_REQUIRES app_config key_value_store misc net_mqtt_app    
 )

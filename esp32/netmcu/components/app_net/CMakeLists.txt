@@ -15,7 +15,7 @@ idf_component_register(
     INCLUDE_DIRS "./include" ../.. 
     PRIV_INCLUDE_DIRS "./include/app/net" ../../main
     #REQUIRES  
-    PRIV_REQUIRES app_config debug net
-                  esp_https_ota
+    PRIV_REQUIRES debug misc net
+                  lwip
     EMBED_TXTFILES ./esp32/ca_cert.pem
 )

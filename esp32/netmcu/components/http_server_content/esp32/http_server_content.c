@@ -5,7 +5,8 @@
 #include <sys/param.h>
 #include <mbedtls/base64.h>
 
-#include <esp_http_server.h>
+#include "net/http/server/http_server.h"
+#include "net/http/server/esp32/register_uris.h"
 
 #include "userio/status_json.h"
 #include "config/config.h"
