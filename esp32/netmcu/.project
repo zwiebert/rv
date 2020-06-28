@@ -3,7 +3,6 @@
 	<name>netmcu</name>
 	<comment></comment>
 	<projects>
-		<project>components-mcu</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

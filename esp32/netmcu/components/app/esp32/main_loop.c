@@ -22,7 +22,9 @@ static const lfa_funT lfa_table[lf_Len] = {
 #ifdef USE_TCPS
     tcps_loop,
 #endif
-    stm32loop, cli_loop, };
+    stm32loop, cli_loop,
+    lfa_mcuRestart,
+};
 
 #ifndef USE_EG
 void loop_checkFlags() {
@@ -59,7 +61,7 @@ void loop_eventBits_check() {
 #endif
 
 static void tmr_checkNetwork_cb(TimerHandle_t xTimer) {
-  if (!wifi_ap_active && !ipnet_isConnected()) {
+  if (!ipnet_isConnected()) {
     lf_setBit(lf_createWifiAp);
   }
 }

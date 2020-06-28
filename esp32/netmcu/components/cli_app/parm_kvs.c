@@ -35,7 +35,6 @@ int
 process_parmKvs(clpar p[], int len) {
   int arg_idx;
   int errors = 0;
-  so_msg_t so_key = SO_NONE;
 
   dbg_vpf(db_printf("process_parmKvs()\n"));
 

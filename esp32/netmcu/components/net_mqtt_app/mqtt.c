@@ -90,29 +90,28 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
   }
 
   if (mutex_cliTake()) {
-
+    char *line = alloca(40 + data_len);
     if (topic_endsWith(topic, topic_len, TOPIC_DUR_END)) {
-      char *line = set_commandline("x", 1);
       const char *addr = topic + (sizeof TOPIC_ROOT - 1);
-      int addr_len = topic_len- ((sizeof TOPIC_ROOT - 1) + (sizeof TOPIC_DUR_END - 1));
+      int addr_len = topic_len - ((sizeof TOPIC_ROOT - 1) + (sizeof TOPIC_DUR_END - 1));
       sprintf(line, "cmd dur%.*s=%.*s", addr_len, addr, data_len, data);
       cli_process_cmdline(line, SO_TGT_MQTT);
     } else if (strlen(TOPIC_CLI) == topic_len && 0 == strncmp(topic, TOPIC_CLI, topic_len)) {
-      if (strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {
-        char *line;
-        if ((line = set_commandline(data + TAG_CLI_LEN, data_len - TAG_CLI_LEN))) {
-          cli_process_cmdline(line, SO_TGT_MQTT);
-        }
-      } else if ((0 == strncmp(data, TAG_SEND, TAG_SEND_LEN)) || (0 == strncmp(data, TAG_CONFIG, TAG_CONFIG_LEN))
-          || (0 == strncmp(data, TAG_TIMER, TAG_TIMER_LEN))) {
-        char *line;
-        if ((line = set_commandline(data, data_len))) {
-          cli_process_cmdline(line, SO_TGT_MQTT);
-        }
+      if (data_len > TAG_CLI_LEN && strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {
+        data += TAG_CLI_LEN;
+        data_len -= TAG_CLI_LEN;
       }
+      memcpy(line, data, data_len);
+      line[data_len] = '\0';
+      cli_process_cmdline(line, SO_TGT_MQTT);
+    } else if ((0 == strncmp(data, TAG_SEND, TAG_SEND_LEN)) || (0 == strncmp(data, TAG_CONFIG, TAG_CONFIG_LEN))
+        || (0 == strncmp(data, TAG_TIMER, TAG_TIMER_LEN))) {
+      memcpy(line, data, data_len);
+      line[data_len] = '\0';
+      cli_process_cmdline(line, SO_TGT_MQTT);
     }
 
-   // RETURN:
+    // RETURN:
     mutex_cliGive();
   }
 }
@@ -120,9 +119,9 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
 
 void io_mqttApp_enable(bool enable) {
   if (enable) {
-    sj_callback_onClose_ifNotEmpty = io_mqtt_publish_config;
+
   } else {
-    sj_callback_onClose_ifNotEmpty = 0;
+
   }
 }
 

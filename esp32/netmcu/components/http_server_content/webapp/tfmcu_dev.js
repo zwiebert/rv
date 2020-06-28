@@ -690,8 +690,8 @@ function writeHtml_timerTableDiv() {
 //--------------- nav tabs ------------------
 let tabs = [
   { 'text':'RV', 'div_id':['id-rvDiv'], fetch:(FETCH_ZONE_DATA), fetch_init:(FETCH_ZONE_NAMES|FETCH_VERSION) },
-  { 'text':'Config', 'div_id':['configdiv'], fetch:(FETCH_CONFIG|FETCH_BOOT_COUNT) },
-  { 'text':'Firmware', 'div_id':['id-fwDiv'], fetch_init:FETCH_VERSION},
+  { 'text':'Config', 'div_id':['configdiv'], fetch:(FETCH_CONFIG) },
+  { 'text':'Firmware', 'div_id':['id-fwDiv'], fetch_init:FETCH_VERSION, fetch:FETCH_BOOT_COUNT},
 
 ];
 let div_ids = [];

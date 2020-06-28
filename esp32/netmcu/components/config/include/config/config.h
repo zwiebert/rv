@@ -9,6 +9,9 @@
 #define MAIN_CONFIG_CONFIG_H_
 
 #include "app_config/proj_app_cfg.h"
+#include "config_kvs/config.h"
+
+
 #ifdef USE_LAN
 #include "net/ethernet.h"
 #endif
@@ -33,74 +36,24 @@ enum nwConnection {
 #endif
 
 typedef struct {
-	enum verbosity app_verboseOutput;
 	char app_configPassword[16];
-#ifdef USE_SERIAL
-	uint32_t mcu_serialBaud;
-#endif
-#ifdef USE_WLAN
-  struct cfg_wlan wifi;
-#endif
-#ifdef USE_MQTT
-  struct cfg_mqtt mqtt;
-#endif
-#ifdef USE_HTTP
-  struct cfg_http http;
-#endif
-#ifdef USE_POSIX_TIME
-  char geo_tz[32];
-#endif
-#ifdef USE_NTP
-  struct cfg_ntp ntp;
-#endif
 #ifdef USE_NETWORK
   enum nwConnection network;
 #endif
-#ifdef USE_LAN
-  struct cfg_lan lan;
-#endif
-  uint8_t stm32_inv_bootpin;
-
 } config;
 
 extern config C;
-extern const bool always_true, always_false;
 
-#define cfg_getWlan() &C.wifi
-#define cfg_getLan() &C.lan
-#define cfg_getMqttClient() &C.mqtt
-#define cfg_getHttpServer() &C.http
-#define cfg_getNtpClient() &C.ntp
-#define cfg_getTxtio() (const struct cfg_txtio *)&C.app_verboseOutput
-#define cfg_getTcpsServer() (const struct cfg_tcps *)&always_true
-
-enum configItem {
-  CB_VERBOSE,
-#ifdef USE_WLAN
-  CB_WIFI_SSID, CB_WIFI_PASSWD,
-#endif
-  CB_CFG_PASSWD, CB_LONGITUDE, CB_LATITUDE,
-#ifndef USE_POSIX_TIME
-CB_TIZO,
-#else
-  CB_TZ,
-#endif
-#ifdef USE_MQTT
-  CB_MQTT_URL, CB_MQTT_USER, CB_MQTT_PASSWD, CB_MQTT_CLIENT_ID, CB_MQTT_ENABLE,
-#endif
-#ifdef USE_HTTP
-  CB_HTTP_USER, CB_HTTP_PASSWD, CB_HTTP_ENABLE,
-#endif
-#ifdef USE_NTP
-  CB_NTP_SERVER,
-#endif
+enum configAppItem {
+  CBA_start = CB_size - 1,
+  CB_CFG_PASSWD,  CB_TZ,
 #ifdef USE_NETWORK
-  CB_NETWORK_CONNECTION, CB_LAN_PHY, CB_LAN_PWR_GPIO,
+  CB_NETWORK_CONNECTION,
 #endif
   CB_STM32_INV_BOOTPIN,
 
 //-----------
-  CB_size
+  CBA_size
 };
 
 // save C to persistent storage
@@ -113,6 +66,13 @@ void read_config_all();
 void read_config_item(enum configItem item);
 void read_config(uint32_t mask);
 
-void config_setup();
+void config_setup_global();
+void config_setup_mqttAppClient();
+bool config_item_modified(enum configItem item);
+
+const char *config_read_tz(char *d, unsigned d_size);
+enum nwConnection  config_read_network_connection();
+bool config_read_stm32_inv_bootpin();
+
 
 #endif /* MAIN_CONFIG_CONFIG_H_ */

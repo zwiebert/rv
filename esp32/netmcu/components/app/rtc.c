@@ -151,33 +151,9 @@ time_t rtc_timezone_in_secs() {
 
 void 
 rtc_setup() {
-
-#ifdef POSIX_TIME
-  setenv("TZ", C.geo_tz, 1);
+  char buf[64];
+  setenv("TZ", config_read_tz(buf, sizeof buf), 1);
   tzset();
-
-#else
-
-  set_zone(ONE_HOUR * C.astro.geo_timezone); //* C.timezone);
- //obsolete: set_position(C.astro.geo_latitude * ONE_DEGREE, C.astro.geo_longitude * ONE_DEGREE);
-
-  switch (C.geo_dST) {
-
-  case dstEU:
-    set_dst(eu_dst);
-    break;
-
-  case dstAlways:
-     set_dst(always_dst);
-    break;
-
-  case dstNone:
-  default:
-     set_dst(NULL);
-
-    break;
-  }
-#endif
 }
 
 
