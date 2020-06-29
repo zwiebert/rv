@@ -1,0 +1,82 @@
+$color_bg_select: #399d6e;
+$color_fg_select: rgb(186, 194, 78);
+$color_bg: #F8F8E0;
+$color_fg: black; // #278727;
+$color_bg_area: #e7e791;
+
+.bg-area {
+  background-color: $color_bg_area;
+}
+
+.is-selected {
+  background-color: $color_bg_select;
+  color: $color_fg_select;
+}
+
+.is-active {
+  background-color: $color_bg_select;
+  color: $color_fg_select;
+}
+html {
+font-size: 100%;
+background-color: $color_bg;
+color: $color_fg;
+}
+
+.help-text-v0 {
+  display:none;
+}
+
+.help-text-v1 {
+  font-size: 90%;
+}
+
+.cb {
+  width: 1em;
+  height: 1em;
+}
+
+h3 {
+  text-align: center;
+  margin-top: 0px;
+  background-color: $color_bg_select;
+  color: $color_fg_select;
+  grid-area: header;
+  justify-self: stretch;
+  align-self: start;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  50.01% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@media only screen and (max-device-width: 360px) {
+  .full-width {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+
+  .top_table {
+    width: inherit;
+    //@extend .full-width; 
+  }
+}
+
