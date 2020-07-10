@@ -1,15 +1,31 @@
-all: tfmcu.html tfmcu.js
+THIS_ROOT := $(realpath .)
+JSHINT := $(THIS_ROOT)/njs/node_modules/jshint/bin/jshint
+JS_SRC_DIR := $(THIS_ROOT)/njs/src
+JS_BLD_DIR := $(THIS_ROOT)/njs/build
+
+
+SRC_DIRS := $(addprefix $(THIS_ROOT)/njs/,. src src/store src/net src/styles)
+
+SRC_JS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.js))
+SRC_ALL += $(SRC_JS)
+SRC_SVELTE := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.svelte))
+SRC_ALL += $(SRC_SVELTE)
+SRC_CSS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.css))
+SRC_ALL += $(SRC_CSS)
+SRC_SCSS := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.css))
+SRC_ALL += $(SRC_SCSS)
 
 HTMLMIN ?= ~/.local/bin/htmlmin
-JSMIN ?= /usr/bin/python -m jsmin
+INCFILES ?= perl ./include_files.pl
 
-SED_OPTS_HTML =  -e 's/tfmcu_dev.js/\/tfmcu.js/'
-SED_OPTS_JS =
-SED_OPTS = -E -e '/dev-delete-line/d'
+SED_OPTS_HTML =  -e 's/wapp_dev.js/\/wapp.js/'
+SED_OPTS = -E -e '/dev-delete-line/d' -e '/dev-delete-begin/,/dev-delete-end/d'
 
+buildTarget = buildTarget=DEV
 ifdef DISTRO
 ifeq ($(DISTRO),1)
-SED_OPTS +=  -e '/dev-distro-delete-line/d' -e '/^\s*\bdbLog\b.*;/d'
+SED_OPTS +=  -e '/dev-distro-delete-line/d'  -e '/dev-distro-delete-begin/,/dev-distro-delete-end/d'
+buildTarget = buildTarget=PROD
 endif
 endif
 
@@ -17,27 +33,43 @@ ifndef FLAVOR_LAN
 SED_OPTS += -e '/dev-no-lan-delete-line/d'
 endif
 
-outfiles := tfmcu.html tfmcu.js tfmcu_html.c tfmcu_js.c
+bundle_out = build/wapp.js build/wapp.js.map build/wapp.css build/wapp.css.map build/wapp.html
+bundle_files = $(JS_BLD_DIR)/wapp.js $(JS_BLD_DIR)/wapp.js.map $(JS_BLD_DIR)/wapp.css $(JS_BLD_DIR)/wapp.css.map 
+
+.PHONY: bundle
+all: build/wapp.html build/wapp.js
+
+
+
+$(addprefix njs/build_dev/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
+	cd njs && env buildTarget=DEV npm run build
+$(addprefix njs/build/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
+	cd njs && env buildTarget=PROD npm run build
+
+build/wapp.%: njs/build/wapp.%
+	cp -p $< $@  
+
+build/wapp.html: build build/wapp.css ./wapp_dev.html
+$(bundle_out): build
+
+njs/node_modules:
+	test-d njs/node_modules || cd njs && npm install
 
 .PHONY: clean
 clean:
-	-rm $(outfiles)
+	-rm build/* njs/build/*
 
 # convert HTML or Javascript to C source const char array
-%_html.c : %.html
-	cat $< null.txt | xxd -i | sed 's/unsigned/const/' > $@
-%_js.c : %.js
+build/%_html.c : %.html
 	cat $< null.txt | xxd -i | sed 's/unsigned/const/' > $@
 
 #adapt development HTML file for usage in MCU webserver
-%.html : %_dev.html
-	cat $< | sed  ${SED_OPTS} ${SED_OPTS_HTML} | ${HTMLMIN} >$@
-
-#adapt development Javascript file for usage in MCU webserver
-%.js : %_dev.js
-	cat $< | sed ${SED_OPTS} ${SED_OPTS_JS} >/tmp/tfmcu.js && ${JSMIN} /tmp/tfmcu.js >$@
+build/%.html : %_dev.html
+	cat $< | ${INCFILES} | sed  ${SED_OPTS} ${SED_OPTS_HTML} | ${HTMLMIN} >$@
 
 .PHONY: proxy
 
 proxy:
 	while true; do ./proxy.js; done
+build:
+	mkdir -p build

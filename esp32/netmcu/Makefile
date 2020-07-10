@@ -46,7 +46,7 @@ esp32-lan: http_content_lan
 esp32-cellar:
 	make esp32-lan CELLAR=1 FLAVOR_LAN=1
 esp32-flash: 
-	$(esp32_build_cmd) -p /dev/ttyUSB0 flash
+	$(esp32_build_cmd) -p /dev/ttyUSB2 flash
 
 
 

@@ -14,6 +14,22 @@ export function OptionStore() {
 	};
 }
 
+export function ArrayStore(arr) {
+  const { subscribe, set, update } = writable(arr);
+
+  return {
+    subscribe,
+    update: (idx, val) => update(old => {
+      old[idx] = val;
+      return old;
+    }),
+    set: (value) => set(value),
+    reset: () => set({})
+  };
+}
+
+
+
 
 function read_storage_obj(name) {
 	let obj = JSON.parse(localStorage.getItem(name) || '{}');

@@ -1,8 +1,14 @@
 <script>
+  "use strict";
+
   import NavTabs from "./nav_tabs.svelte";
-  import Zones from './zones.svelte';
+  import Zones from "./zones.svelte";
+  import Pump from "./pump.svelte";
   import { TabIdx } from "./store/app_state.js";
   import Layout from "./layout.svelte";
+  import McuConfig from "./mcu_config.svelte";
+  import McuFirmwareUpd from "./mcu_firmware_upd.svelte";
+  import McuFirmwareInfo from "./mcu_firmware_info.svelte";
 
   export let isProduction = false;
 
@@ -19,14 +25,24 @@
     { name: "latest beta firmware", ota_name: "github-beta" },
   ];
 
+  let stm32_fwbtns = [
+    { name: "latest master firmware", ota_name: "stm32-github-master" },
+    { name: "latest beta firmware", ota_name: "stm32-github-beta" },
+  ];
+
   // eslint-disable-next-line no-unused-labels
   testing: if (!isProduction) {
-    navTabs.push("Tests");
     fwbtns.push({
       name: "firmware from given URL",
       ota_name: "netotaFromURL",
       input: "input",
-      input_value: "http://192.168.1.70:3000/tronferno-mcu.bin",
+      input_value: "http://192.168.1.70:8000/netmcu.bin",
+    });
+    stm32_fwbtns.push({
+      name: "firmware from given URL",
+      ota_name: "netotaFromURL",
+      input: "input",
+      input_value: "http://192.168.1.70:8000/rv.bin",
     });
   }
 </script>
@@ -46,17 +62,21 @@
 
   {#if tabIdxMain === 0}
     <div class="area">
-   <Zones />
+      <Zones />
+      <Pump />
     </div>
   {:else if tabIdxMain === 1}
     <div class="area">
-   
+      <McuConfig />
     </div>
   {:else if tabIdxMain === 2}
+    <div class="area" />
+    <h4>NetMCU ESP32 Firmware Update</h4>
+    <McuFirmwareUpd {fwbtns} chip="esp32" />
+    <h4>Firmware Info</h4>
+    <McuFirmwareInfo />
 
-    <div class="area">
-  
-    </div>
-
+    <h4>RvMCU STM32 Firmware Update</h4>
+    <McuFirmwareUpd fwbtns={stm32_fwbtns} chip="stm32" />
   {/if}
 </div>
