@@ -13,5 +13,5 @@ idf_component_register(
     REQUIRES ""
     PRIV_REQUIRES cli_app cli config misc userio net_http_server
                   mbedtls
-    EMBED_TXTFILES "./webapp/tfmcu.html" "./webapp/tfmcu.js"
+    EMBED_TXTFILES "./webapp/build/wapp.html" "./webapp/build/wapp.js" #"./webapp/build/wapp.js.map"
    )

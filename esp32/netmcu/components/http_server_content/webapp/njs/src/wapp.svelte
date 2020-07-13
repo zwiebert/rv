@@ -1,6 +1,7 @@
 <script>
   "use strict";
 
+  import * as httpFetch from "./fetch.js";
   import NavTabs from "./nav_tabs.svelte";
   import Zones from "./zones.svelte";
   import Pump from "./pump.svelte";
@@ -64,19 +65,21 @@
     <div class="area">
       <Zones />
       <Pump />
+      <button on:click={() => httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_DATA|httpFetch.FETCH_ZONE_NAMES)}>Reload</button>
     </div>
   {:else if tabIdxMain === 1}
     <div class="area">
       <McuConfig />
     </div>
   {:else if tabIdxMain === 2}
-    <div class="area" />
-    <h4>NetMCU ESP32 Firmware Update</h4>
-    <McuFirmwareUpd {fwbtns} chip="esp32" />
-    <h4>Firmware Info</h4>
-    <McuFirmwareInfo />
+    <div class="area">
+      <h4>NetMCU ESP32 Firmware Update</h4>
+      <McuFirmwareUpd {fwbtns} chip="esp32" />
+      <h4>Firmware Info</h4>
+      <McuFirmwareInfo />
 
-    <h4>RvMCU STM32 Firmware Update</h4>
-    <McuFirmwareUpd fwbtns={stm32_fwbtns} chip="stm32" />
+      <h4>RvMCU STM32 Firmware Update</h4>
+      <McuFirmwareUpd fwbtns={stm32_fwbtns} chip="stm32" />
+    </div>
   {/if}
 </div>

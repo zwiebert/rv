@@ -81,7 +81,8 @@ process_parmStatus(clpar p[], int len) {
   }
 
   if (hasRainSensor) {
-    io_mqtt_publish_rain_sensor_status(rainSensor);
+    if (so_target & SO_TGT_MQTT)
+      io_mqtt_publish_rain_sensor_status(rainSensor);
   }
 
   return 0;

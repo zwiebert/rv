@@ -23,9 +23,9 @@ esp32_ocd_sh :=  sh $(realpath ./esp32_ocd.sh)
 
 .PHONY: http_content http_content_lan http_proxy
 http_content :
-	cd components/http_server_content/webapp && make -B
+	cd components/http_server_content/webapp && make 
 http_content_lan :
-	cd components/http_server_content/webapp && make -B FLAVOR_LAN=1
+	cd components/http_server_content/webapp && make  FLAVOR_LAN=1
 http_proxy:
 	cd components/http_server_content/webapp && make proxy
 

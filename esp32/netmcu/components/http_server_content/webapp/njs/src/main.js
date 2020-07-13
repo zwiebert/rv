@@ -2,10 +2,11 @@
 // src/main.js
 
 import App from './wapp.svelte';
+import * as connWs from './net/conn_ws.js';
 
 export default function () {
   generate_html();
- // appState.init();
+  setTimeout(() => { connWs.websocket(); }, 1000);
 }
 
 function generate_html() {
