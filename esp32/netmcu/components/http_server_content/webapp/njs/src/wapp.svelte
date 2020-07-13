@@ -77,7 +77,9 @@
       <McuFirmwareUpd {fwbtns} chip="esp32" />
       <h4>Firmware Info</h4>
       <McuFirmwareInfo />
-
+   </div>
+<br>
+   <div class="area">
       <h4>RvMCU STM32 Firmware Update</h4>
       <McuFirmwareUpd fwbtns={stm32_fwbtns} chip="stm32" />
     </div>

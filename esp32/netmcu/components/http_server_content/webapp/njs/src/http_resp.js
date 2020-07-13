@@ -4,7 +4,7 @@ import * as mcuFirmwareUpd from './mcu_firmware_upd.svelte';
 import { McuConfig } from './store/mcu_config.js';
 import { McuBootCount, McuGitTagNames, McuFirmwareBuildDate, McuChipId, McuFirmwareVersion, Stm32McuFirmwareVersion } from "./store/mcu_firmware.js";
 import { McuDocs } from './store/mcu_docs.js';
-import { ZoneCount, ZoneNames, ZoneRemainingSeconds, ZoneDescriptions, ZoneDurations, ZoneTimers, PressControlStatus, WaterPumpStatus, RainSensorStatus, Stm32Time } from './store/zones.js';
+import { ZoneCount, ZoneNames, ZoneRemainingSeconds, ZoneDurations, ZoneTimers, PressControlStatus, WaterPumpStatus, RainSensorStatus, Stm32Time } from './store/zones.js';
 import {
   McuFirmwareUpdState,
 } from "./store/mcu_firmware";
@@ -58,12 +58,12 @@ export function http_handleResponses(obj) {
 
   if ("kvs" in obj) {
     let kvs = obj.kvs;
-    let zoneDescriptions = [];
+    let zoneNames = [];
     for (let i = 0; i < ZoneCount; ++i) {
       let key = "zn" + i.toString();
-      zoneDescriptions[i] = (key in kvs) ? kvs[key] : "";
+      zoneNames[i] = (key in kvs) ? kvs[key] : "";
     }
-    ZoneDescriptions.set(zoneDescriptions);
+    ZoneNames.set(zoneNames);
   }
 
     if ("mcu" in obj) {

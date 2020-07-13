@@ -5,14 +5,15 @@ import { ZoneCount, ZoneNames, ZoneDurations, ZoneRemainingSeconds } from './sto
 
 
 export let zoneIdx;
+export let zoneNames;
 
-$: name = $ZoneNames[zoneIdx] || ''; 
-$: duration = $ZoneDurations[zoneIdx] || 0;
-$: remaining = $ZoneRemainingSeconds[zoneIdx] || 0;
+$: name = zoneNames[zoneIdx] || ''; 
+$: duration = ($ZoneDurations[zoneIdx] / 60.0).toFixed(2) || 0;
+$: remaining = ($ZoneRemainingSeconds[zoneIdx] / 60.0).toFixed(2) || 0;
 
 </script>
 
-<td>{name}</td>
+<td><input type="text" bind:value={zoneNames[zoneIdx]} /></td>
 <td>{duration}</td>
 <td>{remaining}</td>
 
