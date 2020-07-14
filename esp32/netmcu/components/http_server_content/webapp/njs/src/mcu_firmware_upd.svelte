@@ -90,7 +90,7 @@ $: {
             on:click={() => netFirmwareOTA(document.getElementById(bt.ota_name).value)}>
             Do flash {bt.name}
           </button>
-          <input type="text" id={bt.ota_name} value={bt.input_value} />
+          <input type="text" id={bt.ota_name} bind:value={bt.input_value} />
         </label>
         <br />
         <br />

@@ -111,7 +111,7 @@
             </td>
           {/if}
 
-          {#if name.endsWith('-enable')}
+          {#if name.endsWith('-enable') || name === 'stm32-bootgpio-inv'}
             <td>
               <input
                 class="config-input cb"

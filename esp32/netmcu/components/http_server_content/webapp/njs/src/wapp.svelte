@@ -10,6 +10,7 @@
   import McuConfig from "./mcu_config.svelte";
   import McuFirmwareUpd from "./mcu_firmware_upd.svelte";
   import McuFirmwareInfo from "./mcu_firmware_info.svelte";
+  import Stm32McuFirmwareInfo from "./stm32_mcu_firmware_info.svelte";
 
   export let isProduction = false;
 
@@ -41,7 +42,7 @@
     });
     stm32_fwbtns.push({
       name: "firmware from given URL",
-      ota_name: "netotaFromURL",
+      ota_name: "stm32_netotaFromURL",
       input: "input",
       input_value: "http://192.168.1.70:8000/rv.bin",
     });
@@ -74,7 +75,7 @@
   {:else if tabIdxMain === 2}
     <div class="area">
       <h4>NetMCU ESP32 Firmware Update</h4>
-      <McuFirmwareUpd {fwbtns} chip="esp32" />
+      <McuFirmwareUpd {fwbtns} chip="" />
       <h4>Firmware Info</h4>
       <McuFirmwareInfo />
    </div>
@@ -82,6 +83,7 @@
    <div class="area">
       <h4>RvMCU STM32 Firmware Update</h4>
       <McuFirmwareUpd fwbtns={stm32_fwbtns} chip="stm32" />
+      <Stm32McuFirmwareInfo />
     </div>
   {/if}
 </div>
