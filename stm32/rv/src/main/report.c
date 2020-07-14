@@ -30,3 +30,9 @@ void report_pump_status(bool state) {
     sprintf(buf, "status pump=%s;", state ? "1" : "0");
     esp32_puts(buf);
 }
+
+void report_pc_status(bool state) {
+    char buf[80] = "";
+    sprintf(buf, "status pc=%s;", state ? "1" : "0");
+    esp32_puts(buf);
+}

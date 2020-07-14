@@ -201,6 +201,50 @@ void so_output_message(so_msg_t mt, const void *arg) {
     break;
 
     /////////////////////////////////////////////////////////////////////////////////
+  case SO_RVE_begin: {
+    so_out_x_open("rve");
+  }
+    break;
+
+  case  SO_RVE_PUMP: {
+    const so_arg_on_t *state = arg;
+    io_mqtt_publish_pump_status(state->on);
+    so_out_x_reply_entry_sd("pump", state->on);
+  }
+  break;
+
+  case  SO_RVE_RAIN: {
+    const so_arg_on_t *state = arg;
+    io_mqtt_publish_rain_sensor_status(state->on);
+    so_out_x_reply_entry_sd("rain", state->on);
+  }
+  break;
+
+  case  SO_RVE_PRESS_CTL: {
+    const so_arg_on_t *state = arg;
+    so_out_x_reply_entry_sd("pc", state->on);
+  }
+  break;
+
+  case  SO_RVE_VALVES: {
+    const so_arg_valves_t *valves = arg;
+    so_out_x_reply_entry_sl("valve_state", valves->state_bits);
+    so_out_x_reply_entry_sl("valve_change", valves->changed_bits);
+
+    u32 mask = valves->changed_bits;
+    for (int i=0; mask; ++i, (mask >>= 1)) {
+      if (mask & 1) {
+        io_mqtt_publish_valve_status(i, GET_BIT(valves->state_bits, i));
+      }
+    }
+  }
+  break;
+
+  case SO_RVE_end:
+    so_out_x_close();
+    break;
+
+    /////////////////////////////////////////////////////////////////////////////////
   case SO_CFGPASSWD_OK:
     // io_puts("password ok\n");
     break;

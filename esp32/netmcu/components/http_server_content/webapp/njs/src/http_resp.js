@@ -56,6 +56,19 @@ export function http_handleResponses(obj) {
 
   }
 
+  if ("rve" in obj) {
+    let rve = obj.rve;
+    if ("pump" in rve) {
+      WaterPumpStatus.set(rve.pump);
+    }
+    if ("rain" in rve) {
+      RainSensorStatus.set(rve.rain);
+    }
+    if ("pc" in rve) {
+      PressControlStatus.set(rve.pc);
+    }
+  }
+
   if ("kvs" in obj) {
     let kvs = obj.kvs;
     let zoneNames = [];
