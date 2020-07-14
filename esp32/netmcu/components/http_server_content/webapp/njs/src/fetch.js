@@ -7,14 +7,19 @@ export const FETCH_ZONE_NAMES = 2;
 export const FETCH_ZONE_DATA = 4;
 export const FETCH_VERSION = 8;
 export const FETCH_BOOT_COUNT = 16;
-export const FETCH_ALIASES_START_PAIRING = 32;
-export const FETCH_ALIASES_START_UNPAIRING = 64;
-export const FETCH_SHUTTER_PREFS = 128;
 
 export const FETCH_GIT_TAGS = 0; //XXX
 
 
 const MAX_RETRY_COUNT = 3;
+
+
+export function sendCmd(cmd) {
+  let url = "/cmd.json";
+  let obj = { from: "wapp"};
+  obj.cmd = cmd;
+  http_postRequest(url, obj);
+}
 
 export function http_postRequest(url = '', data = {}, state = { retry_count:0 }) {
   appDebug.dbLog("post-json: " + JSON.stringify(data));
@@ -73,20 +78,6 @@ export function http_postDocRequest(name) {
     });
 }
 
-export function http_postShutterCommand(c = document.getElementById('send-c').value) {
-  let tfmcu = { to: "tfmcu" };
-
-  let send = {
-    g: g.toString(),
-    m: m.toString(),
-    c: c,
-  };
-  tfmcu.send = send;
-  appDebug.dbLog(JSON.stringify(tfmcu));
-  let url = '/cmd.json';
-  appDebug.dbLog("url: " + url);
-  http_postRequest(url, tfmcu);
-}
 
   export function http_fetchByMask(mask) {
     let tfmcu = {to:"tfmcu"};
@@ -113,28 +104,6 @@ export function http_postShutterCommand(c = document.getElementById('send-c').va
     if (mask & FETCH_BOOT_COUNT)
       tfmcu.mcu = {
         "boot-count":"?"
-      };
-
-    if (mask & FETCH_ALIASES_START_PAIRING)
-      tfmcu.pair = {
-        a: "?",
-        g: this.g,
-        m: this.m,
-        c: "pair"
-      };
-    if (mask & FETCH_ALIASES_START_UNPAIRING)
-      tfmcu.pair = {
-        a: "?",
-        g: this.g,
-        m: this.m,
-        c: "unpair"
-      };
-
-    if (mask & FETCH_SHUTTER_PREFS)
-      tfmcu.shpref = {
-        g: this.g,
-        m: this.m,
-        c: "read",
       };
 
     let url = '/cmd.json';

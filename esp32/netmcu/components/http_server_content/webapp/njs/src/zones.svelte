@@ -24,7 +24,7 @@
 
 function postZoneNames() {
   let netmcu = {to:"netmcu"};
-  let kvs = {};
+  let kvs = {zn:'?'};
   netmcu.kvs = kvs;
 
   for (let i=0; i < ZoneCount; ++i) {
@@ -53,6 +53,7 @@ function postZoneNames() {
     <th>#</th>
     <th>Name</th>
     <th>Duration</th>
+    <th>Run</th>
     <th>Remaining</th>
   </tr>
   {#each { length: ZoneCount } as _, i}
