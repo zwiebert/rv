@@ -8,6 +8,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import sveltePreprocess from 'svelte-preprocess';
 
 export const isProduction = process.env.buildTarget === "PROD";
+const useTailwind = process.env.useTailwind === "yes";
 
 export default {
   onwarn(warning, rollupWarn) {
@@ -15,7 +16,7 @@ export default {
       rollupWarn(warning);
     }
   },
-  input: 'src/main.js',
+  input: useTailwind ? 'src/main_tailwind.js' : 'src/main.js',
   output: [...!isProduction ? [ {
     file: 'build_dev/wapp.js',
     sourcemap: true,

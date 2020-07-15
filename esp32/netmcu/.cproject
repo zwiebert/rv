@@ -217,8 +217,6 @@
                 				
                 <buildCommand>win_cp.sh</buildCommand>
                 				
-                <buildArguments/>
-                				
                 <stopOnError>true</stopOnError>
                 				
                 <useDefaultCommand>false</useDefaultCommand>
@@ -379,13 +377,13 @@
                 			
             </target>
             			
-            <target name="esp32-clean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+            <target name="clean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
                 				
                 <buildCommand>make</buildCommand>
                 				
                 <buildArguments/>
                 				
-                <buildTarget>esp32-clean</buildTarget>
+                <buildTarget>clean</buildTarget>
                 				
                 <stopOnError>true</stopOnError>
                 				
@@ -398,8 +396,6 @@
             <target name="esp32-flash" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
                 				
                 <buildCommand>make</buildCommand>
-                				
-                <buildArguments/>
                 				
                 <buildTarget>esp32-flash</buildTarget>
                 				
@@ -415,8 +411,6 @@
                 				
                 <buildCommand>make</buildCommand>
                 				
-                <buildArguments/>
-                				
                 <buildTarget>esp32-flash-ocd</buildTarget>
                 				
                 <stopOnError>true</stopOnError>
@@ -430,8 +424,6 @@
             <target name="esp32-flash-app-ocd" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
                 				
                 <buildCommand>make</buildCommand>
-                				
-                <buildArguments/>
                 				
                 <buildTarget>esp32-flash-app-ocd</buildTarget>
                 				
@@ -447,8 +439,6 @@
                 				
                 <buildCommand>make</buildCommand>
                 				
-                <buildArguments/>
-                				
                 <buildTarget>esp32-wlan esp32-flash-app-ocd</buildTarget>
                 				
                 <stopOnError>true</stopOnError>
@@ -462,6 +452,8 @@
             <target name="esp32-fullclean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
                 				
                 <buildCommand>make</buildCommand>
+                				
+                <buildArguments/>
                 				
                 <buildTarget>esp32-fullclean</buildTarget>
                 				

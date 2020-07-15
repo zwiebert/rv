@@ -21,6 +21,8 @@ INCFILES ?= perl ./include_files.pl
 SED_OPTS_HTML =  -e 's/wapp_dev.js/\/wapp.js/'
 SED_OPTS = -E -e '/dev-delete-line/d' -e '/dev-delete-begin/,/dev-delete-end/d'
 
+useTailwind = no
+
 buildTarget = buildTarget=DEV
 ifdef DISTRO
 ifeq ($(DISTRO),1)
@@ -42,9 +44,9 @@ all: build/wapp.html build/wapp.js
 
 
 $(addprefix njs/build_dev/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
-	cd njs && env buildTarget=DEV npm run build
+	cd njs && env useTailwind=$(useTailwind) buildTarget=DEV npm run build
 $(addprefix njs/build/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
-	cd njs && env buildTarget=PROD npm run build
+	cd njs && env useTailwind=$(useTailwind) buildTarget=PROD npm run build
 
 build/wapp.%: njs/build/wapp.%
 	cp -p $< $@  

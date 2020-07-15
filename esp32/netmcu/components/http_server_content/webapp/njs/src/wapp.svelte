@@ -6,8 +6,6 @@
   import Zones from "./zones.svelte";
   import Pump from "./pump.svelte";
   import { TabIdx } from "./store/app_state.js";
-  //import Layout from "./layout_tailwind.svelte";
-  import Layout from "./layout.svelte";
   import McuConfig from "./mcu_config.svelte";
   import McuFirmwareUpd from "./mcu_firmware_upd.svelte";
   import McuFirmwareInfo from "./mcu_firmware_info.svelte";
@@ -55,11 +53,11 @@
 <style type="text/scss">
   @import "./styles/app.scss";
   .area {
-    @apply mt-4 p-2 bg-area;
+    margin-top:1rem;
+    padding:0.5rem;
+    background-color: $color_bg_area;
   }
 </style>
-
-<Layout />
 
 
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">

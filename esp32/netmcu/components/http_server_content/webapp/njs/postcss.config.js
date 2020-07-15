@@ -1,9 +1,10 @@
 const isProduction = process.env.buildTarget === "PROD";
+const useTailwind = process.env.useTailwind === "yes";
 
 module.exports = {
   plugins: [
-    require('tailwindcss'),
-    isProduction && require('@fullhuman/postcss-purgecss')({
+    useTailwind && require('tailwindcss'),
+    useTailwind && isProduction && require('@fullhuman/postcss-purgecss')({
       content: [
         './**/**/*.html',
         './**/**/*.svelte'
