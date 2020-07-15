@@ -39,7 +39,7 @@ bundle_out = build/wapp.js build/wapp.js.map build/wapp.css build/wapp.css.map b
 bundle_files = $(JS_BLD_DIR)/wapp.js $(JS_BLD_DIR)/wapp.js.map $(JS_BLD_DIR)/wapp.css $(JS_BLD_DIR)/wapp.css.map 
 
 .PHONY: bundle
-all: build/wapp.html build/wapp.js
+all: build/wapp.html build/wapp.js build/wapp.js.map
 
 
 

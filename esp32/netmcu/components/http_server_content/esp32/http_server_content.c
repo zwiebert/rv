@@ -127,7 +127,7 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 const struct {
   const char *uri, *type, *file;
 } uri_file_map[] = { { .uri = "/f/js/wapp.js", .type = "text/javascript", .file = text_wapp_js }, //
-    //   { .uri = "/wapp.js.map", .type = "text/javascript",  .file = text_wapp_js_map }, //
+    //{ .uri = "/wapp.js.map", .type = "text/javascript",  .file = text_wapp_js_map }, //
     //   { .uri = "", .file = "" }, //
     { .uri = "/f/cli/help/config", .file = cli_help_parmConfig }, //
     { .uri = "/f/cli/help/mcu", .file = cli_help_parmMcu }, //

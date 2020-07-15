@@ -179,17 +179,16 @@
             </td>
           {:else if name === 'network'}
             <td>
-              <select class="config-input" id="cfg_{name}">
+              <select class="config-input" id="cfg_{name}" value={mcuConfig[name]}>
+                <option value="none">No Network</option>
                 <option value="wlan">Existing WLAN</option>
                 <option value="ap">WLAN Accesspoint</option>
                 <option value="lan">Ethernet</option>
-                <!-- dev-no-lan-delete-line -->
-                <option value="none">No Network</option>
               </select>
             </td>
           {:else if name === 'lan-phy'}
             <td>
-              <select class="config-input" id="cfg_{name}">
+              <select class="config-input" id="cfg_{name} value={mcuConfig[name]}">
                 <option value="lan8270">LAN8270</option>
                 <option value="rtl8201">RTL8201</option>
                 <option value="ip101">IP101</option>
@@ -208,7 +207,7 @@
             </td>
           {:else if name === 'astro-correction'}
             <td>
-              <select class="config-input" id="cfg_{name}">
+              <select class="config-input" id="cfg_{name}" value={mcuConfig[name]}>
                 <option value="0">average</option>
                 <option value="1">not too late or dark</option>
                 <option value="2">not too early or bright</option>
@@ -216,7 +215,7 @@
             </td>
           {:else if name.startsWith('gpio')}
             <td>
-              <select class="config-input" id="cfg_{name}">
+              <select class="config-input" id="cfg_{name}"  value={mcuConfig[name]}>
                 <option value="i">Input (Pull.FLoating)</option>
                 <option value="ih">Input (Pull.Up)</option>
                 <option value="il">Input (Pull.Down)</option>
