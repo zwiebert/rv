@@ -6,11 +6,14 @@
   import Zones from "./zones.svelte";
   import Pump from "./pump.svelte";
   import { TabIdx } from "./store/app_state.js";
+  //import Layout from "./layout_tailwind.svelte";
   import Layout from "./layout.svelte";
   import McuConfig from "./mcu_config.svelte";
   import McuFirmwareUpd from "./mcu_firmware_upd.svelte";
   import McuFirmwareInfo from "./mcu_firmware_info.svelte";
   import Stm32McuFirmwareInfo from "./stm32_mcu_firmware_info.svelte";
+
+  import { Stm32Time } from './store/zones.js';
 
   export let isProduction = false;
 
@@ -51,13 +54,13 @@
 
 <style type="text/scss">
   @import "./styles/app.scss";
-
   .area {
     @apply mt-4 p-2 bg-area;
   }
 </style>
 
 <Layout />
+
 
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
   <NavTabs nav_tabs={navTabs} name="main" />
@@ -67,6 +70,9 @@
       <Zones />
       <Pump />
       <button on:click={() => httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_DATA|httpFetch.FETCH_ZONE_NAMES)}>Reload</button>
+      <br>
+      <br>
+      <input type="text" value={$Stm32Time} />
     </div>
   {:else if tabIdxMain === 1}
     <div class="area">
