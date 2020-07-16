@@ -44,10 +44,6 @@
     mcuConfig_fromHtml_toMcu();
   }
 
-  function hClick_RestartMcu() {
-    misc.req_mcuRestart();
-  }
-
   function mcuConfig_fromHtml_toMcu() {
     const cfg = $McuConfig;
 
@@ -188,7 +184,7 @@
             </td>
           {:else if name === 'lan-phy'}
             <td>
-              <select class="config-input" id="cfg_{name} value={mcuConfig[name]}">
+              <select class="config-input" id="cfg_{name}" value="{mcuConfig[name]}">
                 <option value="lan8270">LAN8270</option>
                 <option value="rtl8201">RTL8201</option>
                 <option value="ip101">IP101</option>
@@ -258,7 +254,7 @@
   <button id="csvb" type="button" on:click={hClick_Save}>Save</button>
   <br />
   <br />
-  <button id="mrtb" type="button" on:click={hClick_RestartMcu}>
+  <button id="mrtb" type="button" on:click={() => misc.req_mcuRestart()}>
     Restart MCU
   </button>
   <br />

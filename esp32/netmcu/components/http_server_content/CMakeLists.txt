@@ -13,6 +13,24 @@ idf_component_register(
     REQUIRES ""
     PRIV_REQUIRES cli_app cli config misc userio net_http_server
                   mbedtls
-    EMBED_TXTFILES "./webapp/build/wapp.html" #"./webapp/build/wapp.js"
-    EMBED_FILES  "./webapp/build/wapp.js.gz"  "./webapp/build/wapp.css.gz" "./webapp/build/wapp.js.map.br" 
    )
+ 
+
+    
+ add_custom_command(
+     OUTPUT ${COMPONENT_DIR}/webapp/__force.h
+            "./webapp/build/wapp.html.gz.c"
+            "./webapp/build/wapp.js.gz.c"
+            "./webapp/build/wapp.css.gz.c"
+            "./webapp/build/wapp.js.map.gz.c"
+     COMMAND make all -C ${COMPONENT_DIR}/webapp
+     VERBATIM)
+     
+ add_custom_target(
+    content_files
+    DEPENDS ${COMPONENT_DIR}/webapp/__force.h
+ )
+ 
+ add_dependencies(
+  ${COMPONENT_LIB} content_files
+)

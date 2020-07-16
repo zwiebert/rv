@@ -39,7 +39,7 @@ bundle_out = build/wapp.js build/wapp.js.map build/wapp.css build/wapp.css.map b
 bundle_files = $(JS_BLD_DIR)/wapp.js $(JS_BLD_DIR)/wapp.js.map $(JS_BLD_DIR)/wapp.css $(JS_BLD_DIR)/wapp.css.map 
 
 .PHONY: bundle
-all: build/wapp.html build/wapp.js build/wapp.js.gz build/wapp.js.map build/wapp.js.map.gz build/wapp.js.map.br build/wapp.css build/wapp.css.gz
+all: build/wapp.html.gz.c build/wapp.js.gz.c build/wapp.js.map.br.c build/wapp.css.gz.c
 
 
 
@@ -49,16 +49,16 @@ $(addprefix njs/build/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modul
 	cd njs && env useTailwind=$(useTailwind) buildTarget=PROD npm run build
 
 build/wapp.%: njs/build/wapp.%
-	cp -p $< $@
+	mkdir -p build
+	cp $< $@
 	
 %.gz:%
 	gzip --keep --force --best $< 
 %.br:%
 	brotli --keep --force --best $<
+build/%.c:build/%
+	xxd -i  $< | sed 's/unsigned/const/' > $@
 	 
-build/wapp.html: build build/wapp.css ./wapp_dev.html
-$(bundle_out): build
-
 njs/node_modules:
 	test-d njs/node_modules || cd njs && npm install
 
@@ -66,12 +66,9 @@ njs/node_modules:
 clean:
 	-rm build/* njs/build/*
 
-# convert HTML or Javascript to C source const char array
-build/%_html.c : %.html
-	cat $< null.txt | xxd -i | sed 's/unsigned/const/' > $@
-
 #adapt development HTML file for usage in MCU webserver
-build/%.html : %_dev.html
+build/%.html: %_dev.html
+	mkdir -p build
 	cat $< | ${INCFILES} | sed  ${SED_OPTS} ${SED_OPTS_HTML} | ${HTMLMIN} >$@
 
 .PHONY: proxy

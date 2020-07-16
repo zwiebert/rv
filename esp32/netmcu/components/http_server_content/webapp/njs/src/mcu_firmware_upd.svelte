@@ -1,6 +1,7 @@
 <script>
   import * as appDebug from "./app_debug.js";
   import * as httpFetch from "./fetch.js";
+  import * as misc from "./misc.js";
   import {
     McuFirmwareUpdProgress,
     McuFirmwareUpdState,
@@ -13,6 +14,8 @@
   export let fwbtns = [];
   export let McuFwGitTags;
   export let chip = "";
+  export let updSecs = 30;
+
   import { onMount, onDestroy } from "svelte";
 
   let on_destroy = [];
@@ -26,7 +29,6 @@
   });
 
   let netota_intervalID = 0;
-  let netota_progressCounter = 0;
   let netota_isInProgress = false;
 
   function netota_FetchFeedback() {
@@ -59,10 +61,9 @@ $: {
       if ($McuFirmwareUpdState === 0 ) {
         //
       } else if ($McuFirmwareUpdState === 1) {
-        McuFirmwareUpdProgress.set((++netota_progressCounter * 100) / 30);
+        //
       } else {
         clearInterval(netota_intervalID);
-        netota_progressCounter = 0;
         netota_isInProgress = false;
       }
     }
@@ -115,7 +116,9 @@ $: {
       <br />
       <strong>
         Update succeeded
-        <button id="ota_reboot" type="button">Reboot MCU</button>
+        <button id="mrtb" type="button" on:click={() => misc.req_mcuRestart()}>
+          Restart MCU
+        </button>
         <br />
         <br />
       </strong>
@@ -125,7 +128,7 @@ $: {
         <br />
       </strong>
       <br />
-      <progress value={$McuFirmwareUpdProgress} max="100" />
+      <progress value={$McuFirmwareUpdProgress} max="{updSecs}" />
     {/if}
     {#if $ReloadProgress > 0}
       <strong>Wait for MCU to restart...</strong>

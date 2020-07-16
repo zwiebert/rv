@@ -54,7 +54,6 @@
 
 <style type="text/scss">
   @import "./styles/app.scss";
-
 </style>
 
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
@@ -84,13 +83,13 @@
     {#if tabIdxFw === 0}
       <div class="area">
         <h4>NetMCU ESP32</h4>
-        <McuFirmwareUpd {fwbtns} chip="" />
+        <McuFirmwareUpd {fwbtns} chip="" updSecs="14" />
         <McuFirmwareInfo />
       </div>
     {:else if tabIdxFw === 1}
       <div class="area">
         <h4>RvMCU STM32</h4>
-        <McuFirmwareUpd fwbtns={stm32_fwbtns} chip="stm32" />
+        <McuFirmwareUpd fwbtns={stm32_fwbtns} chip="stm32" updSecs="75" />
         <Stm32McuFirmwareInfo />
       </div>
     {/if}

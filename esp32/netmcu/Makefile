@@ -45,7 +45,7 @@ esp32-wlan: http_content
 	$(esp32_build_cmd) reconfigure all
 esp32-lan: http_content_lan
 	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
-esp32-cellar:
+esp32-cellar: http_content_lan
 	make esp32-lan CELLAR=1 FLAVOR_LAN=1
 esp32-flash: 
 	$(esp32_build_cmd) -p /dev/ttyUSB2 flash

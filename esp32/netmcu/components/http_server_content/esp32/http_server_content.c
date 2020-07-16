@@ -94,16 +94,16 @@ static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
     return httpd_queue_work(handle, ws_async_send, resp_arg);
 }
 
+#define SERVE_JS_MAP
+#define SERVE_BR
+
 //////////////////// static files ///////////////////////////////////////
-extern const char text_wapp_html[] asm("_binary_wapp_html_start");
-extern const char text_wapp_js_gz[] asm("_binary_wapp_js_gz_start");
-extern const char text_wapp_js_gz_end[] asm("_binary_wapp_js_gz_end");
-extern const char text_wapp_js_map_gz[] asm("_binary_wapp_js_map_gz_start");
-extern const char text_wapp_js_map_gz_end[] asm("_binary_wapp_js_map_gz_end");
-extern const char text_wapp_js_map_br[] asm("_binary_wapp_js_map_br_start");
-extern const char text_wapp_js_map_br_end[] asm("_binary_wapp_js_map_br_end");
-extern const char text_wapp_css_gz[] asm("_binary_wapp_css_gz_start");
-extern const char text_wapp_css_gz_end[] asm("_binary_wapp_css_gz_end");
+#include "../webapp/build/wapp.html.gz.c"
+#include "../webapp/build/wapp.js.gz.c"
+#include "../webapp/build/wapp.css.gz.c"
+#ifdef SERVE_JS_MAP
+#include "../webapp/build/wapp.js.map.br.c"
+#endif
 
 ////////////////////////// URI handlers /////////////////////////////////
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
@@ -130,12 +130,15 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
   return ESP_OK;
 }
 
-struct file_map { const char *uri, *type, *file, *file_gz, *file_gz_end, *file_br, *file_br_end; };
+#if 0
+struct file_map { const char *uri, *type, *file, *file_gz, *file_br; u16 file_size, file_gz_size, file_br_size; };
 const struct file_map uri_file_map[] = {
-    { .uri = "/", .type = "text/html", .file = text_wapp_html }, //
-    { .uri = "/f/js/wapp.js", .type = "text/javascript", .file_gz = text_wapp_js_gz, .file_gz_end = text_wapp_js_gz_end  }, //
-    { .uri = "/f/js/wapp.js.map", .type = "text/javascript",  .file_br = text_wapp_js_map_br, .file_br_end = text_wapp_js_map_br_end }, //
-    { .uri = "/f/css/wapp.css", .type = "text/css", .file_gz = text_wapp_css_gz, .file_gz_end = text_wapp_css_gz_end  }, //
+    { .uri = "/", .type = "text/html", .file_gz = build_wapp_html_gz, .file_gz_size = sizeof build_wapp_html_gz }, //
+    { .uri = "/f/js/wapp.js", .type = "text/javascript", .file_gz = build_wapp_js_gz, .file_gz_size = sizeof build_wapp_js_gz  }, //
+#ifdef SERVE_JS_MAP
+    { .uri = "/f/js/wapp.js.map", .type = "text/javascript",  .file_br = build_wapp_js_map_br, .file_br_size = sizeof build_wapp_js_map_br }, //
+#endif
+    { .uri = "/f/css/wapp.css", .type = "text/css", .file_gz = build_wapp_css_gz, .file_gz_size = sizeof build_wapp_css_gz  }, //
     { .uri = "/f/cli/help/config", .file = cli_help_parmConfig }, //
     { .uri = "/f/cli/help/mcu", .file = cli_help_parmMcu }, //
     { .uri = "/f/cli/help/help", .file = cli_help_parmHelp }, //
@@ -157,24 +160,92 @@ static esp_err_t handle_uri_get_file(httpd_req_t *req) {
 
     if (fm->file_br) {
       httpd_resp_set_hdr(req, "content-encoding", "br");
-      httpd_resp_send(req, fm->file_br, fm->file_br_end - fm->file_br);
+      httpd_resp_send(req, fm->file_br, fm->file_br_size);
       return ESP_OK;
     }
 
     if (fm->file_gz) {
       httpd_resp_set_hdr(req, "content-encoding", "gzip");
-      httpd_resp_send(req, fm->file_gz, fm->file_gz_end - fm->file_gz);
+      httpd_resp_send(req, fm->file_gz, fm->file_gz_size);
       return ESP_OK;
     }
 
     if (fm->file) {
-      httpd_resp_sendstr(req, fm->file);
+      if (fm->file_size)
+        httpd_resp_send(req, fm->file_gz, fm->file_size);
+      else
+        httpd_resp_sendstr(req, fm->file);
       return ESP_OK;
     }
   }
 
   return ESP_FAIL;
 }
+
+#else
+struct file_map { const char *uri, *type, *file; u32 file_size; };
+
+#ifdef SERVE_BR
+const struct file_map uri_file_map_br[] = {
+#ifdef SERVE_JS_MAP
+    { .uri = "/f/js/wapp.js.map", .type = "text/javascript",  .file = build_wapp_js_map_br, .file_size = sizeof build_wapp_js_map_br }, //
+#endif
+    };
+#endif
+
+const struct file_map uri_file_map_gz[] = {
+    { .uri = "/f/css/wapp.css", .type = "text/css", .file = build_wapp_css_gz, .file_size = sizeof build_wapp_css_gz }, //
+    { .uri = "/", .type = "text/html", .file = build_wapp_html_gz, .file_size = sizeof build_wapp_html_gz }, //
+    { .uri = "/f/js/wapp.js", .type = "text/javascript", .file = build_wapp_js_gz, .file_size = sizeof build_wapp_js_gz }, //
+    };
+
+const struct file_map uri_file_map[] =  {
+    { .uri = "/f/cli/help/config", .file = cli_help_parmConfig }, //
+    { .uri = "/f/cli/help/mcu", .file = cli_help_parmMcu }, //
+    { .uri = "/f/cli/help/help", .file = cli_help_parmHelp }, //
+    { .uri = "/f/cli/help/kvs", .file = cli_help_parmKvs }, //
+    { .uri = "/f/cli/help/cmd", .file = cli_help_parmCmd }, //
+};
+
+
+static esp_err_t respond_file(httpd_req_t *req, const struct file_map *fm, const char *content_encoding) {
+  httpd_resp_set_type(req, fm->type ? fm->type : "text/plain;charset=\"UTF-8\"");
+  if (content_encoding)
+    httpd_resp_set_hdr(req, "content-encoding", content_encoding);
+  if (fm->file_size)
+    httpd_resp_send(req, fm->file, fm->file_size);
+  else
+    httpd_resp_sendstr(req, fm->file);
+  return ESP_OK;
+}
+
+
+static esp_err_t handle_uri_get_file(httpd_req_t *req) {
+  if (!check_access_allowed(req))
+    return ESP_FAIL;
+
+#ifdef SERVE_BR
+  for (int i = 0; i < sizeof(uri_file_map_br) / sizeof(uri_file_map_br[0]); ++i) {
+    if (strcmp(req->uri, uri_file_map_br[i].uri) == 0)
+      return respond_file(req, &uri_file_map_br[i], "br");
+  }
+#endif
+
+  for (int i = 0; i < sizeof(uri_file_map_gz) / sizeof(uri_file_map_gz[0]); ++i) {
+    if (strcmp(req->uri, uri_file_map_gz[i].uri) == 0)
+      return respond_file(req, &uri_file_map_gz[i], "gzip");
+  }
+
+  for (int i = 0; i < sizeof(uri_file_map) / sizeof(uri_file_map[0]); ++i) {
+    if (strcmp(req->uri, uri_file_map[i].uri) == 0)
+      return respond_file(req, &uri_file_map[i], "");
+  }
+
+  return ESP_FAIL;
+}
+
+#endif
+
 
 static esp_err_t handle_uri_ws(httpd_req_t *req) {
   int fd = httpd_req_to_sockfd(req);

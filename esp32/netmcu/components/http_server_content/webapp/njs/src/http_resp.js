@@ -1,23 +1,39 @@
-'use strict';
+"use strict";
 
-import { McuConfig } from './store/mcu_config.js';
-import { McuBootCount, McuGitTagNames, McuFirmwareBuildDate, McuChipId, McuFirmwareVersion, Stm32McuFirmwareVersion } from "./store/mcu_firmware.js";
-import { McuDocs } from './store/mcu_docs.js';
-import { ZoneCount, ZoneNames, ZoneRemainingSeconds, ZoneDurations, ZoneTimers, PressControlStatus, WaterPumpStatus, RainSensorStatus, Stm32Time } from './store/zones.js';
+import { McuConfig } from "./store/mcu_config.js";
 import {
-  McuFirmwareUpdState,
-} from "./store/mcu_firmware";
+  McuBootCount,
+  McuGitTagNames,
+  McuFirmwareBuildDate,
+  McuChipId,
+  McuFirmwareVersion,
+  Stm32McuFirmwareVersion,
+  McuFirmwareUpdProgress,
+} from "./store/mcu_firmware.js";
+import { McuDocs } from "./store/mcu_docs.js";
+import {
+  ZoneCount,
+  ZoneNames,
+  ZoneRemainingSeconds,
+  ZoneDurations,
+  ZoneTimers,
+  PressControlStatus,
+  WaterPumpStatus,
+  RainSensorStatus,
+  Stm32Time,
+} from "./store/zones.js";
+import { McuFirmwareUpdState } from "./store/mcu_firmware";
 
 export function http_handleResponses(obj) {
   console.log("reply-json: " + JSON.stringify(obj));
 
-    if ("config" in obj) {
-      let config = obj.config;
-        McuConfig.update(config);
-    }
+  if ("config" in obj) {
+    let config = obj.config;
+    McuConfig.update(config);
+  }
 
   if ("position" in obj) {
-    document.getElementById('spi').value = obj.position.p;
+    document.getElementById("spi").value = obj.position.p;
   }
 
   if ("data" in obj) {
@@ -30,14 +46,14 @@ export function http_handleResponses(obj) {
       let zoneRemainingSeconds = [];
       for (let i = 0; i < ZoneCount; ++i) {
         let sfx = i.toString() + ".0";
-        let dur = 'dur' + sfx;
-        let rem = 'rem' + sfx;
-        zoneDurations[i] = (dur in data) ? data[dur] : 0;
-        zoneRemainingSeconds[i] = (rem in data) ? data[rem] : 0;
+        let dur = "dur" + sfx;
+        let rem = "rem" + sfx;
+        zoneDurations[i] = dur in data ? data[dur] : 0;
+        zoneRemainingSeconds[i] = rem in data ? data[rem] : 0;
 
         for (let k = 0; k < 10; ++k) {
-          let sfx = i.toString() + '.' + k;
-          let timer = 'timer' + sfx;
+          let sfx = i.toString() + "." + k;
+          let timer = "timer" + sfx;
           if (timer in data) {
             zoneTimers[timer] = data[timer];
           }
@@ -52,7 +68,6 @@ export function http_handleResponses(obj) {
       RainSensorStatus.set("rain" in data && data.rain);
       Stm32Time.set("time" in data ? data.time : "");
     }
-
   }
 
   if ("rve" in obj) {
@@ -73,44 +88,44 @@ export function http_handleResponses(obj) {
     let zoneNames = [];
     for (let i = 0; i < ZoneCount; ++i) {
       let key = "zn" + i.toString();
-      zoneNames[i] = (key in kvs) ? kvs[key] : "";
+      zoneNames[i] = key in kvs ? kvs[key] : "";
     }
     ZoneNames.set(zoneNames);
   }
 
-    if ("mcu" in obj) {
-      let mcu = obj.mcu;
-      if ("chip" in mcu) {
-        McuChipId.set(mcu.chip);
-      }
-      if ("firmware" in mcu) {
-        McuFirmwareVersion.set(mcu.firmware);
-      }
-      if ("build-time" in mcu) {
-        McuFirmwareBuildDate.set(mcu["build-time"]);
-      }
-      if ("boot-count" in mcu) {
-        McuBootCount.set(mcu["boot-count"]);
-      }
-      if ("ota-state" in mcu) {
-        McuFirmwareUpdState.set(Number.parseInt(mcu["ota-state"]));
-      }
-      if ("stm32ota-state" in mcu) {
-        McuFirmwareUpdState.set(Number.parseInt(mcu["stm32ota-state"]));
-      }
-
+  if ("mcu" in obj) {
+    let mcu = obj.mcu;
+    if ("chip" in mcu) {
+      McuChipId.set(mcu.chip);
     }
-    
+    if ("firmware" in mcu) {
+      McuFirmwareVersion.set(mcu.firmware);
+    }
+    if ("build-time" in mcu) {
+      McuFirmwareBuildDate.set(mcu["build-time"]);
+    }
+    if ("boot-count" in mcu) {
+      McuBootCount.set(mcu["boot-count"]);
+    }
+    if ("ota-state" in mcu) {
+      let ota_state = mcu["ota-state"];
 
+      McuFirmwareUpdState.set(Number.parseInt(ota_state));
+      handleOtaState(ota_state);
+    }
+    if ("stm32ota-state" in mcu) {
+      let ota_state = mcu["stm32ota-state"];
 
-  
+      McuFirmwareUpdState.set(Number.parseInt(ota_state));
+      handleOtaState(ota_state);
+    }
+  }
 }
 
 export function http_handleDocResponses(name, text) {
   let obj = {};
-  obj[name] = { 'text': text };
+  obj[name] = { text: text };
   McuDocs.update(obj);
-
 }
 
 export function gitTags_handleResponse(json) {
@@ -119,4 +134,12 @@ export function gitTags_handleResponse(json) {
     names.push(item.name);
   });
   McuGitTagNames.set(names);
+}
+
+
+function handleOtaState(state) {
+  if (state === 1)
+    McuFirmwareUpdProgress.update((old) => old+1);
+  else
+    McuFirmwareUpdProgress.set(0);
 }
