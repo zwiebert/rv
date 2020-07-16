@@ -41,13 +41,13 @@ function postZoneNames() {
 
 </script>
 
-<table class="bg-green-400">
+<table class="bg-transparent">
   <tr>
     <th>#</th>
     <th>Name</th>
-    <th>Duration</th>
+    <th>Dur</th>
     <th>Run</th>
-    <th>Remaining</th>
+    <th>Rem</th>
   </tr>
   {#each { length: ZoneCount } as _, i}
     <tr>

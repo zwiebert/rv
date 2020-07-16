@@ -78,7 +78,7 @@ $: {
           <button
             type="button"
             on:click={() => netFirmwareOTA(bt.ota_name)}>
-            Do flash {bt.name}
+            Update to {bt.name}
           </button>
         </label>
         <br />
@@ -88,7 +88,7 @@ $: {
           <button
             type="button"
             on:click={() => netFirmwareOTA(document.getElementById(bt.ota_name).value)}>
-            Do flash {bt.name}
+            Update {bt.name}
           </button>
           <input type="text" id={bt.ota_name} bind:value={bt.input_value} />
         </label>

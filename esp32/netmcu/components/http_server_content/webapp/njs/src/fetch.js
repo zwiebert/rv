@@ -83,28 +83,27 @@ export function http_postDocRequest(name) {
     let tfmcu = {to:"tfmcu"};
 
     if (mask & FETCH_CONFIG)
-      tfmcu.config = { all: "?" };
+      add_kv(tfmcu,"config","all","?");
+
+
+    if (mask & FETCH_BOOT_COUNT)
+      add_kv(tfmcu, "mcu", "boot-count", "?");
 
     if (mask & FETCH_VERSION) {
-      tfmcu.mcu = { version:"?" };
+      add_kv(tfmcu, "mcu",  "version","?");
       add_kv(tfmcu,"cmd","rv-version","?");
     }
 
 
     if (mask & FETCH_ZONE_NAMES)
-      tfmcu.kvs = { zn:"?" };
+     add_kv(tfmcu,"kvs","zn","?");
+ 
 
     if (mask & FETCH_ZONE_DATA) {
       add_kv(tfmcu,"cmd","dur","?");
       add_kv(tfmcu,"cmd","rem","?");
       add_kv(tfmcu,"cmd","status","?");
     }
-
-
-    if (mask & FETCH_BOOT_COUNT)
-      tfmcu.mcu = {
-        "boot-count":"?"
-      };
 
     let url = '/cmd.json';
     http_postRequest(url, tfmcu);

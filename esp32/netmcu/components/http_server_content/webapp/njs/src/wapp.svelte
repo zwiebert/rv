@@ -11,65 +11,66 @@
   import McuFirmwareInfo from "./mcu_firmware_info.svelte";
   import Stm32McuFirmwareInfo from "./stm32_mcu_firmware_info.svelte";
 
-  import { Stm32Time } from './store/zones.js';
+  import { Stm32Time } from "./store/zones.js";
 
   export let isProduction = false;
 
   $: tabIdxMain = $TabIdx["main"] || 0;
+  $: tabIdxFw = $TabIdx["fw"] || 0;
   $: tabIdxSettings = $TabIdx["settings"] || 0;
   $: visibleMcuConfig = false;
   $: visiblePairedControllers = false;
   $: visibleMovementDurations = false;
 
   let navTabs = ["RV", "Config", "Firmware"];
+  let navTabsFw = ["esp32", "stm32"];
 
   let fwbtns = [
-    { name: "latest master firmware", ota_name: "github-master" },
-    { name: "latest beta firmware", ota_name: "github-beta" },
+    { name: "latest master", ota_name: "github-master" },
+    { name: "latest beta", ota_name: "github-beta" },
   ];
 
   let stm32_fwbtns = [
-    { name: "latest master firmware", ota_name: "stm32-github-master" },
-    { name: "latest beta firmware", ota_name: "stm32-github-beta" },
+    { name: "latest master", ota_name: "stm32-github-master" },
+    { name: "latest beta", ota_name: "stm32-github-beta" },
   ];
 
   // eslint-disable-next-line no-unused-labels
   testing: if (!isProduction) {
     fwbtns.push({
-      name: "firmware from given URL",
+      name: "from URL",
       ota_name: "netotaFromURL",
       input: "input",
-      input_value: "http://192.168.1.70:8000/netmcu.bin",
+      input_value: "http://192.168.1.76:8000/netmcu.bin",
     });
     stm32_fwbtns.push({
-      name: "firmware from given URL",
+      name: "from URL",
       ota_name: "stm32_netotaFromURL",
       input: "input",
-      input_value: "http://192.168.1.70:8000/rv.bin",
+      input_value: "http://192.168.1.76:8000/rv.bin",
     });
   }
 </script>
 
 <style type="text/scss">
   @import "./styles/app.scss";
-  .area {
-    margin-top:1rem;
-    padding:0.5rem;
-    background-color: $color_bg_area;
-  }
+
 </style>
 
-
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
-  <NavTabs nav_tabs={navTabs} name="main" />
-
+  <div class="navtab-main">
+    <NavTabs nav_tabs={navTabs} name="main" />
+  </div>
   {#if tabIdxMain === 0}
     <div class="area">
       <Zones />
       <Pump />
-      <button on:click={() => httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_DATA|httpFetch.FETCH_ZONE_NAMES)}>Reload</button>
-      <br>
-      <br>
+      <button
+        on:click={() => httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_DATA | httpFetch.FETCH_ZONE_NAMES)}>
+        Reload
+      </button>
+      <br />
+      <br />
       <input type="text" value={$Stm32Time} />
     </div>
   {:else if tabIdxMain === 1}
@@ -77,17 +78,21 @@
       <McuConfig />
     </div>
   {:else if tabIdxMain === 2}
-    <div class="area">
-      <h4>NetMCU ESP32 Firmware Update</h4>
-      <McuFirmwareUpd {fwbtns} chip="" />
-      <h4>Firmware Info</h4>
-      <McuFirmwareInfo />
-   </div>
-<br>
-   <div class="area">
-      <h4>RvMCU STM32 Firmware Update</h4>
-      <McuFirmwareUpd fwbtns={stm32_fwbtns} chip="stm32" />
-      <Stm32McuFirmwareInfo />
+    <div class="navtab-sub">
+      <NavTabs nav_tabs={navTabsFw} name="fw" />
     </div>
+    {#if tabIdxFw === 0}
+      <div class="area">
+        <h4>NetMCU ESP32</h4>
+        <McuFirmwareUpd {fwbtns} chip="" />
+        <McuFirmwareInfo />
+      </div>
+    {:else if tabIdxFw === 1}
+      <div class="area">
+        <h4>RvMCU STM32</h4>
+        <McuFirmwareUpd fwbtns={stm32_fwbtns} chip="stm32" />
+        <Stm32McuFirmwareInfo />
+      </div>
+    {/if}
   {/if}
 </div>
