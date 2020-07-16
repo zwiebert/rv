@@ -4,22 +4,15 @@
   import {
     ZoneCount,
     ZoneNames,
-    ZoneDurations,
-    ZoneRemainingSeconds,
   } from "./store/zones";
   import Zone from "./zone.svelte";
   import * as httpFetch from "./fetch.js";
-  import { onMount, onDestroy } from "svelte";
+  import { onMount} from "svelte";
 
-  let on_destroy = [];
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_NAMES | httpFetch.FETCH_ZONE_DATA);
   });
-  onDestroy(() => {
-    for (const fn of on_destroy) {
-      fn();
-    }
-  });
+
 
 
 function postZoneNames() {

@@ -1,6 +1,5 @@
 'use strict';
 
-import * as mcuFirmwareUpd from './mcu_firmware_upd.svelte';
 import { McuConfig } from './store/mcu_config.js';
 import { McuBootCount, McuGitTagNames, McuFirmwareBuildDate, McuChipId, McuFirmwareVersion, Stm32McuFirmwareVersion } from "./store/mcu_firmware.js";
 import { McuDocs } from './store/mcu_docs.js';

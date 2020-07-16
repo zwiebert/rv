@@ -21,7 +21,7 @@ INCFILES ?= perl ./include_files.pl
 SED_OPTS_HTML =  -e 's/wapp_dev.js/\/wapp.js/'
 SED_OPTS = -E -e '/dev-delete-line/d' -e '/dev-delete-begin/,/dev-delete-end/d'
 
-useTailwind = no
+useTailwind = yes
 
 buildTarget = buildTarget=DEV
 ifdef DISTRO
@@ -39,7 +39,7 @@ bundle_out = build/wapp.js build/wapp.js.map build/wapp.css build/wapp.css.map b
 bundle_files = $(JS_BLD_DIR)/wapp.js $(JS_BLD_DIR)/wapp.js.map $(JS_BLD_DIR)/wapp.css $(JS_BLD_DIR)/wapp.css.map 
 
 .PHONY: bundle
-all: build/wapp.html build/wapp.js build/wapp.js.map
+all: build/wapp.html build/wapp.js build/wapp.js.gz build/wapp.js.map build/wapp.js.map.gz build/wapp.js.map.br build/wapp.css build/wapp.css.gz
 
 
 
@@ -49,8 +49,13 @@ $(addprefix njs/build/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modul
 	cd njs && env useTailwind=$(useTailwind) buildTarget=PROD npm run build
 
 build/wapp.%: njs/build/wapp.%
-	cp -p $< $@  
-
+	cp -p $< $@
+	
+%.gz:%
+	gzip --keep --force --best $< 
+%.br:%
+	brotli --keep --force --best $<
+	 
 build/wapp.html: build build/wapp.css ./wapp_dev.html
 $(bundle_out): build
 

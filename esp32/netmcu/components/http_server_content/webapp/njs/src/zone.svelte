@@ -22,10 +22,10 @@
 </script>
 
 <td>
-  <input type="text" bind:value={zoneNames[zoneIdx]} />
+  <input class="w-32" type="text" bind:value={zoneNames[zoneIdx]} />
 </td>
 <td>
-  <input type="number" value={duration} id="dur{zoneIdx}" />
+  <input class="w-16" type="number" value={duration} id="dur{zoneIdx}" />
 </td>
 <td>
   <input type="checkbox" {checked} on:click={onClickRun} id="zrun{zoneIdx}" />

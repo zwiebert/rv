@@ -1,7 +1,3 @@
-<script>
-
-</script>
-
 <style global type="text/scss">
   @tailwind base;
   @tailwind components;

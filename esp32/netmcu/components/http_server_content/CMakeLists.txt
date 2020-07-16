@@ -13,5 +13,6 @@ idf_component_register(
     REQUIRES ""
     PRIV_REQUIRES cli_app cli config misc userio net_http_server
                   mbedtls
-    EMBED_TXTFILES "./webapp/build/wapp.html" "./webapp/build/wapp.js" #"./webapp/build/wapp.js.map"
+    EMBED_TXTFILES "./webapp/build/wapp.html" #"./webapp/build/wapp.js"
+    EMBED_FILES  "./webapp/build/wapp.js.gz"  "./webapp/build/wapp.css.gz" "./webapp/build/wapp.js.map.br" 
    )

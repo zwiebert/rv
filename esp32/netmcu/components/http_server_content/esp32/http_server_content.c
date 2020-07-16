@@ -95,9 +95,15 @@ static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
 }
 
 //////////////////// static files ///////////////////////////////////////
-extern const u8 text_wapp_html[] asm("_binary_wapp_html_start");
-extern const char text_wapp_js[] asm("_binary_wapp_js_start");
-extern const char text_wapp_js_map[] asm("_binary_wapp_js_map_start");;
+extern const char text_wapp_html[] asm("_binary_wapp_html_start");
+extern const char text_wapp_js_gz[] asm("_binary_wapp_js_gz_start");
+extern const char text_wapp_js_gz_end[] asm("_binary_wapp_js_gz_end");
+extern const char text_wapp_js_map_gz[] asm("_binary_wapp_js_map_gz_start");
+extern const char text_wapp_js_map_gz_end[] asm("_binary_wapp_js_map_gz_end");
+extern const char text_wapp_js_map_br[] asm("_binary_wapp_js_map_br_start");
+extern const char text_wapp_js_map_br_end[] asm("_binary_wapp_js_map_br_end");
+extern const char text_wapp_css_gz[] asm("_binary_wapp_css_gz_start");
+extern const char text_wapp_css_gz_end[] asm("_binary_wapp_css_gz_end");
 
 ////////////////////////// URI handlers /////////////////////////////////
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
@@ -124,11 +130,12 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
   return ESP_OK;
 }
 
-const struct {
-  const char *uri, *type, *file;
-} uri_file_map[] = { { .uri = "/f/js/wapp.js", .type = "text/javascript", .file = text_wapp_js }, //
-    //{ .uri = "/wapp.js.map", .type = "text/javascript",  .file = text_wapp_js_map }, //
-    //   { .uri = "", .file = "" }, //
+struct file_map { const char *uri, *type, *file, *file_gz, *file_gz_end, *file_br, *file_br_end; };
+const struct file_map uri_file_map[] = {
+    { .uri = "/", .type = "text/html", .file = text_wapp_html }, //
+    { .uri = "/f/js/wapp.js", .type = "text/javascript", .file_gz = text_wapp_js_gz, .file_gz_end = text_wapp_js_gz_end  }, //
+    { .uri = "/f/js/wapp.js.map", .type = "text/javascript",  .file_br = text_wapp_js_map_br, .file_br_end = text_wapp_js_map_br_end }, //
+    { .uri = "/f/css/wapp.css", .type = "text/css", .file_gz = text_wapp_css_gz, .file_gz_end = text_wapp_css_gz_end  }, //
     { .uri = "/f/cli/help/config", .file = cli_help_parmConfig }, //
     { .uri = "/f/cli/help/mcu", .file = cli_help_parmMcu }, //
     { .uri = "/f/cli/help/help", .file = cli_help_parmHelp }, //
@@ -142,25 +149,31 @@ static esp_err_t handle_uri_get_file(httpd_req_t *req) {
     return ESP_FAIL;
 
   for (int i = 0; i < sizeof(uri_file_map) / sizeof(uri_file_map[0]); ++i) {
-    if (strcmp(req->uri, uri_file_map[i].uri) != 0)
+    const struct file_map *fm = &uri_file_map[i];
+    if (strcmp(req->uri, fm->uri) != 0)
       continue;
-    const char *type = (uri_file_map[i].type) ? uri_file_map[i].type : "text/plain;charset=\"UTF-8\"";
+    const char *type = (fm->type) ? fm->type : "text/plain;charset=\"UTF-8\"";
     httpd_resp_set_type(req, type);
-    httpd_resp_sendstr(req, uri_file_map[i].file);
-    return ESP_OK;
+
+    if (fm->file_br) {
+      httpd_resp_set_hdr(req, "content-encoding", "br");
+      httpd_resp_send(req, fm->file_br, fm->file_br_end - fm->file_br);
+      return ESP_OK;
+    }
+
+    if (fm->file_gz) {
+      httpd_resp_set_hdr(req, "content-encoding", "gzip");
+      httpd_resp_send(req, fm->file_gz, fm->file_gz_end - fm->file_gz);
+      return ESP_OK;
+    }
+
+    if (fm->file) {
+      httpd_resp_sendstr(req, fm->file);
+      return ESP_OK;
+    }
   }
 
   return ESP_FAIL;
-}
-
-static esp_err_t handle_uri_tfmcu_html(httpd_req_t *req) {
-  if (!check_access_allowed(req))
-    return ESP_FAIL;
-
-  httpd_resp_set_type(req, "text/html");
-  httpd_resp_sendstr(req, (const char*) req->user_ctx);
-
-  return ESP_OK;
 }
 
 static esp_err_t handle_uri_ws(httpd_req_t *req) {
@@ -207,19 +220,17 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
 }
 
 ////////////////////////// URI definitions ////////////////////////////////
-
 static const httpd_uri_t httpd_uris[] = {
-    { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json, .user_ctx = NULL, },
-    { .uri = "/f/*", .method = HTTP_GET, .handler = handle_uri_get_file},
-    { .uri = "/", .method = HTTP_GET, .handler = handle_uri_tfmcu_html, .user_ctx = (void*) text_wapp_html, },
-    { .uri = "/ws", .method = HTTP_GET, .handler = handle_uri_ws, .user_ctx = NULL, .is_websocket = true},
+    { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json },
+    { .uri = "/f/*", .method = HTTP_GET, .handler = handle_uri_get_file },
+    { .uri = "/", .method = HTTP_GET, .handler = handle_uri_get_file },
+    { .uri = "/ws", .method = HTTP_GET, .handler = handle_uri_ws, .user_ctx = NULL, .is_websocket = true },
 };
 
 
 ///////// public ///////////////
 void hts_register_uri_handlers(httpd_handle_t server) {
   int i;
-
 
   ESP_LOGI(TAG, "Registering URI handlers");
   for (i = 0; i < sizeof(httpd_uris) / sizeof(httpd_uri_t); ++i) {
