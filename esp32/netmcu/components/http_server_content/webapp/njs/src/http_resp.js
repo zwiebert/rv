@@ -9,6 +9,7 @@ import {
   McuFirmwareVersion,
   Stm32McuFirmwareVersion,
   McuFirmwareUpdProgress,
+  McuFirmwareUpdState,
 } from "./store/mcu_firmware.js";
 import { McuDocs } from "./store/mcu_docs.js";
 import {
@@ -22,7 +23,6 @@ import {
   RainSensorStatus,
   Stm32Time,
 } from "./store/zones.js";
-import { McuFirmwareUpdState } from "./store/mcu_firmware";
 
 export function http_handleResponses(obj) {
   console.log("reply-json: " + JSON.stringify(obj));
