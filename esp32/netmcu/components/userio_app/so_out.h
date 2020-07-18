@@ -5,10 +5,12 @@
 #endif
 
 extern uint8_t so_target;
-extern bool cli_isJson;
 
-#define so_cco (!cli_isJson)
-#define so_jco cli_isJson
+#define so_jco ((so_target & (SO_TGT_HTTP|SO_TGT_MQTT)) || ((so_target & SO_TGT_CLI) && (so_target & SO_TGT_FLAG_JSON)))
+#define so_cco ((so_target & SO_TGT_CLI) && (so_target & SO_TGT_FLAG_TXT))
+#define so_mqt ((so_target & SO_TGT_MQTT))
+#define so_ws ((so_target & SO_TGT_WS))
+
 
 #ifndef USE_JSON
 #undef so_jco

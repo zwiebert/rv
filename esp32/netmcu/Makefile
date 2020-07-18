@@ -7,7 +7,7 @@
 .PHONY: esp32-wlan esp32-lan esp32-flash esp32-flash-ocd esp32-flash-app esp32-flash-app-ocd
 
 default: print-help
-clean: esp32-clean
+clean: esp32-clean http_clean
 
 ifdef V
 esp32_build_opt_verbose = -v
@@ -21,13 +21,15 @@ esp32_build_dir := $(BUILD_BASE)
 endif
 esp32_ocd_sh :=  sh $(realpath ./esp32_ocd.sh)
 
-.PHONY: http_content http_content_lan http_proxy
+.PHONY: http_content http_content_lan http_proxy http_clean
 http_content :
-	cd components/http_server_content/webapp && make -B
+	cd components/http_server_content/webapp && make 
 http_content_lan :
-	cd components/http_server_content/webapp && make -B FLAVOR_LAN=1
+	cd components/http_server_content/webapp && make  FLAVOR_LAN=1
 http_proxy:
 	cd components/http_server_content/webapp && make proxy
+http_clean:
+	cd components/http_server_content/webapp && make clean
 
 
 
@@ -43,10 +45,10 @@ esp32-wlan: http_content
 	$(esp32_build_cmd) reconfigure all
 esp32-lan: http_content_lan
 	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
-esp32-cellar:
+esp32-cellar: http_content_lan
 	make esp32-lan CELLAR=1 FLAVOR_LAN=1
 esp32-flash: 
-	$(esp32_build_cmd) -p /dev/ttyUSB0 flash
+	$(esp32_build_cmd) -p /dev/ttyUSB2 flash
 
 
 

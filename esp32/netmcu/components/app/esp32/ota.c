@@ -18,7 +18,7 @@
 #include "misc/int_types.h"
 
 static const char *TAG = "simple_ota_example";
-extern const u8 server_cert_pem_start[] asm("_binary_ca_cert_pem_start");
+extern const char ca_cert_pem[];
 
 static ota_state_T state;
 
@@ -63,7 +63,7 @@ void simple_ota_example_task(void * pvParameter) {
 
   // ESP_LOGI(TAG, "Starting OTA example");
 
-  esp_http_client_config_t config = { .url = Firmware_url, .cert_pem = (char *) server_cert_pem_start, .event_handler = _http_event_handler, };
+  esp_http_client_config_t config = { .url = Firmware_url, .cert_pem = ca_cert_pem, .event_handler = _http_event_handler, };
   //vTaskDelete(NULL);
   state = ota_RUN;
   esp_err_t ret = esp_https_ota(&config);

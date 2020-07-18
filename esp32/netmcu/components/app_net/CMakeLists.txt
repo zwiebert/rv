@@ -17,5 +17,4 @@ idf_component_register(
     #REQUIRES  
     PRIV_REQUIRES debug misc net
                   lwip
-    EMBED_TXTFILES ./esp32/ca_cert.pem
 )

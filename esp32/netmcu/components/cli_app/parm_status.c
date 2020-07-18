@@ -32,6 +32,7 @@
 #define KEY_RAIN_SENSOR "rain"
 #define KEY_EVENT "event"
 #define KEY_PUMP "pump"
+#define KEY_PRESS_CTL "pc"
 
 #define BUF_SIZE 128
 #define ZONE_COUNT 14
@@ -41,10 +42,10 @@ int
 process_parmStatus(clpar p[], int len) {
   int arg_idx;
 
-  bool hasValveBits = false, hasValveChangeMask = false, hasRainSensor = false;
-  u32 valveBits = 0, valveChangeMask = 0;
-  bool rainSensor = 0;
+  so_output_message(SO_RVE_begin, NULL);
 
+  bool hasValveBits = false, hasValveChangeMask = false;
+  u32 valveBits = 0, valveChangeMask = 0;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -59,30 +60,28 @@ process_parmStatus(clpar p[], int len) {
       hasValveChangeMask = true;
       valveChangeMask = strtol(val, 0, 16);
     } else if (strcmp(key, KEY_RAIN_SENSOR) == 0) {
-      hasRainSensor = true;
-      rainSensor = *val != '0';
+      so_arg_on_t state = { .on = *val != '0' };
+      so_output_message(SO_RVE_RAIN, &state);
     } else if (strcmp(key, KEY_EVENT) == 0) {
       io_mqtt_publish_stm32_event(val);
     } else if (strcmp(key, KEY_PUMP) == 0) {
-      bool state = *val != '0';
-      io_mqtt_publish_pump_status(state);
+      so_arg_on_t state = { .on = *val != '0' };
+      so_output_message(SO_RVE_PUMP, &state);
+    } else if (strcmp(key, KEY_PRESS_CTL) == 0) {
+      so_arg_on_t state = { .on = *val != '0' };
+      so_output_message(SO_RVE_PRESS_CTL, &state);
     } else {
       cli_warning_optionUnknown(key);
     }
   }
 
   if (hasValveBits && hasValveChangeMask) {
-    u32 mask = valveChangeMask;
-    for (int i=0; mask; ++i, (mask >>= 1)) {
-      if (mask & 1) {
-        io_mqtt_publish_valve_status(i, GET_BIT(valveBits, i));
-      }
-    }
+    so_arg_valves_t valves = { .state_bits = valveBits, .changed_bits = valveChangeMask };
+    so_output_message(SO_RVE_VALVES, &valves);
   }
 
-  if (hasRainSensor) {
-    io_mqtt_publish_rain_sensor_status(rainSensor);
-  }
+
+  so_output_message(SO_RVE_end, NULL);
 
   return 0;
 }

@@ -19,5 +19,5 @@ idf_component_register(
     REQUIRES app_config debug misc 
     PRIV_REQUIRES app_net app_config cli_app config debug key_value_store misc stm32 storage txtio net_mqtt_app
                   nvs_flash esp_https_ota app_update
-            
+    EMBED_TXTFILES ./esp32/ca_cert.pem
 )

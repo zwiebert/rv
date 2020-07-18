@@ -112,6 +112,7 @@ bool wp_isPressControlOn(bool *has_changed) {
         *has_changed = true;
       }
       is_on = !is_on;
+      report_pc_status(is_on);
     }
     return is_on;
   }
@@ -149,6 +150,9 @@ bool wp_isPressControlOn(bool *has_changed) {
   if (has_changed) {
     *has_changed = hasChanged;
   }
+  if (hasChanged)
+    report_pc_status(is_on);
+
   return is_on;
 #endif
 }
