@@ -13,6 +13,7 @@
 static time_t wpl_max_on_time = WPL_MAX_ON_TIME_SHORT;
 #define WPL_RESET_MAX_ON_TIME_AFTER (ONE_HOUR)
 static uint32_t wpl_increaseMaxOnTimeTime;
+static bool maybePcFailure;
 
 #define VALVE_ACTIVE_DELAY 20
 static bool areValvesActive() {
@@ -47,6 +48,10 @@ static void checkUserButton() {
   bool hasChanged = false;
   if (wp_isUserButtonPressed(&hasChanged) && hasChanged) {
     wpl_increaseMaxOnTime();
+  }
+  if (maybePcFailure) {
+    wp_clearPcFailure();
+    maybePcFailure = false;
   }
 }
 
@@ -93,11 +98,14 @@ static void checkRustProtection() {
 
 static void ifPumpOff() {
   checkResetMaxOnTime();
+  bool hasChanged;
 
-  if (wp_isPressControlOn(0)) {
+  if (wp_isPressControlOn(&hasChanged)) {
     wp_switchPump(true);
   } else {
     checkRustProtection();
+    if (hasChanged && areValvesActive())
+      maybePcFailure = true;
   }
 }
 
@@ -110,6 +118,7 @@ void wpl_loop(void) {
   checkUserButton();
 
   if (wp_isPumpOn()) {
+    maybePcFailure = false;
     ifPumpOn();
   } else {
     ifPumpOff();
