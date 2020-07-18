@@ -12,7 +12,6 @@
   import { ReloadProgress } from "./store/app_state.js";
 
   export let fwbtns = [];
-  export let McuFwGitTags;
   export let chip = "";
   export let updSecs = 30;
 
@@ -98,10 +97,7 @@ $: {
       {/if}
     {/each}
 
-    {#if McuFwGitTags}
-      <!-- svelte-ignore reactive-component -->
-      <svelte:component this={McuFwGitTags} />
-    {/if}
+    <slot></slot>
   {/if}
 
   {#if $McuFirmwareUpdChip === chip}

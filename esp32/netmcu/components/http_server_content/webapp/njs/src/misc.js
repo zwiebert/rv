@@ -33,6 +33,10 @@ export function req_mcuRestart() {
   let url = '/cmd.json';
   httpFetch.http_postRequest(url, json);
   req_reloadStart();
-  //setTimeout(function(){ location.reload(); }, 10000);
 }
 
+export function req_stm32McuRestart() {
+  let json = { to:"tfmcu", mcu: { rfw:"1" } };
+  let url = '/cmd.json';
+  httpFetch.http_postRequest(url, json);
+}

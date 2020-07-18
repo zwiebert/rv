@@ -1,6 +1,7 @@
 <script>
   "use strict";
 
+  import * as misc from "./misc.js";
   import * as httpFetch from "./fetch.js";
   import NavTabs from "./nav_tabs.svelte";
   import Zones from "./zones.svelte";
@@ -85,12 +86,18 @@
         <h4>NetMCU ESP32</h4>
         <McuFirmwareUpd {fwbtns} chip="" updSecs="14" />
         <McuFirmwareInfo />
+        <button type="button" on:click={() => misc.req_mcuRestart()}>
+          Restart MCU
+        </button>
       </div>
     {:else if tabIdxFw === 1}
       <div class="area">
         <h4>RvMCU STM32</h4>
         <McuFirmwareUpd fwbtns={stm32_fwbtns} chip="stm32" updSecs="75" />
         <Stm32McuFirmwareInfo />
+        <button type="button" on:click={() => misc.req_stm32McuRestart()}>
+          Restart MCU
+        </button>
       </div>
     {/if}
   {/if}
