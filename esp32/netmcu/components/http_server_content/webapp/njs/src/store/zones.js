@@ -1,9 +1,10 @@
 import { writable } from 'svelte/store';
-import { ArrayStore } from './custom_stores';
+import { ArrayStore, PersistentIntStore } from './custom_stores';
 
 export const ZoneCount = 14;
 
 export const ZoneNames = ArrayStore([]);
+export const ZoneDisabled= PersistentIntStore("zdis");
 export const ZoneRemainingSeconds = ArrayStore([0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
 export const ZoneDescriptions = ArrayStore(["<enter names...>",0, 0,0,0,0,0,0,0,0,0,0,0,0]);
 export const ZoneDurations = ArrayStore([0,0,0,0,0,0,0,0,0,0,0,0,0,0]);

@@ -4,6 +4,7 @@
   import {
     ZoneCount,
     ZoneNames,
+    ZoneDisabled,
   } from "./store/zones";
   import Zone from "./zone.svelte";
   import * as httpFetch from "./fetch.js";
@@ -43,20 +44,19 @@ function postZoneNames() {
 
 <table class="bg-transparent">
   <tr>
-    <th>#</th>
-    <th>Name</th>
+    <th>Zone</th>
     <th>Dur</th>
     <th>Run</th>
     <th>Rem</th>
   </tr>
   {#each { length: ZoneCount } as _, i}
+  {#if ($ZoneDisabled & (1<<i)) === 0}
     <tr>
-      <th>{i}</th>
       <Zone zoneIdx={i} {zoneNames} />
     </tr>
-  {/each}
+  {/if}
+    {/each}
 
 </table>
 
-<button on:click={postZoneNames}>Save</button>
 <br>

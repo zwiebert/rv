@@ -74,18 +74,24 @@ function save_storage_int(name, value) {
 }
 
 export function PersistentIntStore(name) {
-
-	const { subscribe, set } = writable(read_storage_int(name));
+    let value = read_storage_int(name);
+	const { subscribe, set } = writable(value);
 
 	function my_set(value) {
 		save_storage_int(name, value);
 		set(value);
 	}
 
+	function my_update(fn) {
+		value = fn(value);
+		my_set(value);
+	}
+
 	let result = {
 		subscribe,
 		set: my_set,
-		reset: () => my_set(0)
+		reset: () => my_set(0),
+		update: my_update,
 	};
 
 	return result;

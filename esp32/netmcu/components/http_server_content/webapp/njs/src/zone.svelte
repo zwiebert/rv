@@ -7,6 +7,8 @@
   export let zoneIdx;
   export let zoneNames;
 
+  $: zoneName = zoneNames[zoneIdx] || '';
+
   $: duration = ($ZoneDurations[zoneIdx] / 60.0).toFixed(2) || 0;
   $: remaining = ($ZoneRemainingSeconds[zoneIdx] / 60.0).toFixed(2) || 0;
   $: checked = duration > 0.01;
@@ -21,9 +23,9 @@
   }
 </script>
 
-<td>
-  <input class="w-40" type="text" bind:value={zoneNames[zoneIdx]} />
-</td>
+<th class="text-left">
+  {zoneIdx} {zoneName}
+</th>
 <td>
   <input class="w-12" type="number" value={duration} id="dur{zoneIdx}" />
 </td>
