@@ -1,6 +1,6 @@
 <script>
     "use strict";
-  
+    import { _ } from './services/i18n';
     import {
       ZoneCount,
       ZoneNames,
@@ -44,8 +44,8 @@
   <table class="bg-transparent">
     <tr>
       <th>#</th>
-      <th>Name</th>
-      <th>Disable</th>
+      <th>{$_('app.zoneName')}</th>
+      <th>{$_('app.hide')}</th>
     </tr>
     {#each { length: ZoneCount } as _, i}
       <tr>
@@ -56,5 +56,5 @@
   
   </table>
   
-  <button on:click={postZoneNames}>Save</button>
+  <button on:click={postZoneNames}>{$_('app.save')}</button>
   <br>

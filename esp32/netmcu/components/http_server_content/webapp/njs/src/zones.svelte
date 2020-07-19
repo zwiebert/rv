@@ -1,6 +1,6 @@
 <script>
   "use strict";
-
+  import { _ } from './services/i18n';
   import {
     ZoneCount,
     ZoneNames,
@@ -44,10 +44,10 @@ function postZoneNames() {
 
 <table class="bg-transparent">
   <tr>
-    <th>Zone</th>
-    <th>Dur</th>
-    <th>Run</th>
-    <th>Rem</th>
+    <th>{$_('app.zone')}</th>
+    <th>{$_('app.duration')}</th>
+    <th>{$_('app.run')}</th>
+    <th>{$_('app.remaining')}</th>
   </tr>
   {#each { length: ZoneCount } as _, i}
   {#if ($ZoneDisabled & (1<<i)) === 0}

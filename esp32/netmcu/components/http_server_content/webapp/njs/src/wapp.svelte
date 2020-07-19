@@ -1,6 +1,6 @@
 <script>
   "use strict";
-
+  import { _ } from './services/i18n';
   import * as misc from "./misc.js";
   import * as httpFetch from "./fetch.js";
   import NavTabs from "./nav_tabs.svelte";
@@ -24,10 +24,6 @@
   $: visibleMcuConfig = false;
   $: visiblePairedControllers = false;
   $: visibleMovementDurations = false;
-
-  let navTabs = ["RV", "Config", "Firmware"];
-  let navTabsCfg = ["NetMCU", "RV"];
-  let navTabsFw = ["esp32", "stm32"];
 
   let fwbtns = [
     { name: "latest master", ota_name: "github-master" },
@@ -62,7 +58,7 @@
 
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
   <div class="navtab-main">
-    <NavTabs nav_tabs={navTabs} name="main" />
+    <NavTabs nav_tabs={[$_('app.nav_main_rv'), $_('app.nav_main_config'), $_('app.nav_main_firmware')]} name="main" />
   </div>
   {#if tabIdxMain === 0}
     <div class="area">
@@ -70,7 +66,7 @@
       <Pump />
       <button
         on:click={() => httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_DATA | httpFetch.FETCH_ZONE_NAMES)}>
-        Reload
+        {$_('app.reload')}
       </button>
       <br />
       <br />
@@ -78,7 +74,7 @@
     </div>
   {:else if tabIdxMain === 1}
   <div class="navtab-sub">
-    <NavTabs nav_tabs={navTabsCfg} name="cfg" />
+    <NavTabs nav_tabs={[$_('app.nav_cfg_netMcu'), $_('app.nav_cfg_rv')]} name="cfg" />
   </div>
   {#if tabIdxCfg === 0}
     <div class="area">
@@ -91,24 +87,22 @@
   {/if}
   {:else if tabIdxMain === 2}
     <div class="navtab-sub">
-      <NavTabs nav_tabs={navTabsFw} name="fw" />
+      <NavTabs nav_tabs={[$_('app.nav_fw_netMcu'), $_('app.nav_fw_rv')]} name="fw" />
     </div>
     {#if tabIdxFw === 0}
       <div class="area">
-        <h4>NetMCU ESP32</h4>
         <McuFirmwareUpd {fwbtns} chip="" updSecs="14" />
         <McuFirmwareInfo />
         <button type="button" on:click={() => misc.req_mcuRestart()}>
-          Restart MCU
+          {$_('app.restartMcu')}
         </button>
       </div>
     {:else if tabIdxFw === 1}
       <div class="area">
-        <h4>RvMCU STM32</h4>
         <McuFirmwareUpd fwbtns={stm32_fwbtns} chip="stm32" updSecs="75" />
         <Stm32McuFirmwareInfo />
         <button type="button" on:click={() => misc.req_stm32McuRestart()}>
-          Restart MCU
+          {$_('app.restartMcu')}
         </button>
       </div>
     {/if}

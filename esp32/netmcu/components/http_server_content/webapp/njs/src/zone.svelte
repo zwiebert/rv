@@ -27,7 +27,7 @@
   {zoneIdx} {zoneName}
 </th>
 <td>
-  <input class="w-12" type="number" value={duration} id="dur{zoneIdx}" />
+  <input class="w-16 text-right" type="number" value={duration} id="dur{zoneIdx}" />
 </td>
 <td>
   <input type="checkbox" {checked} on:click={onClickRun} id="zrun{zoneIdx}" />
