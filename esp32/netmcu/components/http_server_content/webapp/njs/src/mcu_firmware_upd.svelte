@@ -128,7 +128,7 @@ $: {
       <progress value={$McuFirmwareUpdProgress} max="{updSecs}" />
     {/if}
     {#if $ReloadProgress > 0}
-      <strong>$_('app.msg_waitForMcuRestart')</strong>
+      <strong>{$_('app.msg_waitForMcuRestart')}</strong>
       <br />
       <progress value={$ReloadProgress} max="100" />
     {/if}

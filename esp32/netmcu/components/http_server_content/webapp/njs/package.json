@@ -19,7 +19,7 @@
 		"nollup": "^0.12.2",
 		"postcss": "^7.0.32",
 		"postcss-load-config": "^2.1.0",
-		"rollup": "^2.21.0",
+		"rollup": "^2.22.1",
 		"rollup-plugin-eslint": "^7.0.0",
 		"rollup-plugin-svelte": "^5.2.2",
 		"rollup-plugin-terser": "^6.1.0",
@@ -27,7 +27,7 @@
 		"svelte": "^3.24.0",
 		"svelte-i18n": "^3.0.4",
 		"svelte-preprocess": "^3.9.12",
-		"tailwindcss": "^1.5.0"
+		"tailwindcss": "^1.5.1"
 	},
 	"jshintConfig": {
 		"esversion": 6,
