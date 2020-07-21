@@ -60,7 +60,7 @@
   <div class="navtab-main">
     <NavTabs nav_tabs={[$_('app.nav_main_rv'), $_('app.nav_main_config'), $_('app.nav_main_firmware')]} name="main" />
   </div>
-  {#if tabIdxMain === 0}
+  {#if !tabIdxMain}
     <div class="area">
       <Zones />
       <Pump />
@@ -76,7 +76,7 @@
   <div class="navtab-sub">
     <NavTabs nav_tabs={[$_('app.nav_cfg_netMcu'), $_('app.nav_cfg_rv')]} name="cfg" />
   </div>
-  {#if tabIdxCfg === 0}
+  {#if !tabIdxCfg}
     <div class="area">
       <McuConfig />
     </div>
@@ -89,7 +89,7 @@
     <div class="navtab-sub">
       <NavTabs nav_tabs={[$_('app.nav_fw_netMcu'), $_('app.nav_fw_rv')]} name="fw" />
     </div>
-    {#if tabIdxFw === 0}
+    {#if !tabIdxFw}
       <div class="area">
         <McuFirmwareUpd {fwbtns} chip="" updSecs="14" />
         <McuFirmwareInfo />
