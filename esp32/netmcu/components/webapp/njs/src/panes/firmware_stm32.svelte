@@ -4,15 +4,12 @@
   import McuFirmwareUpd from "../mcu_firmware_upd.svelte";
   import Stm32McuFirmwareInfo from "../stm32_mcu_firmware_info.svelte";
 
-  export let isProduction = false;
-
   let stm32_fwbtns = [
     { name: "latest master", ota_name: "stm32-github-master" },
     { name: "latest beta", ota_name: "stm32-github-beta" },
   ];
 
-  // eslint-disable-next-line no-unused-labels
-  testing: if (!isProduction) {
+  if (misc.NODE_ENV_DEV) {
     stm32_fwbtns.push({
       name: "from URL",
       ota_name: "stm32_netotaFromURL",

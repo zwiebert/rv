@@ -10,8 +10,6 @@
   import PaneFirmwareStm32 from "./panes/firmware_stm32.svelte";
   import { TabIdx } from "./store/app_state.js";
 
-  export let isProduction = false;
-
   $: tabIdxMain = $TabIdx["main"] || 0;
   $: tabIdxCfg = $TabIdx["cfg"] || 0;
   $: tabIdxFw = $TabIdx["fw"] || 0;
@@ -48,9 +46,9 @@
         name="fw" />
     </div>
     {#if !tabIdxFw}
-      <PaneFirmwareEsp32 {isProduction} />
+      <PaneFirmwareEsp32 />
     {:else if tabIdxFw === 1}
-      <PaneFirmwareStm32 {isProduction} />
+      <PaneFirmwareStm32 />
     {/if}
   {/if}
 </div>

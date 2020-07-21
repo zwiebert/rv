@@ -1,18 +1,16 @@
 <script>
+  "use strict";
   import { _ } from "../services/i18n";
   import * as misc from "../misc.js";
   import McuFirmwareUpd from "../mcu_firmware_upd.svelte";
   import McuFirmwareInfo from "../mcu_firmware_info.svelte";
-
-  export let isProduction = false;
 
   let fwbtns = [
     { name: "latest master", ota_name: "github-master" },
     { name: "latest beta", ota_name: "github-beta" },
   ];
 
-  // eslint-disable-next-line no-unused-labels
-  testing: if (!isProduction) {
+  if (misc.NODE_ENV_DEV) {
     fwbtns.push({
       name: "from URL",
       ota_name: "netotaFromURL",
