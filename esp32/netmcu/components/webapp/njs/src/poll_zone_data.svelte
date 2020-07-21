@@ -8,7 +8,7 @@
   import { onMount, onDestroy } from "svelte";
   import { ReloadProgress } from './store/app_state.js';
 
-  export let pollInterval = 5000;
+  export let pollInterval = 1000;
 
 
   let on_destroy = [];
