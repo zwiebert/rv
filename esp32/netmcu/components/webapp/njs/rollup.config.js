@@ -62,7 +62,7 @@ export default {
   },
   plugins: [
     json(),
-    ...!isProduction ? [
+    ...isProduction ? [
       strip({
         functions: ['testing.*', 'testing_*', 'appDebug.*', 'console.*', 'assert.*'],
         labels: ['testing'],
