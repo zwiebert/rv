@@ -1,7 +1,8 @@
 import { writable } from 'svelte/store';
 import { ArrayStore, PersistentIntStore } from './custom_stores';
 
-export const ZoneCount = 14;
+export const ZoneCountMax = 14;
+export const ZoneCount = writable(ZoneCountMax);
 
 export const ZoneNames = ArrayStore([]);
 export const ZoneDisabled= PersistentIntStore("zdis");

@@ -42,3 +42,7 @@ export function req_stm32McuRestart() {
   let url = '/cmd.json';
   httpFetch.http_postRequest(url, json);
 }
+
+export function formatSecondsToMMSS(secs) {
+  return ("0" + Math.floor(secs / 60)).slice(-2) + ":" + ("0" + (secs % 60)).slice(-2);
+}

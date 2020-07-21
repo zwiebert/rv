@@ -6,8 +6,6 @@ import { eslint } from "rollup-plugin-eslint";
 import svelte from 'rollup-plugin-svelte';
 import resolve from '@rollup/plugin-node-resolve';
 import sveltePreprocess from 'svelte-preprocess';
-import { replace } from 'svelte-preprocess';
-import { watch } from 'rollup';
 
 export const isProduction = process.env.NODE_ENV === "production";
 const useTailwind = process.env.useTailwind === "yes";
@@ -88,11 +86,9 @@ export default {
         sveltePreprocess({
         postcss: true,
         replace: [
-            ['misc.NODE_ENV_DEV', !isProduction ? 'false' : 'true'],
+            ['misc.NODE_ENV_DEV', isProduction ? 'false' : 'true'],
             ['//NODE_ENV_DEV', isProduction ? 'if(false)' : 'if(true)'],
          ],
-
-       //replace(): ['NODE_ENV_DEV', isProduction ? 'false' : 'true'],
       })],
 
     }),

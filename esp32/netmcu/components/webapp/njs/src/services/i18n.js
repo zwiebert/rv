@@ -23,6 +23,7 @@ const en = {
         "nav_cfg_rv":"RV-MCU",
         "nav_cfg_netMcu":"Net-MCU",
         "msg_waitForMcuRestart":"Wait for MCU to restart...",
+        "msg_enterNewName":"Enter new name:",
     }
 } ;
 
@@ -41,6 +42,7 @@ const de = {
         "save":"Speichern",
         "hide":"Verstecke",
         "msg_waitForMcuRestart":"MCU wird neu gestartet...",
+        "msg_enterNewName":"Neuer Name:",
  
     }
 } ;

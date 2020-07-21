@@ -8,6 +8,7 @@
   import PaneMcuSettings from "./panes/mcu_settings.svelte";
   import PaneFirmwareEsp32 from "./panes/firmware_esp32.svelte";
   import PaneFirmwareStm32 from "./panes/firmware_stm32.svelte";
+  import PaneZoneMaintenance from "./panes/zone_maintenance.svelte";
   import { TabIdx } from "./store/app_state.js";
 
   $: tabIdxMain = $TabIdx["main"] || 0;
@@ -23,7 +24,7 @@
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
   <div class="navtab-main">
     <NavTabs
-      nav_tabs={[$_('app.nav_main_rv'), $_('app.nav_main_config'), $_('app.nav_main_firmware')]}
+      nav_tabs={[$_('app.nav_main_rv'), $_('app.nav_main_config'), "Maintenance"]}
       name="main" />
   </div>
   {#if !tabIdxMain}
@@ -31,24 +32,26 @@
   {:else if tabIdxMain === 1}
     <div class="navtab-sub">
       <NavTabs
-        nav_tabs={[$_('app.nav_cfg_netMcu'), $_('app.nav_cfg_rv')]}
+        nav_tabs={[$_('app.nav_cfg_netMcu'), $_('app.nav_cfg_rv'), $_('app.nav_main_firmware')]}
         name="cfg" />
     </div>
     {#if !tabIdxCfg}
       <PaneMcuSettings />
-    {:else}
+    {:else if tabIdxCfg === 1}
       <PaneRvSettings />
+    {:else if tabIdxCfg === 2}
+      <div class="navtab-sub">
+        <NavTabs
+          nav_tabs={[$_('app.nav_fw_netMcu'), $_('app.nav_fw_rv')]}
+          name="fw" />
+      </div>
+      {#if !tabIdxFw}
+        <PaneFirmwareEsp32 />
+      {:else if tabIdxFw === 1}
+        <PaneFirmwareStm32 />
+      {/if}
     {/if}
   {:else if tabIdxMain === 2}
-    <div class="navtab-sub">
-      <NavTabs
-        nav_tabs={[$_('app.nav_fw_netMcu'), $_('app.nav_fw_rv')]}
-        name="fw" />
-    </div>
-    {#if !tabIdxFw}
-      <PaneFirmwareEsp32 />
-    {:else if tabIdxFw === 1}
-      <PaneFirmwareStm32 />
-    {/if}
+    <PaneZoneMaintenance />
   {/if}
 </div>

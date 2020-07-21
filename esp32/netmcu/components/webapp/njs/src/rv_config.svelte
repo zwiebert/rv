@@ -20,7 +20,7 @@
     let kvs = {zn:'?'};
     netmcu.kvs = kvs;
   
-    for (let i=0; i < ZoneCount; ++i) {
+    for (let i=0; i < $ZoneCount; ++i) {
       let sfx = i.toString();
       let key = 'zn'+sfx;
       let new_name =  zoneNames[i];
@@ -47,7 +47,7 @@
       <th>{$_('app.zoneName')}</th>
       <th>{$_('app.hide')}</th>
     </tr>
-    {#each { length: ZoneCount } as _, i}
+    {#each { length: $ZoneCount } as _, i}
       <tr>
         <th>{i}</th>
         <Zone zoneIdx={i} {zoneNames} />
