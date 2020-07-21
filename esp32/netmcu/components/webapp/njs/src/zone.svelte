@@ -3,6 +3,7 @@
 
   import { ZoneDurations, ZoneRemainingSeconds } from "./store/zones";
   import * as httpFetch from "./fetch.js";
+  import { formatSecondsToMMSS } from "./misc.js";
 
   export let zoneIdx;
   export let zoneNames;
@@ -10,7 +11,7 @@
   $: zoneName = zoneNames[zoneIdx] || '';
 
   $: duration = ($ZoneDurations[zoneIdx] / 60.0).toFixed(2) || 0;
-  $: remaining = ($ZoneRemainingSeconds[zoneIdx] / 60.0).toFixed(2) || 0;
+  $: remaining_mmss = formatSecondsToMMSS($ZoneRemainingSeconds[zoneIdx]);
   $: checked = duration > 0.01;
 
   function onClickRun() {
@@ -32,4 +33,4 @@
 <td>
   <input type="checkbox" {checked} on:click={onClickRun} id="zrun{zoneIdx}" />
 </td>
-<td>{remaining}</td>
+<td>{remaining_mmss}</td>

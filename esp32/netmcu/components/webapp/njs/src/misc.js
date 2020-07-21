@@ -4,6 +4,8 @@ import { ReloadProgress } from './store/app_state.js';
 
 import * as httpFetch from './fetch.js';
 
+export const NODE_ENV_DEV = true;
+
 const reload_Progress = {
   ivId: 0,
   ms: 1000,
@@ -39,4 +41,8 @@ export function req_stm32McuRestart() {
   let json = { to:"tfmcu", mcu: { rfw:"1" } };
   let url = '/cmd.json';
   httpFetch.http_postRequest(url, json);
+}
+
+export function formatSecondsToMMSS(secs) {
+  return ("0" + Math.floor(secs / 60)).slice(-2) + ":" + ("0" + (secs % 60)).slice(-2);
 }

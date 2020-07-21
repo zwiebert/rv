@@ -21,7 +21,7 @@ function postZoneNames() {
   let kvs = {zn:'?'};
   netmcu.kvs = kvs;
 
-  for (let i=0; i < ZoneCount; ++i) {
+  for (let i=0; i < $ZoneCount; ++i) {
     let sfx = i.toString();
     let key = 'zn'+sfx;
     let new_name =  zoneNames[i];
@@ -49,7 +49,7 @@ function postZoneNames() {
     <th>{$_('app.run')}</th>
     <th>{$_('app.remaining')}</th>
   </tr>
-  {#each { length: ZoneCount } as _, i}
+  {#each { length: $ZoneCount } as _, i}
   {#if ($ZoneDisabled & (1<<i)) === 0}
     <tr>
       <Zone zoneIdx={i} {zoneNames} />

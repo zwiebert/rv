@@ -13,7 +13,7 @@ import {
 } from "./store/mcu_firmware.js";
 import { McuDocs } from "./store/mcu_docs.js";
 import {
-  ZoneCount,
+  ZoneCountMax,
   ZoneNames,
   ZoneRemainingSeconds,
   ZoneDurations,
@@ -44,7 +44,7 @@ export function http_handleResponses(obj) {
       let zoneTimers = {};
       let zoneDurations = [];
       let zoneRemainingSeconds = [];
-      for (let i = 0; i < ZoneCount; ++i) {
+      for (let i = 0; i < ZoneCountMax; ++i) {
         let sfx = i.toString() + ".0";
         let dur = "dur" + sfx;
         let rem = "rem" + sfx;
@@ -86,7 +86,7 @@ export function http_handleResponses(obj) {
   if ("kvs" in obj) {
     let kvs = obj.kvs;
     let zoneNames = [];
-    for (let i = 0; i < ZoneCount; ++i) {
+    for (let i = 0; i < ZoneCountMax; ++i) {
       let key = "zn" + i.toString();
       zoneNames[i] = key in kvs ? kvs[key] : "";
     }
