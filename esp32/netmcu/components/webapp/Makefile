@@ -23,10 +23,13 @@ SED_OPTS = -E -e '/dev-delete-line/d' -e '/dev-delete-begin/,/dev-delete-end/d'
 useTailwind = yes
 
 buildTarget = buildTarget=DEV
+node_env = NODE_ENV=development
+
 ifdef DISTRO
 ifeq ($(DISTRO),1)
 SED_OPTS +=  -e '/dev-distro-delete-line/d'  -e '/dev-distro-delete-begin/,/dev-distro-delete-end/d'
 buildTarget = buildTarget=PROD
+node_env = NODE_ENV=production
 endif
 endif
 
@@ -43,9 +46,9 @@ bundle_c = build/wapp.html.gz.c build/wapp.js.gz.c build/wapp.js.map.br.c build/
 all: $(bundle_c)
 
 $(addprefix njs/build_dev/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
-	cd njs && env useTailwind=$(useTailwind) buildTarget=DEV npm run build
+	cd njs && env useTailwind=$(useTailwind) NODE_ENV=development buildTarget=DEV npm run build
 $(addprefix njs/build/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
-	cd njs && env useTailwind=$(useTailwind) buildTarget=PROD npm run build
+	cd njs && env useTailwind=$(useTailwind) NODE_ENV=production buildTarget=PROD npm run build
 
 build/wapp.%: njs/build/wapp.%
 	mkdir -p build
