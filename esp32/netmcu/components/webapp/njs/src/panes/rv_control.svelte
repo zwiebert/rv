@@ -4,7 +4,10 @@
   import Zones from "../zones.svelte";
   import Pump from "../pump.svelte";
   import { Stm32Time } from "../store/zones.js";
+  import PollZoneData from "../poll_zone_data.svelte";
 </script>
+
+<PollZoneData />
 
 <div class="area">
   <Zones />

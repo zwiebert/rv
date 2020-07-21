@@ -4,6 +4,7 @@
   import { ZoneNames, ZoneCount, ZoneDurations, ZoneRemainingSeconds } from "../store/zones";
   import * as httpFetch from "../fetch.js";
   import { onMount } from "svelte";
+  import PollZoneData from "../poll_zone_data.svelte";
 
 
   onMount(() => {
@@ -69,6 +70,8 @@
   }
 
 </script>
+
+<PollZoneData />
 
 <div class="area">
 

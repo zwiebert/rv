@@ -1,5 +1,4 @@
 'use strict';
-// src/main.js
 
 import App from './main_tailwind.svelte';
 import * as connWs from './net/conn_ws.js';
