@@ -9,8 +9,6 @@ import sveltePreprocess from 'svelte-preprocess';
 
 export const isProduction = process.env.NODE_ENV === "production";
 export const isDistro = process.env.DISTRO === "yes";
-const useTailwind = process.env.useTailwind === "yes";
-
 
 export default {
   onwarn(warning, rollupWarn) {
@@ -18,7 +16,7 @@ export default {
       rollupWarn(warning);
     }
   },
-  input: useTailwind ? 'src/main_tailwind.js' : 'src/main.js',
+  input: 'src/main.js',
   output: [...!isProduction ? [ {
     file: 'build_dev/wapp.js',
     sourcemap: true,
