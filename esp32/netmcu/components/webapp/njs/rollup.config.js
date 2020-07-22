@@ -8,7 +8,9 @@ import resolve from '@rollup/plugin-node-resolve';
 import sveltePreprocess from 'svelte-preprocess';
 
 export const isProduction = process.env.NODE_ENV === "production";
+export const isDistro = process.env.DISTRO === "yes";
 const useTailwind = process.env.useTailwind === "yes";
+
 
 export default {
   onwarn(warning, rollupWarn) {
@@ -87,6 +89,8 @@ export default {
         postcss: true,
         replace: [
             ['misc.NODE_ENV_DEV', isProduction ? 'false' : 'true'],
+            ['misc.PROD', isProduction ? 'true' : 'false'],
+            ['misc.DISTRO', isDistro ? 'true' : 'false'],
             ['//NODE_ENV_DEV', isProduction ? 'if(false)' : 'if(true)'],
          ],
       })],

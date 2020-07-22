@@ -9,7 +9,7 @@
     { name: "latest beta", ota_name: "stm32-github-beta" },
   ];
 
-  if (misc.NODE_ENV_DEV) {
+  if (!misc.DISTRO) {
     stm32_fwbtns.push({
       name: "from URL",
       ota_name: "stm32_netotaFromURL",

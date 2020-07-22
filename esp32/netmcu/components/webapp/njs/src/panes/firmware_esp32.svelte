@@ -10,7 +10,7 @@
     { name: "latest beta", ota_name: "github-beta" },
   ];
 
-  if (misc.NODE_ENV_DEV) {
+  if (!misc.DISTRO) {
     fwbtns.push({
       name: "from URL",
       ota_name: "netotaFromURL",

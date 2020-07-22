@@ -25,6 +25,7 @@ useTailwind = yes
 ifdef DISTRO
 ifeq ($(DISTRO),1)
 SED_OPTS +=  -e '/dev-distro-delete-line/d'  -e '/dev-distro-delete-begin/,/dev-distro-delete-end/d'
+webapp_env = distro=yes
 endif
 endif
 
@@ -43,7 +44,7 @@ all: $(bundle_c)
 $(addprefix njs/build_dev/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
 	cd njs && env useTailwind=$(useTailwind) NODE_ENV=development npm run build
 $(addprefix njs/build/wapp,.js .css .js.map .css.map): $(SRC_ALL) njs/node_modules
-	cd njs && env useTailwind=$(useTailwind) NODE_ENV=production npm run build
+	cd njs && env useTailwind=$(useTailwind) NODE_ENV=production $(distro) npm run build
 
 build/wapp.%: njs/build/wapp.%
 	mkdir -p build
