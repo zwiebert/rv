@@ -36,7 +36,7 @@ endif
 bundle_out = build/wapp.js build/wapp.js.map build/wapp.css build/wapp.css.map build/wapp.html
 bundle_files = $(JS_BLD_DIR)/wapp.js $(JS_BLD_DIR)/wapp.js.map $(JS_BLD_DIR)/wapp.css $(JS_BLD_DIR)/wapp.css.map 
 
-bundle_c = build/wapp.html.gz.c build/wapp.js.gz.c build/wapp.js.map.br.c build/wapp.css.gz.c
+bundle_c = build/wapp.html.gz.c build/wapp.js.gz.c build/wapp.js.map.gz.c build/wapp.js.map.br.c build/wapp.css.gz.c build/wapp.css.map.gz.c build/wapp.css.map.br.c
 
 .PHONY: bundle
 all: $(bundle_c)

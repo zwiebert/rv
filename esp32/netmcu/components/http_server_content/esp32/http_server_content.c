@@ -97,7 +97,7 @@ static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
 }
 
 #define SERVE_JS_MAP
-#define SERVE_BR
+#define SERVE_CSS_MAP
 
 ////////////////////////// URI handlers /////////////////////////////////
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
@@ -203,6 +203,7 @@ static esp_err_t respond_file(httpd_req_t *req, const struct file_map *fm, const
 #define URI_WAPP_CSS "/f/css/wapp.css"
 #define URI_WAPP_JS "/f/js/wapp.js"
 #define URI_WAPP_JS_MAP "/f/js/wapp.js.map"
+#define URI_WAPP_CSS_MAP "/f/css/wapp.css.map"
 
 static esp_err_t handle_uri_get_file(httpd_req_t *req) {
   if (!check_access_allowed(req))
@@ -225,10 +226,15 @@ static esp_err_t handle_uri_get_file(httpd_req_t *req) {
     fm.type = "text/javascript";
 #ifdef SERVE_JS_MAP
   } else  if (strcmp(req->uri, URI_WAPP_JS_MAP) == 0) {
-    fm.file = build_wapp_js_map_br;
-    fm.file_size = build_wapp_js_map_br_len;
+    fm.file = build_wapp_js_map_gz;
+    fm.file_size = build_wapp_js_map_gz_len;
     fm.type = "text/javascript";
-    encoding = "br";
+#endif
+#ifdef SERVE_CSS_MAP
+  } else  if (strcmp(req->uri, URI_WAPP_CSS_MAP) == 0) {
+    fm.file = build_wapp_css_map_gz;
+    fm.file_size = build_wapp_css_map_gz_len;
+    fm.type = "text/css";
 #endif
   } else {
     for (int i = 0; i < sizeof(uri_file_map) / sizeof(uri_file_map[0]); ++i) {
