@@ -2,7 +2,11 @@ module.exports = {
   corePlugins: {
     preflight: false,
   },
-  purge: [],
+  purge: [
+   "./src/**/*.svelte",
+   "./src/**/*.css",
+   "./src/**/*.scss",
+  ],
   theme: {
     extend: {
       color: {
