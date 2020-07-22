@@ -1,11 +1,23 @@
 <script>
   import { _ } from "../services/i18n";
-  import { Z, ZoneName, ZoneDurationMmss, ZoneRemainingMmss } from "../store/curr_zone";
-  import { ZoneNames, ZoneCount, ZoneDurations, ZoneRemainingSeconds } from "../store/zones";
+  import {
+    Z,
+    ZoneName,
+    ZoneDurationMmss,
+    ZoneRemainingMmss,
+  } from "../store/curr_zone";
+  import {
+    ZoneNames,
+    ZoneCount,
+    ZoneDurations,
+    ZoneRemainingSeconds,
+    PressControlStatus,
+    WaterPumpStatus,
+    RainSensorStatus,
+  } from "../store/zones";
   import * as httpFetch from "../fetch.js";
   import { onMount } from "svelte";
   import PollZoneData from "../poll_zone_data.svelte";
-
 
   onMount(() => {
     httpFetch.http_fetchByMask(
@@ -68,7 +80,6 @@
   function onClickStop() {
     cmdDuration($Z, 0);
   }
-
 </script>
 
 <PollZoneData />
@@ -94,13 +105,33 @@
 </div>
 
 <div class="area">
-  <button on:click={onClickRun}>Start</button>
-  <br />
-  <button on:click={onClickStop}>Stop</button>
+  <button class="text-xl p-8 m-2" on:click={onClickRun}>Start</button>
+  <button class="text-xl p-8 m-2" on:click={onClickStop}>Stop</button>
 </div>
 
 <div class="area">
-    <p>{$_('app.duration')}: {$ZoneDurationMmss}</p>
-    <p>{$_('app.remaining')}: {$ZoneRemainingMmss}</p>
+  <p>
+    {$_('app.duration')}: {$ZoneDurationMmss} {$_('app.remaining')}: {$ZoneRemainingMmss}
+  </p>
 </div>
 
+<div class="area">
+  <label>
+    {$_('app.pressControl')}
+    <input type="checkbox" checked={$PressControlStatus} />
+  </label>
+  <br />
+  <label>
+    {$_('app.pump')}
+    <input type="checkbox" id="id-waterPumpStatus" checked={$WaterPumpStatus} />
+  </label>
+  <br />
+  <label>
+    {$_('app.rainSensor')}
+    <input
+      type="checkbox"
+      id="id-rainSensorStatus"
+      checked={$RainSensorStatus} />
+  </label>
+  <br />
+</div>

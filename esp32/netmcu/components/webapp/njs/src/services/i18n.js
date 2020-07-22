@@ -24,6 +24,7 @@ const en = {
         "nav_cfg_netMcu":"Net-MCU",
         "msg_waitForMcuRestart":"Wait for MCU to restart...",
         "msg_enterNewName":"Enter new name:",
+        "msg_firmwareIsUpdating":"Firmware is updating...",
     }
 } ;
 
@@ -43,7 +44,7 @@ const de = {
         "hide":"Verstecke",
         "msg_waitForMcuRestart":"MCU wird neu gestartet...",
         "msg_enterNewName":"Neuer Name:",
- 
+        "msg_firmwareIsUpdating":"Firmware aktualisiert sich...",
     }
 } ;
 
