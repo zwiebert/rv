@@ -2,55 +2,35 @@
   import { _ } from "../services/i18n";
   import {
     Z,
-    ZoneName,
     ZoneDurationMmss,
     ZoneRemainingMmss,
   } from "../store/curr_zone";
-  import {
-    ZoneNames,
-    ZoneCount,
-    ZoneDurations,
-    ZoneRemainingSeconds,
-    PressControlStatus,
-    WaterPumpStatus,
-    RainSensorStatus,
-  } from "../store/zones";
+
   import * as httpFetch from "../fetch.js";
   import { onMount } from "svelte";
   import PollZoneData from "../poll_zone_data.svelte";
-
+  import EditName  from "../components/edit_name.svelte";
+  import SelectZone  from "../components/select_zone.svelte";
+  import RvStatus  from "../components/rv_status.svelte";
+  
   onMount(() => {
     httpFetch.http_fetchByMask(
       httpFetch.FETCH_ZONE_NAMES | httpFetch.FETCH_ZONE_DATA
     );
   });
 
-  $: name = $ZoneName || "";
-
-  function shn_fromHtml_toMcu(val) {
-    let rd = { to: "netmcu", kvs: { zn: "?" } };
-    rd.kvs["zn" + $Z.toString()] = val;
-
-    let url = "/cmd.json";
-    httpFetch.http_postRequest(url, rd);
-  }
-
-  function hChange_Name() {
-    shn_fromHtml_toMcu(name);
-  }
 
   //         sscanf(val, "%f,%d,%f,%d,%f,%d,%f,%f", &on, &ignoreRainSensor, &off, &repeats, &period, &dInterval, &dhBegin, &dhEnd);
-  function cmdDuration(
-    zone,
-    onTime = 0.0,
-    ignoreRainSensor = 0,
-    offTime = 0.0,
-    repeats = 0,
-    period = 0.0,
-    dInterval = 0,
-    dhBegin = 0,
-    dhEnd = 0
-  ) {
+  function cmdDuration(zone, args) {
+    let onTime = args.onTime || 0.0;
+    let ignoreRainSensor = args.ignore || 0;
+    let offTime = args.offTime || 0.0;
+    let repeats = args.repeats || 0;
+    let period = args.period || 0.0;
+    let dInterval = args.dInterval || 0;
+    let dhBegin = args.dhBegin || 0;
+    let dhEnd = args.dhEnd || 0;
+
     let cmdString =
       onTime +
       "," +
@@ -75,33 +55,21 @@
   }
 
   function onClickRun() {
-    cmdDuration($Z, 1, 3);
+    cmdDuration($Z, { onTime:1, ignore:3 } );
   }
   function onClickStop() {
-    cmdDuration($Z, 0 );
+    cmdDuration($Z, {} );
   }
 </script>
 
 <PollZoneData />
 
 <div class="area">
-
-  <label>Zone: {$ZoneName}</label>
-  <br />
-  <select bind:value={$Z}>
-    {#each { length: $ZoneCount } as _, zn}
-      <option>{zn}</option>
-    {/each}
-
-  </select>
+ <SelectZone />
 </div>
 
 <div class="area">
-  <div class="text-center">
-    <label>{$_('app.msg_enterNewName')}</label>
-    <br />
-    <input type="text" name="name" bind:value={name} on:change={hChange_Name} />
-  </div>
+ <EditName />
 </div>
 
 <div class="area">
@@ -116,22 +84,5 @@
 </div>
 
 <div class="area">
-  <label>
-    {$_('app.pressControl')}
-    <input type="checkbox" checked={$PressControlStatus} />
-  </label>
-  <br />
-  <label>
-    {$_('app.pump')}
-    <input type="checkbox" id="id-waterPumpStatus" checked={$WaterPumpStatus} />
-  </label>
-  <br />
-  <label>
-    {$_('app.rainSensor')}
-    <input
-      type="checkbox"
-      id="id-rainSensorStatus"
-      checked={$RainSensorStatus} />
-  </label>
-  <br />
+<RvStatus />
 </div>
