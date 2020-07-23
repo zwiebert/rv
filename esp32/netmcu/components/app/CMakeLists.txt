@@ -17,7 +17,7 @@ idf_component_register(
     INCLUDE_DIRS "./include" ../.. 
     PRIV_INCLUDE_DIRS . "./include/app" ../../main
     REQUIRES app_config debug misc 
-    PRIV_REQUIRES app_net app_config cli_app config debug key_value_store misc stm32 storage txtio net_mqtt_app
+    PRIV_REQUIRES app_net app_config cli_app config debug key_value_store misc stm32 storage txtio net_mqtt_app stm32_com
                   nvs_flash esp_https_ota app_update
     EMBED_TXTFILES ./esp32/ca_cert.pem
 )

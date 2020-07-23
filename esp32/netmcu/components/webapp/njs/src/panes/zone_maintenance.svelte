@@ -75,10 +75,10 @@
   }
 
   function onClickRun() {
-    cmdDuration($Z, 1, 1);
+    cmdDuration($Z, 1, 3);
   }
   function onClickStop() {
-    cmdDuration($Z, 0);
+    cmdDuration($Z, 0 );
   }
 </script>
 

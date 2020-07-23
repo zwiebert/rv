@@ -133,8 +133,13 @@ process_parmCmd(clpar p[], int len) {
     dbg_vpf(db_printf("cmd2stm32: <%s>\n", buf));
     if (xSemaphoreTakeRecursive(uart_mutex, portMAX_DELAY)) {
       stm32_write(buf, strlen(buf));
+
       if (reqResponse) {
+#ifdef USE_STM32COM
+     // TODO
+#else
         cliCmd_waitForResponse();
+#endif
       }
       xSemaphoreGiveRecursive(uart_mutex);
     }

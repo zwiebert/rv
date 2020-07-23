@@ -30,6 +30,8 @@ void ws_send_json(const char *json);
 #define USE_CLI_MUTEX
 #define USE_NETWORK
 
+#define USE_STM32COM
+
 
 #define STM32_RESET_PIN  (GPIO_NUM_33)
 #define STM32_BOOT_PIN (GPIO_NUM_32)

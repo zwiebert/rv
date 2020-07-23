@@ -1,6 +1,7 @@
 #include "main.h"
 #include "config/config.h"
 #include "stm32/stm32.h"
+#include "stm32_com/com_task.h"
 
 void loop_setBit_mcuRestart() {
   lf_setBit(lf_mcuRestart);
@@ -74,6 +75,11 @@ void mcu_init() {
       .reset_gpio = STM32_RESET_PIN,
   };
   stm32_setup(cfg_stm32);
+
+#ifdef USE_STM32COM
+  struct cfg_stm32com cfg_stm32com = { .enable = true };
+  stm32com_setup_task(&cfg_stm32com);
+#endif
 #endif
 
   io_puts("\r\n\r\n");
@@ -82,7 +88,9 @@ void mcu_init() {
 
   lfPer_setBit(lf_loopWatchDog);
   lfPer_setBit(lf_loopCli);
+#ifndef USE_STM32COM
   lfPer_setBit(lf_loopStm32);
+#endif
 #ifdef USE_TCPS
   lfPer_setBit(lf_loopTcpServer);
 #endif

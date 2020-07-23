@@ -1,6 +1,7 @@
 #include "rv_timer.hh"
 
 #include "water_pump.h"
+#include "report.h"
 
 
 int Lph[RV_VALVE_COUNT] = {
@@ -52,6 +53,7 @@ void RvTimer::changeState(state_T state) {
   }
 
   mState = state;
+  report_state_change(this->mValveNumber, state);
 }
 
 void RvTimer::changeOnOff() {
