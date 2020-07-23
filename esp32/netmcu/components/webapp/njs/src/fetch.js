@@ -2,11 +2,15 @@
 import * as appDebug from './app_debug.js';
 import * as httpResp from './http_resp.js';
 
-export const FETCH_CONFIG = 1;
-export const FETCH_ZONE_NAMES = 2;
-export const FETCH_ZONE_DATA = 4;
-export const FETCH_VERSION = 8;
-export const FETCH_BOOT_COUNT = 16;
+let bit = 1;
+export const FETCH_CONFIG = bit;
+export const FETCH_ZONE_NAMES = (bit <<= 1);
+export const FETCH_ZONE_DURATIONS = (bit <<= 1);
+export const FETCH_ZONE_REMAINING_DURATIONS = (bit <<= 1);
+export const FETCH_RV_STATUS = (bit <<= 1);
+export const FETCH_VERSION = (bit <<= 1);
+export const FETCH_BOOT_COUNT = (bit <<= 1);
+export const FETCH_RV_VERSION = (bit <<= 1);
 
 export const FETCH_GIT_TAGS = 0; //XXX
 
@@ -78,9 +82,24 @@ export function http_postDocRequest(name) {
     });
 }
 
+  let fetchMask = 0;
+  function async_fetchByMask() {
+    let mask = fetchMask;
+    fetchMask = 0;
+    http_fetchByMask(mask, true);
+  }
 
-  export function http_fetchByMask(mask) {
+  export function http_fetchByMask(mask, synchron) {
     let tfmcu = {to:"tfmcu"};
+    if (!mask) {
+      return;
+    }
+
+    if (!synchron) {
+      fetchMask |= mask;
+      setTimeout(async_fetchByMask, 125);
+      return;
+    }
 
     if (mask & FETCH_CONFIG)
       add_kv(tfmcu,"config","all","?");
@@ -91,18 +110,28 @@ export function http_postDocRequest(name) {
 
     if (mask & FETCH_VERSION) {
       add_kv(tfmcu, "mcu",  "version","?");
+    }
+
+    if (mask & FETCH_RV_VERSION) {
       add_kv(tfmcu,"cmd","rv-version","?");
     }
+
 
 
     if (mask & FETCH_ZONE_NAMES)
      add_kv(tfmcu,"kvs","zn","?");
  
 
-    if (mask & FETCH_ZONE_DATA) {
+    if (mask & FETCH_ZONE_REMAINING_DURATIONS) {
+      add_kv(tfmcu,"cmd","rem","?");
+    }
+    if (mask & FETCH_ZONE_DURATIONS) {
+      add_kv(tfmcu,"cmd","dur","?");
+    }
+
+    if (mask & FETCH_RV_STATUS) {
       add_kv(tfmcu,"cmd","dur","?");
       add_kv(tfmcu,"cmd","rem","?");
-      add_kv(tfmcu,"cmd","status","?");
     }
 
     let url = '/cmd.json';

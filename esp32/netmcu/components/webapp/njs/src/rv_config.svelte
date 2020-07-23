@@ -10,7 +10,7 @@
     import { onMount} from "svelte";
   
     onMount(() => {
-      httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_NAMES | httpFetch.FETCH_ZONE_DATA);
+      httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_NAMES);
     });
   
   

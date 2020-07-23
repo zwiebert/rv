@@ -15,7 +15,7 @@
   
   onMount(() => {
     httpFetch.http_fetchByMask(
-      httpFetch.FETCH_ZONE_NAMES | httpFetch.FETCH_ZONE_DATA
+      httpFetch.FETCH_ZONE_NAMES | httpFetch.FETCH_ZONE_DURATIONS | httpFetch.FETCH_ZONE_REMAINING_DURATIONS
     );
   });
 

@@ -1,19 +1,16 @@
 <script>
   import {
     PressControlStatus,
-    WaterPumpStatus,
-    RainSensorStatus,
   } from "./store/zones";
   import * as httpFetch from "./fetch.js";
   import { onMount, onDestroy } from "svelte";
-  import { ReloadProgress } from './store/app_state.js';
 
   export let pollInterval = 1000;
 
 
   let on_destroy = [];
   onMount(() => {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
+    poll_data();
   });
   onDestroy(() => {
     stop_polling();
@@ -39,6 +36,6 @@
   }
 
   function poll_data() {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_DATA);
+    httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_DURATIONS | httpFetch.FETCH_ZONE_REMAINING_DURATIONS);
   }
 </script>

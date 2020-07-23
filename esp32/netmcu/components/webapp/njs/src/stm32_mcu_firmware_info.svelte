@@ -5,7 +5,7 @@
   import { onMount } from "svelte";
 
   onMount(() => {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_VERSION);
+    httpFetch.http_fetchByMask(httpFetch.FETCH_RV_VERSION);
   });
 
 </script>

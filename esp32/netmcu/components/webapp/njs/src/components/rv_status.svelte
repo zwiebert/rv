@@ -1,6 +1,5 @@
 <script>
   import { _ } from "../services/i18n";
-  import { Z, ZoneName } from "../store/curr_zone";
   import {
     PressControlStatus,
     WaterPumpStatus,
@@ -10,7 +9,7 @@
   import { onMount } from "svelte";
 
   onMount(() => {
-    httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_DATA);
+    httpFetch.http_fetchByMask(httpFetch.FETCH_RV_STATUS);
   });
 </script>
 
