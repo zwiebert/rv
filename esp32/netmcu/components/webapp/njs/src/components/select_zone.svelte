@@ -1,9 +1,7 @@
 <script>
   import { _ } from "../services/i18n";
   import { Z, ZoneName } from "../store/curr_zone";
-  import {
-    ZoneCount,
-  } from "../store/zones";
+  import { ZoneCount, ZoneNames, ZoneDisabled } from "../store/zones";
   import * as httpFetch from "../fetch.js";
   import { onMount } from "svelte";
 
@@ -12,11 +10,10 @@
   });
 </script>
 
-<label>{$_('app.zone')}: {$ZoneName}</label>
-<br />
 <select bind:value={$Z}>
   {#each { length: $ZoneCount } as _, zn}
-    <option>{zn}</option>
+    {#if ($ZoneDisabled & (1 << zn)) === 0}
+      <option value={zn}>{zn} {$ZoneNames[zn] || ''}</option>
+    {/if}
   {/each}
-
 </select>
