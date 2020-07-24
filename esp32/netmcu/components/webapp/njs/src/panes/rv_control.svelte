@@ -10,13 +10,25 @@
 <PollZoneData />
 
 <div class="area">
-  <Zones />
-  <RvStatus />
-  <button
-    on:click={() => httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_DURATIONS | httpFetch.FETCH_ZONE_REMAINING_DURATIONS | httpFetch.FETCH_ZONE_NAMES)}>
-    {$_('app.reload')}
-  </button>
-  <br />
-  <br />
-  <input type="text" value={$Stm32Time} />
+
+  <div class="area">
+    <Zones />
+
+  </div>
+
+  <div class="area">
+    <RvStatus />
+
+  </div>
+
+  <div class="area">
+    <button
+      on:click={() => httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_DURATIONS | httpFetch.FETCH_ZONE_REMAINING_DURATIONS | httpFetch.FETCH_ZONE_NAMES | httpFetch.FETCH_RV_STATUS)}>
+      {$_('app.reload')}
+    </button>
+    <br />
+    <br />
+    <input type="text" value={$Stm32Time} />
+  </div>
+
 </div>

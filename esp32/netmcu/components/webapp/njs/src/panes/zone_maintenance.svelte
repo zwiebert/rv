@@ -9,7 +9,6 @@
   import * as httpFetch from "../fetch.js";
   import { onMount } from "svelte";
   import PollZoneData from "../poll_zone_data.svelte";
-  import EditName  from "../components/edit_name.svelte";
   import SelectZone  from "../components/select_zone.svelte";
   import RvStatus  from "../components/rv_status.svelte";
   
@@ -65,11 +64,10 @@
 <PollZoneData />
 
 <div class="area">
- <SelectZone />
-</div>
+
 
 <div class="area">
- <EditName />
+ <SelectZone />
 </div>
 
 <div class="area">
@@ -85,4 +83,6 @@
 
 <div class="area">
 <RvStatus />
+</div>
+
 </div>
