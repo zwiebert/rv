@@ -130,8 +130,7 @@ export function http_postDocRequest(name) {
     }
 
     if (mask & FETCH_RV_STATUS) {
-      add_kv(tfmcu,"cmd","dur","?");
-      add_kv(tfmcu,"cmd","rem","?");
+      add_kv(tfmcu,"cmd","status","?");
     }
 
     let url = '/cmd.json';
