@@ -89,16 +89,7 @@
 </script>
 
 <style type="text/scss">
-  .conf-table label {
-    padding: 2px;
-    margin-right: 3px;
-  }
-  .config-input.text {
-    width: inherit;
-  }
-  .config-input.number {
-    width: 5rem;
-  }
+
 </style>
 
 <div id="configdiv" class="top-div">
