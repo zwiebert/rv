@@ -9,7 +9,7 @@
 
 <PollZoneData />
 
-<div class="area">
+<div class="main-area">
 
   <div class="area">
     <Zones />
