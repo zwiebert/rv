@@ -63,24 +63,18 @@ export function http_handleResponses(obj) {
       ZoneTimers.set(zoneTimers);
       ZoneDurations.set(zoneDurations);
       ZoneRemainingSeconds.set(zoneRemainingSeconds);
-      PressControlStatus.set("pc" in data && data.pc);
-      WaterPumpStatus.set("pump" in data && data.pump);
-      RainSensorStatus.set("rain" in data && data.rain);
-      Stm32Time.set("time" in data ? data.time : "");
+      if ("pc" in data) PressControlStatus.set(data.pc);
+      if ("pump" in data) WaterPumpStatus.set(data.pump);
+      if ("rain" in data) RainSensorStatus.set(data.rain);
+      if ("time" in data) Stm32Time.set(data.time);
     }
   }
 
   if ("rve" in obj) {
     let rve = obj.rve;
-    if ("pump" in rve) {
-      WaterPumpStatus.set(rve.pump);
-    }
-    if ("rain" in rve) {
-      RainSensorStatus.set(rve.rain);
-    }
-    if ("pc" in rve) {
-      PressControlStatus.set(rve.pc);
-    }
+    if ("pump" in rve) WaterPumpStatus.set(rve.pump);
+    if ("rain" in rve) RainSensorStatus.set(rve.rain);
+    if ("pc" in rve) PressControlStatus.set(rve.pc);
   }
 
   if ("kvs" in obj) {
@@ -136,10 +130,7 @@ export function gitTags_handleResponse(json) {
   McuGitTagNames.set(names);
 }
 
-
 function handleOtaState(state) {
-  if (state === 1)
-    McuFirmwareUpdProgress.update((old) => old+1);
-  else
-    McuFirmwareUpdProgress.set(0);
+  if (state === 1) McuFirmwareUpdProgress.update((old) => old + 1);
+  else McuFirmwareUpdProgress.set(0);
 }

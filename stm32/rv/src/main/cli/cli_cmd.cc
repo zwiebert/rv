@@ -118,12 +118,12 @@ process_parmCmd(clpar p[], int len) {
 
     }
 
-    if (wantsRelayPC && wp_isPressControlOn(0)) {
-      strcat(buf, "\"pc\":1,");
+    if (wantsRelayPC) {
+      strcat(buf, wp_isPressControlOn(0) ? "\"pc\":1," : "\"pc\":0,");
     }
 
-    if (wantsRelayPump && wp_isPumpOn()) {
-      strcat(buf, "\"pump\":1,");
+    if (wantsRelayPump) {
+      strcat(buf,  wp_isPumpOn() ? "\"pump\":1," : "\"pump\":0,");
     }
 
     if (wantsPumpRunTime) {
@@ -134,8 +134,8 @@ process_parmCmd(clpar p[], int len) {
       }
     }
 
-    if (wantsRainSensor && rs.getState()) {
-      strcat(buf, "\"rain\":1,");
+    if (wantsRainSensor) {
+      strcat(buf, rs.getState() ? "\"rain\":1," :  "\"rain\":0,");
     }
 
     if (wantsTime) {
