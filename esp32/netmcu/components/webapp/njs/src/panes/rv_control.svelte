@@ -26,8 +26,6 @@
       on:click={() => httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_DURATIONS | httpFetch.FETCH_ZONE_REMAINING_DURATIONS | httpFetch.FETCH_ZONE_NAMES | httpFetch.FETCH_RV_STATUS)}>
       {$_('app.reload')}
     </button>
-    <br />
-    <br />
     <input type="text" value={$Stm32Time} />
   </div>
 

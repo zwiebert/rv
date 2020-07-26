@@ -16,6 +16,10 @@
     );
   });
 
+function testDur(zone) {
+  let test_durCmd = { ignoreRainSensor:1, onTime:.5, offTime:.5, repeats:5 };
+  cmdDuration(zone, test_durCmd);
+}
   //         sscanf(val, "%f,%d,%f,%d,%f,%d,%f,%f", &on, &ignoreRainSensor, &off, &repeats, &period, &dInterval, &dhBegin, &dhEnd);
   function cmdDuration(zone, args) {
     let onTime = args.onTime || 0.0;
@@ -51,7 +55,8 @@
   }
 
   function onClickRun() {
-    cmdDuration($Z, { onTime: 1, ignore: 3 });
+    testDur($Z);
+    //cmdDuration($Z, { onTime: 1, ignore: 3 });
   }
   function onClickStop() {
     cmdDuration($Z, {});
