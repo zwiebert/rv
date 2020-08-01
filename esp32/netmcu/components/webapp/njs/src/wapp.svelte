@@ -40,7 +40,7 @@
     {:else if tabIdxCfg === 1}
       <PaneRvSettings />
     {:else if tabIdxCfg === 2}
-      <div class="navtab-sub">
+      <div class="navtab-sub2">
         <NavTabs
           nav_tabs={[$_('app.nav_fw_netMcu'), $_('app.nav_fw_rv')]}
           name="fw" />

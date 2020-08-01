@@ -90,7 +90,6 @@ export function http_postDocRequest(name) {
   }
 
   export function http_fetchByMask(mask, synchron) {
-    let tfmcu = {to:"tfmcu"};
     if (!mask) {
       return;
     }
@@ -101,6 +100,8 @@ export function http_postDocRequest(name) {
       return;
     }
 
+    let tfmcu = {to:"tfmcu"};
+    
     if (mask & FETCH_CONFIG)
       add_kv(tfmcu,"config","all","?");
 
