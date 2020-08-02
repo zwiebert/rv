@@ -75,7 +75,7 @@ public:
     if (dur > sinceLastLphChange)
       return true;
 
-#if 1
+#if 0
     if (dur > sinceLastPumpOff)
       return true;
 #endif
