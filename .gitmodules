@@ -1,3 +1,9 @@
 [submodule "esp32/netmcu/components-mcu"]
 	path = esp32/netmcu/components-mcu
 	url = https://github.com/zwiebert/components-mcu.git
+[submodule "stm32/rv/src/main/json/jsmn"]
+	path = stm32/rv/misc/jsmn
+	url = https://github.com/zserge/jsmn.git
+[submodule "stm32/rv/test/host/unity"]
+	path = stm32/rv/test/host/unity
+	url = https://github.com/ThrowTheSwitch/Unity.git

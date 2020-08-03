@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#ifndef TEST_MODULE
+#ifndef TEST_HOST
 #include "user_config.h"
 #include "string.h"
 #include "cli_imp.h"
@@ -16,6 +16,7 @@
 #define dbg_vpf(x)
 uint16_t msgid;
 #else
+#include "cli_imp.h"
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -25,15 +26,9 @@ uint16_t msgid;
 #include <stdlib.h>
 #define postcond(x) assert((x))
 #define ICACHE_FLASH_ATTR
-int msgid;
 
-typedef struct {
-  char *key;
-  char *val;
-} clpar;
-#define MAX_PAR 20
-clpar par[MAX_PAR];
 #endif
+
 
 // like get command line:
 static int parse_json_find_next_obj(const char *s, int *key, int *key_len, int *obj, int *obj_len) {
@@ -95,7 +90,7 @@ static int parse_json_find_next_obj(const char *s, int *key, int *key_len, int *
   return -1;
 }
 
-char *json_get_command_object(char *s, char **ret_name) {
+char *json_get_command_object(char *s, char **ret_name, char **next) {
   int key, key_len, obj, obj_len;
 
   int idx = parse_json_find_next_obj(s, &key, &key_len, &obj, &obj_len);
@@ -106,6 +101,9 @@ char *json_get_command_object(char *s, char **ret_name) {
     char *block = &s[obj + 1]; // set to char after '{';
     s[obj + obj_len - 1] = '\0'; // terminate obj excluding '}'
 
+    if (next)
+      *next = &s[obj + obj_len];
+
     if (ret_name)
       *ret_name = name;
     return block;
@@ -113,18 +111,20 @@ char *json_get_command_object(char *s, char **ret_name) {
   return NULL;
 }
 
-int ICACHE_FLASH_ATTR
-parse_json(char *name, char *s) {
+int
+parse_json(char *name, char *s, struct cli_parm *clp) {
+#define cli_par (clp->par)
+#undef MAX_PAR
+#define MAX_PAR (clp->size)
   int p;
-  msgid = 0;
   int start = 0, i, k, n;
   int result = 1;
-  par[0].key = name;
-  par[0].val = "";
+  cli_par[0].key = name;
+  cli_par[0].val = "";
 
   for (p = 1; p < MAX_PAR; ++p) {
-    par[p].key = 0;
-    par[p].val = 0;
+    cli_par[p].key = 0;
+    cli_par[p].val = 0;
     int q1 = -1, q2 = -1;
     int v1 = -1, v2 = -1;
 
@@ -161,13 +161,13 @@ parse_json(char *name, char *s) {
                 }
               }
 
-              par[p].key = &s[q1 + 1];
+              cli_par[p].key = &s[q1 + 1];
               s[q2] = '\0';
-              par[p].val = &s[is_quoted ? v1 + 1 : v1];
+              cli_par[p].val = &s[is_quoted ? v1 + 1 : v1];
               s[v2] = '\0';
 
-              if (strcmp(par[p].key, "mid") == 0) {
-                msgid = atoi(par[p].val);
+              if (strcmp(cli_par[p].key, "mid") == 0) {
+                //cli_msgid = atoi(cli_par[p].val);
                 --p;
               } else {
                 ++result;
@@ -186,44 +186,33 @@ parse_json(char *name, char *s) {
   return result;
 }
 
-#ifndef TEST_MODULE
+
+void
+cli_print_json(const char *json) {
+    io_puts(json), io_putlf();
+}
+
+
+
+#ifndef TEST_HOST
 
 void ICACHE_FLASH_ATTR
 cli_process_json(char *json) {
   dbg_vpf(db_printf("process_json: %s\n", json));
   {
     char *name;
-    char *cmd_obj = json_get_command_object(json, &name);
+    char *cmd_obj;
 
-    if (cmd_obj) {
-      int n = parse_json(name, cmd_obj);
+    while ((cmd_obj = json_get_command_object(json, &name, &json))) {
+      clpar par[20] = {};
+      struct cli_parm clp = { .par = par, .size = 20 };
+      int n = parse_json(name, cmd_obj, &clp);
       if (n < 0) {
         reply_failure();
-      } else {
-        process_parm(par, n);
+      } else if (n > 0) {
+        process_parm(clp.par, n);
       }
     }
   }
-}
-
-#else
-
-//char json[] = "{ \"to\": \"tfmcu\", \"config\": { \"cu\": \"801234\",\"baud\": 115200,\"longitude\": 13.5,\"latitude\": 52.6,\"timezone\": 1.0,\"tz\": \"\",\"verbose\": 5,\"mqtt-enable\": 1,\"mqtt-url\": \"mqtt://192.168.1.42:7777\",\"mqtt-user\": \"mqusr\",\"mqtt-password\": \"mqpw\" } }";
-
-char json[] = "{\"to\":\"tfmcu\",\"timer\":{\"g\":1,\"m\":0,\"f\":\"imDwArs\",\"daily\":\"0700\",\"astro\":0}}";
-int main() {
-  char *name;
-  char *cmd_obj = json_get_command_object(json, &name);
-
-  printf("name: %s, obj: %s\n", name, cmd_obj);
-
-  if (cmd_obj) {
-    int len = parse_json(name, cmd_obj);
-    for (int i = 0; i < len; ++i)
-    printf("key: %s, val: %s\n", par[i].key, par[i].val);
-
-  }
-
-  return 0;
 }
 #endif
