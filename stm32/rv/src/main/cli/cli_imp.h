@@ -75,7 +75,8 @@ void cli_loop(void);
 
 void cli_print_json(const char *json); //FIXME
 
-void cli_process_json(char *json);
+typedef int (*process_parm_cb)(clpar parm[], int parm_len);
+void cli_process_json(char *json, process_parm_cb proc_parm) ;
 
 #ifdef __cplusplus
 }

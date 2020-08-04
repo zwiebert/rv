@@ -47,7 +47,7 @@ C_WARN ?= -Wall -Wno-unused-result
 INCLUDE := $(addprefix -I,$(EXTRA_INCDIR))
 
 build/test_%.out:
-	$(Q) gcc  -g3 $(C_WARN) -flto -O1 -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -lm #-H
+	$(Q) gcc  -g3 $(C_WARN) -flto -O0 -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -lm #-H
 
 
 %.log:%.out
@@ -58,5 +58,5 @@ build/test_%.out:
 
 setup=test_runner/setup.c
 ################################
-build/test_cli_json.out: src/test_cli_json.c $(SRC_BASE)/src/main/cli/cli_json.c
+build/test_cli_json.out: src/test_cli_json.c $(SRC_BASE)/src/main/cli/cli_json.c $(SRC_BASE)/src/main/json/json.c
 

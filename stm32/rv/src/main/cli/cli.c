@@ -157,7 +157,7 @@ void ICACHE_FLASH_ATTR cli_loop(void) {
 #endif
 #ifdef USE_JSON
     if (cmdline[0] == '{') {
-     cli_process_json(cmdline);
+     cli_process_json(cmdline, process_parm);
     } else
 #endif
     {
