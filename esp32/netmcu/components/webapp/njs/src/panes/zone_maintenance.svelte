@@ -55,8 +55,8 @@ function testDur(zone) {
   }
 
   function onClickRun() {
-    testDur($Z);
-    //cmdDuration($Z, { onTime: 1, ignore: 3 });
+    //testDur($Z);
+    cmdDuration($Z, { onTime: 1, ignore: 3 });
   }
   function onClickStop() {
     cmdDuration($Z, {});
