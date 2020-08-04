@@ -28,6 +28,7 @@
 #include "systick_1ms.h"
 #include "valve_relays.h"
 
+#include "loop.h"
 #include "test/test.h"
 
 #include "../Libraries/tm1638/include/boards/dlb8.h"
@@ -323,14 +324,5 @@ void loop(void) {
     }
   }
 #endif
-  wpl_loop();
-  cli_loop();
-  cxx_loop();
-
-  {
-    if (!i2c2_check()) {
-      report_event("i2c:reset");
-      puts("I2C had crashed. Reset");
-    }
-  }
+  lf_loop();
 }

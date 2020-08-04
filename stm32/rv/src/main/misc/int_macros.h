@@ -32,4 +32,6 @@
 #define CLR_BIT(var,pos) ((var) &= ~((1) << (pos)))
 #define PUT_BIT(var,pos, val) ((val) ? SET_BIT(var,pos) : CLR_BIT(var,pos))
 
+#define BIT(nr)  (1UL << (nr))
+
 #endif /* SRC_INT_MACROS_H_ */

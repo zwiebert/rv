@@ -23,6 +23,7 @@
 #include <libopencm3/cm3/scb.h>
 
 #include <string.h>
+#include "../loop.h"
 
 #define RX_BUFSIZE 128
 static volatile uint8_t buf[RX_BUFSIZE];
@@ -57,6 +58,7 @@ void USART1_IRQHandler(void) {
 		data = usart_recv(USART1);
 
 		rx_put(data & 0xff);
+		lf_setBit(lf_cli);
 
 	}
 }
