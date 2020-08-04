@@ -61,7 +61,7 @@ uint16_t msgid;
 #include "user_config.h"
 #include "cli_imp.h"
 #include <stdio.h>
-
+#include "debug/debug.h"
 
 #define ENABLE_RESTART 1 // allow software reset
 
@@ -149,6 +149,7 @@ cli_process_cmdline(char *line) {
 void ICACHE_FLASH_ATTR cli_loop(void) {
   char *cmdline;
   if ((cmdline = get_commandline())) {
+    db_printf("cmdline: %s\n", cmdline);
 #ifdef USE_WDG
 	  extern bool watchDog_checkCommandLine(const char *cmdLine);
 	  if (watchDog_checkCommandLine(cmdline)) {

@@ -15,7 +15,7 @@
 #include "debug/debug.h"
 #define postcond(x)
 #define dbg_vpf(x) x
-#define D(x)
+#define D(x) x
 uint16_t msgid;
 
 #else
@@ -37,18 +37,23 @@ uint16_t msgid;
 
 #include "json/json.h"
 
-static char *stringFromToken(char *json, const jsmntok_t *tok) {
-  json[tok->end] = '\0';
-  return json + tok->start;
-}
-
-
 #ifndef TEST_HOST
 void
 cli_print_json(const char *json) {
     io_puts(json), io_putlf();
 }
 #endif
+
+#ifdef DB_NO_OPT
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
+#endif
+
+static char *stringFromToken(char *json, const jsmntok_t *tok) {
+  json[tok->end] = '\0';
+  return json + tok->start;
+}
+
 
 int handle_parm_json(char *json, jsmntok_t *tok, const char *name) {
   const int oc = tok[0].size;
@@ -61,6 +66,8 @@ int handle_parm_json(char *json, jsmntok_t *tok, const char *name) {
     }
   }
 }
+
+
 
 void cli_process_json(char *json, process_parm_cb proc_parm) {
   dbg_vpf(db_printf("process_json: %s\n", json));
@@ -86,7 +93,9 @@ void cli_process_json(char *json, process_parm_cb proc_parm) {
         char *cmd_obj = "";
         if (tok[i - 1].type == JSMN_STRING) {
           cmd_obj = stringFromToken(json, &tok[i - 1]);
-        } D(db_printf("cmd_obj: %s\n", cmd_obj));
+        }
+
+        D(db_printf("cmd_obj: %s\n", cmd_obj));
 
         if (strcmp(cmd_obj, "json") == 0) {
           int n = handle_parm_json(json, tok, cmd_obj);
@@ -104,12 +113,13 @@ void cli_process_json(char *json, process_parm_cb proc_parm) {
             ++pi;
             --n_childs;
           }
-
+          D(db_printf("proc_parm: %s\n", par->key));
           proc_parm(par, pi);
         }
       }
     }
   }
 }
-
-
+#ifdef DB_NO_OPT
+#pragma GCC pop_options
+#endif
