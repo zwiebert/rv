@@ -23,8 +23,10 @@ get_commandline(void) {
 	  D(printf("get: %d, (%c)\n", c, (char)c));
 
 	  if (cmd_buf_idx == 0) {
-	    if (c == '\n' || c == '\r' || c == ';')
+	    if (c == '\n' || c == '\r' || c == ';') {
+	      error = false;
 	      continue; // skip leading whitespaces
+	    }
 	  }
 
 

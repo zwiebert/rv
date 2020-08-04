@@ -242,9 +242,11 @@ void app() {
     wp_clearPcFailure(); //
 
 	while (1) {
+#if 0
 		for (unsigned long i = 0; i < 4500; ++i) {
 			__asm__("nop");
 		}
+#endif
 #ifdef USE_DLB8
 		uint8_t button = dlb8_get_changed_buttons(dlb8_obj[0]);
 
