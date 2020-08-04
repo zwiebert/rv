@@ -34,11 +34,19 @@
 #define DD(x)
 #endif
 
-
-
+#define TRACE_MARKER "trace:"
+#define TRACE_MARKER_LEN (sizeof TRACE_MARKER - 1)
 
 #define BUF_SIZE 512
 static char line[BUF_SIZE];
+
+static bool stmTrace_checkCommandLine(const char *line) {
+  if (strncmp(TRACE_MARKER, line, TRACE_MARKER_LEN) != 0)
+    return false;
+
+  printf("stm32:%s\n", line);
+  return true;
+}
 
 
 static void do_work() {
@@ -54,10 +62,15 @@ static void do_work() {
     line[i] = c;
   }
   line[i] = '\0';
-  D(printf("stm32com:recv: <%s>\n", line));
 
   if (watchDog_checkCommandLine(line))
     return;
+  if (stmTrace_checkCommandLine(line))
+    return;
+
+  D(printf("stm32com:recv: <%s>\n", line));
+
+
 
   char *json = strstr(line, "{\"status\":");
   if (json && mutex_cliTake()) {
