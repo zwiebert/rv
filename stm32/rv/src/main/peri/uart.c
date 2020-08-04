@@ -23,7 +23,7 @@
 #include <libopencm3/cm3/scb.h>
 
 #include <string.h>
-#include "../loop.h"
+#include "../loop.hh"
 
 #define RX_BUFSIZE 128
 static volatile uint8_t buf[RX_BUFSIZE];

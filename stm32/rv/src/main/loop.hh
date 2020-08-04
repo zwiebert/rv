@@ -15,4 +15,12 @@ enum loop_flagbits {
 extern int loop_flags_once;
 extern int loop_flags_periodic;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void lf_loop();
+
+#ifdef __cplusplus
+}
+#endif

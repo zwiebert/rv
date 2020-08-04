@@ -28,7 +28,7 @@
 #include "systick_1ms.h"
 #include "valve_relays.h"
 
-#include "loop.h"
+#include "loop.hh"
 #include "test/test.h"
 
 #include "../Libraries/tm1638/include/boards/dlb8.h"
