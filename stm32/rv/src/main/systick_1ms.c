@@ -14,8 +14,8 @@
 
 
 #include "systick_1ms.h"
-
-
+#include "loop.hh"
+#include "misc/int_macros.h"
 
 volatile uint64_t run_time_ms;
 
@@ -36,6 +36,15 @@ bool ms_timeElapsed(uint64_t *last, int diff) {
 
 void SysTick_Handler(void) {
   ++run_time_ms;
+  static int countSec;
+  if (--countSec <= 0) {
+    countSec = 1000;
+    lf_setBits(BIT(lf_interval_1s)|BIT(lf_interval_500ms));
+
+  }
+  if (countSec == 500) {
+    lf_setBit(lf_interval_500ms);
+  }
   for (int i = 0; i < MST_size; ++i) {
     --ms_tableMst[i];
   }

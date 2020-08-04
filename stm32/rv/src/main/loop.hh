@@ -6,14 +6,18 @@
 #define lfPer_setBit(v)  lfPer_setBits(1<<(v))
 
 enum loop_flagbits {
-  lf_wpl, lf_cli, lf_cxx,
+  lf_interval_1s,
+  lf_interval_500ms,
+  lf_cli,
+  lf_wpl,
   lf_ic2c_check,
+
   /////////////
   lf_Len
 };
 
-extern int loop_flags_once;
-extern int loop_flags_periodic;
+extern volatile int loop_flags_once;
+extern volatile int loop_flags_periodic;
 
 #ifdef __cplusplus
 extern "C" {
