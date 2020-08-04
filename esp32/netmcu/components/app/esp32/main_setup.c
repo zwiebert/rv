@@ -76,10 +76,8 @@ void mcu_init() {
   };
   stm32_setup(cfg_stm32);
 
-#ifdef USE_STM32COM
   struct cfg_stm32com cfg_stm32com = { .enable = true };
   stm32com_setup_task(&cfg_stm32com);
-#endif
 #endif
 
   io_puts("\r\n\r\n");
@@ -88,9 +86,6 @@ void mcu_init() {
 
   lfPer_setBit(lf_loopWatchDog);
   lfPer_setBit(lf_loopCli);
-#ifndef USE_STM32COM
-  lfPer_setBit(lf_loopStm32);
-#endif
 #ifdef USE_TCPS
   lfPer_setBit(lf_loopTcpServer);
 #endif

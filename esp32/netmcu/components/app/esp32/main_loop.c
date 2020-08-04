@@ -22,9 +22,6 @@ static const lfa_funT lfa_table[lf_Len] = {
 #ifdef USE_TCPS
     tcps_loop,
 #endif
-#ifndef USE_STM32COM
-    stm32loop,
-#endif
     cli_loop,
     lfa_mcuRestart,
 };
