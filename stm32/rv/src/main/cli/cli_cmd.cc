@@ -27,9 +27,9 @@ extern "C" void timer_set(int8_t channel);
 #define CMD_ASK_STATUS " status=?;"
 #define CMD_ASK_STATUS_LEN (sizeof CMD_ASK_STATUS - 1)
 
-#define JSON_PREFIX "\"data\":{"
+#define JSON_PREFIX "{\"data\":{"
 #define JSON_PREFIX_LEN ((sizeof JSON_PREFIX) - 1)
-#define JSON_SUFFIX "}\n"
+#define JSON_SUFFIX "}}\n"
 #define JSON_SUFFIX_LEN ((sizeof JSON_SUFFIX) - 1)
 
 #define KEY_VERSION "version"
@@ -39,7 +39,7 @@ extern "C" void timer_set(int8_t channel);
 const char help_parmCmd[] = "zone=[0-13]      zone number\n"
     "duration=[0-60]  how long to irrigate\n";
 
-int ICACHE_FLASH_ATTR
+int
 process_parmCmd(clpar p[], int len) {
   int arg_idx;
 
@@ -118,12 +118,12 @@ process_parmCmd(clpar p[], int len) {
 
     }
 
-    if (wantsRelayPC && wp_isPressControlOn(0)) {
-      strcat(buf, "\"pc\":1,");
+    if (wantsRelayPC) {
+      strcat(buf, wp_isPressControlOn(0) ? "\"pc\":1," : "\"pc\":0,");
     }
 
-    if (wantsRelayPump && wp_isPumpOn()) {
-      strcat(buf, "\"pump\":1,");
+    if (wantsRelayPump) {
+      strcat(buf,  wp_isPumpOn() ? "\"pump\":1," : "\"pump\":0,");
     }
 
     if (wantsPumpRunTime) {
@@ -134,8 +134,8 @@ process_parmCmd(clpar p[], int len) {
       }
     }
 
-    if (wantsRainSensor && rs.getState()) {
-      strcat(buf, "\"rain\":1,");
+    if (wantsRainSensor) {
+      strcat(buf, rs.getState() ? "\"rain\":1," :  "\"rain\":0,");
     }
 
     if (wantsTime) {

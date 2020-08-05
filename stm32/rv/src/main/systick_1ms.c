@@ -14,16 +14,14 @@
 
 
 #include "systick_1ms.h"
-
-
+#include "loop.hh"
+#include "misc/int_macros.h"
 
 volatile uint64_t run_time_ms;
 
 uint64_t ms_runTime(void) {
   return run_time_ms;
 }
-
-volatile int ms_tableMst[MST_size];
 
 bool ms_timeElapsed(uint64_t *last, int diff) {
   uint64_t now = run_time_ms;
@@ -35,9 +33,19 @@ bool ms_timeElapsed(uint64_t *last, int diff) {
 }
 
 void SysTick_Handler(void) {
-  ++run_time_ms;
-  for (int i = 0; i < MST_size; ++i) {
-    --ms_tableMst[i];
+  uint64_t ms = ++run_time_ms;
+  static int countSec;
+  if (--countSec <= 0) {
+    countSec = 1000;
+    lf_setBit(lf_interval_1s);
+  }
+
+  if ((ms & 511) == 0) {
+    lf_setBit(lf_interval_512ms);
+  }
+
+  if ((ms & 63) == 0) {
+    lf_setBit(lf_interval_64ms);
   }
 }
 

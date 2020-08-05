@@ -71,7 +71,7 @@ enum loop_flagbits {
 #ifdef USE_TCPS
   lf_loopTcpServer,
 #endif
-  lf_loopCli, lf_loopStm32,
+  lf_loopCli,
   lf_mcuRestart,
   //-------------
   lf_Len

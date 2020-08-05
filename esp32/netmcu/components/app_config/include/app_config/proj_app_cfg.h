@@ -23,12 +23,16 @@
 #define USE_TCPS_TASK
 #define USE_EG
 
+#define USE_LPH
+
 #define USE_WS
 void ws_send_json(const char *json);
 #define ws_print_json ws_send_json
 
 #define USE_CLI_MUTEX
 #define USE_NETWORK
+
+#define USE_STM32COM
 
 
 #define STM32_RESET_PIN  (GPIO_NUM_33)

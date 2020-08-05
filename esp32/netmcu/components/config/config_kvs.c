@@ -23,6 +23,9 @@ const char *config_keys[] = {"C_CFG_PW", "C_TZ",
     "C_NW_CONN",
 #endif
     "C_STM_INV_BP",
+#ifdef USE_LPH
+  "C_LPH",
+#endif
 };
 
 bool config_item_modified(enum configItem item) {

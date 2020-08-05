@@ -1,6 +1,8 @@
 #ifndef cli_imp_h_
 #define cli_imp_h_
 #include "cli.h"
+#include <stdint.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,6 +21,11 @@ typedef struct {
 } clpar;
 #define MAX_PAR 20
 extern clpar par[MAX_PAR];
+
+struct cli_parm {
+  clpar *par;
+  unsigned size;
+};
 
 extern const char help_parmCmd[] ;
 extern const char help_parmTimer[] ;
@@ -57,7 +64,8 @@ int asc2bool(const char *s);
 int parse_commandline(char *cl);
 void reply_success(void);
 int reply_failure(void);
-bool config_receiver(const char *val);
+
+
 bool config_transmitter(const char *val);
 bool reply(bool success);
 bool timerString2bcd(const char *src, uint8_t *dst, uint16_t size_dst);
@@ -67,7 +75,8 @@ void cli_loop(void);
 
 void cli_print_json(const char *json); //FIXME
 
-void cli_process_json(char *json);
+typedef int (*process_parm_cb)(clpar parm[], int parm_len);
+void cli_process_json(char *json, process_parm_cb proc_parm) ;
 
 #ifdef __cplusplus
 }

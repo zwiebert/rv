@@ -28,6 +28,7 @@
 #include "systick_1ms.h"
 #include "valve_relays.h"
 
+#include "loop.hh"
 #include "test/test.h"
 
 #include "../Libraries/tm1638/include/boards/dlb8.h"
@@ -242,9 +243,11 @@ void app() {
     wp_clearPcFailure(); //
 
 	while (1) {
+#if 0
 		for (unsigned long i = 0; i < 4500; ++i) {
 			__asm__("nop");
 		}
+#endif
 #ifdef USE_DLB8
 		uint8_t button = dlb8_get_changed_buttons(dlb8_obj[0]);
 
@@ -321,14 +324,5 @@ void loop(void) {
     }
   }
 #endif
-  wpl_loop();
-  cli_loop();
-  cxx_loop();
-
-  {
-    if (!i2c2_check()) {
-      report_event("i2c:reset");
-      puts("I2C had crashed. Reset");
-    }
-  }
+  lf_loop();
 }

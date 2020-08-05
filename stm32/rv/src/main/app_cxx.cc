@@ -18,18 +18,6 @@ RainSensor rs;
 #define RVT_LOOP_MS  500
 #define WD_LOOP_MS 1000
 
-extern "C" void cxx_loop() {
-
-  if (ms_checkMst(MST_rvtLoop, RVT_LOOP_MS)) {
-    rs.loop();
-    rvt.loop();
-  }
-
-#ifdef USE_WDG
-    watchDog_loop();
-#endif
-}
-
 extern "C" void cxx_setup() {
 #ifdef USE_WDG
 	watchDog_setup();

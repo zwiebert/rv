@@ -51,7 +51,9 @@ enum configAppItem {
   CB_NETWORK_CONNECTION,
 #endif
   CB_STM32_INV_BOOTPIN,
-
+#ifdef USE_LPH
+  CB_LPH,
+#endif
 //-----------
   CBA_size
 };
@@ -74,5 +76,7 @@ const char *config_read_tz(char *d, unsigned d_size);
 enum nwConnection  config_read_network_connection();
 bool config_read_stm32_inv_bootpin();
 
+bool config_read_lph(uint16_t lph[14]);
+bool config_save_lph(uint16_t lph[14]);
 
 #endif /* MAIN_CONFIG_CONFIG_H_ */

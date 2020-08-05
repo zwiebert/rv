@@ -37,3 +37,12 @@ const char* config_read_tz(char *d, unsigned d_size) {
 bool config_read_stm32_inv_bootpin() {
   return !!config_read_item_i8(CB_STM32_INV_BOOTPIN, MY_STM32_INV_BOOTPIN);
 }
+
+#ifdef USE_LPH
+bool config_read_lph(uint16_t lph[14]) {
+  return config_read_item_b(CB_LPH, lph, sizeof(uint16_t) * 14, 0) != 0;
+}
+bool config_save_lph(uint16_t lph[14]) {
+  return config_save_item_b(CB_LPH, lph, sizeof(uint16_t) * 14);
+}
+#endif

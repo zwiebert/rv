@@ -7,7 +7,7 @@
 
 clpar par[MAX_PAR];
 
-static char * ICACHE_FLASH_ATTR
+static char *
 skip_leading_whitespace(char *s) {
   while (*s == ' ')
     *s++ = '\0';
@@ -15,14 +15,14 @@ skip_leading_whitespace(char *s) {
   return s;
 }
 
-static char * ICACHE_FLASH_ATTR
+static char *
 find_next_space_eq_eol(char *s) {
   while (*s != '\0' && *s != ' ' && *s != '=') {
     s++;
   }
   return s;
 }
-static char * ICACHE_FLASH_ATTR
+static char *
 find_next_whitespace_or_eol(char *s) {
   while (*s != '\0' && *s != ' ' && *s != '=') {
     s++;
@@ -30,7 +30,7 @@ find_next_whitespace_or_eol(char *s) {
   return s;
 }
 
-int ICACHE_FLASH_ATTR
+int
 parse_commandline(char *cl) {
   int p;
   msgid = 0;

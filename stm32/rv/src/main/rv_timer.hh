@@ -34,6 +34,9 @@ typedef void (*switch_valves_cb)(uint16_t valve_bits, uint16_t valve_mask);
 class RvTimer;
 class RvTimers;
 
+#define IGNORE_RAIN_SENSOR 1
+#define IGNORE_PUMP_PAUSE 2
+
 
 class RvTimerPause {
 #define PAUSE_SECS_PER_LITER 8
@@ -66,13 +69,13 @@ public:
       return false;
 
     run_time_T dur = pauseDuration();
-    run_time_T sinceLastLphChange = (runTime() - mLastLphChange);
-    run_time_T sinceLastPumpOff = wp_getPumpOffDuration();
 
+    run_time_T sinceLastLphChange = (runTime() - mLastLphChange);
     if (dur > sinceLastLphChange)
       return true;
 
-#if 1
+#if 0
+    run_time_T sinceLastPumpOff = wp_getPumpOffDuration();
     if (dur > sinceLastPumpOff)
       return true;
 #endif
@@ -87,7 +90,7 @@ public:
   struct SetArgs {
     int on_duration = 0, off_duration = 0, repeats = 0, period = 0;
     int mDaysInterval = 0, mTodSpanBegin = 0, mTodSpanEnd = 0;
-    int mIgnoreRainSensor = false;
+    int mIgnoreRainSensor = 0;
 #define SA_JSON_FMT "{\"d1\":%d,\"ir\":%d,\"d0\":%d,\"r\":%d,\"per\":%d,\"di\":%d,\"sb\":%d,\"se\":%d}"
     char *toJSON(char *buf, int buf_size) {
       if (0
@@ -168,7 +171,7 @@ private:
   }
 
   bool isDisabledByRain() {
-    if (mArgs.mIgnoreRainSensor)
+    if (mArgs.mIgnoreRainSensor & IGNORE_RAIN_SENSOR)
       return false;
     if (rs.getState())
       return true; // raining now or was raining (adjust sensor directly)
@@ -260,7 +263,7 @@ public:
   void set(SetArgs &args, int id) {
     mTimerNumber = id;
     mArgs = args;
-    if (rs.getState() && !(args.period || args.mDaysInterval || args.mIgnoreRainSensor)) {
+    if (rs.getState() && !(args.period || args.mDaysInterval || args.mIgnoreRainSensor & IGNORE_RAIN_SENSOR)) {
       mArgs.on_duration = 0; // force timer to stop
     }
   }
@@ -299,7 +302,7 @@ public:
   }
 
   bool shouldStopBecauseRain() {
-    if (mArgs.mIgnoreRainSensor)
+    if (mArgs.mIgnoreRainSensor & IGNORE_RAIN_SENSOR)
       return false;
     if (!isRunning())
       return false;
@@ -333,6 +336,10 @@ public:
     if (mState == STATE_PAUSED)
       return false;
 
+    if (mArgs.mIgnoreRainSensor & IGNORE_PUMP_PAUSE) {
+      return false;
+    }
+
     if (rvtp.needsPause(mValveNumber)) {
       return true;
     }
@@ -343,6 +350,10 @@ public:
   bool canUnpause() {
     if (mState != STATE_PAUSED)
       return false;
+
+    if (mArgs.mIgnoreRainSensor & IGNORE_PUMP_PAUSE) {
+      return true;
+    }
 
     if (rvtp.needsPause(mValveNumber))
       return false;

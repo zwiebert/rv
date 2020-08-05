@@ -9,6 +9,7 @@
 #include <string.h>
 #include "cli_imp.h"
 #include "cli_app.h"
+#include "cli/mutex.h"
 #include "userio/status_json.h"
 
 bool cli_isJson;
@@ -34,19 +35,16 @@ const struct parm_handlers parm_handlers = {
     .count = sizeof(handlers) / sizeof(handlers[0]),
 };
 
-
-
-
-
-
-
 bool cli_checkStm32CommandLine(char *line) {
-  char *terminator = &line[strlen(line)-1];
+  char *terminator = &line[strlen(line) - 1];
   if (*terminator != ';') {
     return false;
   }
   *terminator = '\0';
-  cli_process_cmdline(line, SO_TGT_ANY); //XXX: which target?
+  if (mutex_cliTake()) {
+    cli_process_cmdline(line, SO_TGT_ANY); //XXX: which target?
+    mutex_cliGive();
+  }
   return true;
 }
 
