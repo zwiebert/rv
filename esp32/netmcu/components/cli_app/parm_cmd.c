@@ -115,7 +115,7 @@ process_parmCmd(clpar p[], int len) {
         float duration = 0;
         sscanf(val, "%f", &duration);
         if (0 <= zone && zone < ZONE_COUNT && 0 <= duration && duration <= MAX_DURATION) {
-          buf_idx += sprintf(buf + strlen(buf), "\"dur%d.%d\":%d", zone, timer_number, (int)(duration * 60));
+          buf_idx += sprintf(buf + strlen(buf), "\"dur%d.%d\":%d,", zone, timer_number, (int)(duration * 60));
           hasCmdLine = true;
         } else {
           db_printf("error: out of range");
