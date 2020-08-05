@@ -14,7 +14,6 @@ char *json_get_command_object(char *s, char **ret_name, char **next_name);
 #include <stdint.h>
 #include <stdlib.h>
 #define postcond(x) assert((x))
-#define ICACHE_FLASH_ATTR
 int msgid;
 
 typedef struct {

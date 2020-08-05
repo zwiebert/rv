@@ -30,7 +30,7 @@ const char help_parmConfig[]  =
 #endif
 ;
 
-int ICACHE_FLASH_ATTR
+int
 process_parmConfig(clpar p[], int len) {
   int arg_idx;
   int errors = 0;

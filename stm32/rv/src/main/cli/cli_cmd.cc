@@ -39,7 +39,7 @@ extern "C" void timer_set(int8_t channel);
 const char help_parmCmd[] = "zone=[0-13]      zone number\n"
     "duration=[0-60]  how long to irrigate\n";
 
-int ICACHE_FLASH_ATTR
+int
 process_parmCmd(clpar p[], int len) {
   int arg_idx;
 

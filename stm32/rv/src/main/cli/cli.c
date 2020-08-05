@@ -1,57 +1,3 @@
-#if 0
-/*
- * cli.c
- *
- *  Created on: 15.05.2019
- *      Author: bertw
- */
-
-#include "cli.h"
-#include "cli_imp.h"
-#include "debug/debug.h"
-
-
-
-int ICACHE_FLASH_ATTR
-process_parmTimer(clpar p[], int len) {
-	for (int i = 0; i < len; ++i) {
-		db_printf("key=%s, val=%s\n", p[i].key, p[i].val);
-	}
-
-return 0;
-}
-
-struct {
-  const char *parm;
-  int (*process_parmX)(clpar p[], int len);
-  const char *help;
-} parm_handlers[] = {
-
-                      { "timer", process_parmTimer, 0 },
-  };
-
-
-
-
-int ICACHE_FLASH_ATTR
-process_parm(clpar p[], int len) {
-  int i;
-
-db_puts("process parm");
-  for (i = 0; i < (sizeof(parm_handlers) / sizeof(parm_handlers[0])); ++i) {
-    if (strcmp(p[0].key, parm_handlers[i].parm) == 0)
-      return parm_handlers[i].process_parmX(p, len);
-  }
-  return 0;
-}
-
-
-int reply_failure(void) { return 0;}
-uint16_t msgid;
-
-
-#else
-
 /*
  * cli.c
  *
@@ -69,11 +15,7 @@ typedef void (*void_fun_ptr)(void);
 const int OUT_MAX_LEN = 80;
 
 
-
-
-
-
-int ICACHE_FLASH_ATTR
+int
 asc2bool(const char *s) {
   if (!s)
     return 1; // default value for key without value
@@ -89,13 +31,13 @@ asc2bool(const char *s) {
 
 }
 
-void ICACHE_FLASH_ATTR
+void
 reply_success() {
 	puts("ok:");
   //reply_message(0, "ok");
 }
 
-int ICACHE_FLASH_ATTR
+int
 reply_failure() {
  puts("error:"); // reply_message(0, "error");
   return -1;
@@ -105,7 +47,7 @@ reply_failure() {
 
 
 
-bool ICACHE_FLASH_ATTR
+bool
 reply(bool success) {
   if (success)
     reply_success();
@@ -124,7 +66,7 @@ struct {
         { "mcu", process_parmMcu, 0 },
   };
 
-int ICACHE_FLASH_ATTR
+int
 process_parm(clpar p[], int len) {
   int i;
 
@@ -135,7 +77,7 @@ process_parm(clpar p[], int len) {
   return 0;
 }
 
-void ICACHE_FLASH_ATTR
+void
 cli_process_cmdline(char *line) {
   int n = parse_commandline(line);
   if (n < 0) {
@@ -146,7 +88,7 @@ cli_process_cmdline(char *line) {
 }
 
 
-void ICACHE_FLASH_ATTR cli_loop(void) {
+void cli_loop(void) {
   char *cmdline;
   if ((cmdline = get_commandline())) {
     db_printf("cmdline: %s\n", cmdline);
@@ -167,16 +109,4 @@ void ICACHE_FLASH_ATTR cli_loop(void) {
   }
 }
 
-#if TEST_MODULE_CLI
-bool ICACHE_FLASH_ATTR
-testModule_cli()
-{
-  char cl[] = "timer g=5 astro=0;";  //"timer g=2 m=2 weekly=08222000++++10552134+";
-  int n = parse_commandline(cl);
-  if (n > 0)
-  process_parm(par, n);
 
-  return n != -1;
-}
-#endif
-#endif

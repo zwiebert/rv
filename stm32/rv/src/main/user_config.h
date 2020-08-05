@@ -39,10 +39,4 @@
 #else
 #error "build version missing"
 #endif
-
-
-
-
-#define ICACHE_FLASH_ATTR
-
 #endif /* MAIN_USER_CONFIG_H_ */
