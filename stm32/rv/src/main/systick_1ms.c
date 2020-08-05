@@ -23,8 +23,6 @@ uint64_t ms_runTime(void) {
   return run_time_ms;
 }
 
-volatile int ms_tableMst[MST_size];
-
 bool ms_timeElapsed(uint64_t *last, int diff) {
   uint64_t now = run_time_ms;
   if (*last + diff >= now)
@@ -35,18 +33,19 @@ bool ms_timeElapsed(uint64_t *last, int diff) {
 }
 
 void SysTick_Handler(void) {
-  ++run_time_ms;
+  uint64_t ms = ++run_time_ms;
   static int countSec;
   if (--countSec <= 0) {
     countSec = 1000;
-    lf_setBits(BIT(lf_interval_1s)|BIT(lf_interval_500ms));
+    lf_setBit(lf_interval_1s);
+  }
 
+  if ((ms & 511) == 0) {
+    lf_setBit(lf_interval_512ms);
   }
-  if (countSec == 500) {
-    lf_setBit(lf_interval_500ms);
-  }
-  for (int i = 0; i < MST_size; ++i) {
-    --ms_tableMst[i];
+
+  if ((ms & 63) == 0) {
+    lf_setBit(lf_interval_64ms);
   }
 }
 

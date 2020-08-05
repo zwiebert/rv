@@ -69,13 +69,13 @@ public:
       return false;
 
     run_time_T dur = pauseDuration();
-    run_time_T sinceLastLphChange = (runTime() - mLastLphChange);
-    run_time_T sinceLastPumpOff = wp_getPumpOffDuration();
 
+    run_time_T sinceLastLphChange = (runTime() - mLastLphChange);
     if (dur > sinceLastLphChange)
       return true;
 
 #if 0
+    run_time_T sinceLastPumpOff = wp_getPumpOffDuration();
     if (dur > sinceLastPumpOff)
       return true;
 #endif

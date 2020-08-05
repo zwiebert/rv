@@ -13,7 +13,9 @@ extern RvTimers rvt;
 extern RainSensor rs;
 
 volatile int loop_flags_once;
-volatile int loop_flags_periodic = BIT(lf_wpl) | BIT(lf_ic2c_check);
+#ifndef loop_flags_periodic
+volatile int loop_flags_periodic;
+#endif
 
 typedef void (*lfa_funT)(void);
 
@@ -30,19 +32,25 @@ static void interval_1s_loop() {
 #ifdef USE_WDG
     watchDog_loop();
 #endif
+    i2c2_check_loop();
 }
 
-static void interval_500ms_loop() {
+static void interval_512ms_loop() {
   rs.loop();
   rvt.loop();
 }
 
+static void interval_64ms_loop() {
+  wpl_loop();
+}
+
+
 static const lfa_funT lfa_table[lf_Len] = {
     interval_1s_loop,
-    interval_500ms_loop,
+    interval_512ms_loop,
+    interval_64ms_loop,
     cli_loop,
     wpl_loop,
-    i2c2_check_loop,
 };
 
 
