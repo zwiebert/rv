@@ -3,7 +3,41 @@
 #include "water_pump.h"
 #include "report.h"
 
+#if 1
+#define LPH_10VAN_90 140
+#define LPH_10VAN_180 290
+#define LPH_12VAN_90 130
+#define LPH_12VAN_180 260
+#define LPH_15LCS 111
+#define LPH_15SST 250
 
+#define LPH_XS 93
+#define LPH_SXB360 50
+
+#define LPH_LAWN_WEST (6 * LPH_12VAN_90 + 3 * LPH_12VAN_180)
+#define LPH_LAWN_EAST (4 * LPH_12VAN_90 + 2 * LPH_15LCS + 2 * LPH_15SST)
+
+#define LPH_HORTENS (3 * LPH_XS)
+#define LPH_FLOWERS_SOUTH (9 * LPH_XS)
+#define LPH_FLOWERS_WEST (11 * LPH_XS)
+#define LPH_POTS_NORTH (7 * LPH_SXB360 / 2) // choked to 1/2
+
+int Lph[RV_VALVE_COUNT] = {
+    LPH_LAWN_WEST, //0
+    LPH_HORTENS, //1
+    LPH_FLOWERS_SOUTH, //2
+    LPH_LAWN_EAST, //3
+    1000, //4
+    1000, //5
+    1000, //6
+    1000, //7
+    1000, //8
+    LPH_FLOWERS_WEST, //9
+    1000, //10
+    LPH_POTS_NORTH, //11
+    };
+
+#else
 int Lph[RV_VALVE_COUNT] = {
     1000, //0
     1000, //1
@@ -18,6 +52,8 @@ int Lph[RV_VALVE_COUNT] = {
     1000, //10
     1000, //11
     };
+
+#endif
 
 uint16_t RvTimers::valve_bits;
 uint16_t RvTimers::valve_mask;
