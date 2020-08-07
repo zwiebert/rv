@@ -24,7 +24,7 @@ void breaker() {
 
 const int RV_TIMER_COUNT = 20;
 const int RV_VALVE_COUNT = 12;
-const int RV_MAX_LPH = 1200;
+const int RV_MAX_LPH = 1600;
 
 extern int Lph[RV_VALVE_COUNT];
 

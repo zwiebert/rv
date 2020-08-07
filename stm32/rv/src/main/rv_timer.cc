@@ -14,13 +14,13 @@
 #define LPH_XS 93
 #define LPH_SXB360 50
 
-#define LPH_LAWN_WEST (6 * LPH_12VAN_90 + 3 * LPH_12VAN_180)
-#define LPH_LAWN_EAST (4 * LPH_12VAN_90 + 2 * LPH_15LCS + 2 * LPH_15SST)
+#define LPH_LAWN_WEST (6 * LPH_12VAN_90 + 3 * LPH_12VAN_180)  // 1560
+#define LPH_LAWN_EAST (4 * LPH_12VAN_90 + 2 * LPH_15LCS + 2 * LPH_15SST) // 1242
 
-#define LPH_HORTENS (3 * LPH_XS)
-#define LPH_FLOWERS_SOUTH (9 * LPH_XS)
-#define LPH_FLOWERS_WEST (11 * LPH_XS)
-#define LPH_POTS_NORTH (7 * LPH_SXB360 / 2) // choked to 1/2
+#define LPH_HORTENS (1 * LPH_XS) // 93
+#define LPH_FLOWERS_SOUTH (9 * LPH_XS)  // 837
+#define LPH_FLOWERS_WEST (11 * LPH_XS) // 1023
+#define LPH_POTS_NORTH (7 * LPH_SXB360 / 2) // 175 (choked to 1/2)
 
 int Lph[RV_VALVE_COUNT] = {
     LPH_LAWN_WEST, //0
