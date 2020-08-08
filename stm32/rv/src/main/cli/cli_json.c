@@ -35,7 +35,7 @@ uint16_t msgid;
 #endif
 
 
-#include "json/json.h"
+#include <jsmn/jsmn.h>
 
 #ifndef TEST_HOST
 void

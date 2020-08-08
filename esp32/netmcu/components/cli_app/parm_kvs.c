@@ -16,13 +16,6 @@
 
 #define ENABLE_RESTART 1 // allow software reset
 
-
-#ifdef CONFIG_GPIO_SIZE
-//PIN_DEFAULT=0, PIN_INPUT, PIN_INPUT_PULLUP, PIN_OUTPUT, PIN_ERROR, PIN_READ, PIN_CLEAR, PIN_SET, PIN_TOGGLE
-
-const char pin_state_args[] = "dipo ?01t";
-#endif
-
 const char cli_help_parmKvs[]  =
     "'kvs' sets or gets key/value pairs\n\n"
 
