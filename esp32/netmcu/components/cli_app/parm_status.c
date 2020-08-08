@@ -33,6 +33,7 @@
 #define KEY_EVENT "event"
 #define KEY_PUMP "pump"
 #define KEY_PRESS_CTL "pc"
+#define KEY_PB "pb"
 
 #define BUF_SIZE 128
 #define ZONE_COUNT 14
@@ -64,6 +65,8 @@ process_parmStatus(clpar p[], int len) {
       so_output_message(SO_RVE_RAIN, &state);
     } else if (strcmp(key, KEY_EVENT) == 0) {
       io_mqtt_publish_stm32_event(val);
+    } else if (strcmp(key, KEY_PB) == 0) {
+       const char *b64 = val; // TODO: implement protobuf handler
     } else if (strcmp(key, KEY_PUMP) == 0) {
       so_arg_on_t state = { .on = *val != '0' };
       so_output_message(SO_RVE_PUMP, &state);
