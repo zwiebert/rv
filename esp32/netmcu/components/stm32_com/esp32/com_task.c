@@ -73,6 +73,8 @@ static void do_work() {
 
 
   char *json = strstr(line, "{\"status\":");
+  if (!json)
+    json = strstr(line, "{\"pbuf\":");
   if (json && mutex_cliTake()) {
     cli_process_json(json, SO_TGT_ANY);
     mutex_cliGive();

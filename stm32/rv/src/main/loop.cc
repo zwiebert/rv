@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include "watch_dog.hh"
 #include "rv_timer.hh"
+#include "peri/uart.h"
 
 extern RvTimers rvt;
 extern RainSensor rs;
@@ -28,11 +29,19 @@ static void i2c2_check_loop() {
   }
 }
 
+bool got_zoneData;
+static void fetchData_loop() {
+  if (!got_zoneData)
+    esp32_puts("{\"pbuf\":{\"zd\":\"?\"}}\n");
+}
+
+
 static void interval_1s_loop() {
 #ifdef USE_WDG
     watchDog_loop();
 #endif
     i2c2_check_loop();
+    fetchData_loop();
 }
 
 static void interval_512ms_loop() {
@@ -51,6 +60,7 @@ static const lfa_funT lfa_table[lf_Len] = {
     interval_64ms_loop,
     cli_loop,
     wpl_loop,
+    fetchData_loop,
 };
 
 

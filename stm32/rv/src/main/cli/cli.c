@@ -64,6 +64,7 @@ struct {
         { "config", process_parmConfig, 0 },
         { "cmd", process_parmCmd, 0 },
         { "mcu", process_parmMcu, 0 },
+        { "pbuf", process_parmProtoBuf, 0 },
   };
 
 int

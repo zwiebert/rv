@@ -13,6 +13,7 @@ enum loop_flagbits {
   lf_interval_64ms,
   lf_cli,
   lf_wpl,
+  lf_fetchData,
   /////////////
   lf_Len
 };

@@ -55,7 +55,7 @@ int process_parmConfig(clpar p[], int len);
 int process_parmMcu(clpar p[], int len);
 int process_parmTimer(clpar p[], int len);
 int process_parmHelp(clpar p[], int len);
-int process_parmPair(clpar p[], int len);
+int process_parmProtoBuf(clpar p[], int len);
 /* cli.c */
 void warning_unknown_option(const char *key);
 void cli_msg_ready(void);

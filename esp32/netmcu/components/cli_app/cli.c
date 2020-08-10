@@ -28,6 +28,7 @@ static struct parm_handler handlers[] = {
     { "mcu", process_parmMcu, cli_help_parmMcu },
     { "kvs", process_parmKvs, cli_help_parmKvs },
     { "status", process_parmStatus, cli_help_None},
+    { "pbuf", process_parmProtoBuf, cli_help_None},
   };
 
 const struct parm_handlers parm_handlers = {
