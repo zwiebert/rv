@@ -10,13 +10,13 @@
 
 
 struct lph_args {
-  struct lph_arg *a;
+  const struct lph_arg *a;
   int lph_idx;
 };
 
 static bool decode_lphArray(pb_istream_t *stream, const pb_field_iter_t *field, void **arg) {
   struct lph_args *lph_args = (struct lph_args*) *arg;
-  struct lph_arg *lph_arg = lph_args->a;
+  const struct lph_arg *lph_arg = lph_args->a;
   if (lph_args->lph_idx == 0)
     memset(lph_arg->lph_arr, 0, sizeof lph_arg->lph_arr[0] * lph_arg->lph_arr_len);
 
@@ -41,7 +41,7 @@ static bool encode_lphArray(pb_ostream_t *stream, const pb_field_t *field, void 
   return true;
 }
 
-bool decode_zoneData(uint8_t *msg, unsigned msg_len, struct lph_arg *lph_arg) {
+bool decode_zoneData(uint8_t *msg, unsigned msg_len, const struct lph_arg *lph_arg) {
   ZoneData zd = ZoneData_init_zero;
   zd.lph.funcs.decode = decode_lphArray;
   struct lph_args arg = { .a = lph_arg };
@@ -57,11 +57,11 @@ bool decode_zoneData(uint8_t *msg, unsigned msg_len, struct lph_arg *lph_arg) {
   return status;
 }
 
-int encode_zoneData(uint8_t *msg_buf, size_t  msg_buf_len, struct lph_arg *lph_arg) {
+int encode_zoneData(uint8_t *msg_buf, size_t  msg_buf_len, const struct lph_arg *lph_arg) {
   ZoneData zd = ZoneData_init_default;
   zd.lph.funcs.encode = encode_lphArray;
 
-  zd.lph.arg = lph_arg;
+  zd.lph.arg = (void *)lph_arg;
   zd.zone_count = lph_arg->lph_arr_len;
   pb_ostream_t stream = pb_ostream_from_buffer(msg_buf, msg_buf_len);
   bool status = pb_encode(&stream, &ZoneData_msg, &zd);

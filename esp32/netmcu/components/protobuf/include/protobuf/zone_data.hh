@@ -9,7 +9,7 @@ struct lph_arg {
   int lph_arr_len;
 };
 
-bool decode_zoneData(uint8_t *msg_buf, unsigned msgBuf_len, struct lph_arg *lph_arg);
-int encode_zoneData(uint8_t *msg_buf, size_t  msg_buf_len, struct lph_arg *lph_arg);
+bool decode_zoneData(uint8_t *msg_buf, unsigned msgBuf_len, const struct lph_arg *lph_arg);
+int encode_zoneData(uint8_t *msg_buf, size_t  msg_buf_len, const struct lph_arg *lph_arg);
 
 
