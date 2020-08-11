@@ -1,5 +1,5 @@
 set(srcs
-  "../protobuf/build/mcu_com.pb.c"
+  "../protobuf/mcu_com.pb.c"
   zone_data.cc
 )
 
@@ -13,7 +13,7 @@ endif()
 
 idf_component_register(
     SRCS ${srcs}
-    INCLUDE_DIRS . "./build" "./include" "./include/protobuf"
+    INCLUDE_DIRS "./include" "./include/protobuf"
     REQUIRES nanopb
    )
  
@@ -22,7 +22,7 @@ idf_component_register(
             "${COMPONENT_DIR}/include"
             "${COMPONENT_DIR}/include/protobuf/mcu_com.pb.h"
              ${COMPONENT_DIR}/_force.h   
-     COMMAND make -B all -C ${COMPONENT_DIR}
+     COMMAND make -B all -C ../../../../../mcu_com
      VERBATIM)
   
 add_custom_target(pbuf_files ALL  DEPENDS ${COMPONENT_DIR}/_force.h )

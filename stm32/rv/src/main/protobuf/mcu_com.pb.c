@@ -1,1 +1,1 @@
-../../../../../mcu_com/mcu_com.pb.c
+../../../../../mcu_com/build/mcu_com.pb.c
