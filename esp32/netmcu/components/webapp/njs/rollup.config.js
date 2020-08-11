@@ -5,6 +5,7 @@ import strip from '@rollup/plugin-strip';
 import { eslint } from "rollup-plugin-eslint";
 import svelte from 'rollup-plugin-svelte';
 import resolve from '@rollup/plugin-node-resolve';
+import commonjs from '@rollup/plugin-commonjs';
 import sveltePreprocess from 'svelte-preprocess';
 
 export const isProduction = process.env.NODE_ENV === "production";
@@ -12,9 +13,10 @@ export const isDistro = process.env.DISTRO === "yes";
 
 export default {
   onwarn(warning, rollupWarn) {
-    if (warning.code !== 'CIRCULAR_DEPENDENCY') {
-      rollupWarn(warning);
-    }
+    if ( /eval is strongly/.test(warning.message) ) return;
+    if (warning.code === 'CIRCULAR_DEPENDENCY') return;
+    rollupWarn(warning);
+    
   },
   input: 'src/main.js',
   output: [...!isProduction ? [ {
@@ -69,7 +71,7 @@ export default {
         sourceMap: true,
         include: 'src/**/*.(js)',
       })] : [],
-    eslint(),
+    //eslint(),
     svelte({
 
       dev: !isProduction,
@@ -101,8 +103,9 @@ export default {
     // https://github.com/rollup/plugins/tree/master/packages/commonjs
     resolve({
       browser: true,
-      dedupe: ['svelte']
-    })
+      dedupe: ['svelte'],
+    }),
+    commonjs({})
   ]
 };
 

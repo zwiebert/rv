@@ -11,6 +11,8 @@
   import PaneZoneMaintenance from "./panes/zone_maintenance.svelte";
   import { TabIdx } from "./store/app_state.js";
 
+  import Dev from "./dev/experimental.svelte";
+
   $: tabIdxMain = $TabIdx["main"] || 0;
   $: tabIdxCfg = $TabIdx["cfg"] || 0;
   $: tabIdxFw = $TabIdx["fw"] || 0;
@@ -24,7 +26,7 @@
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
   <div class="navtab-main">
     <NavTabs
-      nav_tabs={[$_('app.nav_main_rv'), $_('app.nav_main_config'), "Maintenance"]}
+      nav_tabs={[$_('app.nav_main_rv'), $_('app.nav_main_config'), "Maintenance", "Dev"]}
       name="main" />
   </div>
   {#if !tabIdxMain}
@@ -53,5 +55,7 @@
     {/if}
   {:else if tabIdxMain === 2}
     <PaneZoneMaintenance />
+  {:else if tabIdxMain === 3}
+    <Dev />
   {/if}
 </div>
