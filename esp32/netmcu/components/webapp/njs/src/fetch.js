@@ -8,6 +8,7 @@ export const FETCH_CONFIG = bit;
 export const FETCH_ZONE_NAMES = (bit <<= 1);
 export const FETCH_ZONE_DURATIONS = (bit <<= 1);
 export const FETCH_ZONE_REMAINING_DURATIONS = (bit <<= 1);
+export const FETCH_ZONE_DATA = (bit <<= 1);
 export const FETCH_RV_STATUS = (bit <<= 1);
 export const FETCH_VERSION = (bit <<= 1);
 export const FETCH_BOOT_COUNT = (bit <<= 1);
@@ -138,6 +139,9 @@ export function http_postDocRequest(name) {
     if (mask & FETCH_ZONE_DURATIONS) {
       add_kv(tfmcu,"cmd","dur","?");
     }
+
+    if (mask & FETCH_ZONE_DATA)
+    add_kv(tfmcu,"pbuf","zd","?");
 
     if (mask & FETCH_RV_STATUS) {
       add_kv(tfmcu,"cmd","status","?");

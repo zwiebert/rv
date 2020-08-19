@@ -76,7 +76,7 @@ static void do_work() {
   if (!json)
     json = strstr(line, "{\"pbuf\":");
   if (json && mutex_cliTake()) {
-    cli_process_json(json, SO_TGT_ANY);
+    cli_process_json(json, SO_TGT_ANY | SO_TGT_STM32);
     mutex_cliGive();
   }
 

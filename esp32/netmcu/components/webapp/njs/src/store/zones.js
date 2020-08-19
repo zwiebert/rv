@@ -9,6 +9,7 @@ export const ZoneDisabled= PersistentIntStore("zdis");
 export const ZoneRemainingSeconds = ArrayStore([0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
 export const ZoneDescriptions = ArrayStore(["<enter names...>",0, 0,0,0,0,0,0,0,0,0,0,0,0]);
 export const ZoneDurations = ArrayStore([0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+export const ZoneLPHs = ArrayStore([0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
 export const ZoneTimers = writable({});
 
 export const PressControlStatus = writable(false);

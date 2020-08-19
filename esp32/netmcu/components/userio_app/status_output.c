@@ -25,6 +25,7 @@
 
 #include "misc/int_macros.h"
 #include "misc/int_types.h"
+#include "misc/base64.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -260,12 +261,31 @@ void so_output_message(so_msg_t mt, const void *arg) {
 
   case SO_INET_PRINT_ADDRESS: {
 #if defined USE_LAN || defined USE_WLAN
-    char buf[20];
-    ipnet_addr_as_string(buf, 20);
+    //char buf[20];
+    ipnet_addr_as_string(buf, sizeof buf);
     io_puts("tf: ipaddr: "), io_puts(buf), io_puts(";\n");
 #endif
   }
   break;
+
+  case SO_PBUF_begin:
+    so_out_x_open("pbuf");
+    break;
+
+  case SO_PBUF_KV64: {
+    const so_arg_pbuf_t *pba = arg;
+    size_t b64Len = 0;
+    int err = mbedtls_base64_encode((uint8_t *) buf, sizeof buf, &b64Len, pba->buf, pba->buf_len);
+    if (!err) {
+      buf[b64Len] = '\0';
+      so_out_x_reply_entry_ss(pba->key, buf);
+    }
+  }
+    break;
+
+  case SO_PBUF_end:
+    so_out_x_close();
+    break;
 
   default:
 #ifndef DISTRIBUTION

@@ -87,6 +87,8 @@ static void stm32Send_zoneData() {
 extern "C" int
 process_parmProtoBuf(clpar p[], int len) {
 
+  so_output_message(SO_PBUF_begin, NULL);
+
   for (int arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
@@ -108,7 +110,15 @@ process_parmProtoBuf(clpar p[], int len) {
 
     if (strcmp(key, KEY_ZONE_DATA) == 0) {
       if (requestData) {
-        stm32Send_zoneData();
+        if (so_tgt_test(SO_TGT_STM32)) { //XXX
+          stm32Send_zoneData();
+        } else {
+          uint8_t msgBuf[128];
+          struct lph_arg lph_arg = { .lph_arr = Lph, .lph_arr_len = RV_VALVE_COUNT };
+          int msgBufLen = encode_zoneData(msgBuf, sizeof(msgBuf), &lph_arg);
+          so_arg_pbuf_t pba = { .key = "zd", .buf = msgBuf, .buf_len = msgBufLen };
+          so_output_message(SO_PBUF_KV64, &pba);
+        }
       } else {
         struct lph_arg lph_arg = { .lph_arr = Lph, .lph_arr_len = RV_VALVE_COUNT };
         decode_zoneData(msgBuf, msgBufLen, &lph_arg);
@@ -118,7 +128,7 @@ process_parmProtoBuf(clpar p[], int len) {
     }
   }
 
-
+  so_output_message(SO_PBUF_end, NULL);
 
   return 0;
 }

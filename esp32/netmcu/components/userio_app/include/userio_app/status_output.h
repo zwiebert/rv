@@ -48,6 +48,8 @@ typedef enum {
 
   SO_RVE_begin, SO_RVE_PUMP, SO_RVE_RAIN, SO_RVE_VALVES, SO_RVE_PRESS_CTL, SO_RVE_end,
 
+  SO_PBUF_begin, SO_PBUF_end, SO_PBUF_KV64,
+
   SO_STATUS_OK, SO_STATUS_ERROR,
 
 
@@ -63,5 +65,12 @@ typedef struct {
 typedef struct {
   uint32_t state_bits, changed_bits;
 } so_arg_valves_t;
+
+typedef struct {
+  const char *key;
+  uint8_t *buf;
+  int buf_len;
+} so_arg_pbuf_t;
+
 
 #endif /* USER_MAIN_STATUS_OUTPUT_H_ */

@@ -16,15 +16,15 @@
   });
 </script>
 
-<label class="{$PressControlStatus ? 'bg-selected fg-selected' : 'line-through'}">
+<span class="{$PressControlStatus ? 'bg-selected fg-selected' : 'line-through'}">
   {$_('app.pressControl')}
-</label>
-<label class="{$WaterPumpStatus ? 'bg-selected fg-selected' : 'line-through'}">
+</span>
+<span class="{$WaterPumpStatus ? 'bg-selected fg-selected' : 'line-through'}">
   {$_('app.pump')}
-</label>
-<label class="{$RainSensorStatus ? 'bg-selected fg-selected' : 'line-through'}">
+</span>
+<span class="{$RainSensorStatus ? 'bg-selected fg-selected' : 'line-through'}">
   {$_('app.rainSensor')}
-</label>
+</span>
 
 <!--
 <div class="h-8 w-8 text-gray-800">

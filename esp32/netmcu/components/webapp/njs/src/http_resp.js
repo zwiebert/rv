@@ -1,5 +1,8 @@
 "use strict";
 
+import * as mcuComPb from "./pbuf/mcu_com_pb.js";
+import * as b64 from "js-base64";
+
 import { McuConfig } from "./store/mcu_config.js";
 import {
   McuBootCount,
@@ -13,6 +16,7 @@ import {
 } from "./store/mcu_firmware.js";
 import { McuDocs } from "./store/mcu_docs.js";
 import {
+  ZoneLPHs,
   ZoneCountMax,
   ZoneNames,
   ZoneRemainingSeconds,
@@ -26,6 +30,15 @@ import {
 
 export function http_handleResponses(obj) {
   console.log("reply-json: " + JSON.stringify(obj));
+
+  if ("pbuf" in obj) {
+    let pbuf = obj.pbuf;
+    if ("zd" in obj.pbuf) {
+      let buf = b64.toUint8Array(pbuf.zd);
+      let msg = mcuComPb.ZoneData.deserializeBinary(buf);
+      ZoneLPHs.set(msg.getLphList());
+    }
+  }
 
   if ("config" in obj) {
     let config = obj.config;
