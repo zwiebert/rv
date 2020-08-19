@@ -7,6 +7,7 @@
   import PollZoneData from "../poll_zone_data.svelte";
   import SelectZone from "../components/select_zone.svelte";
   import RvStatus from "../components/rv_status.svelte";
+  import ZoneData from "../components/zone_data.svelte";
 
   onMount(() => {
     httpFetch.http_fetchByMask(
@@ -84,6 +85,10 @@ function testDur(zone) {
 
   <div class="area">
     <RvStatus />
+  </div>
+
+  <div class="area">
+    <ZoneData />
   </div>
 
 </div>
