@@ -1,6 +1,7 @@
 'use strict';
 import * as appDebug from './app_debug.js';
 import * as httpResp from './http_resp.js';
+import { ws_isOpen } from "./net/conn_ws";
 
 let bit = 1;
 export const FETCH_CONFIG = bit;
@@ -14,6 +15,8 @@ export const FETCH_RV_VERSION = (bit <<= 1);
 
 export const FETCH_GIT_TAGS = 0; //XXX
 
+
+const FETCHES_REPLY_BY_WS =  FETCH_RV_STATUS;
 
 const MAX_RETRY_COUNT = 3;
 
@@ -86,6 +89,11 @@ export function http_postDocRequest(name) {
   function async_fetchByMask() {
     let mask = fetchMask;
     fetchMask = 0;
+    if ((mask & FETCHES_REPLY_BY_WS) && !ws_isOpen()) {
+     fetchMask = mask & FETCHES_REPLY_BY_WS;
+     mask &=  ~FETCHES_REPLY_BY_WS;
+     setTimeout(async_fetchByMask, 125);
+    }
     http_fetchByMask(mask, true);
   }
 
@@ -95,8 +103,9 @@ export function http_postDocRequest(name) {
     }
 
     if (!synchron) {
+      if (!fetchMask)
+        setTimeout(async_fetchByMask, 125);
       fetchMask |= mask;
-      setTimeout(async_fetchByMask, 125);
       return;
     }
 
