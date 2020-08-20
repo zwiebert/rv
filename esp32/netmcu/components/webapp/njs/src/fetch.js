@@ -29,6 +29,13 @@ export function sendCmd(cmd) {
   http_postRequest(url, obj);
 }
 
+export function sendPbuf(cmd) {
+  let url = "/cmd.json";
+  let obj = { from: "wapp"};
+  obj.pbuf = cmd;
+  http_postRequest(url, obj);
+}
+
 export function http_postRequest(url = '', data = {}, state = { retry_count:0 }) {
   appDebug.dbLog("post-json: " + JSON.stringify(data));
 

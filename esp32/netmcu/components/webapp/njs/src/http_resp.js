@@ -17,6 +17,7 @@ import {
 import { McuDocs } from "./store/mcu_docs.js";
 import {
   ZoneLPHs,
+  ZoneDataMsg,
   ZoneCountMax,
   ZoneNames,
   ZoneRemainingSeconds,
@@ -36,6 +37,7 @@ export function http_handleResponses(obj) {
     if ("zd" in obj.pbuf) {
       let buf = b64.toUint8Array(pbuf.zd);
       let msg = mcuComPb.ZoneData.deserializeBinary(buf);
+      ZoneDataMsg.set(msg);
       ZoneLPHs.set(msg.getLphList());
     }
   }
