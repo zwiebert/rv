@@ -79,4 +79,10 @@ bool config_read_stm32_inv_bootpin();
 bool config_read_lph(uint16_t lph[14]);
 bool config_save_lph(uint16_t lph[14]);
 
+bool config_save_pb64(enum configItem item, const char *pb64);
+bool config_read_pb64(enum configItem item, char *pb64_buf, size_t buf_size);
+bool config_save_pb(enum configItem item, const uint8_t *pb, size_t pb_len);
+bool config_read_pb(enum configItem item, uint8_t *pb_buf, size_t *pb_size);
+
+
 #endif /* MAIN_CONFIG_CONFIG_H_ */
