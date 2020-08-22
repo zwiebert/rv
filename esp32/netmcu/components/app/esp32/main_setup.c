@@ -2,6 +2,7 @@
 #include "config/config.h"
 #include "stm32/stm32.h"
 #include "stm32_com/com_task.h"
+#include "cli_app/cli_app.h"
 
 void loop_setBit_mcuRestart() {
   lf_setBit(lf_mcuRestart);
@@ -55,7 +56,6 @@ void main_setup_ip_dependent() {
 }
 
 void mcu_init() {
-  uart_mutex = xSemaphoreCreateRecursiveMutex();
 #ifdef USE_EG
   loop_eventBits_setup();
 #endif
@@ -145,6 +145,7 @@ void loop_setBit_mcuRestart() {
 #endif
 
   rtc_setup();
+  cliApp_setup();
 
   kvs_get_int32(KEY_BOOT_COUNTER, &boot_counter), kvs_store_int32(KEY_BOOT_COUNTER, ++boot_counter);
 }

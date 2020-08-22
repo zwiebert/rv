@@ -104,9 +104,9 @@ void tmr_loopPeriodic_start() {
 }
 
 void stm32loop() {
-  if (xSemaphoreTakeRecursive(uart_mutex, 0)) {
+  if (stm32_mutexTakeTry()) {
     stm32_checkForInput();
-    xSemaphoreGiveRecursive(uart_mutex);
+    stm32_mutexGive();
   }
 }
 

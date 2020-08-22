@@ -19,7 +19,6 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
-SemaphoreHandle_t uart_mutex;
 
 #ifndef DISTRIBUTION
 #define D(x) x
@@ -130,9 +129,9 @@ process_parmCmd(clpar p[], int len) {
     buf[strlen(buf)-1] = '\0';
     strcat(buf, "}};\n");
     dbg_vpf(db_printf("cmd2stm32: <%s>\n", buf));
-    if (xSemaphoreTakeRecursive(uart_mutex, portMAX_DELAY)) {
+    if (stm32_mutexTake()) {
       stm32_write(buf, strlen(buf));
-      xSemaphoreGiveRecursive(uart_mutex);
+      stm32_mutexGive();
     }
   }
 
