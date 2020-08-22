@@ -119,9 +119,12 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
     hts_query(HQT_NONE, buf, ret); // parse and process received command
 
     httpd_resp_set_type(req, "application/json");
-    httpd_resp_sendstr(req, sj_get_json());
-
-    sj_free_buffer();
+    if (sj_get_json()) {
+      httpd_resp_sendstr(req, sj_get_json());
+      sj_free_buffer();
+    } else {
+      httpd_resp_sendstr(req, "{}");
+    }
     mutex_cliGive();
   }
 

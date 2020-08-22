@@ -10,7 +10,11 @@
 #include "cli_imp.h"
 #include "cli_app.h"
 #include "cli/mutex.h"
+#include "cli/cli.h"
 #include "userio/status_json.h"
+#include "stm32/stm32.h"
+#include "userio_app/status_output.h"
+#include "config/config.h"
 
 bool cli_isJson;
 
@@ -49,4 +53,49 @@ bool cli_checkStm32CommandLine(char *line) {
   return true;
 }
 
+/////////////// setup //////////////////
+
+static bool cliApp_redirect_to_rv(char *json) {
+#define TO_RV "{\"to\":\"rv\""
+#define TO_RV_LEN ( sizeof TO_RV - 1)
+  if (strncmp(json, TO_RV, TO_RV_LEN) == 0) {
+    if (stm32_mutexTake()) {
+      stm32_write(json, strlen(json));
+      stm32_write(";\n", 2);
+      stm32_mutexGive();
+    }
+    return true;
+  }
+  return false;
+}
+
+static bool cliApp_checkPassword(clpar p[], int len, so_target_bits tgt) {
+  if (len < 2)
+    return true;
+
+  if (strcmp(p[0].key, "config") != 0)
+    return true;
+
+  if (!C.app_configPassword[0])
+    return true;
+  if (strcmp(p[1].key, "pw") == 0) {
+    if (strcmp(p[1].val, C.app_configPassword) == 0) {
+      so_output_message(SO_CFGPASSWD_OK, NULL);
+      return true;
+    } else {
+      so_output_message(SO_CFGPASSWD_WRONG, NULL);
+    }
+  } else {
+    so_output_message(SO_CFGPASSWD_MISSING, NULL);
+  }
+
+  return false;
+}
+
+
+
+void cliApp_setup() {
+  cli_hook_process_json = cliApp_redirect_to_rv;
+  cli_hook_checkPassword = cliApp_checkPassword;
+}
 

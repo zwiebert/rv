@@ -13,19 +13,30 @@
 #include "net/mqtt/app/mqtt.h"
 #include "app/kvstore.h"
 #include "debug/debug.h"
+#include <ctype.h>
+#include <string.h>
 
 #define ENABLE_RESTART 1 // allow software reset
 
-const char cli_help_parmKvs[]  =
-    "'kvs' sets or gets key/value pairs\n\n"
+const char cli_help_parmKvs[] = "'kvs' sets or gets key/value pairs\n\n";
 
-;
+static const char *zoneKeysN[] = { "zn", "lph", 0 };
 
-#define ZONE_NAME_KEY "zn"
-#define ZONE_NAME_KEY_LEN ((sizeof ZONE_NAME_KEY) - 1)
+static bool match_zoneKeyN(const char *key) {
+  for (int i = 0; zoneKeysN[i]; ++i) {
+    if (key == strstr(key, zoneKeysN[i]))
+      return true;
+  }
+  return false;
+}
 
-int
-process_parmKvs(clpar p[], int len) {
+static bool match_kvsKey(const char *key) {
+  return true; // XXX: allow any keys for now
+}
+
+
+
+int process_parmKvs(clpar p[], int len) {
   int arg_idx;
   int errors = 0;
 
@@ -33,55 +44,65 @@ process_parmKvs(clpar p[], int len) {
 
   so_output_message(SO_KVS_begin, NULL);
 
-  bool pw_ok = strlen(C.app_configPassword) == 0;
   int needSecondPass = 0;
 
+  // first pass: input parameters
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
-
     if (key == NULL || val == NULL) {  // don't allow any default values
       ++errors;
       continue;
     }
 
-    if (strncmp(key, ZONE_NAME_KEY,ZONE_NAME_KEY_LEN) == 0) {
-      //int zone_number = atoi(key + ZONE_NAME_KEY_LEN);
-      if (*val == '?') {
-       ++needSecondPass;// handle this on second pass below
-      } else {
-        if (!kvs_store_string(key, val)) {
-          ++errors;
-        }
-      }
-    } else {
-      ++errors;
-      cli_warning_optionUnknown(key);
+    if (*val == '?') {
+      ++needSecondPass;
+      continue; // handle this key/val pair in second pass
     }
+
+    if (match_zoneKeyN(key)) {
+      if (!kvs_store_string(key, val)) {
+        ++errors;
+      }
+      continue;
+    }
+
+    if (match_kvsKey(key)) {
+      if (!kvs_store_string(key, val)) {
+        ++errors;
+        continue;
+      }
+    }
+
   }
 
+  // second pass: output parameters
   for (arg_idx = 1; arg_idx < len && needSecondPass > 0; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
-
-    if (*val != '?')  // handle '?' here only
-      continue;
     if (key == NULL || val == NULL)  // don't allow any default values
       continue;
 
-    if (strncmp(key, ZONE_NAME_KEY,ZONE_NAME_KEY_LEN) == 0) {
-      //int zone_number = atoi(key + ZONE_NAME_KEY_LEN);
-      if (*val == '?') {
-        if (strlen(key) == ZONE_NAME_KEY_LEN) {
-          so_output_message(SO_KVS_ZN_ALL, key);
-        } else {
-          so_output_message(SO_KVS_ZN_SINGLE, key);
-        }
-        --needSecondPass;
+    if (*val != '?')
+      continue; // was handled in first pass
+
+    --needSecondPass;
+
+    if (match_zoneKeyN(key)) {
+      if (!isdigit(key[strlen(key) - 1])) {
+
+        so_output_message(SO_KVS_ZN_ALL, key);
+      } else {
+        so_output_message(SO_KVS_ZN_SINGLE, key);
       }
     }
+
+    if (match_kvsKey(key)) {
+      so_output_message(SO_KVS_ZN_SINGLE, key);
+    }
+
   }
 
   so_output_message(SO_KVS_end, NULL);
-  cli_replyResult(errors==0);
+  cli_replyResult(errors == 0);
   return 0;
 }
 

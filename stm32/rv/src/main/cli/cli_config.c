@@ -8,8 +8,9 @@
 #include <real_time_clock.h>
 #include <real_time_clock.h>
 #include "user_config.h"
-//#include "config/config.h"
 #include "cli_imp.h"
+#include "peri/uart.h"
+#include <stdio.h>
 
 #define ENABLE_RESTART 0 // allow software reset
 
@@ -30,10 +31,32 @@ const char help_parmConfig[]  =
 #endif
 ;
 
+static const char *zoneKeysN[] = {
+    "zn", "lph", 0
+};
+
+bool kvs_store_string(const char *key, const char *val) {
+  char buf[128];
+  if (0 < snprintf(buf, sizeof buf, "{\"to\":\"cli\",\"kvs\":{\"%s\":\"%s\"}};\n", key, val)) {
+    esp32_puts(buf);
+    return true;
+  }
+  return false;
+}
+
+static bool match_zoneKeyN(const char *key) {
+  for (int i = 0; zoneKeysN[i]; ++i) {
+    if (key == strstr(key, zoneKeysN[i]))
+      return true;
+  }
+  return false;
+}
+
 int
 process_parmConfig(clpar p[], int len) {
   int arg_idx;
   int errors = 0;
+  int needSecondPass = 0;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -51,6 +74,14 @@ process_parmConfig(clpar p[], int len) {
     	rtc_set_counter_val(atol(val));
     } else if (strcmp(key, "tz") == 0) {
       setenv("TZ", val, 1);
+    } else  if (match_zoneKeyN(key)) {
+      if (*val == '?') {
+        ++needSecondPass;  // handle this on second pass below
+      } else {
+        if (!kvs_store_string(key, val)) {
+          ++errors;
+        }
+      }
     } else {
       ++errors;
     }

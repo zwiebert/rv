@@ -19,6 +19,7 @@
 #include "net/tcp_cli_server.h"
 #include "time.h"
 #include "txtio/inout.h"
+#include "userio/status_json.h"
 #include <errno.h>
 #include <string.h>
 #include <sys/select.h>
@@ -31,7 +32,7 @@
 #define DD(x)
 #else
 #define D(x) x
-#define DD(x)
+#define DD(x) x
 #endif
 
 #define TRACE_MARKER "trace:"
@@ -75,8 +76,24 @@ static void do_work() {
   char *json = strstr(line, "{\"status\":");
   if (!json)
     json = strstr(line, "{\"pbuf\":");
+  if (!json)
+    json = strstr(line, "{\"kvs\":");
+  if (!json)
+    json = strstr(line, "{\"to\":\"cli\",");
+
   if (json && mutex_cliTake()) {
+    DD(printf("stm32com:request: <%s>\n", json));
     cli_process_json(json, SO_TGT_ANY | SO_TGT_STM32);
+
+    if (sj_get_json()) {
+      DD(printf("stm32com:response: <%s>\n", sj_get_json()));
+      if (stm32_mutexTake()) {
+        stm32_write(sj_get_json(), strlen(sj_get_json()));
+        stm32_write(";\n", 2);
+        stm32_mutexGive();
+        sj_free_buffer();
+      }
+    }
     mutex_cliGive();
   }
 
