@@ -16,16 +16,12 @@
   });
 
   function postZoneData() {
-    $ZoneLPHs[$Z] = lph; 
-    let msg = $ZoneDataMsg;
-    if (!msg)
-       return;
-    msg.setLphList($ZoneLPHs);
-    let buf = msg.serializeBinary();
-    let buf64 = Base64.fromUint8Array(buf);
-    let cmd = { "zd": buf64};
-    console.log(cmd);
-    httpFetch.sendPbuf(cmd);
+    let key = "lph"+$Z;
+    let val = lph;
+    let msg = {kvs:{}};
+    msg[key] = val;
+    console.log(msg);
+    httpFetch.sendRv(msg);
   }
 
   $: lph = $ZoneLPH;

@@ -4,13 +4,16 @@
  *  Created on: 21.05.2019
  *      Author: bertw
  */
-
+extern "C" {
 #include <real_time_clock.h>
 #include <real_time_clock.h>
 #include "user_config.h"
 #include "cli_imp.h"
 #include "peri/uart.h"
+}
+#include "rv_timer.hh"
 #include <stdio.h>
+#include <ctype.h>
 
 #define ENABLE_RESTART 0 // allow software reset
 
@@ -31,6 +34,7 @@ const char help_parmConfig[]  =
 #endif
 ;
 
+enum { ZN, LPH };
 static const char *zoneKeysN[] = {
     "zn", "lph", 0
 };
@@ -44,19 +48,19 @@ bool kvs_store_string(const char *key, const char *val) {
   return false;
 }
 
-static bool match_zoneKeyN(const char *key) {
+static int match_zoneKeyN(const char *key) {
   for (int i = 0; zoneKeysN[i]; ++i) {
     if (key == strstr(key, zoneKeysN[i]))
-      return true;
+      return i;
   }
-  return false;
+  return -1;
 }
 
-int
-process_parmConfig(clpar p[], int len) {
+int process_parmConfig(clpar p[], int len) {
   int arg_idx;
   int errors = 0;
   int needSecondPass = 0;
+  int zkIdx = -1;
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -71,23 +75,37 @@ process_parmConfig(clpar p[], int len) {
 #endif
 
     } else if (strcmp(key, "time") == 0) {
-    	rtc_set_counter_val(atol(val));
+      rtc_set_counter_val(atol(val));
     } else if (strcmp(key, "tz") == 0) {
       setenv("TZ", val, 1);
-    } else  if (match_zoneKeyN(key)) {
+    } else if ((zkIdx = match_zoneKeyN(key)) >= 0) {
       if (*val == '?') {
         ++needSecondPass;  // handle this on second pass below
       } else {
         if (!kvs_store_string(key, val)) {
           ++errors;
         }
+        if (isdigit(key[strlen(key) - 1]))
+          switch (zkIdx) {
+          case ZN: {
+            int idx = atoi(key + 2);
+          }
+            break;
+          case LPH: {
+            int idx = atoi(key + 3);
+            Lph[idx] = atoi(val);
+          }
+            break;
+          default:
+            break;
+          }
       }
     } else {
       ++errors;
     }
   }
 
-  reply(errors==0);
+  reply(errors == 0);
   return 0;
 }
 

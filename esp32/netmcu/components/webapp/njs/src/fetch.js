@@ -35,6 +35,13 @@ export function sendPbuf(cmd) {
   http_postRequest(url, obj);
 }
 
+export function sendRv(cmd) {
+  let url = "/cmd.json";
+  let obj = {to:"rv"};
+  obj.pbuf = cmd;
+  http_postRequest(url, obj);
+}
+
 export function http_postRequest(
   url = "",
   data = {},
