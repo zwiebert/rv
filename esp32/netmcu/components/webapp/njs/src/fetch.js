@@ -1,6 +1,6 @@
-'use strict';
-import * as appDebug from './app_debug.js';
-import * as httpResp from './http_resp.js';
+"use strict";
+import * as appDebug from "./app_debug.js";
+import * as httpResp from "./http_resp.js";
 import { ws_isOpen } from "./net/conn_ws";
 
 let bit = 1;
@@ -16,27 +16,30 @@ export const FETCH_RV_VERSION = (bit <<= 1);
 
 export const FETCH_GIT_TAGS = 0; //XXX
 
-
-const FETCHES_REPLY_BY_WS =  FETCH_RV_STATUS;
+const FETCHES_REPLY_BY_WS = FETCH_RV_STATUS;
+const FETCHES_TARGET_STM32 = FETCH_ZONE_DATA;
 
 const MAX_RETRY_COUNT = 3;
 
-
 export function sendCmd(cmd) {
   let url = "/cmd.json";
-  let obj = { from: "wapp"};
+  let obj = { from: "wapp" };
   obj.cmd = cmd;
   http_postRequest(url, obj);
 }
 
 export function sendPbuf(cmd) {
   let url = "/cmd.json";
-  let obj = { from: "wapp"};
+  let obj = { from: "wapp" };
   obj.pbuf = cmd;
   http_postRequest(url, obj);
 }
 
-export function http_postRequest(url = '', data = {}, state = { retry_count:0 }) {
+export function http_postRequest(
+  url = "",
+  data = {},
+  state = { retry_count: 0 }
+) {
   appDebug.dbLog("post-json: " + JSON.stringify(data));
 
   const fetch_data = {
@@ -49,11 +52,8 @@ export function http_postRequest(url = '', data = {}, state = { retry_count:0 })
     body: JSON.stringify(data),
   };
 
-
-
   return fetch(url, fetch_data)
-
-    .then(response => {
+    .then((response) => {
       if (!response.ok) {
         console.log("error");
         if (state.retry_count++ < MAX_RETRY_COUNT) {
@@ -69,11 +69,10 @@ export function http_postRequest(url = '', data = {}, state = { retry_count:0 })
     .catch((error) => {
       console.log("error: http_postRequest(): ", error);
     });
-
 }
 
 export function http_postDocRequest(name) {
-  let url = '/doc';
+  let url = "/doc";
   // Default options are marked with *
   return fetch(url, {
     method: "POST",
@@ -83,95 +82,94 @@ export function http_postDocRequest(name) {
     },
     referrer: "no-referrer",
     body: name,
-  })
-    .then(response => {
-      if (response.ok) {
-        response.text().then(text => {
-          httpResp.http_handleDocResponses(name, text);
-        });
-      }
-    });
+  }).then((response) => {
+    if (response.ok) {
+      response.text().then((text) => {
+        httpResp.http_handleDocResponses(name, text);
+      });
+    }
+  });
 }
 
-  let fetchMask = 0;
-  function async_fetchByMask() {
-    let mask = fetchMask;
-    fetchMask = 0;
-    if ((mask & FETCHES_REPLY_BY_WS) && !ws_isOpen()) {
-     fetchMask = mask & FETCHES_REPLY_BY_WS;
-     mask &=  ~FETCHES_REPLY_BY_WS;
-     setTimeout(async_fetchByMask, 125);
-    }
-    http_fetchByMask(mask, true);
+let fetchMask = 0;
+function async_fetchByMask() {
+  let mask = fetchMask;
+  fetchMask = 0;
+  if (mask & FETCHES_REPLY_BY_WS && !ws_isOpen()) {
+    fetchMask = mask & FETCHES_REPLY_BY_WS;
+    mask &= ~FETCHES_REPLY_BY_WS;
+    setTimeout(async_fetchByMask, 125);
+  }
+  http_fetchByMask(mask, true);
+}
+
+export function http_fetchByMask(mask, synchron) {
+  if (!mask) {
+    return;
   }
 
-  export function http_fetchByMask(mask, synchron) {
-    if (!mask) {
-      return;
-    }
-
-    if (!synchron) {
-      if (!fetchMask)
-        setTimeout(async_fetchByMask, 125);
-      fetchMask |= mask;
-      return;
-    }
-
-    let tfmcu = {to:"tfmcu"};
-    
-    if (mask & FETCH_CONFIG)
-      add_kv(tfmcu,"config","all","?");
-
-
-    if (mask & FETCH_BOOT_COUNT)
-      add_kv(tfmcu, "mcu", "boot-count", "?");
-
-    if (mask & FETCH_VERSION) {
-      add_kv(tfmcu, "mcu",  "version","?");
-    }
-
-    if (mask & FETCH_RV_VERSION) {
-      add_kv(tfmcu,"cmd","rv-version","?");
-    }
-
-
-
-    if (mask & FETCH_ZONE_NAMES)
-     add_kv(tfmcu,"kvs","zn","?");
- 
-
-    if (mask & FETCH_ZONE_REMAINING_DURATIONS) {
-      add_kv(tfmcu,"cmd","rem","?");
-    }
-    if (mask & FETCH_ZONE_DURATIONS) {
-      add_kv(tfmcu,"cmd","dur","?");
-    }
-
-    if (mask & FETCH_ZONE_DATA)
-    add_kv(tfmcu,"pbuf","zd","?");
-
-    if (mask & FETCH_RV_STATUS) {
-      add_kv(tfmcu,"cmd","status","?");
-    }
-
-    let url = '/cmd.json';
-    http_postRequest(url, tfmcu);
+  if (!synchron) {
+    if (!fetchMask) setTimeout(async_fetchByMask, 125);
+    fetchMask |= mask;
+    return;
   }
 
+  let mask_esp32 = mask & ~FETCHES_TARGET_STM32;
+  let mask_stm32 = mask & FETCHES_TARGET_STM32;
 
+  if (mask_esp32) fetchByMask2(mask_esp32, "netmcu");
+
+  if (mask_stm32) fetchByMask2(mask_stm32, "rv");
+}
+
+function fetchByMask2(mask, target) {
+  let tfmcu = { to: target };
+
+  if (mask & FETCH_CONFIG) add_kv(tfmcu, "config", "all", "?");
+
+  if (mask & FETCH_BOOT_COUNT) add_kv(tfmcu, "mcu", "boot-count", "?");
+
+  if (mask & FETCH_VERSION) {
+    add_kv(tfmcu, "mcu", "version", "?");
+  }
+
+  if (mask & FETCH_RV_VERSION) {
+    add_kv(tfmcu, "cmd", "rv-version", "?");
+  }
+
+  if (mask & FETCH_ZONE_NAMES) add_kv(tfmcu, "kvs", "zn", "?");
+
+  if (mask & FETCH_ZONE_REMAINING_DURATIONS) {
+    add_kv(tfmcu, "cmd", "rem", "?");
+  }
+  if (mask & FETCH_ZONE_DURATIONS) {
+    add_kv(tfmcu, "cmd", "dur", "?");
+  }
+
+  if (mask & FETCH_ZONE_DATA) add_kv(tfmcu, "pbuf", "zd", "?");
+
+  if (mask & FETCH_RV_STATUS) {
+    add_kv(tfmcu, "cmd", "status", "?");
+  }
+
+  let url = "/cmd.json";
+  http_postRequest(url, tfmcu);
+}
 
 export function fetchWithTimeout(url, data, timeout) {
   return new Promise((resolve, reject) => {
     // Set timeout timer
     let timer = setTimeout(
-      () => reject(new Error('Request timed out')),
+      () => reject(new Error("Request timed out")),
       timeout
     );
 
-    fetch(url, data).then(
-      response => resolve(response),
-      err => reject(err)
-    ).finally(() => clearTimeout(timer));
+    fetch(url, data)
+      .then(
+        (response) => resolve(response),
+        (err) => reject(err)
+      )
+      .finally(() => clearTimeout(timer));
   });
 }
 
@@ -201,10 +199,8 @@ function gitTags_fetch() {
     });
 }
 
-
-function add_kv(root,cmd,key,val) {
-  if (!(cmd in root))
-    root[cmd] = {};
+function add_kv(root, cmd, key, val) {
+  if (!(cmd in root)) root[cmd] = {};
 
   root[cmd][key] = val;
 }

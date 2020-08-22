@@ -16,9 +16,8 @@
   
   
   function postZoneNames() {
-    let netmcu = {to:"netmcu"};
-    let kvs = {zn:'?'};
-    netmcu.kvs = kvs;
+    let netmcu = {to:"rv", config:{}};
+    let kvs = netmcu.config;
   
     for (let i=0; i < $ZoneCount; ++i) {
       let sfx = i.toString();
@@ -34,6 +33,8 @@
     let url = '/cmd.json';
     console.log("url: "+url);
     httpFetch.http_postRequest(url, netmcu);
+
+    setTimeout(httpFetch.http_postRequest, 500, url, {to:"netmcu", kvs:{zn:"?"}});
   }
   
   
