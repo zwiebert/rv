@@ -64,26 +64,6 @@ int Lph[RV_VALVE_COUNT] = {
     LPH_POTS_NORTH, //11
     };
 
-static void stm32Send_zoneData() {
-#define BUF_SIZE 128
-  char buf[BUF_SIZE] = "";
-  uint8_t msgBuf[128];
-  struct lph_arg lph_arg = { .lph_arr = Lph, .lph_arr_len = RV_VALVE_COUNT };
-  int msgBufLen = encode_zoneData(msgBuf, sizeof(msgBuf), &lph_arg);
-
-  if (msgBufLen > 0) {
-    uint8_t b64[64];
-    size_t b64Len = 0;
-
-    int err = mbedtls_base64_encode(b64, sizeof b64, &b64Len, msgBuf, msgBufLen);
-    if (!err) {
-      io_printf("msgBufLen=%d, zd=<%*s>\n", msgBufLen, b64Len, b64);
-      snprintf(buf, BUF_SIZE, "{\"pbuf\":{\"zd\":\"%*s\"}};\n", b64Len, b64);
-      stm32_write(buf, strlen(buf));
-    }
-  }
-}
-
 extern "C" int
 process_parmProtoBuf(clpar p[], int len) {
 
@@ -110,18 +90,14 @@ process_parmProtoBuf(clpar p[], int len) {
 
     if (strcmp(key, KEY_ZONE_DATA) == 0) {
       if (requestData) {
-        if (so_tgt_test(SO_TGT_STM32)) { //XXX
-          stm32Send_zoneData();
-        } else {
-          uint8_t msgBuf[128];
-          struct lph_arg lph_arg = { .lph_arr = Lph, .lph_arr_len = RV_VALVE_COUNT };
-          int msgBufLen = encode_zoneData(msgBuf, sizeof(msgBuf), &lph_arg);
-          so_arg_pbuf_t pba = { .key = "zd", .buf = msgBuf, .buf_len = msgBufLen };
-          so_output_message(SO_PBUF_KV64, &pba);
-        }
+        uint8_t msgBuf[128];
+        struct zd_arg zd_arg = { .lph_arr = Lph, .lph_arr_len = RV_VALVE_COUNT };
+        int msgBufLen = encode_zoneData(msgBuf, sizeof(msgBuf), &zd_arg);
+        so_arg_pbuf_t pba = { .key = "zd", .buf = msgBuf, .buf_len = msgBufLen };
+        so_output_message(SO_PBUF_KV64, &pba);
       } else {
-        struct lph_arg lph_arg = { .lph_arr = Lph, .lph_arr_len = RV_VALVE_COUNT };
-        decode_zoneData(msgBuf, msgBufLen, &lph_arg);
+        struct zd_arg zd_arg = { .lph_arr = Lph, .lph_arr_len = RV_VALVE_COUNT };
+        decode_zoneData(msgBuf, msgBufLen, &zd_arg);
       }
     } else {
       warning_unknown_option(key);

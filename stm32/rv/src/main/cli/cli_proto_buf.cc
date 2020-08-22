@@ -48,7 +48,7 @@ process_parmProtoBuf(clpar p[], int len) {
 
 
     if (strcmp(key, KEY_ZONE_DATA) == 0) {
-      struct lph_arg lph_arg = { .lph_arr = Lph, .lph_arr_len = RV_VALVE_COUNT };
+      struct zd_arg lph_arg = { .lph_arr = Lph, .lph_arr_len = RV_VALVE_COUNT };
       if (decode_zoneData(msgBuf, msgBufLen, &lph_arg))
         got_zoneData = true;
       warning_unknown_option(key);

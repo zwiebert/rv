@@ -4,12 +4,12 @@
 #include <stdint.h>
 #include <stddef.h>
 
-struct lph_arg {
+struct zd_arg {
   int *lph_arr;
   int lph_arr_len;
 };
 
-bool decode_zoneData(uint8_t *msg_buf, unsigned msgBuf_len, const struct lph_arg *lph_arg);
-int encode_zoneData(uint8_t *msg_buf, size_t  msg_buf_len, const struct lph_arg *lph_arg);
+bool decode_zoneData(const uint8_t *src_buf, size_t src_buf_len, const struct zd_arg *dst_zd_arg);
+int encode_zoneData(uint8_t *dst_msg_uf, size_t  dst_msg_buf_len, const struct zd_arg *zd_arg);
 
 
