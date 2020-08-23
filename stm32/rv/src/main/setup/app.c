@@ -14,21 +14,21 @@
 #include <libopencm3/stm32/f1/memorymap.h>
 #include <stdio.h>
 #include <errno.h>
-#include <real_time_clock.h>
+#include <time/real_time_clock.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
 #include "mcp23017.h"
 #include "misc/int_macros.h"
-#include "water_pump_logic.h"
+#include "rv/water_pump_logic.h"
 #include "peri/uart.h"
 #include "cli/cli.h"
 #include "app_cxx.h"
-#include "report.h"
-#include "systick_1ms.h"
-#include "valve_relays.h"
+#include "rv/report.h"
+#include "time/systick_1ms.h"
+#include "rv/valve_relays.h"
 
-#include "loop.hh"
+#include "loop/loop.hh"
 #include "test/test.h"
 
 #include "../Libraries/tm1638/include/boards/dlb8.h"

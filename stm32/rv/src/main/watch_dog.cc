@@ -9,11 +9,11 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/memorymap.h>
-#include "real_time_clock.h"
+#include "time/real_time_clock.h"
 
 #include "watch_dog.hh"
 #include "peri/uart.h"
-#include "report.h"
+#include "rv/report.h"
 
 static unsigned call_time, response_time;
 static unsigned missed_responses;

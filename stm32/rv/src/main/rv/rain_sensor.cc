@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include <rain_sensor.hh>
+#include <rv/rain_sensor.hh>
 
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>

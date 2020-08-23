@@ -117,25 +117,17 @@ void *p;
 
 void RvTimers::loop() {
 
-
-
-  for (RvTimer *t = mRvTimers.mUsedTimers.getFirst(); t; t = t->getNext()) {
-
-#if 0
-    char json[256];
-    t->toJSON(json, sizeof json);
-     RvTimerData test = RvTimerData(json);
-     p = &test;
-#endif
-
-    if (t->isDone()) {
-      RvTimer *pred = t->pred;
-      mRvTimers.delete_timer(t);
-      t = pred;
-      continue;
+  for (RvtList::iterator it = mRvTimers.mUsedTimers.begin(); it != mRvTimers.mUsedTimers.end();) {
+    if (it->isDone()) {
+      mRvTimers.delete_timer(it++);
+    } else {
+      ++it;
     }
+  }
 
-    RvTimer &vt = *t;
+  for (RvtList::iterator it = mRvTimers.mUsedTimers.begin(); it != mRvTimers.mUsedTimers.end(); ++it) {
+
+    RvTimer &vt = *it;
 
     switch (vt.checkState()) {
 

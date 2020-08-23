@@ -14,7 +14,7 @@ extern "C" {
 
 #include "user_config.h"
 #include "water_pump.h"
-#include <real_time_clock.h>
+#include <time/real_time_clock.h>
 
 #define WPL_MAX_OFF_TIME (ONE_DAY * 2)
 #define WPL_MAX_ON_TIME_SHORT (ONE_MINUTE * 2)

@@ -6,11 +6,11 @@
  */
 
 #include "user_config.h"
-#include "rv_timer.hh"
-#include "app_cxx.h"
+#include "rv/rv_timer.hh"
+#include "setup/app_cxx.h"
 #include "watch_dog.hh"
-#include "systick_1ms.h"
-#include "valve_relays.h"
+#include "time/systick_1ms.h"
+#include "rv/valve_relays.h"
 
 RvTimers rvt = RvTimers(0, app_switch_valves);
 RainSensor rs;

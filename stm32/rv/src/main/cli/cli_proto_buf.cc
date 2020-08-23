@@ -1,13 +1,13 @@
 #include "user_config.h"
-#include <real_time_clock.h>
+#include <time/real_time_clock.h>
 #include <string.h>
 #include "cli_imp.h"
 #include <stdio.h>
 #include "peri/uart.h"
-#include "water_pump.h"
-#include "rv_timer.hh"
-#include "app_cxx.hh"
-#include "rain_sensor.hh"
+#include "rv/water_pump.h"
+#include "rv/rv_timer.hh"
+#include "setup/app_cxx.hh"
+#include "rv/rain_sensor.hh"
 extern "C" {
 #include "misc/base64.h"
 }

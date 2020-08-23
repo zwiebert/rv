@@ -14,7 +14,7 @@
 
 
 #include "systick_1ms.h"
-#include "loop.hh"
+#include "loop/loop.hh"
 #include "misc/int_macros.h"
 
 volatile uint64_t run_time_ms;

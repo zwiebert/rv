@@ -1,13 +1,13 @@
 #include "user_config.h"
-#include <real_time_clock.h>
+#include <time/real_time_clock.h>
 #include <string.h>
 #include "cli_imp.h"
 #include <stdio.h>
 #include "peri/uart.h"
-#include "water_pump.h"
-#include "rv_timer.hh"
-#include "app_cxx.hh"
-#include "rain_sensor.hh"
+#include "rv/water_pump.h"
+#include "rv/rv_timer.hh"
+#include "setup/app_cxx.hh"
+#include "rv/rain_sensor.hh"
 
 #define warning_unknown_option(x)
 extern "C" void timer_set(int8_t channel);
@@ -72,8 +72,13 @@ process_parmCmd(clpar p[], int len) {
         RvTimer::SetArgs args;
         sscanf(val, "%d,%d,%d,%d,%d,%d,%d,%d", &args.on_duration, &args.mIgnoreRainSensor, &args.off_duration, &args.repeats, &args.period, &args.mDaysInterval, &args.mTodSpanBegin,
             &args.mTodSpanEnd);
-        rvt.set(args, channel, timer_number)->scheduleRun();
-        hasDuration = true;
+
+        if (rvt.set(args, channel, timer_number)->scheduleRun()) {
+          hasDuration = true;
+        } else {
+          // XXX: error
+        }
+
       } else {
         int duration = atoi(val);
         rvt.set(channel, duration, timer_number)->scheduleRun();
@@ -96,7 +101,7 @@ process_parmCmd(clpar p[], int len) {
   if (wantsReply) {
     esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
 
-    for (RvTimer *t = rvt.getTimerList()->getFirst(); t; t = t->getNext()) {
+    for (RvtList::iterator t = rvt.getTimerList()->begin(); t != rvt.getTimerList()->end(); ++t) {
       if (wantsDurations) {
         int secs = t->get_duration();
         if (secs) {

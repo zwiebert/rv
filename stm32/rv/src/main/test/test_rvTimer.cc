@@ -7,9 +7,9 @@
 
 #include "user_config.h"
 #include "test.h"
-#include "app_cxx.h"
-#include "rv_timer.hh"
-#include "valve_relays.h"
+#include "setup/app_cxx.h"
+#include "rv/rv_timer.hh"
+#include "rv/valve_relays.h"
 
 
 extern bool rs_forceRain;
@@ -55,7 +55,7 @@ extern "C" testRes_T testRvTimer_loop() {
     DO_WAIT(10);
     break;
   case T_OW_CHECK:
-    if (rvt.getTimerList()->length() != 3)
+    if (rvt.getTimerList()->size() != 3)
       tr_failed();
     ++ts;
     break;
@@ -67,7 +67,7 @@ extern "C" testRes_T testRvTimer_loop() {
     DO_WAIT(10);
     break;
   case T_OW_DONE:
-    if (rvt.getTimerList()->length() != 0)
+    if (rvt.getTimerList()->size() != 0)
       tr_failed();
     if (valveRelay_getActiveValves())
       tr_failed();
@@ -83,7 +83,7 @@ extern "C" testRes_T testRvTimer_loop() {
     DO_WAIT(10);
     break;
   case T_N_CHECK_STATS:
-    if (rvt.getTimerList()->length() > 0)
+    if (rvt.getTimerList()->size() > 0)
       break;
     if (valveRelay_getActiveValves())
       tr_failed();
@@ -103,7 +103,7 @@ extern "C" testRes_T testRvTimer_loop() {
   case T_A_CHECK_STATES:
     if (rts[0]->mState != RvTimer::STATE_ON)
       break;
-    if (rvt.getTimerList()->length() != RV_VALVE_COUNT)
+    if (rvt.getTimerList()->size() != RV_VALVE_COUNT)
       return tr_failed();
     for (int i = 1; i < RV_VALVE_COUNT; ++i) {
       if (rts[i]->mState != RvTimer::STATE_RUN)
@@ -116,7 +116,7 @@ extern "C" testRes_T testRvTimer_loop() {
    ++ts;
     break;
   case T_A_DONE:
-    if (rvt.getTimerList()->getFirst())
+    if (!rvt.getTimerList()->empty())
       break;
     rs_forceRain = false;
     ++ts;
@@ -130,7 +130,7 @@ extern "C" testRes_T testRvTimer_loop() {
     ++ts;
     break;
   case T_012_CHECK_0:
-    if(rvt.getTimerList()->length() != 3)
+    if(rvt.getTimerList()->size() != 3)
       return tr_failed();
     if (rts[0]->mState == RvTimer::STATE_RUN || rts[0]->mState == RvTimer::STATE_OFF)
       break;
@@ -140,11 +140,11 @@ extern "C" testRes_T testRvTimer_loop() {
     break;
 
   case T_012_CHECK_1P:
-    if(rvt.getTimerList()->length() != 2)
+    if(rvt.getTimerList()->size() != 2)
       break;
     if (rts[1]->mState == RvTimer::STATE_RUN)
       break;
-    if (rvt.getTimerList()->getFirst() != rts[1])
+    if (&rvt.getTimerList()->front() != rts[1])
       return tr_failed();
     if (!(rts[1]->mState == RvTimer::STATE_PAUSED && rts[2]->mState == RvTimer::STATE_PAUSED))
       return tr_failed();
@@ -152,13 +152,13 @@ extern "C" testRes_T testRvTimer_loop() {
     break;
 
   case T_012_CHECK_1:
-    if(rvt.getTimerList()->length() != 2)
+    if(rvt.getTimerList()->size() != 2)
       break;
     if (rts[1]->mState == RvTimer::STATE_PAUSED)
       break;
     if (rts[1]->mState == RvTimer::STATE_RUN)
       break;
-    if (rvt.getTimerList()->getFirst() != rts[1])
+    if (&rvt.getTimerList()->front() != rts[1])
       return tr_failed();
     if (!(rts[1]->mState == RvTimer::STATE_ON && rts[2]->mState == RvTimer::STATE_RUN))
       return tr_failed();
@@ -166,11 +166,11 @@ extern "C" testRes_T testRvTimer_loop() {
     break;
 
   case T_012_CHECK_2:
-    if(rvt.getTimerList()->length() != 1)
+    if(rvt.getTimerList()->size() != 1)
       break;
     if (rts[2]->mState == RvTimer::STATE_RUN || rts[2]->mState == RvTimer::STATE_PAUSED)
       break;
-    if (rvt.getTimerList()->getFirst() != rts[2])
+    if (&rvt.getTimerList()->front() != rts[2])
       return tr_failed();
     if (!(rts[2]->mState == RvTimer::STATE_ON))
       return tr_failed();
@@ -178,7 +178,7 @@ extern "C" testRes_T testRvTimer_loop() {
     break;
 
   case T_012_DONE:
-    if (rvt.getTimerList()->getFirst())
+    if (!rvt.getTimerList()->empty())
       break;
     ++ts;
     break;

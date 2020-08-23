@@ -5,14 +5,14 @@
  *      Author: bertw
  */
 extern "C" {
-#include <real_time_clock.h>
-#include <real_time_clock.h>
+#include <time/real_time_clock.h>
+#include <time/real_time_clock.h>
 #include "user_config.h"
 #include "cli_imp.h"
 #include "peri/uart.h"
 }
-#include "loop.hh"
-#include "rv_timer.hh"
+#include "loop/loop.hh"
+#include "rv/rv_timer.hh"
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>

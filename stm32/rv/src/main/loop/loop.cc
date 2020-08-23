@@ -1,13 +1,13 @@
 #include "loop.hh"
 #include "misc/int_macros.h"
 
-#include "water_pump_logic.h"
+#include "rv/water_pump_logic.h"
 #include "cli/cli.h"
-#include "app_cxx.h"
-#include "report.h"
+#include "setup/app_cxx.h"
+#include "rv/report.h"
 #include <stdio.h>
 #include "watch_dog.hh"
-#include "rv_timer.hh"
+#include "rv/rv_timer.hh"
 #include "peri/uart.h"
 
 extern RvTimers rvt;

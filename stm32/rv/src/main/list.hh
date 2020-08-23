@@ -1,12 +1,16 @@
-/*
- * list.hh
- *
- *  Created on: 05.07.2019
- *      Author: bertw
- */
+#pragma once
 
-#ifndef MAIN_LIST_HH_
-#define MAIN_LIST_HH_
+#define USE_STD_LIST
+
+#ifdef USE_STD_LIST
+#include <list>
+#include "rv/rv_timer.hh"
+class RvTimer;
+
+typedef std::list<RvTimer> RvtList;
+
+#else
+
 
 #include <stddef.h>
 
@@ -15,8 +19,6 @@ template<class T> class List;
 template<class T>
 class Node {
   friend List<T>;
-private:
-  bool mIsHead;
 protected:
   T *pred, *succ;
 
@@ -24,53 +26,81 @@ protected:
 
 public:
   Node<T>(T *head = 0) :
-      mIsHead(head != 0), pred(head), succ(head) {
-
+      pred(head), succ(head) {
   }
-
-  T* getNext() {
-    return succ->mIsHead ? 0 : succ;
-  }
-
-
 
 };
 
 template<class T>
-class List: private Node<T> {
+class List {
   int mLength = 0;
+  Node<T> head;
 
 public:
-  List<T>() :
-      Node<T>((T*) this) {
+  List<T>() : head((T*)&head)
+
+
+      {
   }
 
-  void append(T *obj);
-  void remove(T *obj);
-  T* pop();
+  void push_back(T *obj);
+  void erase(T *obj);
+  T* pop_front();
 
-  T* getFirst() {
-    return this->getNext();
+  T* front() {
+    return head.succ;
   }
 
-  size_t length() {
+  T* back() {
+    return head.pred;
+  }
+
+
+  size_t size() {
     return mLength;
+  }
+  bool empty() { return head.succ == head.pred; }
+
+  class iterator {
+     T *current;
+  public:
+     iterator(T* obj): current(obj) {};
+     T* operator=(T *rhs) { return (current = rhs); }
+     T* operator->() { return current; }
+     bool operator==(const T *rhs) { return current == rhs; }
+     //bool operator!=(const iterator rhs) { return current != rhs; }
+     T* operator++() { return current = current->succ; }
+     operator T*() { return current; }
+  };
+
+  iterator begin() {
+    return head.succ;
+  }
+
+  iterator end() {
+    return (T*)&head;
   }
 
 };
 
-template<class T> void List<T>::append(T *obj) {
+
+class RvTimer;
+
+typedef List<RvTimer> RvtList;
+
+
+template<class T> void List<T>::push_back(T *obj) {
   ++mLength;
 
-  T *tail = this->pred;
+  T *tail = head.pred;
   tail->succ = obj;
   obj->pred = tail;
 
-  this->pred = obj; // obj is new list tail
-  obj->succ = (T*) this;
+  head.pred = obj; // obj is new list tail
+  obj->succ = (T*) &head;
 }
 
-template<class T> void List<T>::remove(T *obj) {
+template<class T> void List<T>::erase(T *obj) {
   --mLength;
   if (obj->pred)
     obj->pred->succ = obj->succ;
@@ -78,13 +108,11 @@ template<class T> void List<T>::remove(T *obj) {
     obj->succ->pred = obj->pred;
 }
 
-template<class T> T* List<T>::pop() {
-  if (this->succ->mIsHead)
-    return 0;
+template<class T> T* List<T>::pop_front() {
+  precond(!empty());
 
-  T *obj = this->succ;
-  remove(obj);
+  T *obj = head.succ;
+  erase(obj);
   return obj;
 }
-
-#endif /* MAIN_LIST_HH_ */
+#endif

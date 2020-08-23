@@ -2,25 +2,16 @@
 #define RV_TIMER_HH
 
 #include "rain_sensor.hh"
-#include "app_cxx.hh"
+#include "setup/app_cxx.hh"
 #include "user_config.h"
 #include "misc/int_macros.h"
-#include "real_time_clock.h"
+#include "time/real_time_clock.h"
 #include "water_pump.h"
 #include "list.hh"
 
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
-#ifdef MOD_TEST
-#include <iostream>
-volatile time_t start_time;
-volatile int x;
-void breaker() {
-  // start_time = time(0);
-}
-
-#endif
 
 const int RV_TIMER_COUNT = 20;
 const int RV_VALVE_COUNT = 12;
@@ -138,7 +129,7 @@ public:
   }
 };
 
-class RvTimer: public Node<RvTimer>, public RvTimerData  {
+class RvTimer: public RvTimerData  {
   friend class RvTimers;
   static RvTimerPause rvtp;
 private:
@@ -380,6 +371,8 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 class RvTimers {
+  typedef std::list<RvTimer> RvtList;
+
   static uint16_t valve_bits, valve_mask;
   static void switch_valve_2(int valve_number, bool state) {
     SET_BIT(valve_mask, valve_number);
@@ -390,31 +383,25 @@ private:
 
   class Timers {
   private:
-    RvTimer mTimerPool[RV_TIMER_COUNT];
+    //RvTimer mTimerPool[RV_TIMER_COUNT];
   public:
-    List<RvTimer> mFreeTimers, mUsedTimers;
+    RvtList mUsedTimers;
     Timers() {
-
-      for (int i = 0; i < RV_TIMER_COUNT; ++i) {
-        mFreeTimers.append(&mTimerPool[i]);
-      }
     }
 
-    RvTimer *get_timer() {
-      RvTimer *res = mFreeTimers.pop();
-      if (res)
-        mUsedTimers.append(res);
-      return res;
+    RvTimer* get_timer() {
+      mUsedTimers.emplace_back();
+      return &mUsedTimers.back();
     }
 
-    void delete_timer(RvTimer *t) {
-      mUsedTimers.remove(t);
-      *t = RvTimer();  // re-init
-      mFreeTimers.append(t);
+    void delete_timer(RvtList::iterator t) {
+      mUsedTimers.erase(t);
     }
 
-    unsigned get_used_count() { return mUsedTimers.length(); }
-    unsigned get_free_count() { return mFreeTimers.length(); }
+    unsigned get_used_count() {
+      return mUsedTimers.size();
+    }
+    //unsigned get_free_count() { return mFreeTimers.length(); }
 
   } mRvTimers;
 
@@ -423,8 +410,10 @@ private:
 
 public:
 
-  unsigned get_used_count() { return mRvTimers.get_used_count(); }
-  unsigned get_free_count() { return mRvTimers.get_free_count(); }
+  unsigned get_used_count() {
+    return mRvTimers.get_used_count();
+  }
+  //unsigned get_free_count() { return mRvTimers.get_free_count(); }
 
   RvTimers(switch_valve_cb cb, switch_valves_cb cb2) :
       mSvCb(cb), mSvsCb(cb2) {
@@ -435,8 +424,8 @@ public:
     mSvCb = cb; // XXX
   }
 
-  RvTimer *set(RvTimer::SetArgs &args, int valve_number, int id) {
-    for (RvTimer *t = mRvTimers.mUsedTimers.getFirst(); t; t = t->getNext()) {
+  RvTimer* set(RvTimer::SetArgs &args, int valve_number, int id) {
+    for (RvtList::iterator t = mRvTimers.mUsedTimers.begin(); t != mRvTimers.mUsedTimers.end(); ++t) {
       if (t->match(valve_number, id)) {
         t->changeState(RvTimer::STATE_DONE);
         break;
@@ -464,7 +453,7 @@ public:
   }
 
   void unset(int valve_number, int id) {
-    for (RvTimer *t = mRvTimers.mUsedTimers.getFirst(); t; t = t->getNext()) {
+    for (RvtList::iterator t = mRvTimers.mUsedTimers.begin(); t != mRvTimers.mUsedTimers.end(); ++t) {
       if (t->match(valve_number, id)) {
         mRvTimers.delete_timer(t);
       }
@@ -474,39 +463,10 @@ public:
   void loop();
 
 public:
-  List<RvTimer> *getTimerList() {
+  RvtList *getTimerList() {
     return &mRvTimers.mUsedTimers;
   }
 };
-
-#ifdef MOD_TEST
-#include <stdlib.h>
-#include <iostream>
-
-void switch_valve(int valve_number, bool state) {
-  std::cout << (time(0) - start_time) << ": valve " << valve_number << " switched " << (state ? "on" : "off") << std::endl;
-  std::cout.flush();
-}
-
-extern "C" void app_switch_valve(int valve_number, bool state);
-
-int main() {
-  start_time = time(0);
-  RvTimers rvt = RvTimers(switch_valve);
-
-  // rvt.set(0,2,4,3,60)->run();
-  // rvt.set(1,3,5,4,130)->run();
-  // rvt.set(2,3)->run();
-
-  rvt.set(6, 30, 0, 0, 60*2)->run();
-  rvt.set(7, 30, 0, 0, 60*2)->run();
-  while (1) {
-    rvt.loop();
-    //sleep(100);
-  }
-}
-
-#endif
 
 #endif
 // Local Variables:

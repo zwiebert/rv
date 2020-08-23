@@ -11,7 +11,7 @@
 #include "user_config.h"
 
 #include <stdbool.h>
-#include "real_time_clock.h"
+#include "time/real_time_clock.h"
 
 #define WP_MCP_MASK 0x0c
 

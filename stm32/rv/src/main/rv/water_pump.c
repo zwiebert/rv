@@ -14,8 +14,8 @@
 #include <libopencm3/stm32/exti.h>
 #include "misc/int_macros.h"
 #include "report.h"
-#include "real_time_clock.h"
-#include "systick_1ms.h"
+#include "time/real_time_clock.h"
+#include "time/systick_1ms.h"
 #include "assert.h"
 #include "valve_relays.h"
 
