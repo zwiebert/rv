@@ -94,12 +94,18 @@ export function http_handleResponses(obj) {
 
   if ("kvs" in obj) {
     let kvs = obj.kvs;
-    let zoneNames = [];
+    
     for (let i = 0; i < ZoneCountMax; ++i) {
       let key = "zn" + i.toString();
-      zoneNames[i] = key in kvs ? kvs[key] : "";
+      if (key in kvs) {
+        ZoneNames.update(i, kvs[key]);
+      }
+      key = "lph" + i.toString();
+      if (key in kvs) {
+        ZoneLPHs.update(i, kvs[key]);
+      }
     }
-    ZoneNames.set(zoneNames);
+
   }
 
   if ("mcu" in obj) {

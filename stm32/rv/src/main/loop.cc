@@ -32,7 +32,7 @@ static void i2c2_check_loop() {
 bool got_zoneData;
 static void fetchData_loop() {
   if (!got_zoneData) {
-    esp32_puts("{\"to\":\"cli\",\"pbuf\":{\"zd\":\"?\"}}\n");
+   // esp32_puts("{\"to\":\"cli\",\"pbuf\":{\"zd\":\"?\"}}\n");
     esp32_puts("{\"to\":\"cli\",\"kvs\":{\"lph\":\"?\"}}\n");
   }
 }

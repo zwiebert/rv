@@ -6,6 +6,7 @@ import { ws_isOpen } from "./net/conn_ws";
 let bit = 1;
 export const FETCH_CONFIG = bit;
 export const FETCH_ZONE_NAMES = (bit <<= 1);
+export const FETCH_ZONE_LPHS = (bit <<= 1);
 export const FETCH_ZONE_DURATIONS = (bit <<= 1);
 export const FETCH_ZONE_REMAINING_DURATIONS = (bit <<= 1);
 export const FETCH_ZONE_DATA = (bit <<= 1);
@@ -35,10 +36,17 @@ export function sendPbuf(cmd) {
   http_postRequest(url, obj);
 }
 
+export function sendKvs(cmd) {
+  let url = "/cmd.json";
+  let obj = { from: "wapp" };
+  obj.kvs = cmd;
+  http_postRequest(url, obj);
+}
+
 export function sendRv(cmd) {
   let url = "/cmd.json";
   let obj = {to:"rv"};
-  obj.pbuf = cmd;
+  Object.assign(obj, cmd);
   http_postRequest(url, obj);
 }
 
@@ -145,6 +153,8 @@ function fetchByMask2(mask, target) {
   }
 
   if (mask & FETCH_ZONE_NAMES) add_kv(tfmcu, "kvs", "zn", "?");
+
+  if (mask & FETCH_ZONE_LPHS) add_kv(tfmcu, "kvs", "lph", "?");
 
   if (mask & FETCH_ZONE_REMAINING_DURATIONS) {
     add_kv(tfmcu, "cmd", "rem", "?");

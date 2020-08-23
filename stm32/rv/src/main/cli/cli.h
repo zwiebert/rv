@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-#define CMD_BUF_SIZE 128
+#define CMD_BUF_SIZE 512
 char *get_commandline(void);
 void cli_loop(void);
 

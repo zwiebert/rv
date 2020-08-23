@@ -29,6 +29,8 @@ extern "C" {
 
 void lf_loop();
 
+extern bool got_zoneData;
+
 #ifdef __cplusplus
 }
 #endif
