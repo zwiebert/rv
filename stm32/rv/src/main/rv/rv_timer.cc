@@ -119,7 +119,7 @@ void RvTimers::loop() {
 
 
 
-  for (RvTimer *t = mRvTimers.mUsedTimers.getNext(); t; t = t->getNext()) {
+  for (RvTimer *t = mRvTimers.mUsedTimers.getFirst(); t; t = t->getNext()) {
 
 #if 0
     char json[256];

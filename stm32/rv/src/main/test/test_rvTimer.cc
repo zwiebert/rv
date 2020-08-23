@@ -116,7 +116,7 @@ extern "C" testRes_T testRvTimer_loop() {
    ++ts;
     break;
   case T_A_DONE:
-    if (rvt.getTimerList()->getNext())
+    if (rvt.getTimerList()->getFirst())
       break;
     rs_forceRain = false;
     ++ts;
@@ -144,7 +144,7 @@ extern "C" testRes_T testRvTimer_loop() {
       break;
     if (rts[1]->mState == RvTimer::STATE_RUN)
       break;
-    if (rvt.getTimerList()->getNext() != rts[1])
+    if (rvt.getTimerList()->getFirst() != rts[1])
       return tr_failed();
     if (!(rts[1]->mState == RvTimer::STATE_PAUSED && rts[2]->mState == RvTimer::STATE_PAUSED))
       return tr_failed();
@@ -158,7 +158,7 @@ extern "C" testRes_T testRvTimer_loop() {
       break;
     if (rts[1]->mState == RvTimer::STATE_RUN)
       break;
-    if (rvt.getTimerList()->getNext() != rts[1])
+    if (rvt.getTimerList()->getFirst() != rts[1])
       return tr_failed();
     if (!(rts[1]->mState == RvTimer::STATE_ON && rts[2]->mState == RvTimer::STATE_RUN))
       return tr_failed();
@@ -170,7 +170,7 @@ extern "C" testRes_T testRvTimer_loop() {
       break;
     if (rts[2]->mState == RvTimer::STATE_RUN || rts[2]->mState == RvTimer::STATE_PAUSED)
       break;
-    if (rvt.getTimerList()->getNext() != rts[2])
+    if (rvt.getTimerList()->getFirst() != rts[2])
       return tr_failed();
     if (!(rts[2]->mState == RvTimer::STATE_ON))
       return tr_failed();
@@ -178,7 +178,7 @@ extern "C" testRes_T testRvTimer_loop() {
     break;
 
   case T_012_DONE:
-    if (rvt.getTimerList()->getNext())
+    if (rvt.getTimerList()->getFirst())
       break;
     ++ts;
     break;

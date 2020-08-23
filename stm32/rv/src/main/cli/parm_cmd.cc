@@ -96,7 +96,7 @@ process_parmCmd(clpar p[], int len) {
   if (wantsReply) {
     esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
 
-    for (RvTimer *t = rvt.getTimerList()->getNext(); t; t = t->getNext()) {
+    for (RvTimer *t = rvt.getTimerList()->getFirst(); t; t = t->getNext()) {
       if (wantsDurations) {
         int secs = t->get_duration();
         if (secs) {

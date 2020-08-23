@@ -15,6 +15,7 @@ extern "C" {
 #include "rv_timer.hh"
 #include <stdio.h>
 #include <ctype.h>
+#include <stdlib.h>
 
 #define ENABLE_RESTART 0 // allow software reset
 

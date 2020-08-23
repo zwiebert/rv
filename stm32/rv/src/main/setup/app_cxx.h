@@ -17,7 +17,6 @@ extern class RainSensor rs;
 extern "C" {
 #endif
 
-void cxx_loop();
 void cxx_setup();
 
 

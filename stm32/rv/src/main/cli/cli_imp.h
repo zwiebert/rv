@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-#define CMD_BUF_SIZE 128
+#define CMD_BUF_SIZE 512
 extern char cmd_buf[CMD_BUF_SIZE];
 
 // implementation interface for  cli*.c files

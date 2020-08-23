@@ -436,7 +436,7 @@ public:
   }
 
   RvTimer *set(RvTimer::SetArgs &args, int valve_number, int id) {
-    for (RvTimer *t = mRvTimers.mUsedTimers.getNext(); t; t = t->getNext()) {
+    for (RvTimer *t = mRvTimers.mUsedTimers.getFirst(); t; t = t->getNext()) {
       if (t->match(valve_number, id)) {
         t->changeState(RvTimer::STATE_DONE);
         break;
@@ -464,7 +464,7 @@ public:
   }
 
   void unset(int valve_number, int id) {
-    for (RvTimer *t = mRvTimers.mUsedTimers.getNext(); t; t = t->getNext()) {
+    for (RvTimer *t = mRvTimers.mUsedTimers.getFirst(); t; t = t->getNext()) {
       if (t->match(valve_number, id)) {
         mRvTimers.delete_timer(t);
       }
