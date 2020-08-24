@@ -6,9 +6,9 @@
  */
 
 #include "user_config.h"
-#include "rv/rv_timer.hh"
+#include "rv/rv_timers.hh"
 #include "setup/app_cxx.h"
-#include "watch_dog.hh"
+#include "watch_dog/watch_dog.hh"
 #include "time/systick_1ms.h"
 #include "rv/valve_relays.h"
 

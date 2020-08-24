@@ -1,19 +1,20 @@
-#ifndef RV_TIMER_HH
-#define RV_TIMER_HH
+#pragma once
 
 #include "user_config.h"
-#include "list.hh"
 #include "rain_sensor.hh"
 #include "setup/app_cxx.hh"
 
 #include "misc/int_macros.h"
 #include "time/real_time_clock.h"
 #include "water_pump.h"
-
+#include "rv_timer_data.hh"
 
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
+
+
+
 
 const int RV_TIMER_COUNT = 20;
 const int RV_VALVE_COUNT = 12;
@@ -31,105 +32,6 @@ class RvTimers;
 #define IGNORE_PUMP_PAUSE 2
 
 
-class RvTimerPause {
-#define PAUSE_SECS_PER_LITER 8
-#define PAUSE_AFTER_LITER 100
-  int mLitersBeforePause = 0;
-  unsigned mLph = 0;
-  run_time_T mLastLphChange = 0;
-
-  unsigned pauseDuration() { return mLitersBeforePause * PAUSE_SECS_PER_LITER; }
-public:
-  unsigned getLph()  { return mLph; }
-  void lphChange(int lph) {
-    if (!lph)
-      return;
-
-
-    run_time_T now = runTime();
-    run_time_T dur = now - mLastLphChange;
-
-    if (mLph) {
-      mLitersBeforePause += (int)(((double)mLph / 3600.0) * (double)dur);
-    }
-
-    mLph += lph;
-    mLastLphChange = now;
-  }
-
-  bool needsPause(int zone = -1) {
-    if (mLitersBeforePause == 0)
-      return false;
-
-    run_time_T dur = pauseDuration();
-
-    run_time_T sinceLastLphChange = (runTime() - mLastLphChange);
-    if (dur > sinceLastLphChange)
-      return true;
-
-#if 0
-    run_time_T sinceLastPumpOff = wp_getPumpOffDuration();
-    if (dur > sinceLastPumpOff)
-      return true;
-#endif
-
-    mLitersBeforePause = 0;
-    return false;
-  }
-};
-
-struct RvTimerData {
-public:
-  struct SetArgs {
-    int on_duration = 0, off_duration = 0, repeats = 0, period = 0;
-    int mDaysInterval = 0, mTodSpanBegin = 0, mTodSpanEnd = 0;
-    int mIgnoreRainSensor = 0;
-#define SA_JSON_FMT "{\"d1\":%d,\"ir\":%d,\"d0\":%d,\"r\":%d,\"per\":%d,\"di\":%d,\"sb\":%d,\"se\":%d}"
-    char *toJSON(char *buf, int buf_size) {
-      if (0
-          <= snprintf(buf, buf_size, SA_JSON_FMT, on_duration, mIgnoreRainSensor,
-              off_duration, repeats, period, mDaysInterval, mTodSpanBegin, mTodSpanEnd))
-        return buf;
-
-      return 0;
-    }
-    SetArgs() {}
-    SetArgs(const char *json) {
-      json = strstr(json, "{\"d1\":");
-      if (json) {
-        sscanf(json, SA_JSON_FMT, &on_duration, &mIgnoreRainSensor, &off_duration, &repeats, &period, &mDaysInterval, &mTodSpanBegin, &mTodSpanEnd);
-      }
-    }
-  };
-protected:
-  SetArgs mArgs;
-  int mValveNumber = -1;
-  int mTimerNumber = 0; // multiple time per valve with different numbers
-  time_t mNextRun = 0;
-  time_t mLastRun = 0;
-
-public:
-#define TD_JSON_PF_FMT "{\"vn\":%d,\"tn\":%d,\"nr\":%ld,\"lr\":%ld,\"args\":%s}"
-#define TD_JSON_SF_FMT "{\"vn\":%d,\"tn\":%d,\"nr\":%ld,\"lr\":%ld,"
-  char *toJSON(char *buf, int buf_size) {
-    char aBuf[128] = "";
-    const char *aJson = mArgs.toJSON(aBuf, sizeof aBuf);
-
-    if (0
-        <= snprintf(buf, buf_size, TD_JSON_PF_FMT, mValveNumber, mTimerNumber, (uint32_t)mNextRun, (uint32_t)mLastRun, aJson))
-      return buf;
-
-    return 0;
-  }
-
-  RvTimerData() {}
-  RvTimerData(const char *json): mArgs(json) {
-    uint32_t nextRun = 0, lastRun = 0; // long long currently not working with printf/scanf
-    sscanf(json, TD_JSON_SF_FMT, &mValveNumber, &mTimerNumber, &nextRun, &lastRun);
-    mNextRun = nextRun;
-    mLastRun = lastRun;
-  }
-};
 
 class RvTimer: public RvTimerData  {
   friend class RvTimers;
@@ -370,113 +272,4 @@ public:
   }
 };
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-#ifdef USE_STD_LIST
-template <class T> using TList = std::list<T, my_allocator<T>>;
-#else
-template <class T> using TList = List<T, my_allocator<T>>;
-#endif
 
-class RvTimers {
-  static uint16_t valve_bits, valve_mask;
-  static void switch_valve_2(int valve_number, bool state) {
-    SET_BIT(valve_mask, valve_number);
-    if (state)
-      SET_BIT(valve_bits, valve_number);
-  }
-private:
-  typedef TList<RvTimer> RvtList;
-
-  class Timers {
-  public:
-
-     RvtList mUsedTimers;
-    Timers() {
-    }
-
-    RvTimer* get_timer() {
-      mUsedTimers.emplace_back();
-      return &mUsedTimers.back();
-    }
-
-    void delete_timer(RvtList::iterator t) {
-      mUsedTimers.erase(t);
-    }
-
-    unsigned get_used_count() {
-      return mUsedTimers.size();
-    }
-    //unsigned get_free_count() { return mFreeTimers.length(); }
-
-  } mRvTimers;
-
-  switch_valve_cb mSvCb; // XXX
-  switch_valves_cb mSvsCb;
-
-public:
-
-  unsigned get_used_count() {
-    return mRvTimers.get_used_count();
-  }
-  //unsigned get_free_count() { return mRvTimers.get_free_count(); }
-
-  RvTimers(switch_valve_cb cb, switch_valves_cb cb2) :
-      mSvCb(cb), mSvsCb(cb2) {
-
-  }
-
-  void register_callback(switch_valve_cb cb) {
-    mSvCb = cb; // XXX
-  }
-
-  RvTimer* set(RvTimer::SetArgs &args, int valve_number, int id) {
-    for (RvtList::iterator t = mRvTimers.mUsedTimers.begin(); t != mRvTimers.mUsedTimers.end(); ++t) {
-      if (t->match(valve_number, id)) {
-        t->changeState(RvTimer::STATE_DONE);
-        break;
-      }
-    }
-
-    RvTimer *timer = mRvTimers.get_timer();
-    if (!timer)
-      return 0;
-
-    if (args.on_duration == 0) {
-      timer->changeState(RvTimer::STATE_DONE);
-    }
-
-    timer->register_callback((mSvCb ? mSvCb : switch_valve_2), valve_number);
-    timer->set(args, id);
-    return timer;
-
-  }
-
-  RvTimer *set(int valve_number, int on_duration, int id = 0) {
-    RvTimer::SetArgs args;
-    args.on_duration = on_duration;
-    return set(args, valve_number, id);
-  }
-
-  void unset(int valve_number, int id) {
-    for (RvtList::iterator t = mRvTimers.mUsedTimers.begin(); t != mRvTimers.mUsedTimers.end(); ++t) {
-      if (t->match(valve_number, id)) {
-        mRvTimers.delete_timer(t);
-      }
-    }
-  }
-
-  void loop();
-
-public:
-  RvtList *getTimerList() {
-    return &mRvTimers.mUsedTimers;
-  }
-};
-
-
-typedef TList<RvTimer> RvtList;
-
-#endif
-// Local Variables:
-// compile-command: "/c/MinGW/bin/g++ -ggdb rv_timer.cc"
-// End:

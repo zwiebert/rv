@@ -2,6 +2,7 @@
 
 #include "water_pump.h"
 #include "report.h"
+#include <algorithm>
 
 int Lph[RV_VALVE_COUNT] = {
     1000, //0
@@ -18,11 +19,6 @@ int Lph[RV_VALVE_COUNT] = {
     1000, //11
     };
 
-
-uint16_t RvTimers::valve_bits;
-uint16_t RvTimers::valve_mask;
-
-
 RvTimerPause RvTimer::rvtp;
 
 void RvTimer::changeState(state_T state) {
@@ -33,13 +29,13 @@ void RvTimer::changeState(state_T state) {
 
   if (oldState == STATE_ON) {
     switch_valve(false);
-    rvtp.lphChange(-Lph[getValveNumber()]);
+    rvtp.lphUpdate(-Lph[getValveNumber()]);
   }
 
   switch (state) {
   case STATE_ON:
     switch_valve(true);
-    rvtp.lphChange(+Lph[getValveNumber()]);
+    rvtp.lphUpdate(+Lph[getValveNumber()]);
     break;
   case STATE_PAUSED:
     break;
@@ -111,61 +107,5 @@ void RvTimer::stop() {
   }
 
   changeState(mNextRun ? STATE_OFF : STATE_DONE);
-}
-
-void *p;
-
-void RvTimers::loop() {
-
-  for (RvtList::iterator it = mRvTimers.mUsedTimers.begin(); it != mRvTimers.mUsedTimers.end();) {
-    if (it->isDone()) {
-      mRvTimers.delete_timer(it++);
-    } else {
-      ++it;
-    }
-  }
-
-  for (RvtList::iterator it = mRvTimers.mUsedTimers.begin(); it != mRvTimers.mUsedTimers.end(); ++it) {
-
-    RvTimer &vt = *it;
-
-    switch (vt.checkState()) {
-
-    case RvTimer::SCR_ON_OFF:
-      if (vt.isOff()) { // ready to turn on
-        if (RvTimer::rvtp.getLph() + Lph[vt.getValveNumber()] < RV_MAX_LPH) {
-          vt.changeOnOff();
-        }
-      } else { // ready to turn off
-        vt.changeOnOff();
-      }
-      break;
-
-    case RvTimer::SCR_RAIN:
-      vt.changeOnOff();
-      break;
-
-    case RvTimer::SCR_RUN:
-      vt.run();
-      break;
-
-    case RvTimer::SCR_PAUSE:
-      vt.pause();
-      break;
-
-    case RvTimer::SCR_UNPAUSE:
-      vt.unpause();
-      break;
-
-    case RvTimer::SCR_NONE:
-      break;
-    }
-
-  }
-
-  if (valve_mask && mSvsCb) {
-    mSvsCb(valve_bits, valve_mask);
-    valve_bits = valve_mask = 0;
-  }
 }
 

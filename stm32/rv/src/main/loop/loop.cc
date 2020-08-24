@@ -6,11 +6,11 @@
 #include "setup/app_cxx.h"
 #include "rv/report.h"
 #include <stdio.h>
-#include "watch_dog.hh"
-#include "rv/rv_timer.hh"
+#include "watch_dog/watch_dog.hh"
+#include "rv/rv_timers.hh"
 #include "peri/uart.h"
 
-extern RvTimers rvt;
+
 extern RainSensor rs;
 
 volatile int loop_flags_once;

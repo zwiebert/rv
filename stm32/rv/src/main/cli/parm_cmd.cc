@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "peri/uart.h"
 #include "rv/water_pump.h"
-#include "rv/rv_timer.hh"
+#include "rv/rv_timers.hh"
 #include "setup/app_cxx.hh"
 #include "rv/rain_sensor.hh"
 
@@ -101,23 +101,23 @@ process_parmCmd(clpar p[], int len) {
   if (wantsReply) {
     esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
 
-    for (RvtList::iterator t = rvt.getTimerList()->begin(); t != rvt.getTimerList()->end(); ++t) {
+      for (RvTimer &vt : *rvt.getTimerList()) {
       if (wantsDurations) {
-        int secs = t->get_duration();
+        int secs = vt.get_duration();
         if (secs) {
-          snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"%s%d.%d\":%d,", KEY_DURATION_PREFIX, t->getValveNumber(), t->getTimerNumber(), secs);
+          snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"%s%d.%d\":%d,", KEY_DURATION_PREFIX, vt.getValveNumber(), vt.getTimerNumber(), secs);
         }
       }
 
       if (wantsRemainingTimes) {
-        int secs = t->get_remaining();
+        int secs = vt.get_remaining();
         if (secs) {
-          snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"%s%d.%d\":%d,", KEY_REMAINING_PREFIX, t->getValveNumber(), t->getTimerNumber(), secs);
+          snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"%s%d.%d\":%d,", KEY_REMAINING_PREFIX, vt.getValveNumber(), vt.getTimerNumber(), secs);
         }
       }
 
       if (wantsTimers) {
-        t->argsToJSON(buf + strlen(buf), BUF_SIZE - strlen(buf));
+        vt.argsToJSON(buf + strlen(buf), BUF_SIZE - strlen(buf));
         strcat(buf, ",");
       }
 
