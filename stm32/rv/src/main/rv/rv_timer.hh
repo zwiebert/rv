@@ -371,8 +371,6 @@ public:
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 class RvTimers {
-  typedef std::list<RvTimer> RvtList;
-
   static uint16_t valve_bits, valve_mask;
   static void switch_valve_2(int valve_number, bool state) {
     SET_BIT(valve_mask, valve_number);
@@ -382,8 +380,6 @@ class RvTimers {
 private:
 
   class Timers {
-  private:
-    //RvTimer mTimerPool[RV_TIMER_COUNT];
   public:
     RvtList mUsedTimers;
     Timers() {

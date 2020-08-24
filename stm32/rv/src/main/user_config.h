@@ -22,6 +22,10 @@
 #define USE_WDG
 #define USE_PC_POLLING
 
+#define USE_MALLOC_IN_NEW_GLOBAL
+//#define USE_MALLOC_IN_NEW_NODE
+//#define USE_STD_LIST
+
 #ifdef BUILD_DEBUG
 #undef USE_TEST
 #define USE_BB // use internal pull-up resistors when on bread-board

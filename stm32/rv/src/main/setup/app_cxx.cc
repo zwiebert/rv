@@ -18,6 +18,21 @@ RainSensor rs;
 #define RVT_LOOP_MS  500
 #define WD_LOOP_MS 1000
 
+#ifdef USE_MALLOC_IN_NEW_GLOBAL
+void* operator new(size_t nbytes) {
+  return malloc(nbytes);
+}
+
+void* operator new[](size_t nbytes) {
+  return malloc(nbytes);
+}
+
+void operator delete(void *p) {
+  free(p);
+}
+#endif
+
+
 extern "C" void cxx_setup() {
 #ifdef USE_WDG
 	watchDog_setup();
@@ -28,3 +43,5 @@ extern "C" void cxx_setup() {
 	//rvt.set(6, 30, 0, 0, 60 * 2)->run();
 	//rvt.set(7, 30, 0, 0, 60 * 2)->run();
 }
+
+

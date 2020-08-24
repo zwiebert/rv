@@ -1,6 +1,6 @@
 #pragma once
 
-#define USE_STD_LIST
+//#define USE_STD_LIST
 
 #ifdef USE_STD_LIST
 #include <list>
@@ -13,46 +13,69 @@ typedef std::list<RvTimer> RvtList;
 
 
 #include <stddef.h>
-
-template<class T> class List;
+#include <memory>
 
 template<class T>
-class Node {
-  friend List<T>;
-protected:
-  T *pred, *succ;
+struct Node {
+  Node<T> *pred, *succ;
+  T obj;
 
-
-
-public:
-  Node<T>(T *head = 0) :
+  Node<T>(Node<T> *head = 0) :
       pred(head), succ(head) {
   }
 
+#ifdef USE_MALLOC_IN_NEW_NODE
+void* operator new(size_t nbytes) {
+  return malloc(nbytes);
+}
+
+void* operator new[](size_t nbytes) {
+  return malloc(nbytes);
+}
+
+void operator delete(void *p) {
+  free(p);
+}
+#endif
 };
 
-template<class T>
+template<class T, class A = std::allocator<T> >
 class List {
   int mLength = 0;
   Node<T> head;
 
 public:
-  List<T>() : head((T*)&head)
+  List<T,A>() : head((Node<T>*)&head)
 
 
       {
   }
 
-  void push_back(T *obj);
-  void erase(T *obj);
-  T* pop_front();
+  class iterator {
+     Node<T> *current;
+  public:
+     iterator(Node<T>* obj): current(obj) {};
+     Node<T>* operator=(Node<T> *rhs) { return (current = rhs); }
+     T* operator->() { return &current->obj; }
+     bool operator==(const T *rhs) { return current == rhs; }
+     //bool operator!=(const iterator rhs) { return current != rhs; }
+     Node<T>* operator++() { return current = current->succ; }
+     Node<T>* operator++(int n) { Node<T> * result = current; current = current->succ; return result; }
+     operator Node<T>*() { return current; }
+     T& operator *() { return current->obj; }
+  };
 
-  T* front() {
-    return head.succ;
+  void push_back(T &obj);
+  void emplace_back();
+  void erase(iterator it);
+  void pop_front();
+
+  T& front() {
+    return head.succ->obj;
   }
 
-  T* back() {
-    return head.pred;
+  T& back() {
+    return head.pred->obj;
   }
 
 
@@ -61,58 +84,59 @@ public:
   }
   bool empty() { return head.succ == head.pred; }
 
-  class iterator {
-     T *current;
-  public:
-     iterator(T* obj): current(obj) {};
-     T* operator=(T *rhs) { return (current = rhs); }
-     T* operator->() { return current; }
-     bool operator==(const T *rhs) { return current == rhs; }
-     //bool operator!=(const iterator rhs) { return current != rhs; }
-     T* operator++() { return current = current->succ; }
-     operator T*() { return current; }
-  };
+
 
   iterator begin() {
     return head.succ;
   }
 
   iterator end() {
-    return (T*)&head;
+    return (Node<T>*)&head;
   }
 
 };
 
+#include <new>
 
 class RvTimer;
-
 typedef List<RvTimer> RvtList;
+typedef Node<RvTimer> RvtNode;
 
 
-template<class T> void List<T>::push_back(T *obj) {
+
+
+template<class T, class A> void List<T,A>::emplace_back() {
+
+  Node<T> *node = new Node<T>(0);
+
   ++mLength;
-
-  T *tail = head.pred;
-  tail->succ = obj;
-  obj->pred = tail;
-
-  head.pred = obj; // obj is new list tail
-  obj->succ = (T*) &head;
+  Node<T> *tail = head.pred;
+  tail->succ = node;
+  node->pred = tail;
+  head.pred = node;
+  node->succ = (Node<T> *)&head;
 }
 
-template<class T> void List<T>::erase(T *obj) {
+template<class T, class A> void List<T,A>::push_back(T &obj) {
+  emplace_back();
+  head.pred->obj = obj;
+}
+
+template<class T, class A> void List<T,A>::erase(iterator it) {
   --mLength;
+  Node<T> *obj = it;
+
   if (obj->pred)
     obj->pred->succ = obj->succ;
   if (obj->succ)
     obj->succ->pred = obj->pred;
+
+  delete(obj);
 }
 
-template<class T> T* List<T>::pop_front() {
+template<class T, class A> void List<T,A>::pop_front() {
   precond(!empty());
 
-  T *obj = head.succ;
-  erase(obj);
-  return obj;
+  erase(begin());
 }
 #endif
