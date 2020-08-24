@@ -1,13 +1,15 @@
 #ifndef RV_TIMER_HH
 #define RV_TIMER_HH
 
+#include "user_config.h"
+#include "list.hh"
 #include "rain_sensor.hh"
 #include "setup/app_cxx.hh"
-#include "user_config.h"
+
 #include "misc/int_macros.h"
 #include "time/real_time_clock.h"
 #include "water_pump.h"
-#include "list.hh"
+
 
 #include <time.h>
 #include <stdio.h>
@@ -369,6 +371,11 @@ public:
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
+#ifdef USE_STD_LIST
+template <class T> using TList = std::list<T, my_allocator<T>>;
+#else
+template <class T> using TList = List<T, my_allocator<T>>;
+#endif
 
 class RvTimers {
   static uint16_t valve_bits, valve_mask;
@@ -378,10 +385,12 @@ class RvTimers {
       SET_BIT(valve_bits, valve_number);
   }
 private:
+  typedef TList<RvTimer> RvtList;
 
   class Timers {
   public:
-    RvtList mUsedTimers;
+
+     RvtList mUsedTimers;
     Timers() {
     }
 
@@ -463,6 +472,9 @@ public:
     return &mRvTimers.mUsedTimers;
   }
 };
+
+
+typedef TList<RvTimer> RvtList;
 
 #endif
 // Local Variables:
