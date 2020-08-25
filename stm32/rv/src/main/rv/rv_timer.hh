@@ -1,6 +1,7 @@
 #pragma once
 
 #include "user_config.h"
+#include "rv.hh"
 #include "rain_sensor.hh"
 #include "setup/app_cxx.hh"
 
@@ -14,19 +15,10 @@
 #include <string.h>
 
 
-
-
-const int RV_TIMER_COUNT = 20;
-const int RV_VALVE_COUNT = 12;
-const int RV_MAX_LPH = 1600;
-
-extern int Lph[RV_VALVE_COUNT];
-
 typedef void (*switch_valve_cb)(int valve_number, bool state);
 typedef void (*switch_valves_cb)(uint16_t valve_bits, uint16_t valve_mask);
 
-class RvTimer;
-class RvTimers;
+
 
 #define IGNORE_RAIN_SENSOR 1
 #define IGNORE_PUMP_PAUSE 2

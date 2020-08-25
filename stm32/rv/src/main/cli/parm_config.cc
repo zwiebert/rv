@@ -95,7 +95,7 @@ int process_parmConfig(clpar p[], int len) {
             break;
           case LPH: {
             int idx = atoi(key + 3);
-            Lph[idx] = atoi(val);
+            rvz[idx].setLph(atoi(val));
             got_zoneData = true;
           }
             break;

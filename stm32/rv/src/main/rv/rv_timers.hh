@@ -23,8 +23,6 @@ typedef void (*switch_valves_cb)(uint16_t valve_bits, uint16_t valve_mask);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-class RvTimer;
-
 class RvTimers {
   static uint16_t valve_bits, valve_mask;
   static void switch_valve_2(int valve_number, bool state) {

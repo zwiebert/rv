@@ -10,6 +10,7 @@ extern "C" {
 #include "cli_imp.h"
 #include "peri/uart.h"
 }
+#include "rv/rv_zones.hh"
 #include "loop/loop.hh"
 #include "rv/rv_timer.hh"
 #include <stdio.h>
@@ -60,11 +61,12 @@ int process_parmKvs(clpar p[], int len) {
           switch (zkIdx) {
           case ZN: {
             int idx = atoi(key + 2);
+            rvz[idx].name() = std::string(val);
           }
             break;
           case LPH: {
             int idx = atoi(key + 3);
-            Lph[idx] = atoi(val);
+            rvz[idx].setLph(atoi(val));
             got_zoneData = true;
           }
             break;

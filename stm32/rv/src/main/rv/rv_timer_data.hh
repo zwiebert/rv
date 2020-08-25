@@ -1,6 +1,7 @@
 #pragma once
 
 #include "user_config.h"
+#include "rv.hh"
 #include "rain_sensor.hh"
 #include "setup/app_cxx.hh"
 

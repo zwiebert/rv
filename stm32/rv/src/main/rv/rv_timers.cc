@@ -1,5 +1,5 @@
 #include "rv_timers.hh"
-
+#include "rv.hh"
 #include "water_pump.h"
 #include "report.h"
 #include <algorithm>
@@ -19,7 +19,7 @@ void RvTimers::loop() {
 
     case RvTimer::SCR_ON_OFF:
       if (vt.isOff()) { // ready to turn on
-        if (RvTimer::rvtp.getLph() + Lph[vt.getValveNumber()] < RV_MAX_LPH) {
+        if (RvTimer::rvtp.getLph() + rvz[vt.getValveNumber()].getLph() < RV_MAX_LPH) {
           vt.changeOnOff();
         }
       } else { // ready to turn off

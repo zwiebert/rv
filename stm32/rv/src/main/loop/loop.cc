@@ -34,6 +34,7 @@ static void fetchData_loop() {
   if (!got_zoneData) {
    // esp32_puts("{\"to\":\"cli\",\"pbuf\":{\"zd\":\"?\"}}\n");
     esp32_puts("{\"to\":\"cli\",\"kvs\":{\"lph\":\"?\"}}\n");
+    esp32_puts("{\"to\":\"cli\",\"kvs\":{\"zn\":\"?\"}}\n");
   }
 }
 

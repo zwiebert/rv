@@ -1,23 +1,10 @@
 #include "rv_timer.hh"
-
+#include "rv.hh"
+#include "rv_zones.hh"
 #include "water_pump.h"
 #include "report.h"
 #include <algorithm>
 
-int Lph[RV_VALVE_COUNT] = {
-    1000, //0
-    1000, //1
-    1000, //2
-    1000, //3
-    1000, //4
-    1000, //5
-    1000, //6
-    1000, //7
-    1000, //8
-    1000, //9
-    1000, //10
-    1000, //11
-    };
 
 RvTimerPause RvTimer::rvtp;
 
@@ -29,13 +16,13 @@ void RvTimer::changeState(state_T state) {
 
   if (oldState == STATE_ON) {
     switch_valve(false);
-    rvtp.lphUpdate(-Lph[getValveNumber()]);
+    rvtp.lphUpdate(-rvz[getValveNumber()].getLph());
   }
 
   switch (state) {
   case STATE_ON:
     switch_valve(true);
-    rvtp.lphUpdate(+Lph[getValveNumber()]);
+    rvtp.lphUpdate(+rvz[getValveNumber()].getLph());
     break;
   case STATE_PAUSED:
     break;
