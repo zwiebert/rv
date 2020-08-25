@@ -33,7 +33,7 @@ static void watchDog_sendCall() {
 
 static void watchDog_resetEsp32() {
 	gpio_clear(ESP32_RESET_PIN_PORT, ESP32_RESET_PIN);
-	for (unsigned long i = 0; i < 4500; ++i) {
+	for(int i = 0; i < 4500; ++i) {
 		__asm__("nop");
 	}
 	gpio_set(ESP32_RESET_PIN_PORT, ESP32_RESET_PIN);

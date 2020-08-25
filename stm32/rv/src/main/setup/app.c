@@ -50,7 +50,7 @@ void ioExtender_setup(bool re_init);
 
 void mcp23017_doReset() {
 	gpio_set(DISABLE_ALL_PIN_PORT, DISABLE_ALL_PIN);
-	for (unsigned long i = 0; i < 4500; ++i) {
+	for(int i = 0; i < 4500; ++i) {
 		__asm__("nop");
 	}
 	gpio_clear(DISABLE_ALL_PIN_PORT, DISABLE_ALL_PIN);
@@ -244,7 +244,7 @@ void app() {
 
 	while (1) {
 #if 0
-		for (unsigned long i = 0; i < 4500; ++i) {
+		for(int i = 0; i < 4500; ++i) {
 			__asm__("nop");
 		}
 #endif

@@ -70,7 +70,7 @@ static const lfa_funT lfa_table[lf_Len] = {
 
 
 extern "C" void lf_loop() {
-  for (unsigned long i = 0; i < 4500 && !loop_flags_once; ++i) {
+  for(int i = 0; i < 4500 && !loop_flags_once; ++i) {
     __asm__("nop");
   }
   // XXX: interrupt should be disabled here

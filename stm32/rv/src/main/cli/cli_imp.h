@@ -24,7 +24,7 @@ extern clpar par[MAX_PAR];
 
 struct cli_parm {
   clpar *par;
-  unsigned size;
+  size_t size;
 };
 
 extern const char help_parmCmd[] ;

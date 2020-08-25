@@ -41,9 +41,9 @@ static wp_err_T wp_error;
 static bool wp_pc_sample, wp_ub_sample;
 
 // busy-loop wait for N seconds
-static void delay_secs(unsigned secs) {
+static void delay_secs(int secs) {
 	while (secs--)
-		for (unsigned long i = 0; i < 4500000; ++i) {
+		for(int i = 0; i < 4500000; ++i) {
 			__asm__("nop");
 		}
 }
