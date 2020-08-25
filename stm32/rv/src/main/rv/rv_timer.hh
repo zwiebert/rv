@@ -1,22 +1,19 @@
 #pragma once
 
-#include "user_config.h"
-#include "rv.hh"
-#include "rain_sensor.hh"
-#include "setup/app_cxx.hh"
-
-#include "misc/int_macros.h"
-#include "time/real_time_clock.h"
-#include "water_pump.h"
-#include "rv_timer_data.hh"
-
+#include <rv/rain_sensor.hh>
+#include <rv/rv.hh>
+#include <rv/rv_timer_data.hh>
+#include <rv/rv_timer_pause.hh>
+#include <sys/_timeval.h>
+#include <time/real_time_clock.h>
 #include <time.h>
-#include <stdio.h>
-#include <string.h>
+
+#include <cstdio>
+#include <cstring>
 
 
 typedef void (*switch_valve_cb)(int valve_number, bool state);
-typedef void (*switch_valves_cb)(uint16_t valve_bits, uint16_t valve_mask);
+
 
 
 

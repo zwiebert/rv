@@ -1,25 +1,20 @@
 #pragma once
 
-#include "user_config.h"
-#include "rv_timer.hh"
-#include "list.hh"
-#include "rain_sensor.hh"
-//#include "setup/app_cxx.hh"
+#include <misc/int_macros.h>
+#include <rv/rv_timer.hh>
+#include <rv/rv_timer_data.hh>
 
-#include "misc/int_macros.h"
-#include "time/real_time_clock.h"
-#include "water_pump.h"
+#include <stdint.h>
 
-
-#include <time.h>
-#include <stdio.h>
-#include <string.h>
-
-typedef void (*switch_valve_cb)(int valve_number, bool state);
 typedef void (*switch_valves_cb)(uint16_t valve_bits, uint16_t valve_mask);
 
 #define IGNORE_RAIN_SENSOR 1
 #define IGNORE_PUMP_PAUSE 2
+
+#include "allocator_malloc.hh"
+#include <list>
+template<class T> using TList = std::list<T, AllocatorMalloc<T>>;
+typedef TList<RvTimer> RvtList;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -31,7 +26,6 @@ class RvTimers {
       SET_BIT(valve_bits, valve_number);
   }
 private:
-  typedef TList<RvTimer> RvtList;
   RvtList mActiveTimers;
 
   RvTimer* get_timer() {
@@ -98,5 +92,3 @@ public:
   }
 };
 
-
-typedef TList<RvTimer> RvtList;

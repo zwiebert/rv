@@ -1,18 +1,30 @@
 #pragma once
 
-#include "rv.hh"
-#include <string>
+#include <misc/cstring_utils.hh>
+#include <rv/rv.hh>
+#include <stddef.h>
+
+
 
 class RvZone {
   int mLph = 0;
-  std::string mName;
+  char *mName = NULL;
+
 public:
-  int getLph() {
+
+  int getLph() const {
     return mLph ? mLph : ZONE_LPH_DEFAULT;
   }
   bool setLph(int lph) {
     mLph = lph;
     return true;
   }
-  std::string &name() { return mName; }
+
+  const char* getName() const {
+    return mName ? mName : "";
+  }
+  void setName(const char *name) {
+    csu_assign(&mName, name);
+  }
+
 };

@@ -37,13 +37,6 @@ uint16_t msgid;
 
 #include <jsmn/jsmn.h>
 
-#ifndef TEST_HOST
-void
-cli_print_json(const char *json) {
-    io_puts(json), io_putlf();
-}
-#endif
-
 #ifdef DB_NO_OPT
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
@@ -65,6 +58,7 @@ int handle_parm_json(char *json, jsmntok_t *tok, const char *name) {
 
     }
   }
+  return 0;
 }
 
 
@@ -82,8 +76,6 @@ void cli_process_json(char *json, process_parm_cb proc_parm) {
   int i = 0;
 
   if (tok[i].type == JSMN_OBJECT) {
-    int roi = 0; // root object index
-
     for (i = 1; i < nt; ++i) {
 
       if (tok[i].type == JSMN_OBJECT) {

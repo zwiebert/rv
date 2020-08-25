@@ -1,14 +1,15 @@
-#include "loop.hh"
-#include "misc/int_macros.h"
+#include <cli/cli.h>
+#include <loop/loop.hh>
+#include <misc/int_macros.h>
+#include <peri/uart.h>
+#include <rv/rain_sensor.hh>
+#include <rv/report.h>
+#include <rv/rv.hh>
+#include <rv/rv_timers.hh>
+#include <rv/water_pump_logic.h>
+#include <watch_dog/watch_dog.hh>
 
-#include "rv/water_pump_logic.h"
-#include "cli/cli.h"
-#include "setup/app_cxx.h"
-#include "rv/report.h"
-#include <stdio.h>
-#include "watch_dog/watch_dog.hh"
-#include "rv/rv_timers.hh"
-#include "peri/uart.h"
+#include <cstdio>
 
 
 extern RainSensor rs;

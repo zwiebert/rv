@@ -3,10 +3,8 @@
 #include <list>
 #include <malloc.h>
 
-
-
 template<class T>
-class my_allocator {
+class AllocatorMalloc {
 public:
   typedef size_t size_type;
   typedef ptrdiff_t difference_type;
@@ -16,9 +14,9 @@ public:
   typedef const T &const_reference;
   typedef T value_type;
 
-  my_allocator() {
+  AllocatorMalloc() {
   }
-  my_allocator(const my_allocator&) {
+  AllocatorMalloc(const AllocatorMalloc&) {
   }
 
   pointer allocate(size_type n, const void* = 0) {
@@ -35,7 +33,7 @@ public:
   const_pointer address(const_reference x) const {
     return &x;
   }
-  my_allocator<T>& operator=(const my_allocator&) {
+  AllocatorMalloc<T>& operator=(const AllocatorMalloc&) {
     return *this;
   }
 
@@ -45,18 +43,26 @@ public:
 
   template<class U>
   struct rebind {
-    typedef my_allocator<U> other;
+    typedef AllocatorMalloc<U> other;
   };
 
   template<class U>
-  my_allocator(const my_allocator<U>&) {
+  AllocatorMalloc(const AllocatorMalloc<U>&) {
   }
 
   template<class U>
-  my_allocator& operator=(const my_allocator<U>&) {
+  AllocatorMalloc& operator=(const AllocatorMalloc<U>&) {
     return *this;
+  }
+
+  bool operator==(AllocatorMalloc const &a) {
+    return this == &a;
+  }
+  bool operator!=(AllocatorMalloc const &a) {
+    return !operator==(a);
   }
 };
 
-template <class T> using TList = std::list<T, my_allocator<T>>;
-//template <class T> using TList = std::list<T>;
+//template<class T> using TList = std::list<T, AllocatorMalloc<T>>;
+//#include <string>
+//typedef std::basic_string<char, std::char_traits<char>, AllocatorMalloc<char>> String;

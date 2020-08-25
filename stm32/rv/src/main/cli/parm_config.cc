@@ -13,6 +13,7 @@ extern "C" {
 }
 #include "loop/loop.hh"
 #include "rv/rv_timer.hh"
+#include "rv/rv_zones.hh"
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -91,6 +92,7 @@ int process_parmConfig(clpar p[], int len) {
           switch (zkIdx) {
           case ZN: {
             int idx = atoi(key + 2);
+            rvz[idx].setName(val);
           }
             break;
           case LPH: {

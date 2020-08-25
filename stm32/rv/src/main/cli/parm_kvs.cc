@@ -61,7 +61,7 @@ int process_parmKvs(clpar p[], int len) {
           switch (zkIdx) {
           case ZN: {
             int idx = atoi(key + 2);
-            rvz[idx].name() = std::string(val);
+            rvz[idx].setName(val);
           }
             break;
           case LPH: {

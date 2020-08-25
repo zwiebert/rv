@@ -29,7 +29,6 @@ process_parmProtoBuf(clpar p[], int len) {
 
   for (int arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
-    char buf[128];
 
     if (key == NULL)
       return -1;

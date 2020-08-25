@@ -6,11 +6,11 @@
  */
 
 
-#include "user_config.h"
-#include "report.h"
-#include "peri/uart.h"
+#include <peri/uart.h>
+#include <stdbool.h>
 #include <stdio.h>
-#include "water_pump.h"
+#include <stdint.h>
+#include "report.h"
 
 
 void report_event(const char *msg) {

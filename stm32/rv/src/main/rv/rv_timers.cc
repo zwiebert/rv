@@ -3,6 +3,7 @@
 #include "water_pump.h"
 #include "report.h"
 #include <algorithm>
+#include "rv_zones.hh"
 
 
 uint16_t RvTimers::valve_bits;
