@@ -22,9 +22,9 @@ time_t last_call_time;
 
 
 bool watchDog_checkCommandLine(const char *cmdLine) {
-  if (strcmp(cmdLine, "alive?;") == 0) {
+  if (strcmp(cmdLine, "alive?") == 0) {
     if (stm32_mutexTake()) {
-      stm32_write("ALIVE!;", 7); // response
+      stm32_write("ALIVE!\n", 7); // response
       stm32_mutexGive();
     }
 

@@ -11,8 +11,13 @@ uint16_t RvTimers::valve_mask;
 
 void RvTimers::loop() {
 
-  mActiveTimers.remove_if([](RvTimer &vt) -> bool {
-    return (vt.isDone());
+  mActiveTimers.remove_if([&](RvTimer &vt) -> bool {
+    if (!vt.isDone())
+      return false;
+    if (mTwmCb)
+      mTwmCb(vt.getValveNumber(), vt.getTimerNumber(), true);
+
+    return true;
   });
 
   for (RvTimer &vt : mActiveTimers) {

@@ -53,6 +53,9 @@ process_parmCmd(clpar p[], int len) {
 
     if (key == NULL) {
       return -1;
+    } else if (strcmp(key, "timer") == 0 && *val == '?') {
+      wantsReply = wantsTimers = true;
+
     } else if (strcmp(key, KEY_DURATION_PREFIX) == 0 && *val == '?') {
       wantsReply = wantsDurations = true;
 
@@ -63,24 +66,19 @@ process_parmCmd(clpar p[], int len) {
       wantsReply = wantsDurations = wantsRemainingTimes = wantsRelayPC = wantsRelayPump = wantsTime = wantsRainSensor = wantsPumpRunTime = true;
 
     } else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
-      int channel = -1, timer_number = 0;
-      sscanf((key + KEY_DURATION_PREFIX_LEN), "%d.%d", &channel, &timer_number);
+      RvTimer::SetArgs args;
+      sscanf((key + KEY_DURATION_PREFIX_LEN), "%d.%d", &args.valve_number, &args.timer_number);
       if (strchr(val, ',')) {
-        RvTimer::SetArgs args;
         sscanf(val, "%d,%d,%d,%d,%d,%d,%d,%d", &args.on_duration, &args.mIgnoreRainSensor, &args.off_duration, &args.repeats, &args.period, &args.mDaysInterval, &args.mTodSpanBegin,
             &args.mTodSpanEnd);
-
-        if (rvt.set(args, channel, timer_number)->scheduleRun()) {
+      } else {
+        args.on_duration = atoi(val);
+      }
+        if (rvt.set(args)->scheduleRun()) {
           hasDuration = true;
         } else {
           // XXX: error
         }
-
-      } else {
-        int duration = atoi(val);
-        rvt.set(channel, duration, timer_number)->scheduleRun();
-        hasDuration = true;
-      }
 
     } else if (strcmp(key, KEY_VERSION) == 0 && *val == '?') {
       wantsReply = wantsVersion = true;
@@ -102,7 +100,7 @@ process_parmCmd(clpar p[], int len) {
 
     esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
 
-      for (RvTimer &vt : *rvt.getTimerList()) {
+      for (const RvTimer &vt : *rvt.getTimerList()) {
       if (wantsDurations) {
         int secs = vt.get_duration();
         if (secs) {
@@ -116,12 +114,6 @@ process_parmCmd(clpar p[], int len) {
           snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"%s%d.%d\":%d,", KEY_REMAINING_PREFIX, vt.getValveNumber(), vt.getTimerNumber(), secs);
         }
       }
-
-      if (wantsTimers) {
-        vt.argsToJSON(buf + strlen(buf), BUF_SIZE - strlen(buf));
-        strcat(buf, ",");
-      }
-
     }
 
     if (wantsRelayPC) {
@@ -159,9 +151,41 @@ process_parmCmd(clpar p[], int len) {
       esp32_write(buf, strlen(buf) - 1); // no terminating comma
 
     esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
+
+    if (wantsTimers)
+      for (const RvTimer &vt : *rvt.getTimerList()) {
+        char *json = vt.argsToJSON(buf + strlen(buf), BUF_SIZE - strlen(buf));
+        esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
+        esp32_puts(json);
+        esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
+      }
+
     free(buf);
   }
 
 
   return 0;
+}
+
+void timers_was_modified(int vn, int tn, bool removed) {
+  char buf[128];
+
+  if (removed) {
+    snprintf(buf, sizeof buf, "\"timer%d.%d\":{}", vn, tn);
+    esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
+    esp32_puts(buf);
+    esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
+    return;
+  }
+
+  for (const RvTimer &vt : *rvt.getTimerList()) {
+    if (!vt.match(vn, tn))
+      continue;
+    char *json = vt.argsToJSON(buf + strlen(buf), BUF_SIZE - strlen(buf));
+    esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
+    esp32_puts(json);
+    esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
+    return;
+  }
+
 }

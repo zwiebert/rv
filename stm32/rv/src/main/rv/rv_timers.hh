@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 typedef void (*switch_valves_cb)(uint16_t valve_bits, uint16_t valve_mask);
+typedef void (*timer_was_modified_cb)(int vn, int tn, bool removed);
 
 #define IGNORE_RAIN_SENSOR 1
 #define IGNORE_PUMP_PAUSE 2
@@ -28,17 +29,18 @@ class RvTimers {
 private:
   RvtList mActiveTimers;
 
-  RvTimer* get_timer() {
+  RvTimer* create_timer() {
     mActiveTimers.emplace_back();
     return &mActiveTimers.back();
   }
 
   switch_valve_cb mSvCb; // XXX
   switch_valves_cb mSvsCb;
+  timer_was_modified_cb mTwmCb = 0;
 
 public:
 
-  unsigned get_used_count() {
+  unsigned get_used_count() const {
     return mActiveTimers.size();
   }
   //unsigned get_free_count() { return mRvTimers.get_free_count(); }
@@ -51,16 +53,19 @@ public:
   void register_callback(switch_valve_cb cb) {
     mSvCb = cb; // XXX
   }
+  void register_callback(timer_was_modified_cb cb) {
+    mTwmCb = cb; // XXX
+  }
 
-  RvTimer* set(RvTimer::SetArgs &args, int valve_number, int id) {
+  RvTimer* set(RvTimer::SetArgs &args) {
     for (RvTimer &vt : mActiveTimers) {
-      if (vt.match(valve_number, id)) {
+      if (vt.match(args.valve_number, args.timer_number)) {
         vt.changeState(RvTimer::STATE_DONE);
         break;
       }
     }
 
-    RvTimer *timer = get_timer();
+    RvTimer *timer = create_timer();
     if (!timer)
       return 0;
 
@@ -68,8 +73,10 @@ public:
       timer->changeState(RvTimer::STATE_DONE);
     }
 
-    timer->register_callback((mSvCb ? mSvCb : switch_valve_2), valve_number);
-    timer->set(args, id);
+    timer->register_callback((mSvCb ? mSvCb : switch_valve_2), args.valve_number);
+    timer->set(args);
+    if (mTwmCb)
+      mTwmCb(args.valve_number, args.timer_number, false);
     return timer;
 
   }
@@ -77,17 +84,22 @@ public:
   RvTimer *set(int valve_number, int on_duration, int id = 0) {
     RvTimer::SetArgs args;
     args.on_duration = on_duration;
-    return set(args, valve_number, id);
+    args.valve_number = valve_number;
+    args.timer_number = id;
+    return set(args);
   }
 
   void unset(int valve_number, int id) {
     mActiveTimers.remove_if([&](RvTimer &vt) -> bool {  return vt.match(valve_number, id); });
+
+    if (mTwmCb)
+      mTwmCb(valve_number, id, true);
   }
 
   void loop();
 
 public:
-  RvtList *getTimerList() {
+  const RvtList *getTimerList() const {
     return &mActiveTimers;
   }
 };

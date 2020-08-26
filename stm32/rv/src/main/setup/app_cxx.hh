@@ -10,8 +10,4 @@
 
 //#include "rv/rv_timers.hh"
 
-extern class RvTimers rvt;
-extern class RainSensor rs;
-
-
 #endif /* MAIN_APP_CXX_HH_ */

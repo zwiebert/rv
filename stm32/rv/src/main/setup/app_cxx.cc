@@ -32,11 +32,13 @@ void operator delete(void *p, size_t ) {
 }
 #endif
 
+void timers_was_modified(int vn, int tn, bool removed);
 
 extern "C" void cxx_setup() {
 #ifdef USE_WDG
 	watchDog_setup();
 #endif
+	rvt.register_callback(timers_was_modified);
 	// rvt.set(0,2,4,3,60)->run();
 	// rvt.set(1,3,5,4,130)->run();
 	// rvt.set(2,3)->run();

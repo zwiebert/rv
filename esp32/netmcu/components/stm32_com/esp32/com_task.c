@@ -89,7 +89,7 @@ static void do_work() {
       DD(printf("stm32com:response: <%s>\n", sj_get_json()));
       if (stm32_mutexTake()) {
         stm32_write(sj_get_json(), strlen(sj_get_json()));
-        stm32_write(";\n", 2);
+        stm32_write("\n", 2);
         stm32_mutexGive();
         sj_free_buffer();
       }

@@ -21,7 +21,7 @@
   }
 
   function onClickRun() {
-    cmdDuration({ vn: $Z, d1: 60, ir: 3 });
+    cmdDuration({ vn: $Z, d1: 60, ir: true, ip: true });
   }
   function onClickStop() {
     cmdDuration({ vn: $Z });

@@ -7,10 +7,10 @@
 #include <rv/rv.hh>
 #include <rv/rv_timers.hh>
 #include <rv/water_pump_logic.h>
+#include <time/systick_1ms.h>
 #include <watch_dog/watch_dog.hh>
 
 #include <cstdio>
-
 
 extern RainSensor rs;
 
@@ -33,19 +33,18 @@ static void i2c2_check_loop() {
 bool got_zoneData;
 static void fetchData_loop() {
   if (!got_zoneData) {
-   // esp32_puts("{\"to\":\"cli\",\"pbuf\":{\"zd\":\"?\"}}\n");
-    esp32_puts("{\"to\":\"cli\",\"kvs\":{\"lph\":\"?\"}}\n");
-    esp32_puts("{\"to\":\"cli\",\"kvs\":{\"zn\":\"?\"}}\n");
+    // esp32_puts("{\"to\":\"cli\",\"pbuf\":{\"zd\":\"?\"}}\n");
+    esp32_puts("{\"to\":\"cli\",\"kvs\":{\"lph\":\"?\"}};\n");
+    //esp32_puts("{\"to\":\"cli\",\"kvs\":{\"zn\":\"?\"}}\n");
   }
 }
 
-
 static void interval_1s_loop() {
 #ifdef USE_WDG
-    watchDog_loop();
+  watchDog_loop();
 #endif
-    i2c2_check_loop();
-    fetchData_loop();
+  i2c2_check_loop();
+  fetchData_loop();
 }
 
 static void interval_512ms_loop() {
@@ -57,21 +56,10 @@ static void interval_64ms_loop() {
   wpl_loop();
 }
 
-
-static const lfa_funT lfa_table[lf_Len] = {
-    interval_1s_loop,
-    interval_512ms_loop,
-    interval_64ms_loop,
-    cli_loop,
-    wpl_loop,
-    fetchData_loop,
-};
-
-
-
+static const lfa_funT lfa_table[lf_Len] = { interval_1s_loop, interval_512ms_loop, interval_64ms_loop, cli_loop, wpl_loop, fetchData_loop, };
 
 extern "C" void lf_loop() {
-  for(int i = 0; i < 4500 && !loop_flags_once; ++i) {
+  for (int i = 0; i < 4500 && !loop_flags_once; ++i) {
     __asm__("nop");
   }
   // XXX: interrupt should be disabled here
@@ -80,7 +68,7 @@ extern "C" void lf_loop() {
   // XXX: Interrupt should be re-enabled here
 
   for (int i = 0; i < lf_Len; ++i) {
-    enum loop_flagbits fb = (enum loop_flagbits)i;
+    enum loop_flagbits fb = (enum loop_flagbits) i;
     if (!GET_BIT(loop_flags, fb))
       continue;
 

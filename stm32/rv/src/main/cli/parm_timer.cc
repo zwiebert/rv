@@ -41,44 +41,22 @@ const char help_parmTimer[] = "zone=[0-13]      zone number\n"
 
 int process_parmTimer(clpar p[], int len) {
   int arg_idx;
-  RvTimer::SetArgs args = { };
-  int zoneNumber = -1;
-  int timerNumber = 0;
+  RvTimer::SetArgs args = RvTimer::SetArgs(reinterpret_cast<cstr_pair *>(&p[1]), len - 1);
 
+
+#if 0
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
+    break;  // nothing to do here
+
     if (key == NULL) {
       return -1;
-    } else if (strcmp(key, "vn") == 0) {
-      zoneNumber = atoi(val);
-    } else if (strcmp(key, "tn") == 0) {
-      timerNumber = atoi(val);
-
-    } else if (strcmp(key, "d1") == 0) {
-      args.on_duration = atoi(val);
-    } else if (strcmp(key, "d0") == 0) {
-      args.off_duration = atoi(val);
-    } else if (strcmp(key, "r") == 0) {
-      args.repeats = atoi(val);
-    } else if (strcmp(key, "per") == 0) {
-      args.period = atoi(val);
-    } else if (strcmp(key, "di") == 0) {
-      args.mDaysInterval = atoi(val);
-    } else if (strcmp(key, "sb") == 0) {
-      args.mTodSpanBegin = atoi(val);
-    } else if (strcmp(key, "se") == 0) {
-      args.mTodSpanEnd = atoi(val);
-    } else if (strcmp(key, "ir") == 0) {
-      args.mIgnoreRainSensor |= strcmp("true",val) == 0 ? 1 : 0;
-    } else if (strcmp(key, "ip") == 0) {
-      args.mIgnoreRainSensor |= strcmp("true",val) == 0 ? 2 : 0;
-    } else {
-      warning_unknown_option(key);
     }
   }
+#endif
 
-  if (zoneNumber >= 0 && rvt.set(args, zoneNumber, timerNumber)->scheduleRun()) {
+  if (args.valve_number >= 0 && rvt.set(args)->scheduleRun()) {
     rvt.loop(); // XXX
   } else {
     // XXX: error

@@ -71,11 +71,12 @@ export function http_handleResponses(obj) {
           let timer = "timer" + sfx;
           if (timer in data) {
             zoneTimers[timer] = data[timer];
+            ZoneTimers.update(obj => {obj[timer] = data[timer]; return obj; });
           }
         }
       }
 
-      ZoneTimers.set(zoneTimers);
+      //ZoneTimers.set(zoneTimers);
       ZoneDurations.set(zoneDurations);
       ZoneRemainingSeconds.set(zoneRemainingSeconds);
       if ("pc" in data) PressControlStatus.set(data.pc);

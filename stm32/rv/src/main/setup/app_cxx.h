@@ -9,11 +9,6 @@
 #define MAIN_APP_CXX_H_
 
 #ifdef __cplusplus
-extern class RvTimers rvt;
-extern class RainSensor rs;
-#endif
-
-#ifdef __cplusplus
 extern "C" {
 #endif
 

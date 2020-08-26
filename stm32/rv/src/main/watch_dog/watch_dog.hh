@@ -9,7 +9,7 @@
 #define MAIN_WATCH_DOG_HH_
 
 const unsigned WDG_INTERVAL = 10;
-const char WDG_CALL[] = "alive?;\n";
+const char WDG_CALL[] = "alive?\n";
 const unsigned WDG_CALL_LEN = sizeof WDG_CALL;
 const char WDG_RESPONSE[] = "ALIVE!";
 const unsigned WDG_RESPONSE_LEN = sizeof WDG_RESPONSE;

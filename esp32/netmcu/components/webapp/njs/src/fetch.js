@@ -2,6 +2,7 @@
 import * as appDebug from "./app_debug.js";
 import * as httpResp from "./http_resp.js";
 import { ws_isOpen } from "./net/conn_ws";
+import { ZoneTimers } from "./store/zones";
 
 let bit = 1;
 export const FETCH_CONFIG = bit;
@@ -10,6 +11,7 @@ export const FETCH_ZONE_LPHS = (bit <<= 1);
 export const FETCH_ZONE_DURATIONS = (bit <<= 1);
 export const FETCH_ZONE_REMAINING_DURATIONS = (bit <<= 1);
 export const FETCH_ZONE_DATA = (bit <<= 1);
+export const FETCH_ZONE_TIMERS = (bit <<= 1);
 export const FETCH_RV_STATUS = (bit <<= 1);
 export const FETCH_VERSION = (bit <<= 1);
 export const FETCH_BOOT_COUNT = (bit <<= 1);
@@ -17,8 +19,9 @@ export const FETCH_RV_VERSION = (bit <<= 1);
 
 export const FETCH_GIT_TAGS = 0; //XXX
 
-const FETCHES_REPLY_BY_WS = FETCH_RV_STATUS;
-const FETCHES_TARGET_STM32 = FETCH_ZONE_DATA;
+
+const FETCHES_TARGET_STM32 = FETCH_ZONE_DATA | FETCH_ZONE_TIMERS;
+const FETCHES_REPLY_BY_WS = FETCHES_TARGET_STM32 | FETCH_RV_STATUS;
 
 const MAX_RETRY_COUNT = 3;
 
@@ -45,16 +48,12 @@ export function sendKvs(cmd) {
 
 export function sendRv(cmd) {
   let url = "/cmd.json";
-  let obj = {to:"rv"};
+  let obj = { to: "rv" };
   Object.assign(obj, cmd);
   http_postRequest(url, obj);
 }
 
-export function http_postRequest(
-  url = "",
-  data = {},
-  state = { retry_count: 0 }
-) {
+export function http_postRequest(url = "", data = {}, state = { retry_count: 0 }) {
   appDebug.dbLog("post-json: " + JSON.stringify(data));
 
   const fetch_data = {
@@ -163,6 +162,11 @@ function fetchByMask2(mask, target) {
     add_kv(tfmcu, "cmd", "dur", "?");
   }
 
+  if (mask & FETCH_ZONE_TIMERS) {
+    ZoneTimers.set({});
+    add_kv(tfmcu, "cmd", "timer", "?");
+  }
+
   if (mask & FETCH_ZONE_DATA) add_kv(tfmcu, "pbuf", "zd", "?");
 
   if (mask & FETCH_RV_STATUS) {
@@ -176,10 +180,7 @@ function fetchByMask2(mask, target) {
 export function fetchWithTimeout(url, data, timeout) {
   return new Promise((resolve, reject) => {
     // Set timeout timer
-    let timer = setTimeout(
-      () => reject(new Error("Request timed out")),
-      timeout
-    );
+    let timer = setTimeout(() => reject(new Error("Request timed out")), timeout);
 
     fetch(url, data)
       .then(
@@ -191,8 +192,7 @@ export function fetchWithTimeout(url, data, timeout) {
 }
 
 function gitTags_fetch() {
-  const tag_url =
-    "https://api.github.com/repos/zwiebert/tronferno-mcu-bin/tags";
+  const tag_url = "https://api.github.com/repos/zwiebert/tronferno-mcu-bin/tags";
   const fetch_data = {
     method: "GET",
     cache: "no-cache",

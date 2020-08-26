@@ -36,7 +36,7 @@ void RvTimer::changeState(state_T state) {
   }
 
   mState = state;
-  report_state_change(this->mValveNumber, state);
+  report_state_change(this->mArgs.valve_number, state);
 }
 
 void RvTimer::changeOnOff() {

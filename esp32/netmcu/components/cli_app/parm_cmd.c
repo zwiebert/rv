@@ -43,6 +43,11 @@ const char cli_help_parmCmd[]  =
 #define CMD_ASK_DURATIONS "\"dur\":\"?\","
 #define CMD_ASK_DURATIONS_LEN (sizeof CMD_ASK_DURATIONS - 1)
 
+#define KEY_TIMER_PREFIX "timer"
+#define KEY_TIMER_PREFIX_LEN ((sizeof KEY_TIMER_PREFIX) - 1)
+#define CMD_ASK_TIMERS "\"timer\":\"?\","
+#define CMD_ASK_TIMERS_LEN (sizeof CMD_ASK_TIMERS - 1)
+
 #define KEY_REMAINING_PREFIX "rem"
 #define KEY_REMAINING_TIME_PREFIX_LEN ((sizeof KEY_REMAINING_TIME_PREFIX) - 1)
 #define CMD_ASK_REMAINING_TIMES "\"rem\":\"?\","
@@ -75,8 +80,13 @@ process_parmCmd(clpar p[], int len) {
     if (key == NULL) {
       return -1;
 
-    } else if (strcmp(key, "dur") == 0 && *val == '?') {
+    } else if (strcmp(key, KEY_DURATION_PREFIX) == 0 && *val == '?') {
       strcat(buf, CMD_ASK_DURATIONS);
+
+      hasCmdLine = true;
+
+    } else if (strcmp(key, KEY_TIMER_PREFIX) == 0 && *val == '?') {
+      strcat(buf, CMD_ASK_TIMERS);
 
       hasCmdLine = true;
 
@@ -85,11 +95,11 @@ process_parmCmd(clpar p[], int len) {
 
       hasCmdLine = true;
 
-    } else if (strcmp(key, "rem") == 0 && *val == '?') {
+    } else if (strcmp(key, KEY_REMAINING_PREFIX) == 0 && *val == '?') {
       strcat(buf, CMD_ASK_REMAINING_TIMES);
 
       hasCmdLine = true;
-    } else if (strcmp(key, "status") == 0 && *val == '?') {
+    } else if (strcmp(key, KEY_STATUS_PREFIX) == 0 && *val == '?') {
       strcat(buf, CMD_ASK_STATUS);
 
       hasCmdLine = true;
