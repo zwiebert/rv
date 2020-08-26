@@ -43,10 +43,7 @@ int
 process_parmCmd(clpar p[], int len) {
   int arg_idx;
 
-  char *buf = (char*) malloc(BUF_SIZE);
-  if (!buf)
-    return -1;
-  *buf = '\0';
+
 
   bool wantsDurations = false, wantsRemainingTimes = false, wantsReply = false, hasDuration = false, wantsRelayPump = false, wantsRelayPC = false,
       wantsRainSensor = false, wantsTime = false, wantsTimers = false, wantsPumpRunTime = false, wantsVersion = false;
@@ -95,10 +92,14 @@ process_parmCmd(clpar p[], int len) {
 
   if (hasDuration) {
     rvt.loop(); //XXX
-    esp32_write("dr\n", 3);
   }
 
   if (wantsReply) {
+    char *buf = (char*) malloc(BUF_SIZE);
+    if (!buf)
+      return -1;
+    *buf = '\0';
+
     esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
 
       for (RvTimer &vt : *rvt.getTimerList()) {
@@ -158,9 +159,9 @@ process_parmCmd(clpar p[], int len) {
       esp32_write(buf, strlen(buf) - 1); // no terminating comma
 
     esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
-    *buf = '\0';
+    free(buf);
   }
 
-  free(buf);
+
   return 0;
 }

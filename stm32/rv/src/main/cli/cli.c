@@ -63,6 +63,7 @@ struct {
 } parm_handlers[] = {
         { "config", process_parmConfig, 0 },
         { "cmd", process_parmCmd, 0 },
+        { "timer", process_parmTimer, 0 },
         { "mcu", process_parmMcu, 0 },
         { "pbuf", process_parmProtoBuf, 0 },
         { "kvs", process_parmKvs, 0 },

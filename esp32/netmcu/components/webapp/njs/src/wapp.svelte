@@ -25,17 +25,13 @@
 
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
   <div class="navtab-main">
-    <NavTabs
-      nav_tabs={[$_('app.nav_main_rv'), $_('app.nav_main_config'), "Maintenance", "Dev"]}
-      name="main" />
+    <NavTabs nav_tabs={[$_('app.nav_main_rv'), $_('app.nav_main_config'), 'Maintenance', 'Dev']} name="main" />
   </div>
   {#if !tabIdxMain}
     <PaneRvControl />
   {:else if tabIdxMain === 1}
     <div class="navtab-sub">
-      <NavTabs
-        nav_tabs={[$_('app.nav_cfg_netMcu'), $_('app.nav_cfg_rv'), $_('app.nav_main_firmware')]}
-        name="cfg" />
+      <NavTabs nav_tabs={[$_('app.nav_cfg_netMcu'), $_('app.nav_cfg_rv'), $_('app.nav_main_firmware')]} name="cfg" />
     </div>
     {#if !tabIdxCfg}
       <PaneMcuSettings />
@@ -43,9 +39,7 @@
       <PaneRvSettings />
     {:else if tabIdxCfg === 2}
       <div class="navtab-sub2">
-        <NavTabs
-          nav_tabs={[$_('app.nav_fw_netMcu'), $_('app.nav_fw_rv')]}
-          name="fw" />
+        <NavTabs nav_tabs={[$_('app.nav_fw_netMcu'), $_('app.nav_fw_rv')]} name="fw" />
       </div>
       {#if !tabIdxFw}
         <PaneFirmwareEsp32 />

@@ -94,7 +94,7 @@ export function http_handleResponses(obj) {
 
   if ("kvs" in obj) {
     let kvs = obj.kvs;
-    
+
     for (let i = 0; i < ZoneCountMax; ++i) {
       let key = "zn" + i.toString();
       if (key in kvs) {
@@ -105,7 +105,6 @@ export function http_handleResponses(obj) {
         ZoneLPHs.update(i, kvs[key]);
       }
     }
-
   }
 
   if ("mcu" in obj) {

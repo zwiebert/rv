@@ -8,25 +8,21 @@
   export let zoneIdx;
   export let zoneNames;
 
-  $: zoneName = zoneNames[zoneIdx] || '';
+  $: zoneName = zoneNames[zoneIdx] || "";
 
   $: duration = ($ZoneDurations[zoneIdx] / 60.0).toFixed(2) || 0;
   $: remaining_mmss = formatSecondsToMMSS($ZoneRemainingSeconds[zoneIdx]);
   $: checked = duration > 0.01;
 
   function onClickRun() {
-    let cmd = {};
-    let key = "dur" + zoneIdx;
-    cmd[key] = document.getElementById("zrun" + zoneIdx).checked
-      ? document.getElementById(key).valueAsNumber
-      : 0;
-    httpFetch.sendCmd(cmd);
+    let cmd = { timer: {} };
+    cmd.timer.zn = zoneIdx;
+    if (document.getElementById("zrun" + zoneIdx).checked) cmd.timer.d1 = (document.getElementById("dur" + zoneIdx).valueAsNumber * 60).toFixed(0);
+    httpFetch.sendRv(cmd);
   }
 </script>
 
-<th class="text-left">
-  {zoneIdx} {zoneName}
-</th>
+<th class="text-left">{zoneIdx} {zoneName}</th>
 <td>
   <input class="w-16 text-right" type="number" value={duration} id="dur{zoneIdx}" />
 </td>

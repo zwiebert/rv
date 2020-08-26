@@ -1,25 +1,19 @@
 <script>
   "use strict";
 
-  import {
-    ZoneDurations,
-    ZoneRemainingSeconds,
-    ZoneDisabled,
-  } from "./store/zones";
+  import { ZoneDurations, ZoneRemainingSeconds, ZoneDisabled } from "./store/zones";
   import * as httpFetch from "./fetch.js";
 
   export let zoneIdx;
   export let zoneNames;
 
   let checked = getBit($ZoneDisabled, zoneIdx) !== 0;
-  
-  $: { ZoneDisabled.update((old) => {
+
+  $: {
+    ZoneDisabled.update((old) => {
       return putBit(old, zoneIdx, checked);
     });
-
-
   }
-
 
   function getBit(number, bitPosition) {
     return (number & (1 << bitPosition)) === 0 ? 0 : 1;
@@ -35,7 +29,7 @@
   }
 
   function putBit(number, bitPosition, bitValue) {
-    return bitValue ? setBit(number,bitPosition) : clearBit(number,bitPosition);
+    return bitValue ? setBit(number, bitPosition) : clearBit(number, bitPosition);
   }
 </script>
 
@@ -43,5 +37,5 @@
   <input class="w-40" type="text" bind:value={zoneNames[zoneIdx]} disabled={checked} />
 </td>
 <td>
-  <input type="checkbox" bind:checked={checked}  />
+  <input type="checkbox" bind:checked />
 </td>

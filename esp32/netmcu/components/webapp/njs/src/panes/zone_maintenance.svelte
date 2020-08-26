@@ -8,59 +8,23 @@
   import SelectZone from "../components/select_zone.svelte";
   import RvStatus from "../components/rv_status.svelte";
   import ZoneData from "../components/zone_data.svelte";
+  import RvTimer from "../components/rv_timer.svelte";
 
   onMount(() => {
-    httpFetch.http_fetchByMask(
-      httpFetch.FETCH_ZONE_NAMES |
-        httpFetch.FETCH_ZONE_DURATIONS |
-        httpFetch.FETCH_ZONE_REMAINING_DURATIONS
-    );
+    httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_NAMES | httpFetch.FETCH_ZONE_DURATIONS | httpFetch.FETCH_ZONE_REMAINING_DURATIONS);
   });
 
-function testDur(zone) {
-  let test_durCmd = { ignoreRainSensor:1, onTime:.5, offTime:.5, repeats:5 };
-  cmdDuration(zone, test_durCmd);
-}
-  //         sscanf(val, "%f,%d,%f,%d,%f,%d,%f,%f", &on, &ignoreRainSensor, &off, &repeats, &period, &dInterval, &dhBegin, &dhEnd);
-  function cmdDuration(zone, args) {
-    let onTime = args.onTime || 0.0;
-    let ignoreRainSensor = args.ignore || 0;
-    let offTime = args.offTime || 0.0;
-    let repeats = args.repeats || 0;
-    let period = args.period || 0.0;
-    let dInterval = args.dInterval || 0;
-    let dhBegin = args.dhBegin || 0;
-    let dhEnd = args.dhEnd || 0;
-
-    let cmdString =
-      onTime +
-      "," +
-      ignoreRainSensor +
-      "," +
-      offTime +
-      "," +
-      repeats +
-      "," +
-      period +
-      "," +
-      dInterval +
-      "," +
-      dhBegin +
-      "," +
-      dhEnd;
-
+  function cmdDuration(args) {
     let cmd = {};
-    let key = "dur" + zone;
-    cmd[key] = cmdString;
-    httpFetch.sendCmd(cmd);
+    cmd.timer = args;
+    httpFetch.sendRv(cmd);
   }
 
   function onClickRun() {
-    //testDur($Z);
-    cmdDuration($Z, { onTime: 1, ignore: 3 });
+    cmdDuration({ vn: $Z, d1: 60, ir: 3 });
   }
   function onClickStop() {
-    cmdDuration($Z, {});
+    cmdDuration({ vn: $Z });
   }
 </script>
 
@@ -78,9 +42,7 @@ function testDur(zone) {
   </div>
 
   <div class="area">
-    <p>
-      {$_('app.duration')}: {$ZoneDurationMmss} {$_('app.remaining')}: {$ZoneRemainingMmss}
-    </p>
+    <p>{$_('app.duration')}: {$ZoneDurationMmss} {$_('app.remaining')}: {$ZoneRemainingMmss}</p>
   </div>
 
   <div class="area">
@@ -89,6 +51,11 @@ function testDur(zone) {
 
   <div class="area">
     <ZoneData />
+  </div>
+
+  <div class="area">
+    <h4>Timer</h4>
+    <RvTimer />
   </div>
 
 </div>
