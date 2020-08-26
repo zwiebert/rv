@@ -18,10 +18,7 @@ idf_component_register(
    )
  
  add_custom_command(
-     OUTPUT "${COMPONENT_DIR}/build/mcu_com.pb.c"
-            "${COMPONENT_DIR}/include"
-            "${COMPONENT_DIR}/include/protobuf/mcu_com.pb.h"
-             ${COMPONENT_DIR}/_force.h   
+     OUTPUT ${COMPONENT_DIR}/_force.h   
      COMMAND make -B all -C ../../../../../mcu_com
      VERBATIM)
   
