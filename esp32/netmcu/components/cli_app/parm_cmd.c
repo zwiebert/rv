@@ -79,7 +79,7 @@ process_parmCmd(clpar p[], int len) {
 
     if (key == NULL) {
       return -1;
-
+#if 0
     } else if (strcmp(key, KEY_DURATION_PREFIX) == 0 && *val == '?') {
       strcat(buf, CMD_ASK_DURATIONS);
 
@@ -103,6 +103,7 @@ process_parmCmd(clpar p[], int len) {
       strcat(buf, CMD_ASK_STATUS);
 
       hasCmdLine = true;
+#endif
     } else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
       int zone=-1, timer_number=0;
       sscanf((key + KEY_DURATION_PREFIX_LEN), "%d.%d", &zone, &timer_number);

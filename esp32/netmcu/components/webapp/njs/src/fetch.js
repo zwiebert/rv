@@ -20,8 +20,8 @@ export const FETCH_RV_VERSION = (bit <<= 1);
 export const FETCH_GIT_TAGS = 0; //XXX
 
 
-const FETCHES_TARGET_STM32 = FETCH_ZONE_DATA | FETCH_ZONE_TIMERS;
-const FETCHES_REPLY_BY_WS = FETCHES_TARGET_STM32 | FETCH_RV_STATUS;
+const FETCHES_TARGET_STM32 =  FETCH_ZONE_DURATIONS | FETCH_ZONE_REMAINING_DURATIONS | FETCH_ZONE_DATA | FETCH_ZONE_TIMERS | FETCH_RV_STATUS | FETCH_RV_VERSION;
+const FETCHES_REPLY_BY_WS = FETCHES_TARGET_STM32;
 
 const MAX_RETRY_COUNT = 3;
 
@@ -148,7 +148,7 @@ function fetchByMask2(mask, target) {
   }
 
   if (mask & FETCH_RV_VERSION) {
-    add_kv(tfmcu, "cmd", "rv-version", "?");
+    add_kv(tfmcu, "cmd", "version", "?");
   }
 
   if (mask & FETCH_ZONE_NAMES) add_kv(tfmcu, "kvs", "zn", "?");
