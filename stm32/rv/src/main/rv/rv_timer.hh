@@ -42,7 +42,7 @@ private:
     return mArgs.on_duration && !mArgs.off_duration && !mArgs.repeats && !mArgs.period;
   }
   bool hasTodSpan() {
-    return mArgs.mTodSpanBegin || mArgs.mTodSpanEnd;
+    return mArgs.mTodSpanBegin != mArgs.mTodSpanEnd;
   }
 
 
@@ -64,12 +64,12 @@ private:
   }
 
   bool isDisabledByTimeOfDay(time_t now = time(0)) {
-    if (mArgs.mTodSpanBegin == mArgs.mTodSpanEnd)
+    if (!hasTodSpan())
       return false;
 
     struct tm *tm_now = localtime(&now);
     int dsecs = tm_now->tm_hour * ONE_HOUR + tm_now->tm_min * ONE_MINUTE + tm_now->tm_sec;
-    if (!(mArgs.mTodSpanBegin <= dsecs && dsecs <= mArgs.mTodSpanEnd))
+    if (!(mArgs.mTodSpanBegin <= dsecs && (dsecs <= mArgs.mTodSpanEnd || mArgs.mTodSpanEnd == 0)))
       return true;
 
     return false;
