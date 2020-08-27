@@ -22,7 +22,5 @@
 <div class="area">
   <McuFirmwareUpd fwbtns={stm32_fwbtns} chip="stm32" updSecs="75" />
   <Stm32McuFirmwareInfo />
-  <button type="button" on:click={() => misc.req_stm32McuRestart()}>
-    {$_('app.restartMcu')}
-  </button>
+  <button type="button" on:click={() => misc.req_stm32McuRestart()}>{$_('app.restartMcu')}</button>
 </div>

@@ -105,26 +105,11 @@ process_parmConfig(clpar p[], int len) {
 
   so_output_message(SO_CFG_begin, NULL);
 
-  bool pw_ok = strlen(C.app_configPassword) == 0;
-
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
     if (key == NULL || val == NULL) {  // don't allow any default values in config
       return cli_replyFailure();
-    } else if (strcmp(key, "pw") == 0) {
-      if (val && strcmp(C.app_configPassword, val) == 0) {
-        pw_ok = true;
-        so_output_message(SO_CFGPASSWD_OK, NULL);
-      } else {
-        so_output_message(SO_CFGPASSWD_WRONG, NULL);
-        return cli_replyFailure();
-      }
-    } else if (!pw_ok) {
-      so_output_message(SO_CFGPASSWD_MISSING, NULL);
-      return cli_replyFailure();
-
-
 #if ENABLE_RESTART
     } else if (strcmp(key, "restart") == 0) {
 #ifdef MCU_ESP32

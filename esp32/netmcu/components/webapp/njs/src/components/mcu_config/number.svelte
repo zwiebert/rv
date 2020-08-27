@@ -3,7 +3,7 @@
   export let value;
   export let min;
   export let max;
-  export let step;
+  export let step = "1";
 </script>
 
 <input

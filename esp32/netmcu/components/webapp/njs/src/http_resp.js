@@ -1,5 +1,8 @@
 "use strict";
 
+import * as mcuComPb from "./pbuf/mcu_com_pb.js";
+import * as b64 from "js-base64";
+
 import { McuConfig } from "./store/mcu_config.js";
 import {
   McuBootCount,
@@ -13,6 +16,8 @@ import {
 } from "./store/mcu_firmware.js";
 import { McuDocs } from "./store/mcu_docs.js";
 import {
+  ZoneLPHs,
+  ZoneDataMsg,
   ZoneCountMax,
   ZoneNames,
   ZoneRemainingSeconds,
@@ -26,6 +31,16 @@ import {
 
 export function http_handleResponses(obj) {
   console.log("reply-json: " + JSON.stringify(obj));
+
+  if ("pbuf" in obj) {
+    let pbuf = obj.pbuf;
+    if ("zd" in obj.pbuf) {
+      let buf = b64.toUint8Array(pbuf.zd);
+      let msg = mcuComPb.ZoneData.deserializeBinary(buf);
+      ZoneDataMsg.set(msg);
+      ZoneLPHs.set(msg.getLphList());
+    }
+  }
 
   if ("config" in obj) {
     let config = obj.config;
@@ -56,11 +71,12 @@ export function http_handleResponses(obj) {
           let timer = "timer" + sfx;
           if (timer in data) {
             zoneTimers[timer] = data[timer];
+            ZoneTimers.update(obj => {obj[timer] = data[timer]; return obj; });
           }
         }
       }
 
-      ZoneTimers.set(zoneTimers);
+      //ZoneTimers.set(zoneTimers);
       ZoneDurations.set(zoneDurations);
       ZoneRemainingSeconds.set(zoneRemainingSeconds);
       if ("pc" in data) PressControlStatus.set(data.pc);
@@ -79,12 +95,17 @@ export function http_handleResponses(obj) {
 
   if ("kvs" in obj) {
     let kvs = obj.kvs;
-    let zoneNames = [];
+
     for (let i = 0; i < ZoneCountMax; ++i) {
       let key = "zn" + i.toString();
-      zoneNames[i] = key in kvs ? kvs[key] : "";
+      if (key in kvs) {
+        ZoneNames.update(i, kvs[key]);
+      }
+      key = "lph" + i.toString();
+      if (key in kvs) {
+        ZoneLPHs.update(i, kvs[key]);
+      }
     }
-    ZoneNames.set(zoneNames);
   }
 
   if ("mcu" in obj) {

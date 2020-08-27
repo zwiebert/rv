@@ -1,17 +1,18 @@
-'use strict';
-import { writable } from 'svelte/store';
+"use strict";
+import { writable } from "svelte/store";
 
 export function OptionStore() {
-	const { subscribe, set, update } = writable({});
+  const { subscribe, set, update } = writable({});
 
-	return {
-		subscribe,
-		update: obj => update(old => {
-			return Object.assign(old, obj);
-		}),
-		set: (value) => set(value),
-		reset: () => set({})
-	};
+  return {
+    subscribe,
+    update: (obj) =>
+      update((old) => {
+        return Object.assign(old, obj);
+      }),
+    set: (value) => set(value),
+    reset: () => set({}),
+  };
 }
 
 export function ArrayStore(arr) {
@@ -19,135 +20,129 @@ export function ArrayStore(arr) {
 
   return {
     subscribe,
-    update: (idx, val) => update(old => {
-      old[idx] = val;
-      return old;
-    }),
+    update: (idx, val) =>
+      update((old) => {
+        old[idx] = val;
+        return old;
+      }),
     set: (value) => set(value),
-    reset: () => set({})
+    reset: () => set({}),
   };
 }
 
-
-
-
 function read_storage_obj(name) {
-	let obj = JSON.parse(localStorage.getItem(name) || '{}');
-	if (typeof obj === 'object' && !Array.isArray(obj)) {
-		return obj;
-	}
-	return {};
+  let obj = JSON.parse(localStorage.getItem(name) || "{}");
+  if (typeof obj === "object" && !Array.isArray(obj)) {
+    return obj;
+  }
+  return {};
 }
 function save_storage_obj(name, obj) {
-	localStorage.setItem(name, JSON.stringify(obj));
+  localStorage.setItem(name, JSON.stringify(obj));
 }
 
 export function PersistentOptionStore(name) {
+  const { subscribe, set, update } = writable(read_storage_obj(name));
 
-	const { subscribe, set, update } = writable(read_storage_obj(name));
+  function my_set(value) {
+    save_storage_obj(name, value);
+    set(value);
+  }
 
-	function my_set(value) {
-		save_storage_obj(name, value);
-		set(value);
-	}
+  let result = {
+    subscribe,
+    update: (obj) =>
+      update((old) => {
+        let new_obj = Object.assign(old, obj);
+        save_storage_obj(name, new_obj);
+        return new_obj;
+      }),
+    set: my_set,
+    reset: () => my_set({}),
+  };
 
-	let result = {
-		subscribe,
-		update: obj => update(old => {
-			let new_obj = Object.assign(old, obj);
-			save_storage_obj(name, new_obj);
-			return new_obj;
-		}),
-		set: my_set,
-		reset: () => my_set({})
-	};
-
-	return result;
+  return result;
 }
-
 
 function read_storage_int(name) {
-	return Number.parseInt((localStorage.getItem(name) || "0"), 10);
+  return Number.parseInt(localStorage.getItem(name) || "0", 10);
 }
 function save_storage_int(name, value) {
-	localStorage.setItem(name, value ? value.toString() : "0");
+  localStorage.setItem(name, value ? value.toString() : "0");
 }
 
 export function PersistentIntStore(name) {
-    let value = read_storage_int(name);
-	const { subscribe, set } = writable(value);
+  let value = read_storage_int(name);
+  const { subscribe, set } = writable(value);
 
-	function my_set(value) {
-		save_storage_int(name, value);
-		set(value);
-	}
+  function my_set(value) {
+    save_storage_int(name, value);
+    set(value);
+  }
 
-	function my_update(fn) {
-		value = fn(value);
-		my_set(value);
-	}
+  function my_update(fn) {
+    value = fn(value);
+    my_set(value);
+  }
 
-	let result = {
-		subscribe,
-		set: my_set,
-		reset: () => my_set(0),
-		update: my_update,
-	};
+  let result = {
+    subscribe,
+    set: my_set,
+    reset: () => my_set(0),
+    update: my_update,
+  };
 
-	return result;
+  return result;
 }
 
 function read_storage_string(name) {
-	return localStorage.getItem(name) || '';
+  return localStorage.getItem(name) || "";
 }
 function save_storage_string(name, value) {
-	localStorage.setItem(name, value ? value.toString() : "0");
+  localStorage.setItem(name, value ? value.toString() : "0");
 }
 
 export function PersistentStringStore(name) {
+  const { subscribe, set } = writable(read_storage_string(name));
 
-	const { subscribe, set } = writable(read_storage_string(name));
+  function my_set(value) {
+    save_storage_string(name, value);
+    set(value);
+  }
 
-	function my_set(value) {
-		save_storage_string(name, value);
-		set(value);
-	}
+  let result = {
+    subscribe,
+    set: my_set,
+    reset: () => my_set(0),
+  };
 
-	let result = {
-		subscribe,
-		set: my_set,
-		reset: () => my_set(0)
-	};
-
-	return result;
+  return result;
 }
-
 
 function read_storage_val(name, def_value) {
-	try {
-		let obj = JSON.parse(localStorage.getItem(name) || JSON.stringify(def_value));
-		return obj.value;
-	} catch (e) {
-		return def_value;
-	}
+  try {
+    let obj = JSON.parse(localStorage.getItem(name) || JSON.stringify(def_value));
+    return obj.value;
+  } catch (e) {
+    return def_value;
+  }
 }
 function save_storage_val(name, value) {
-	localStorage.setItem(name, JSON.stringify({ value: value }));
+  localStorage.setItem(name, JSON.stringify({ value: value }));
 }
 
 export function PersistentValStore(name, def_value) {
+  const { subscribe, set } = writable(read_storage_val(name, def_value));
 
-	const { subscribe, set } = writable(read_storage_val(name, def_value));
+  function my_set(value) {
+    save_storage_val(name, value);
+    set(value);
+  }
 
-	function my_set(value) {
-		save_storage_val(name, value);
-		set(value);
-	}
+  let result = {
+    subscribe,
+    set: my_set,
+  };
 
-	let result = {
-		subscribe,
-		set: my_set,
-	};
-
-	return result;
+  return result;
 }

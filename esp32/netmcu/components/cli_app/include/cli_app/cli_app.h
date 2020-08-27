@@ -17,9 +17,10 @@ int process_parmCmd(clpar p[], int len);
 int process_parmMcu(clpar p[], int len);
 int process_parmKvs(clpar p[], int len);
 int process_parmStatus(clpar p[], int len);
-
+int process_parmProtoBuf(clpar p[], int len);
 
 bool cli_checkStm32CommandLine(char *line);
 
+void cliApp_setup();
 
 #endif /* CLI_CLI_APP_H_ */

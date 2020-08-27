@@ -3,12 +3,13 @@
 #include "cli.h"
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define CMD_BUF_SIZE 128
+#define CMD_BUF_SIZE 512
 extern char cmd_buf[CMD_BUF_SIZE];
 
 // implementation interface for  cli*.c files
@@ -24,7 +25,7 @@ extern clpar par[MAX_PAR];
 
 struct cli_parm {
   clpar *par;
-  unsigned size;
+  size_t size;
 };
 
 extern const char help_parmCmd[] ;
@@ -55,7 +56,8 @@ int process_parmConfig(clpar p[], int len);
 int process_parmMcu(clpar p[], int len);
 int process_parmTimer(clpar p[], int len);
 int process_parmHelp(clpar p[], int len);
-int process_parmPair(clpar p[], int len);
+int process_parmProtoBuf(clpar p[], int len);
+int process_parmKvs(clpar p[], int len);
 /* cli.c */
 void warning_unknown_option(const char *key);
 void cli_msg_ready(void);
@@ -76,7 +78,7 @@ void cli_loop(void);
 void cli_print_json(const char *json); //FIXME
 
 typedef int (*process_parm_cb)(clpar parm[], int parm_len);
-void cli_process_json(char *json, process_parm_cb proc_parm) ;
+int cli_process_json(char *json, process_parm_cb proc_parm) ;
 
 #ifdef __cplusplus
 }

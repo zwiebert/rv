@@ -37,12 +37,7 @@ uint16_t msgid;
 
 #include <jsmn/jsmn.h>
 
-#ifndef TEST_HOST
-void
-cli_print_json(const char *json) {
-    io_puts(json), io_putlf();
-}
-#endif
+#define DB_NO_OPT
 
 #ifdef DB_NO_OPT
 #pragma GCC push_options
@@ -65,26 +60,26 @@ int handle_parm_json(char *json, jsmntok_t *tok, const char *name) {
 
     }
   }
+  return 0;
 }
 
 
 
-void cli_process_json(char *json, process_parm_cb proc_parm) {
-  dbg_vpf(db_printf("process_json: %s\n", json));
+int cli_process_json(char *json, process_parm_cb proc_parm) {
+ // dbg_vpf(db_printf("process_json: %s\n", json));
 
   jsmn_parser jsp;
-#define MAX_TOKENS 128
+#define MAX_TOKENS 64
   jsmntok_t tok[MAX_TOKENS];
 
   jsmn_init(&jsp);
   int nt = jsmn_parse(&jsp, json, strlen(json), tok, MAX_TOKENS);
+  if (nt < 0) {
+    return nt;
+  }
 
-  int i = 0;
-
-  if (tok[i].type == JSMN_OBJECT) {
-    int roi = 0; // root object index
-
-    for (i = 1; i < nt; ++i) {
+  if (tok[0].type == JSMN_OBJECT) {
+    for (int i = 1; i < nt; ++i) {
 
       if (tok[i].type == JSMN_OBJECT) {
         int coi = i; // command object index
@@ -101,7 +96,7 @@ void cli_process_json(char *json, process_parm_cb proc_parm) {
           int n = handle_parm_json(json, tok, cmd_obj);
           i += n;
         } else {
-          clpar par[20] = { };
+          clpar par[nt];
           int pi = 0;
 
           par[pi].key = cmd_obj;
@@ -119,6 +114,7 @@ void cli_process_json(char *json, process_parm_cb proc_parm) {
       }
     }
   }
+  return 0;
 }
 #ifdef DB_NO_OPT
 #pragma GCC pop_options

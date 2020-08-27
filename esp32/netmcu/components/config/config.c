@@ -15,6 +15,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "config/config.h"
 #include "config/config_defaults.h"
+#include "misc/base64.h"
 
 #define D(x) 
 
@@ -46,3 +47,34 @@ bool config_save_lph(uint16_t lph[14]) {
   return config_save_item_b(CB_LPH, lph, sizeof(uint16_t) * 14);
 }
 #endif
+
+
+bool config_save_pb64(enum configItem item, const char *pb64) {
+  return config_save_item_s(item, pb64);
+}
+
+bool config_read_pb64(enum configItem item, char *pb64_buf, size_t buf_size) {
+  return config_read_item_s(item, pb64_buf, buf_size, "");
+}
+
+bool config_save_pb(enum configItem item, const uint8_t *pb, size_t pb_len) {
+  unsigned char pb64[pb_len/2 + pb_len];
+
+  int err = mbedtls_base64_encode(pb64, sizeof pb64, &pb_len, pb, pb_len);
+  if (err)
+    return false;
+  return config_save_pb64(item, (const char *)pb64);
+}
+
+bool config_read_pb(enum configItem item, uint8_t *pb_buf, size_t *pb_size) {
+
+  if (!config_read_pb64(item, (char *)pb_buf, *pb_size))
+    return false;
+
+  int err = mbedtls_base64_decode(pb_buf, *pb_size, pb_size, pb_buf, strlen((char*)pb_buf));
+
+  if (err)
+    return false;
+
+  return true;
+}

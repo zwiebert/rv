@@ -1,12 +1,4 @@
-/*
- * user_config.h
- *
- *  Created on: 16.05.2019
- *      Author: bertw
- */
-
-#ifndef MAIN_USER_CONFIG_H_
-#define MAIN_USER_CONFIG_H_
+#pragma once
 
 #ifndef STM32F1
 #define STM32F1
@@ -21,6 +13,11 @@
 #define USE_JSON
 #define USE_WDG
 #define USE_PC_POLLING
+#define USE_ZONE_NAME
+
+#define USE_MALLOC_IN_NEW_GLOBAL
+//#define USE_MALLOC_IN_NEW_NODE
+//#define USE_STD_LIST
 
 #ifdef BUILD_DEBUG
 #undef USE_TEST
@@ -39,4 +36,9 @@
 #else
 #error "build version missing"
 #endif
-#endif /* MAIN_USER_CONFIG_H_ */
+
+
+#include <malloc.h>
+#define MALLOC(size) malloc(size)
+#define FREE(ptr) free(ptr)
+#define REALLOC(ptr, size) realloc(ptr, size)

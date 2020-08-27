@@ -1,6 +1,6 @@
 
 #include "../peri/uart.h"
-#include "cli.h"
+#include "cli_imp.h"
 #include <stdbool.h>
 #include <stddef.h>
 #include <ctype.h>

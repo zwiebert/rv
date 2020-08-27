@@ -19,7 +19,6 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
-SemaphoreHandle_t uart_mutex;
 
 #ifndef DISTRIBUTION
 #define D(x) x
@@ -41,18 +40,6 @@ const char cli_help_parmCmd[]  =
 
 #define KEY_DURATION_PREFIX "dur"
 #define KEY_DURATION_PREFIX_LEN ((sizeof KEY_DURATION_PREFIX) - 1)
-#define CMD_ASK_DURATIONS "\"dur\":\"?\","
-#define CMD_ASK_DURATIONS_LEN (sizeof CMD_ASK_DURATIONS - 1)
-
-#define KEY_REMAINING_PREFIX "rem"
-#define KEY_REMAINING_TIME_PREFIX_LEN ((sizeof KEY_REMAINING_TIME_PREFIX) - 1)
-#define CMD_ASK_REMAINING_TIMES "\"rem\":\"?\","
-#define CMD_ASK_REMAINING_TIMES_LEN (sizeof CMD_ASK_REMAINING_TIMES - 1)
-
-#define KEY_STATUS_PREFIX "status"
-#define KEY_STATUS_PREFIX_LEN ((sizeof KEY_STATUS_PREFIX) - 1)
-#define CMD_ASK_STATUS "\"status\":\"?\","
-#define CMD_ASK_STATUS_LEN (sizeof CMD_ASK_STATUS - 1)
 
 #define RV_VERSION "rv-version"
 #define CMD_ASK_VERSION "\"version\":\"?\","
@@ -76,24 +63,14 @@ process_parmCmd(clpar p[], int len) {
     if (key == NULL) {
       return -1;
 
-    } else if (strcmp(key, "dur") == 0 && *val == '?') {
-      strcat(buf, CMD_ASK_DURATIONS);
-
+    } else if (*val == '?') {
+      if (strcmp(key, RV_VERSION) == 0) {
+        strcat(buf, CMD_ASK_VERSION);
+      } else {
+        snprintf(buf + strlen(buf), sizeof buf - strlen(buf), "\"%s\":\"?\",", key);
+      }
       hasCmdLine = true;
 
-    } else if (strcmp(key, RV_VERSION) == 0 && *val == '?') {
-      strcat(buf, CMD_ASK_VERSION);
-
-      hasCmdLine = true;
-
-    } else if (strcmp(key, "rem") == 0 && *val == '?') {
-      strcat(buf, CMD_ASK_REMAINING_TIMES);
-
-      hasCmdLine = true;
-    } else if (strcmp(key, "status") == 0 && *val == '?') {
-      strcat(buf, CMD_ASK_STATUS);
-
-      hasCmdLine = true;
     } else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
       int zone=-1, timer_number=0;
       sscanf((key + KEY_DURATION_PREFIX_LEN), "%d.%d", &zone, &timer_number);
@@ -128,11 +105,11 @@ process_parmCmd(clpar p[], int len) {
 
   if (hasCmdLine) {
     buf[strlen(buf)-1] = '\0';
-    strcat(buf, "}};\n");
+    strcat(buf, "}}\n");
     dbg_vpf(db_printf("cmd2stm32: <%s>\n", buf));
-    if (xSemaphoreTakeRecursive(uart_mutex, portMAX_DELAY)) {
+    if (stm32_mutexTake()) {
       stm32_write(buf, strlen(buf));
-      xSemaphoreGiveRecursive(uart_mutex);
+      stm32_mutexGive();
     }
   }
 

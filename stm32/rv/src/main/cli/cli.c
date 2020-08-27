@@ -63,7 +63,10 @@ struct {
 } parm_handlers[] = {
         { "config", process_parmConfig, 0 },
         { "cmd", process_parmCmd, 0 },
+        { "timer", process_parmTimer, 0 },
         { "mcu", process_parmMcu, 0 },
+        { "pbuf", process_parmProtoBuf, 0 },
+        { "kvs", process_parmKvs, 0 },
   };
 
 int
@@ -91,6 +94,7 @@ cli_process_cmdline(char *line) {
 void cli_loop(void) {
   char *cmdline;
   if ((cmdline = get_commandline())) {
+    assert(strlen(cmdline) < CMD_BUF_SIZE);
     db_printf("cmdline: %s\n", cmdline);
 #ifdef USE_WDG
 	  extern bool watchDog_checkCommandLine(const char *cmdLine);

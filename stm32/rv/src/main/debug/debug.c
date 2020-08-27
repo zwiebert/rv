@@ -9,7 +9,7 @@
 
 void db_print(const char *msg) {
   char buf[120];
-  snprintf(buf, 120, "trace: %s\n", msg);
+  snprintf(buf, 120 - 1, "trace: %s\n", msg);
   esp32_puts(buf);
 }
 
@@ -18,7 +18,7 @@ void db_printf(char *format, ...) {
   char buf[120] = TRACE_MARKER;
 
   va_start(args, format);
-  vsnprintf(buf + TRACE_MARKER_LEN, 120, format, args);
+  vsnprintf(buf + TRACE_MARKER_LEN, sizeof buf - TRACE_MARKER_LEN - 1, format, args);
   va_end(args);
 
   esp32_puts(buf);
