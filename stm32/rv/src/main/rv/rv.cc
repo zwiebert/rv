@@ -1,7 +1,13 @@
-#include "rv.hh"
+#include <rv/rain_sensor.hh>
+#include <rv/rv.hh>
+#include <rv/rv_timers.hh>
+#include <rv/rv_zone.hh>
+#include <rv/rv_zones.hh>
+#include <rv/valve_relays.h>
 
-#include "rv_zones.hh"
 
+RvTimers rvt = RvTimers(0, app_switch_valves);
+RainSensor rs;
 RvZones rvz;
 
 int getLph(int valve_number) {

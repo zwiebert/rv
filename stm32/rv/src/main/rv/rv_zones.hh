@@ -2,10 +2,12 @@
 
 #include <rv/rv.hh>
 #include <rv/rv_zone.hh>
+#include <array>
+
 
 class RvZones
 {
-  RvZone mRvz[RV_VALVE_COUNT];
+  std::array<RvZone, RV_VALVE_COUNT> mRvz;
 public:
   RvZones() {
   }

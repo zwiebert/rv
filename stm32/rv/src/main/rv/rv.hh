@@ -22,5 +22,5 @@ extern RvZones rvz;
 #define ZONE_LPH_DEFAULT 1000
 
 #define RV_TIMER_COUNT 20
-#define RV_VALVE_COUNT  12
+#define RV_VALVE_COUNT  14
 #define RV_MAX_LPH 1600

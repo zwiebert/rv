@@ -9,8 +9,6 @@
 typedef void (*switch_valves_cb)(uint16_t valve_bits, uint16_t valve_mask);
 typedef void (*timer_was_modified_cb)(int vn, int tn, bool removed);
 
-#define IGNORE_RAIN_SENSOR 1
-#define IGNORE_PUMP_PAUSE 2
 
 #include "allocator_malloc.hh"
 #include <list>

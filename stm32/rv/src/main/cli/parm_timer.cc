@@ -40,12 +40,11 @@ const char help_parmTimer[] = "zone=[0-13]      zone number\n"
     "duration=[0-60]  how long to irrigate\n";
 
 int process_parmTimer(clpar p[], int len) {
-  int arg_idx;
   RvTimer::SetArgs args = RvTimer::SetArgs(reinterpret_cast<cstr_pair *>(&p[1]), len - 1);
 
 
 #if 0
-  for (arg_idx = 1; arg_idx < len; ++arg_idx) {
+  for (int arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
     break;  // nothing to do here

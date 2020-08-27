@@ -23,6 +23,10 @@ bool csu_assign(char **dst, const char *src) {
   return false;
 }
 
+void csu_destroy(char **p) {
+  free(*p);
+  *p = nullptr;
+}
 
 
 

@@ -55,7 +55,7 @@ private:
   }
 
   bool isDisabledByRain() const {
-    if (mArgs.mIgnoreRainSensor & IGNORE_RAIN_SENSOR)
+    if (mArgs.ignoreRainSensor)
       return false;
     if (rs.getState())
       return true; // raining now or was raining (adjust sensor directly)
@@ -149,7 +149,7 @@ public:
 
   void set(SetArgs &args) {
     mArgs = args;
-    if (rs.getState() && !(args.period || args.mDaysInterval || args.mIgnoreRainSensor & IGNORE_RAIN_SENSOR)) {
+    if (rs.getState() && !(args.period || args.mDaysInterval || args.ignoreRainSensor)) {
       mArgs.on_duration = 0; // force timer to stop
     }
   }
@@ -189,7 +189,7 @@ public:
   }
 
   bool shouldStopBecauseRain() const {
-    if (mArgs.mIgnoreRainSensor & IGNORE_RAIN_SENSOR)
+    if (mArgs.ignoreRainSensor)
       return false;
     if (!isRunning())
       return false;
@@ -223,7 +223,7 @@ public:
     if (mState == STATE_PAUSED)
       return false;
 
-    if (mArgs.mIgnoreRainSensor & IGNORE_PUMP_PAUSE) {
+    if (mArgs.ignorePumpPause) {
       return false;
     }
 
@@ -238,7 +238,7 @@ public:
     if (mState != STATE_PAUSED)
       return false;
 
-    if (mArgs.mIgnoreRainSensor & IGNORE_PUMP_PAUSE) {
+    if (mArgs.ignorePumpPause) {
       return true;
     }
 

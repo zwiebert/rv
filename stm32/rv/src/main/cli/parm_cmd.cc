@@ -67,10 +67,13 @@ process_parmCmd(clpar p[], int len) {
 
     } else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
       RvTimer::SetArgs args;
-      sscanf((key + KEY_DURATION_PREFIX_LEN), "%d.%d", &args.valve_number, &args.timer_number);
+      sscanf((key + KEY_DURATION_PREFIX_LEN), "%hhd.%hhd", &args.valve_number, &args.timer_number);
       if (strchr(val, ',')) {
-        sscanf(val, "%d,%d,%d,%d,%d,%d,%d,%d", &args.on_duration, &args.mIgnoreRainSensor, &args.off_duration, &args.repeats, &args.period, &args.mDaysInterval, &args.mTodSpanBegin,
+        int irs = 0;
+        sscanf(val, "%hhd,%d,%hhd,%hhd,%hd,%hhd,%hd,%hd", &args.on_duration, &irs, &args.off_duration, &args.repeats, &args.period, &args.mDaysInterval, &args.mTodSpanBegin,
             &args.mTodSpanEnd);
+        args.ignoreRainSensor = !!(irs & 1);
+        args.ignorePumpPause = !!(irs & 2);
       } else {
         args.on_duration = atoi(val);
       }

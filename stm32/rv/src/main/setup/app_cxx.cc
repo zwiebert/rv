@@ -5,15 +5,13 @@
  *      Author: bertw
  */
 
-#include "user_config.h"
-#include "rv/rv_timers.hh"
+#include <malloc.h>
+#include <rv/rv.hh>
+#include <rv/rv_timers.hh>
+#include <stddef.h>
+#include <watch_dog/watch_dog.hh>
 #include "setup/app_cxx.h"
-#include "watch_dog/watch_dog.hh"
-#include "time/systick_1ms.h"
-#include "rv/valve_relays.h"
 
-RvTimers rvt = RvTimers(0, app_switch_valves);
-RainSensor rs;
 
 #ifdef USE_MALLOC_IN_NEW_GLOBAL
 void* operator new(size_t nbytes) {
@@ -45,5 +43,4 @@ extern "C" void cxx_setup() {
 	//rvt.set(6, 30, 0, 0, 60 * 2)->run();
 	//rvt.set(7, 30, 0, 0, 60 * 2)->run();
 }
-
 
