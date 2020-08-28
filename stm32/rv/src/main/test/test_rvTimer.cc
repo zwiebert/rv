@@ -7,7 +7,6 @@
 
 #include "user_config.h"
 #include "test.h"
-#include "setup/app_cxx.h"
 #include "rv/rv_timers.hh"
 #include "valves/valve_relays.h"
 

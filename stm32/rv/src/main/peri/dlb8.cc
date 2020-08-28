@@ -1,4 +1,11 @@
+#include "user_config.h"
 #include "../../../Libraries/tm1638/include/boards/dlb8.h"
+
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/usart.h>
+#include <libopencm3/stm32/i2c.h>
+#include <libopencm3/stm32/f1/memorymap.h>
 
 #include <stdio.h>
 #include <stdint.h>
@@ -12,8 +19,12 @@
 Dlb8 input[2];
 Dlb8 *dlb8_obj[2];
 
-void display_print_timers();
-#define TIMER_SET_DONE 1
+// missing functions because of changed timer interface
+void display_print_timers(); //XXX - missing
+#define TIMER_SET_DONE 1 //XXX - missing
+void valveTimer_incrementTimerDuration(int);
+void valveTimer_finishTimer(int);
+void timer_set(int);
 
 void dlb8_print_date(Dlb8 *obj, struct tm *tm) {
     uint8_t digit = 0;
@@ -121,4 +132,13 @@ void dlb8_loop() {
     display_print_timers();
 
   }
+}
+
+void dlb8_setup(void) {
+    rcc_periph_clock_enable(RCC_GPIOB);
+    Tm1638_setup(GPIOB, GPIO13, GPIOB, GPIO14);
+    Tm1638_construct(&input[0].tm, GPIOB, GPIO15);
+    dlb8_obj[0] = &input[0];
+    Tm1638_construct(&input[1].tm, GPIOB, GPIO12);
+    dlb8_obj[1] = &input[1];
 }

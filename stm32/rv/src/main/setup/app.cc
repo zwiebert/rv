@@ -8,7 +8,7 @@
 #include "user_config.h"
 
 #include <loop/loop.hh>
-#include <peri/mcp23017.h>
+#include <peri/relay16.h>
 #include <rv/report.h>
 #include <water_pump/water_pump.h>
 #include <sys/_timeval.h>
@@ -22,17 +22,14 @@
 #include <libopencm3/stm32/f1/memorymap.h>
 
 void loop(void);
-void setup();
+void app_setup();
 
-void atFault() {
-  mcp23017_atFault();
-}
-
-void atFault_setup() {
+extern "C" void atFault() {
+  relay16_atFault();
 }
 
 void app() {
-  setup();
+  app_setup();
   report_event("mcu:started");
   wp_clearPcFailure(); //
 

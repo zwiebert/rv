@@ -9,13 +9,9 @@
 #define VALVE_RELAYS_H_
 
 #include <stdint.h>
-#include "peri/mcp23017.h"
+#include "peri/relay16.h"
 
 #define VALVE_TIMER_COUNT 14
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 void app_switch_valve(int valve_number, bool state);
 void app_switch_valves(uint16_t valve_bits, uint16_t valve_mask);
@@ -25,8 +21,5 @@ void app_switch_valves(uint16_t valve_bits, uint16_t valve_mask);
 
 uint16_t valveRelay_getActiveValves();
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif /* VALVE_RELAYS_H_ */

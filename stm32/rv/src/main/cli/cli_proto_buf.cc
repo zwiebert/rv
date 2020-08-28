@@ -6,7 +6,6 @@
 #include "peri/uart.h"
 #include "water_pump/water_pump.h"
 #include "rv/rv_timer.hh"
-#include "setup/app_cxx.hh"
 #include "rv/rain_sensor.hh"
 extern "C" {
 #include "misc/base64.h"

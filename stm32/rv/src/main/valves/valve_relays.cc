@@ -1,10 +1,4 @@
-/*
- * valve_relay.c
- *
- *  Created on: 14.05.2019
- *      Author: bertw
- */
-
+#include "user_config.h"
 #include <valves/valve_relays.h>
 #include "rv/report.h"
 

@@ -43,7 +43,7 @@ SOFTWARE.
 
 
 /* Private function prototypes */
-extern "C" void app(void);
+void app(void);
 /* Private functions */
 
 /**

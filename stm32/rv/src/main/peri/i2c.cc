@@ -1,5 +1,6 @@
+#include "user_config.h"
 #include "i2c.h"
-#include <peri/mcp23017.h>
+#include <peri/relay16.h>
 
 #include <libopencm3/stm32/i2c.h>
 #include <libopencm3/stm32/f1/gpio.h>
@@ -8,7 +9,7 @@
 bool i2c2_check() {
     if (gpio_get(GPIOB, GPIO_I2C2_SDA))
         return true;
-    mcp23017_setup(true);
+    relay16_setup(true);
     return false;
 }
 
