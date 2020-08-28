@@ -14,6 +14,7 @@
 #include <sys/_timeval.h>
 #include <sys/errno.h>
 #include <time/real_time_clock.h>
+#include <peri/uart.h>
 
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
@@ -44,18 +45,14 @@ time_t time(time_t *p) {
   return curr_time;
 }
 
-// redirect any output to USART1
+// redirect standard output (fd 1)
 int _write(int fd, char *ptr, int len) {
-  int i;
-
-  if (fd == 1) {
-    for (i = 0; i < len; i++)
-      usart_send_blocking(USART1, ptr[i]);
-    return i;
+  if (fd != 1) {
+    errno = EIO;
+    return -1;
   }
 
-  errno = EIO;
-  return -1;
+  return esp32_write(ptr, len);
 }
 
 void loop(void) {

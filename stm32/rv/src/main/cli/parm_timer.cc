@@ -54,7 +54,8 @@ int process_parmTimer(clpar p[], int len) {
   }
 #endif
 
-  if (args.valve_number >= 0 && rvt.set(args)->scheduleRun()) {
+  RvTimer *timer;
+  if (args.valve_number >= 0 && (timer = rvt.set(args)) && timer->scheduleRun()) {
     rvt.loop(); // XXX
   } else {
     // XXX: error

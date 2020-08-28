@@ -1,4 +1,4 @@
-#include "debug.h"
+#include <debug/dbg.h>
 #include "peri/uart.h"
 
 #include <stdio.h>

@@ -82,6 +82,8 @@ public:
   RvTimer() {
   }
 
+  bool operator==(const RvTimer &rhs) const { return mArgs.valve_number == rhs.mArgs.valve_number && mArgs.timer_number == rhs.mArgs.timer_number; }
+
   char *argsToJSON(char *buf, int buf_size) const {
     char *result = buf;
     if (0 <= std::snprintf(buf + std::strlen(buf), buf_size - std::strlen(buf), "\"timer%d.%d\":", getValveNumber(), getTimerNumber())) {

@@ -50,6 +50,6 @@
   {:else if tabIdxMain === 2}
     <PaneZoneMaintenance />
   {:else if tabIdxMain === 3}
-    <Dev />
+   <!-- <Dev /> -->
   {/if}
 </div>

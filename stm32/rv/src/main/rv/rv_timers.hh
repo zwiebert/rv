@@ -3,12 +3,11 @@
 #include <misc/int_macros.h>
 #include <rv/rv_timer.hh>
 #include <rv/rv_timer_data.hh>
-
+#include <algorithm>
 #include <stdint.h>
 
 typedef void (*switch_valves_cb)(uint16_t valve_bits, uint16_t valve_mask);
 typedef void (*timer_was_modified_cb)(int vn, int tn, bool removed);
-
 
 #include "rv_allocator.hh"
 #include <list>
@@ -25,12 +24,39 @@ class RvTimers {
       SET_BIT(valve_bits, valve_number);
   }
 private:
-  RvtList mActiveTimers;
+  RvtList mActiveTimers, mFreeTimers;
 
   RvTimer* create_timer() {
-    mActiveTimers.emplace_back();
+    if (mFreeTimers.empty()) {
+      mActiveTimers.emplace_back();
+    } else {
+      auto src = mFreeTimers.begin();
+      mActiveTimers.splice(mActiveTimers.end(), mFreeTimers, src);
+    }
     return &mActiveTimers.back();
   }
+
+  void destroy_timer(RvtList::iterator src) {
+    const int vn = src->getValveNumber();
+    const int tn = src->getTimerNumber();
+    *src = {};
+    mFreeTimers.splice(mFreeTimers.end(), mActiveTimers, src);
+    if (mTwmCb)
+      mTwmCb(vn, tn, true);
+  }
+
+  void destroy_timer(RvTimer *timer) {
+    destroy_timer(std::find(mActiveTimers.begin(), mActiveTimers.end(), *timer));
+  }
+
+  RvTimer* find_timer(int vn, int tn) {
+    for (RvTimer &vt : mActiveTimers) {
+      if (vt.match(vn, tn))
+        return &vt;
+    }
+    return nullptr;
+  }
+
 
   switch_valve_cb mSvCb; // XXX
   switch_valves_cb mSvsCb;
@@ -56,30 +82,32 @@ public:
   }
 
   RvTimer* set(RvTimer::SetArgs &args) {
-    for (RvTimer &vt : mActiveTimers) {
-      if (vt.match(args.valve_number, args.timer_number)) {
-        vt.changeState(RvTimer::STATE_DONE);
+
+    for (auto it = mActiveTimers.begin(); it != mActiveTimers.end(); ++it) {
+      if (it->match(args.valve_number, args.timer_number)) {
+        it->changeState(RvTimer::STATE_DONE);
+        rvt.destroy_timer(it);
         break;
       }
     }
 
-    RvTimer *timer = create_timer();
-    if (!timer)
+    if (args.on_duration == 0)
+      return 0;
+    if (rs.getState() && !(args.period || args.mDaysInterval || args.ignoreRainSensor))
       return 0;
 
-    if (args.on_duration == 0) {
-      timer->changeState(RvTimer::STATE_DONE);
+    if (RvTimer *timer = create_timer()) {
+      timer->register_callback((mSvCb ? mSvCb : switch_valve_2), args.valve_number);
+      timer->set(args);
+      if (mTwmCb)
+        mTwmCb(args.valve_number, args.timer_number, false);
+      return timer;
     }
-
-    timer->register_callback((mSvCb ? mSvCb : switch_valve_2), args.valve_number);
-    timer->set(args);
-    if (mTwmCb)
-      mTwmCb(args.valve_number, args.timer_number, false);
-    return timer;
+    return 0;
 
   }
 
-  RvTimer *set(int valve_number, int on_duration, int id = 0) {
+  RvTimer* set(int valve_number, int on_duration, int id = 0) {
     RvTimer::SetArgs args;
     args.on_duration = on_duration;
     args.valve_number = valve_number;
@@ -88,7 +116,9 @@ public:
   }
 
   void unset(int valve_number, int id) {
-    mActiveTimers.remove_if([&](RvTimer &vt) -> bool {  return vt.match(valve_number, id); });
+    mActiveTimers.remove_if([&](RvTimer &vt) -> bool {
+      return vt.match(valve_number, id);
+    });
 
     if (mTwmCb)
       mTwmCb(valve_number, id, true);
@@ -97,7 +127,7 @@ public:
   void loop();
 
 public:
-  const RvtList *getTimerList() const {
+  const RvtList* getTimerList() const {
     return &mActiveTimers;
   }
 };

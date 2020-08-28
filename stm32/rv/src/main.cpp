@@ -28,6 +28,7 @@ SOFTWARE.
 */
 
 /* Includes */
+#include "user_config.h"
 #include <stddef.h>
 #include <stdio.h>
 #include "stm32f10x.h"

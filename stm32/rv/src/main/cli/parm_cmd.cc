@@ -78,11 +78,12 @@ process_parmCmd(clpar p[], int len) {
       } else {
         args.on_duration = atoi(val);
       }
-        if (rvt.set(args)->scheduleRun()) {
+
+        if (RvTimer *timer = rvt.set(args)) {
+        if (timer->scheduleRun()) {
           hasDuration = true;
-        } else {
-          // XXX: error
         }
+      }
 
     } else if (std::strcmp(key, KEY_VERSION) == 0 && *val == '?') {
       wantsReply = wantsVersion = true;
