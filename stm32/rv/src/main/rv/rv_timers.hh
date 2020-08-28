@@ -10,9 +10,9 @@ typedef void (*switch_valves_cb)(uint16_t valve_bits, uint16_t valve_mask);
 typedef void (*timer_was_modified_cb)(int vn, int tn, bool removed);
 
 
-#include "allocator_malloc.hh"
+#include "rv_allocator.hh"
 #include <list>
-template<class T> using TList = std::list<T, AllocatorMalloc<T>>;
+template<class T> using TList = std::list<T, RvAllocator<T>>;
 typedef TList<RvTimer> RvtList;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

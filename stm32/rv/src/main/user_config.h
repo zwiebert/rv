@@ -18,6 +18,7 @@
 #define USE_MALLOC_IN_NEW_GLOBAL
 //#define USE_MALLOC_IN_NEW_NODE
 //#define USE_STD_LIST
+#define USE_ALLOCATOR_MALLOC
 
 #ifdef BUILD_DEBUG
 #undef USE_TEST
@@ -38,7 +39,3 @@
 #endif
 
 
-#include <malloc.h>
-#define MALLOC(size) malloc(size)
-#define FREE(ptr) free(ptr)
-#define REALLOC(ptr, size) realloc(ptr, size)
