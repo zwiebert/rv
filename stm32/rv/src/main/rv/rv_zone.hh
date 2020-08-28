@@ -28,6 +28,6 @@ public:
     csu_assign(&mName, name);
   }
 
-  ~RvZone() { csu_destroy(&mName); }
+  ~RvZone() { csu_delete(mName); }
 #endif
 };

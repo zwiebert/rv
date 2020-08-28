@@ -13,6 +13,10 @@
 #include <stdint.h>
 #include <stddef.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
 	uint32_t mI2c;
 	uint16_t mRegs[11];
@@ -60,6 +64,8 @@ bool Mcp23017_forceWrite(Mcp23017 *obj);
 bool Mcp23017_statusOk(Mcp23017 *obj);
 
 
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* SRC_MCP23017_H_ */
