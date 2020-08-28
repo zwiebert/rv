@@ -10,7 +10,7 @@
 #include <loop/loop.hh>
 #include <peri/mcp23017.h>
 #include <rv/report.h>
-#include <rv/water_pump.h>
+#include <water_pump/water_pump.h>
 #include <sys/_timeval.h>
 #include <sys/errno.h>
 #include <time/real_time_clock.h>

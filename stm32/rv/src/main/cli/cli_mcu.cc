@@ -4,7 +4,7 @@
 #include "cli_imp.h"
 #include <stdio.h>
 #include "peri/uart.h"
-#include "rv/water_pump.h"
+#include "water_pump/water_pump.h"
 #include "rv/rv_timer.hh"
 #include "setup/app_cxx.hh"
 #include "rv/rain_sensor.hh"

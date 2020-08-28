@@ -6,7 +6,7 @@
 #include <rv/report.h>
 #include <rv/rv.hh>
 #include <rv/rv_timers.hh>
-#include <rv/water_pump_logic.h>
+#include <water_pump/water_pump_logic.h>
 #include <time/systick_1ms.h>
 #include <watch_dog/watch_dog.hh>
 

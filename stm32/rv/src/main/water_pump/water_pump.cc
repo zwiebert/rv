@@ -13,11 +13,11 @@
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/stm32/exti.h>
 #include "misc/int_macros.h"
-#include "report.h"
+#include "rv/report.h"
 #include "time/real_time_clock.h"
 #include "time/systick_1ms.h"
 #include "assert.h"
-#include "valve_relays.h"
+#include "valves/valve_relays.h"
 
 extern Mcp23017 relay_16;
 #define WP_RELAY_PIN 15  // on IO expander

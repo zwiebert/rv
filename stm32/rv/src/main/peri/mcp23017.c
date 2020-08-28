@@ -3,8 +3,7 @@
 #include <libopencm3/stm32/usart.h>
 #include <libopencm3/stm32/i2c.h>
 #include <libopencm3/stm32/f1/memorymap.h>
-#include <mcp23017.h>
-#include <rv/valve_relays.h>
+#include "mcp23017.h"
 
 
 Mcp23017 relay_16;

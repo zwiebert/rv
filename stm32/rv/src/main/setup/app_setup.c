@@ -5,7 +5,7 @@
 #include <peri/tm1638.h>
 #include <peri/uart.h>
 #include <peri/mcp23017.h>
-#include <rv/water_pump.h>
+#include <water_pump/water_pump.h>
 #include <setup/app_cxx.h>
 #include <stdbool.h>
 #include <stdlib.h>

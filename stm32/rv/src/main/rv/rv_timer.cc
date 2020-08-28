@@ -1,7 +1,7 @@
 #include "rv_timer.hh"
 #include "rv.hh"
 #include "rv_zones.hh"
-#include "water_pump.h"
+#include "water_pump/water_pump.h"
 #include "report.h"
 #include <algorithm>
 

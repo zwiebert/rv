@@ -1,9 +1,12 @@
-#include "rv_timers.hh"
-#include "rv.hh"
-#include "water_pump.h"
-#include "report.h"
+#include <rv/rv.hh>
+#include <rv/rv_timer_pause.hh>
+#include <rv/rv_timers.hh>
+#include <rv/rv_zone.hh>
+#include <rv/rv_zones.hh>
+
 #include <algorithm>
-#include "rv_zones.hh"
+
+#include "water_pump/water_pump.h"
 
 
 uint16_t RvTimers::valve_bits;

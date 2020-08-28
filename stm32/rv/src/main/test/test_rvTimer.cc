@@ -9,7 +9,7 @@
 #include "test.h"
 #include "setup/app_cxx.h"
 #include "rv/rv_timers.hh"
-#include "rv/valve_relays.h"
+#include "valves/valve_relays.h"
 
 
 extern bool rs_forceRain;

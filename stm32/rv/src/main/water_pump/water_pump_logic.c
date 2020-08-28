@@ -5,8 +5,8 @@
  *      Author: bertw
  */
 
-#include <rv/valve_relays.h>
-#include "rv/water_pump_logic.h"
+#include <valves/valve_relays.h>
+#include "water_pump/water_pump_logic.h"
 #include "time/real_time_clock.h"
 #include "rv/report.h"
 

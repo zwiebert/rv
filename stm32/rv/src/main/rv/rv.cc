@@ -3,7 +3,7 @@
 #include <rv/rv_timers.hh>
 #include <rv/rv_zone.hh>
 #include <rv/rv_zones.hh>
-#include <rv/valve_relays.h>
+#include <valves/valve_relays.h>
 
 
 RvTimers rvt = RvTimers(0, app_switch_valves);
