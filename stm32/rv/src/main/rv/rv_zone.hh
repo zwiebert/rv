@@ -8,7 +8,8 @@
 class RvZone {
   int mLph = 0;
 #ifdef USE_ZONE_NAME
-  char *mName = NULL;
+  csu mName;
+  //char *mName = NULL;
 #endif
 public:
 
@@ -22,12 +23,12 @@ public:
 
 #ifdef USE_ZONE_NAME
   const char* getName() const {
-    return mName ? mName : "";
-  }
-  void setName(const char *name) {
-    csu_assign(&mName, name);
+    return mName;
   }
 
-  ~RvZone() { csu_delete(mName); }
+  void setName(const char *name) {
+    mName = name;
+  }
+
 #endif
 };

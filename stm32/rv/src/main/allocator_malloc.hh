@@ -6,48 +6,44 @@
 template<class T>
 class AllocatorMalloc {
 public:
-  typedef size_t size_type;
-  typedef ptrdiff_t difference_type;
+  typedef T value_type;
   typedef T *pointer;
   typedef const T *const_pointer;
   typedef T &reference;
   typedef const T &const_reference;
-  typedef T value_type;
+  typedef std::size_t size_type;
+  typedef std::ptrdiff_t difference_type;
+  typedef std::true_type is_always_equal;
+  typedef std::true_type propagate_on_container_move_assignment;
 
-  AllocatorMalloc() {
-  }
-  AllocatorMalloc(const AllocatorMalloc&) {
-  }
 
-  pointer allocate(size_type n, const void* = 0) {
-    return (T*) malloc(n * sizeof(T));
+  constexpr AllocatorMalloc() noexcept {
   }
 
-  void deallocate(void *p, size_type) {
-    free(p);
+  constexpr AllocatorMalloc(const AllocatorMalloc &other) noexcept {
   }
 
-  pointer address(reference x) const {
-    return &x;
+  constexpr T* allocate(size_type n) {
+    return static_cast<T*>(malloc(n * sizeof(T)));
   }
-  const_pointer address(const_reference x) const {
-    return &x;
+
+  constexpr T* reallocate(T *old, size_type n) {
+    T *ptr = static_cast<T*>(realloc(static_cast<void*>(old), n * sizeof(T)));
+    if (!ptr)
+      deallocate(old, 0);
+    return ptr;
   }
+
+  constexpr void deallocate(T *p, size_type) {
+    free(static_cast<void*>(p));
+  }
+
   AllocatorMalloc<T>& operator=(const AllocatorMalloc&) {
     return *this;
   }
 
-  size_type max_size() const {
-    return size_t(-1);
-  }
-
   template<class U>
-  struct rebind {
-    typedef AllocatorMalloc<U> other;
-  };
-
-  template<class U>
-  AllocatorMalloc(const AllocatorMalloc<U>&) {
+  constexpr AllocatorMalloc(const AllocatorMalloc<U> &other) noexcept {
   }
 
   template<class U>
@@ -55,13 +51,12 @@ public:
     return *this;
   }
 
-  bool operator==(AllocatorMalloc const &a) {
-    return this == &a;
-  }
-  bool operator!=(AllocatorMalloc const &a) {
-    return !operator==(a);
-  }
 };
+
+template<class T1, class T2>
+constexpr bool operator==(const AllocatorMalloc<T1> &lhs, const AllocatorMalloc<T2> &rhs) noexcept {
+  return true;
+}
 
 //template<class T> using TList = std::list<T, AllocatorMalloc<T>>;
 //#include <string>

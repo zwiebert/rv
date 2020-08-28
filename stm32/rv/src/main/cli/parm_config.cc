@@ -44,7 +44,7 @@ static const char *zoneKeysN[] = {
 
 bool kvs_store_string(const char *key, const char *val) {
   char buf[128];
-  if (0 < snprintf(buf, sizeof buf, "{\"to\":\"cli\",\"kvs\":{\"%s\":\"%s\"}};\n", key, val)) {
+  if (0 < std::snprintf(buf, sizeof buf, "{\"to\":\"cli\",\"kvs\":{\"%s\":\"%s\"}};\n", key, val)) {
     esp32_puts(buf);
     return true;
   }
@@ -53,7 +53,7 @@ bool kvs_store_string(const char *key, const char *val) {
 
 static int match_zoneKeyN(const char *key) {
   for (int i = 0; zoneKeysN[i]; ++i) {
-    if (key == strstr(key, zoneKeysN[i]))
+    if (key == std::strstr(key, zoneKeysN[i]))
       return i;
   }
   return -1;
@@ -72,14 +72,14 @@ int process_parmConfig(clpar p[], int len) {
       return reply_failure();
 
 #if ENABLE_RESTART
-    } else if (strcmp(key, "restart") == 0) {
+    } else if (std::strcmp(key, "restart") == 0) {
       extern void  mcu_restart(void);
       mcu_restart();
 #endif
 
-    } else if (strcmp(key, "time") == 0) {
+    } else if (std::strcmp(key, "time") == 0) {
       rtc_set_counter_val(atol(val));
-    } else if (strcmp(key, "tz") == 0) {
+    } else if (std::strcmp(key, "tz") == 0) {
       setenv("TZ", val, 1);
     } else if ((zkIdx = match_zoneKeyN(key)) >= 0) {
       if (*val == '?') {
@@ -88,7 +88,7 @@ int process_parmConfig(clpar p[], int len) {
         if (!kvs_store_string(key, val)) {
           ++errors;
         }
-        if (isdigit(key[strlen(key) - 1]))
+        if (isdigit(key[std::strlen(key) - 1]))
           switch (zkIdx) {
           case ZN: {
             int idx = atoi(key + 2);

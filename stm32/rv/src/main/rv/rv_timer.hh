@@ -84,16 +84,16 @@ public:
 
   char *argsToJSON(char *buf, int buf_size) const {
     char *result = buf;
-    if (0 <= snprintf(buf + strlen(buf), buf_size - strlen(buf), "\"timer%d.%d\":", getValveNumber(), getTimerNumber())) {
-      mArgs.toJSON(buf + strlen(buf), buf_size - strlen(buf));
+    if (0 <= std::snprintf(buf + std::strlen(buf), buf_size - std::strlen(buf), "\"timer%d.%d\":", getValveNumber(), getTimerNumber())) {
+      mArgs.toJSON(buf + std::strlen(buf), buf_size - std::strlen(buf));
       return result;
     }
     return 0;
   }
 
   char *dataToJSON(char *buf, int buf_size) const {
-    if (0 <= snprintf(buf + strlen(buf), buf_size - strlen(buf), "\"timer%d.%d\":", getValveNumber(), getTimerNumber())) {
-      return toJSON(buf + strlen(buf), buf_size - strlen(buf));
+    if (0 <= std::snprintf(buf + std::strlen(buf), buf_size - std::strlen(buf), "\"timer%d.%d\":", getValveNumber(), getTimerNumber())) {
+      return toJSON(buf + std::strlen(buf), buf_size - std::strlen(buf));
     }
     return 0;
   }

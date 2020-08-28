@@ -8,6 +8,7 @@
 #include "cli_imp.h"
 #include <stdio.h>
 #include "debug/debug.h"
+#include <string.h>
 
 #define ENABLE_RESTART 1 // allow software reset
 

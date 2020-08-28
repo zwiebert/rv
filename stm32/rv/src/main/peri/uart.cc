@@ -9,7 +9,7 @@
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/cm3/scb.h>
 
-#include <string.h>
+#include <cstring>
 #include "loop/loop.hh"
 
 #define RX_BUFSIZE 128
@@ -79,7 +79,7 @@ int esp32_write(const char *data, size_t data_len) {
 }
 
 int esp32_puts(const char *s) {
-  return esp32_write(s, strlen(s));
+  return esp32_write(s, std::strlen(s));
 }
 
 int esp32_read(char *buf, size_t buf_size) {

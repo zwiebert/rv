@@ -22,8 +22,8 @@ process_parmMcu(clpar p[], int len) {
 
     if (key == NULL) {
       return -1;
-    } else if (strcmp(key, KEY_VERSION) == 0 && *val == '?') {
-      snprintf(buf, sizeof buf, "{ \"from\":\"rv\", \"mcu\":{ \"version\"=\"%s\"}}", VERSION);
+    } else if (std::strcmp(key, KEY_VERSION) == 0 && *val == '?') {
+      std::snprintf(buf, sizeof buf, "{ \"from\":\"rv\", \"mcu\":{ \"version\"=\"%s\"}}", VERSION);
       esp32_puts(buf);
     } else {
       warning_unknown_option(key);

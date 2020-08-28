@@ -36,15 +36,15 @@ process_parmProtoBuf(clpar p[], int len) {
     uint8_t msgBuf[64];
     size_t msgBufLen = 0;
 
-    if (strcmp("?", val) == 0)
+    if (std::strcmp("?", val) == 0)
       requestData = true;
     else {
-      int err = mbedtls_base64_decode(msgBuf, sizeof msgBuf, &msgBufLen, (const uint8_t *)val, strlen(val));
+      int err = mbedtls_base64_decode(msgBuf, sizeof msgBuf, &msgBufLen, (const uint8_t *)val, std::strlen(val));
       if (err)
         continue;
     }
 #if 0
-    if (strcmp(key, KEY_ZONE_DATA) == 0) {
+    if (std::strcmp(key, KEY_ZONE_DATA) == 0) {
       struct zd_arg lph_arg = { .lph_arr = Lph, .lph_arr_len = RV_VALVE_COUNT };
       if (decode_zoneData(msgBuf, msgBufLen, &lph_arg))
         got_zoneData = true;

@@ -39,6 +39,8 @@ void app() {
 }
 
 time_t time(time_t *p) {
+  if (p)
+    *p = curr_time;
   return curr_time;
 }
 
