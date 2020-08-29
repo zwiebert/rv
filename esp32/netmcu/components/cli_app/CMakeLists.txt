@@ -1,10 +1,10 @@
-set(srcs cli.c  cli_out.c
-    parm_cmd.c
-    parm_config.c parm_config_switch.c
-    parm_help.c
-    parm_kvs.c
-    parm_mcu.c
-    parm_status.c
+set(srcs cli.cc  cli_out.cc
+    parm_cmd.cc
+    parm_config.cc parm_config_switch.cc
+    parm_help.cc
+    parm_kvs.cc
+    parm_mcu.cc
+    parm_status.cc
     parm_proto_buf.cc
 )
 

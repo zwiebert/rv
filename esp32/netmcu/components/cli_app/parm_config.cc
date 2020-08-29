@@ -13,7 +13,7 @@
 
 #define ENABLE_RESTART 1 // allow software reset
 
-const char * const cfg_keys[SO_CFG_size] = {
+const char * cfg_keys[SO_CFG_size] = {
     "rtc", "network",
     "wlan-ssid", "wlan-password", "lan-phy", "lan-pwr-gpio", "ntp-server",
     "tz", "verbose",
@@ -23,7 +23,7 @@ const char * const cfg_keys[SO_CFG_size] = {
 };
 
 #ifdef USE_NETWORK
-const char *const cfg_args_network[nwLEN] = {
+const char * cfg_args_network[nwLEN] = {
     "none", "wlan", "ap", "lan"
 };
 #endif
@@ -78,11 +78,11 @@ const char cli_help_parmConfig[]  =
 ;
 
 #define isValid_optStr(cfg, new) true
-#define set_optStr(v, cb) config_save_item_s(cb, v)
-#define set_optBlob(v, cb) config_save_item_b(cb, &v, sizeof v)
+#define set_optStr(v, cb) config_save_item_s(static_cast<configItem>(cb), v)
+#define set_optBlob(v, cb) config_save_item_b(static_cast<configItem>(cb), &v, sizeof v)
 #define set_optStr_ifValid set_optStr
-#define set_opt(t, v, cb) (config_save_item_##t(cb,v) && config_item_modified(cb))
-#define set_optN(t, v, cb) (config_save_item_n_##t(cb,v) && config_item_modified(cb))
+#define set_opt(t, v, cb) (config_save_item_##t(static_cast<configItem>(cb),v) && config_item_modified(static_cast<configItem>(cb)))
+#define set_optN(t, v, cb) (config_save_item_n_##t(static_cast<configItem>(cb),v) && config_item_modified(static_cast<configItem>(cb)))
 
 #define has_changed() SET_BIT(*changed_mask, so_key)
 

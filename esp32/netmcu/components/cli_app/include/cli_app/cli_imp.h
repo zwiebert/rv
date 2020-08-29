@@ -12,6 +12,17 @@ extern const char cli_help_parmMcu[] ;
 extern const char cli_help_parmStatus[] ;
 extern const char cli_help_parmHelp[] ;
 
+extern "C" {
+int process_parmConfig(clpar p[], int len);
+int process_parmHelp(clpar p[], int len);
+int process_parmCmd(clpar p[], int len);
+int process_parmMcu(clpar p[], int len);
+int process_parmKvs(clpar p[], int len);
+int process_parmStatus(clpar p[], int len);
+int process_parmProtoBuf(clpar p[], int len);
+}
+
+
 #define NODEFAULT() if (val==0) return cli_replyFailure()
 
 void cli_out_timer_reply_entry(const char *key, const char *val, int len);
@@ -29,3 +40,4 @@ int asc2bool(const char *s);
 bool  asc2u8(const char *s, uint8_t *n, uint8_t limit);
 
 #endif
+

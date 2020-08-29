@@ -45,8 +45,8 @@ struct ws_send_arg {
 };
 
 static void ws_send(void *arg) {
-  struct ws_send_arg *a = arg;
-  httpd_ws_frame_t ws_pkt = { .type = HTTPD_WS_TYPE_TEXT, .payload = (u8*)a->json, .len = strlen(a->json), .final = true};
+  struct ws_send_arg *a = static_cast<struct ws_send_arg *>(arg);
+  httpd_ws_frame_t ws_pkt = {  .final = true, .type = HTTPD_WS_TYPE_TEXT, .payload = (u8*)a->json, .len = strlen(a->json)};
 
   for (int fd = 0; fd < ws_nfds; ++fd) {
     if (!FD_ISSET(fd, &ws_fds))
@@ -63,7 +63,7 @@ static void ws_send(void *arg) {
 }
 
 static esp_err_t ws_trigger_send(httpd_handle_t handle, const char *json) {
-  struct ws_send_arg *arg = malloc(sizeof(struct ws_send_arg));
+  struct ws_send_arg *arg = static_cast<struct ws_send_arg *>(malloc(sizeof(struct ws_send_arg)));
   arg->hd = handle;
   arg->json = strdup(json);
   return httpd_queue_work(handle, ws_send, arg);
@@ -80,7 +80,7 @@ static void ws_async_send(void *arg)
 {
   ESP_LOGI(TAG, "ws_async_send");
     static const char * data = "Async data";
-    struct async_resp_arg *resp_arg = arg;
+    struct async_resp_arg *resp_arg = static_cast<struct async_resp_arg *>(arg);
     httpd_handle_t hd = resp_arg->hd;
     int fd = resp_arg->fd;
     httpd_ws_frame_t ws_pkt;
@@ -97,7 +97,7 @@ static void ws_async_send(void *arg)
 static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
 {
   ESP_LOGI(TAG, "trigger_async_send");
-    struct async_resp_arg *resp_arg = malloc(sizeof(struct async_resp_arg));
+    struct async_resp_arg *resp_arg = static_cast<struct async_resp_arg *>(malloc(sizeof(struct async_resp_arg)));
     resp_arg->hd = req->handle;
     resp_arg->fd = httpd_req_to_sockfd(req);
     return httpd_queue_work(handle, ws_async_send, resp_arg);

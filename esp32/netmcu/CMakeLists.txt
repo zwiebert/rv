@@ -6,6 +6,9 @@ set(PROJECT_NAME "tronferno-mcu")
 
 set(EXTRA_COMPONENT_DIRS ./components-mcu/components)
 
+set(CXXFLAGS "-std=gnu++2a")
+
+
 set(COMPONENTS
     app  app_config  app_net  cli_app  config  http_server_content  net_mqtt_app  userio_app
     

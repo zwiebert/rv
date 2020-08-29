@@ -83,7 +83,7 @@ static void do_work() {
 
   if (json && mutex_cliTake()) {
     DD(printf("stm32com:request: <%s>\n", json));
-    cli_process_json(json, SO_TGT_ANY | SO_TGT_STM32);
+    cli_process_json(json, static_cast<so_target_bits>(SO_TGT_ANY | SO_TGT_STM32));
 
     if (sj_get_json()) {
       DD(printf("stm32com:response: <%s>\n", sj_get_json()));

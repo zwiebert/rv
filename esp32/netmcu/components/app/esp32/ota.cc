@@ -16,6 +16,7 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "misc/int_types.h"
+#include "misc/cstring_utils.hh"
 
 static const char *TAG = "simple_ota_example";
 extern const char ca_cert_pem[];
@@ -73,13 +74,12 @@ void simple_ota_example_task(void * pvParameter) {
     state = ota_FAIL;
     // ESP_LOGE(TAG, "Firmware upgrade failed");
   }
-  free(Firmware_url);
+  csu_destroy(&Firmware_url);
   vTaskDelete(NULL);
 }
 
 bool ota_doUpdate(const char *firmware_url) {
-  Firmware_url = malloc(strlen(firmware_url)+1);
-  strcpy (Firmware_url, firmware_url);
+  csu_assign(&Firmware_url, firmware_url);
   xTaskCreate(&simple_ota_example_task, "ota_example_task", 16384, NULL, 5, NULL);
   return false;
 }

@@ -96,7 +96,7 @@ void loop_eventBits_setup();
 u32 loop_eventBits_wait();
 
 void stm32_checkForInput();
-void main_setup_ip_dependent();
+extern "C" void main_setup_ip_dependent();
 void mcu_init();
 
 

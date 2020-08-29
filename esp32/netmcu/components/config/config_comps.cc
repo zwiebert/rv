@@ -19,14 +19,13 @@
 #if 1
 void config_setup_global() {
   kvshT h;
-  C = (config){
+  C = config {
     .network = MY_NETWORK_CONNECTION,
-};
-
-  if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
-    kvsR(i8, CB_NETWORK_CONNECTION, C.network);
-    kvs_close(h);
-  }
+  };
+if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
+  C.network = static_cast<nwConnection>(kvs_get_i8(h, cfg_key(CB_NETWORK_CONNECTION), C.network, 0));
+  kvs_close(h);
+}
 
 }
 #endif

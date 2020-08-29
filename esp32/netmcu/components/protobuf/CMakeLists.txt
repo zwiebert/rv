@@ -1,5 +1,5 @@
 set(srcs
-  "../protobuf/mcu_com.pb.c"
+  "mcu_com.cc"
   zone_data.cc
 )
 

@@ -3,6 +3,7 @@
 #include "stm32/stm32.h"
 #include "stm32_com/com_task.h"
 #include "cli_app/cli_app.h"
+#include "cli/mutex.h"
 
 void loop_setBit_mcuRestart() {
   lf_setBit(lf_mcuRestart);
@@ -26,7 +27,7 @@ void lfa_lostIpAddr_cb() {
 }
 
 
-void main_setup_ip_dependent() {
+extern "C" void main_setup_ip_dependent() { //XXX called from library
   static int once;
   if (!once) {
     once = 1;
@@ -65,16 +66,14 @@ void mcu_init() {
   config_setup_global();
 
 #ifdef USE_SERIAL
-  struct cfg_stm32 *cfg_stm32 = calloc(1, sizeof (struct cfg_stm32));
-  assert(cfg_stm32);
-  *cfg_stm32 = (struct cfg_stm32) {
+  struct cfg_stm32 cfgStm32 = {
       .uart_tx_gpio = STM32_UART_TX_PIN,
       .uart_rx_gpio = STM32_UART_RX_PIN,
       .boot_gpio_is_inverse = STM32_BOOT_PIN_INV,
       .boot_gpio = STM32_BOOT_PIN,
       .reset_gpio = STM32_RESET_PIN,
   };
-  stm32_setup(cfg_stm32);
+  stm32_setup(&cfgStm32);
 
   struct cfg_stm32com cfg_stm32com = { .enable = true };
   stm32com_setup_task(&cfg_stm32com);
@@ -93,9 +92,7 @@ void mcu_init() {
   ipnet_cbRegister_gotIpAddr(lfa_gotIpAddr_cb);
   ipnet_cbRegister_lostIpAddr(lfa_lostIpAddr_cb);
 
-void loop_setBit_mcuRestart() {
-  lf_setBit(lf_mcuRestart);
-}
+
 #ifdef USE_NETWORK
 #ifdef USE_AP_FALLBACK
   esp_netif_init();
@@ -128,7 +125,6 @@ void loop_setBit_mcuRestart() {
 #endif
 
 #ifdef USE_CLI_MUTEX
-  void mutex_setup(void);
   mutex_setup();
 #endif
 

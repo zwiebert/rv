@@ -1,4 +1,4 @@
-set(srcs esp32/com_task.c
+set(srcs esp32/com_task.cc
 )
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")

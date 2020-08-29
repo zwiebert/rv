@@ -1,4 +1,4 @@
-set(srcs esp32/ota.c esp32/main.c esp32/main_setup.c esp32/main_loop.c rtc.c esp32/unity_setup.c watch_dog.c esp32/kvstore.c) 
+set(srcs esp32/ota.cc esp32/main.cc esp32/main_setup.cc esp32/main_loop.cc rtc.cc esp32/unity_setup.cc watch_dog.cc esp32/kvstore.cc) 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
 
@@ -11,6 +11,10 @@ endif()
 if(DEFINED ENV{CELLAR})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DCELLAR")
 endif()
+
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS} -std=gnu++2a" )
+
 
 idf_component_register(
     SRCS ${srcs}

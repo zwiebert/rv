@@ -1,4 +1,4 @@
-set(srcs  mqtt.c) 
+set(srcs  mqtt.cc) 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
 

@@ -26,6 +26,9 @@
 #define USE_LPH
 
 #define USE_WS
+#ifdef __cplusplus
+extern "C"
+#endif
 void ws_send_json(const char *json);
 #define ws_print_json ws_send_json
 

@@ -64,7 +64,7 @@ void stm32_checkForInput() {
   if ((length = stm32_read(&c, 1)) <= 0)
     return;
 
-  for (int i = 1; (ptr = realloc(ptr, block_size * i)); ++i) {
+  for (int i = 1; (ptr = static_cast<char*>(realloc(ptr, block_size * i))); ++i) {
     buf = ptr;
 
     if (i == 1)
@@ -87,7 +87,7 @@ void stm32_checkForInput() {
   free(buf);
 }
 
-void appEsp32_main(void) {
+extern "C" void appEsp32_main(void) {
 
   mcu_init();
 

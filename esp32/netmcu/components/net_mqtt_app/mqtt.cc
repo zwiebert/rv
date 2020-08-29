@@ -90,7 +90,7 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
   }
 
   if (mutex_cliTake()) {
-    char *line = alloca(40 + data_len);
+    char line[40 + data_len];
     if (topic_endsWith(topic, topic_len, TOPIC_DUR_END)) {
       const char *addr = topic + (sizeof TOPIC_ROOT - 1);
       int addr_len = topic_len - ((sizeof TOPIC_ROOT - 1) + (sizeof TOPIC_DUR_END - 1));
