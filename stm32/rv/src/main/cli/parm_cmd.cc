@@ -5,6 +5,7 @@
 #include "water_pump/water_pump.h"
 #include "rv/rv_timers.hh"
 #include "rv/rain_sensor.hh"
+#include "debug/dbg.h"
 
 #include <cstdio>
 #include <stdlib.h>
@@ -43,7 +44,8 @@ const char help_parmCmd[] = "zone=[0-13]      zone number\n"
 int
 process_parmCmd(clpar p[], int len) {
   int arg_idx;
-
+  int errors = 0;
+  int res = 0;
 
 
   bool wantsDurations = false, wantsRemainingTimes = false, wantsReply = false, hasDuration = false, wantsRelayPump = false, wantsRelayPC = false,
@@ -68,23 +70,37 @@ process_parmCmd(clpar p[], int len) {
 
     } else if (std::strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
       RvTimer::SetArgs args;
-      sscanf((key + KEY_DURATION_PREFIX_LEN), "%hhd.%hhd", &args.valve_number, &args.timer_number);
-      if (std::strchr(val, ',')) {
-        int irs = 0;
-        sscanf(val, "%hhd,%d,%hhd,%hhd,%hd,%hhd,%hd,%hd", &args.on_duration, &irs, &args.off_duration, &args.repeats, &args.period, &args.mDaysInterval, &args.mTodSpanBegin,
-            &args.mTodSpanEnd);
-        args.ignoreRainSensor = !!(irs & 1);
-        args.ignorePumpPause = !!(irs & 2);
-      } else {
-        args.on_duration = atoi(val);
-      }
+      int vn = -1, tn = 0;  // XXX: read int because %hhd sometimes fails (why?)
+      if ((res = sscanf(key, KEY_DURATION_PREFIX "%d.%d", &vn, &tn)) >= 1) {
+        args.valve_number = vn;
+        args.timer_number = tn;
+      //if ((res = sscanf(key, KEY_DURATION_PREFIX "%hhd.%hhd", &args.valve_number, &args.timer_number)) >= 1) {
+        if (std::strchr(val, ',')) {
+          int irs = 0;
+          // XXX: this may also fail for %hhd like above?
+          if ((res = sscanf(val, "%hd,%d,%hd,%hhd,%hd,%hhd,%hd,%hd", &args.on_duration, &irs, &args.off_duration, &args.repeats, &args.period, &args.mDaysInterval,
+              &args.mTodSpanBegin, &args.mTodSpanEnd)) >= 2) {
+          args.ignoreRainSensor = !!(irs & 1);
+          args.ignorePumpPause = !!(irs & 2);
+          } else {
+            ++errors;
+            if (errno)
+              perror("error:parm_cmd:sscanf(val)");
+          }
+        } else {
+          args.on_duration = atoi(val);
+        }
 
         if (RvTimer *timer = rvt.set(args)) {
-        if (timer->scheduleRun()) {
-          hasDuration = true;
+          if (timer->scheduleRun()) {
+            hasDuration = true;
+          }
         }
+      } else {
+        if (errno)
+          perror("error:parm_cmd:sscanf(key)");
+        ++errors;
       }
-
     } else if (std::strcmp(key, KEY_VERSION) == 0 && *val == '?') {
       wantsReply = wantsVersion = true;
 
@@ -168,7 +184,10 @@ process_parmCmd(clpar p[], int len) {
     free(buf);
   }
 
-
+  if (errors) {
+    db_printf("error:errno=%d\n", errno);
+    esp32_puts("error: error in processing cli cmd\n");
+  }
   return 0;
 }
 
