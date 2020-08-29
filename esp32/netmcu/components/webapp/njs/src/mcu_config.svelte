@@ -210,7 +210,7 @@
   <br />
   <div id="config_restart_div" />
   {#if $ReloadProgress > 0}
-    <strong>$_('app.msg_waitForMcuRestart')</strong>
+    <strong>{$_('app.msg_waitForMcuRestart')}</strong>
     <br />
     <progress id="reload_progress_bar" value={$ReloadProgress} max="100" />
   {/if}
