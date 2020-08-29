@@ -1,13 +1,15 @@
 #include "user_config.h"
 #include <time/real_time_clock.h>
-#include <string.h>
 #include "cli_imp.h"
-#include <stdio.h>
 #include "peri/uart.h"
 #include "water_pump/water_pump.h"
 #include "rv/rv_timers.hh"
-#include "setup/app_cxx.hh"
 #include "rv/rain_sensor.hh"
+#include "debug/dbg.h"
+
+#include <cstdio>
+#include <stdlib.h>
+#include <cstring>
 
 #define warning_unknown_option(x)
 extern "C" void timer_set(int8_t channel);
@@ -42,7 +44,8 @@ const char help_parmCmd[] = "zone=[0-13]      zone number\n"
 int
 process_parmCmd(clpar p[], int len) {
   int arg_idx;
-
+  int errors = 0;
+  int res = 0;
 
 
   bool wantsDurations = false, wantsRemainingTimes = false, wantsReply = false, hasDuration = false, wantsRelayPump = false, wantsRelayPC = false,
@@ -53,37 +56,52 @@ process_parmCmd(clpar p[], int len) {
 
     if (key == NULL) {
       return -1;
-    } else if (strcmp(key, "timer") == 0 && *val == '?') {
+    } else if (std::strcmp(key, "timer") == 0 && *val == '?') {
       wantsReply = wantsTimers = true;
 
-    } else if (strcmp(key, KEY_DURATION_PREFIX) == 0 && *val == '?') {
+    } else if (std::strcmp(key, KEY_DURATION_PREFIX) == 0 && *val == '?') {
       wantsReply = wantsDurations = true;
 
-    } else if (strcmp(key, KEY_REMAINING_PREFIX) == 0 && *val == '?') {
+    } else if (std::strcmp(key, KEY_REMAINING_PREFIX) == 0 && *val == '?') {
       wantsReply = wantsRemainingTimes = true;
 
-    } else if (strcmp(key, KEY_STATUS_PREFIX) == 0 && *val == '?') {
+    } else if (std::strcmp(key, KEY_STATUS_PREFIX) == 0 && *val == '?') {
       wantsReply = wantsDurations = wantsRemainingTimes = wantsRelayPC = wantsRelayPump = wantsTime = wantsRainSensor = wantsPumpRunTime = true;
 
-    } else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
+    } else if (std::strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
       RvTimer::SetArgs args;
-      sscanf((key + KEY_DURATION_PREFIX_LEN), "%hhd.%hhd", &args.valve_number, &args.timer_number);
-      if (strchr(val, ',')) {
-        int irs = 0;
-        sscanf(val, "%hhd,%d,%hhd,%hhd,%hd,%hhd,%hd,%hd", &args.on_duration, &irs, &args.off_duration, &args.repeats, &args.period, &args.mDaysInterval, &args.mTodSpanBegin,
-            &args.mTodSpanEnd);
-        args.ignoreRainSensor = !!(irs & 1);
-        args.ignorePumpPause = !!(irs & 2);
-      } else {
-        args.on_duration = atoi(val);
-      }
-        if (rvt.set(args)->scheduleRun()) {
-          hasDuration = true;
+      int vn = -1, tn = 0;  // XXX: read int because %hhd sometimes fails (why?)
+      if ((res = sscanf(key, KEY_DURATION_PREFIX "%d.%d", &vn, &tn)) >= 1) {
+        args.valve_number = vn;
+        args.timer_number = tn;
+      //if ((res = sscanf(key, KEY_DURATION_PREFIX "%hhd.%hhd", &args.valve_number, &args.timer_number)) >= 1) {
+        if (std::strchr(val, ',')) {
+          int irs = 0;
+          // XXX: this may also fail for %hhd like above?
+          if ((res = sscanf(val, "%hd,%d,%hd,%hhd,%hd,%hhd,%hd,%hd", &args.on_duration, &irs, &args.off_duration, &args.repeats, &args.period, &args.mDaysInterval,
+              &args.mTodSpanBegin, &args.mTodSpanEnd)) >= 2) {
+          args.ignoreRainSensor = !!(irs & 1);
+          args.ignorePumpPause = !!(irs & 2);
+          } else {
+            ++errors;
+            if (errno)
+              perror("error:parm_cmd:sscanf(val)");
+          }
         } else {
-          // XXX: error
+          args.on_duration = atoi(val);
         }
 
-    } else if (strcmp(key, KEY_VERSION) == 0 && *val == '?') {
+        if (RvTimer *timer = rvt.set(args)) {
+          if (timer->scheduleRun()) {
+            hasDuration = true;
+          }
+        }
+      } else {
+        if (errno)
+          perror("error:parm_cmd:sscanf(key)");
+        ++errors;
+      }
+    } else if (std::strcmp(key, KEY_VERSION) == 0 && *val == '?') {
       wantsReply = wantsVersion = true;
 
     } else {
@@ -107,57 +125,57 @@ process_parmCmd(clpar p[], int len) {
       if (wantsDurations) {
         int secs = vt.get_duration();
         if (secs) {
-          snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"%s%d.%d\":%d,", KEY_DURATION_PREFIX, vt.getValveNumber(), vt.getTimerNumber(), secs);
+          std::snprintf(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf), "\"%s%d.%d\":%d,", KEY_DURATION_PREFIX, vt.getValveNumber(), vt.getTimerNumber(), secs);
         }
       }
 
       if (wantsRemainingTimes) {
         int secs = vt.get_remaining();
         if (secs) {
-          snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"%s%d.%d\":%d,", KEY_REMAINING_PREFIX, vt.getValveNumber(), vt.getTimerNumber(), secs);
+          std::snprintf(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf), "\"%s%d.%d\":%d,", KEY_REMAINING_PREFIX, vt.getValveNumber(), vt.getTimerNumber(), secs);
         }
       }
     }
 
     if (wantsRelayPC) {
-      strcat(buf, wp_isPressControlOn(0) ? "\"pc\":1," : "\"pc\":0,");
+      std::strcat(buf, wp_isPressControlOn(0) ? "\"pc\":1," : "\"pc\":0,");
     }
 
     if (wantsRelayPump) {
-      strcat(buf,  wp_isPumpOn() ? "\"pump\":1," : "\"pump\":0,");
+      std::strcat(buf,  wp_isPumpOn() ? "\"pump\":1," : "\"pump\":0,");
     }
 
     if (wantsPumpRunTime) {
       if (wp_isPumpOn()) {
-        snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"p1d\":%lu,", wp_getPumpOnDuration());
+        std::snprintf(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf), "\"p1d\":%lu,", wp_getPumpOnDuration());
       } else {
-        snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"p0d\":%lu,", wp_getPumpOffDuration());
+        std::snprintf(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf), "\"p0d\":%lu,", wp_getPumpOffDuration());
       }
     }
 
     if (wantsRainSensor) {
-      strcat(buf, rs.getState() ? "\"rain\":1," :  "\"rain\":0,");
+      std::strcat(buf, rs.getState() ? "\"rain\":1," :  "\"rain\":0,");
     }
 
     if (wantsTime) {
       time_t timer = time(NULL);
       struct tm t;
       localtime_r(&timer, &t);
-      strftime(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"time\":\"%FT%H:%M:%S\",", &t);
+      strftime(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf), "\"time\":\"%FT%H:%M:%S\",", &t);
     }
 
     if (wantsVersion) {
-      snprintf(buf + strlen(buf), BUF_SIZE - strlen(buf), "\"version\":\"%s\",", VERSION);
+      std::snprintf(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf), "\"version\":\"%s\",", VERSION);
     }
 
     if (*buf)
-      esp32_write(buf, strlen(buf) - 1); // no terminating comma
+      esp32_write(buf, std::strlen(buf) - 1); // no terminating comma
 
     esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
 
     if (wantsTimers)
       for (const RvTimer &vt : *rvt.getTimerList()) {
-        char *json = vt.argsToJSON(buf + strlen(buf), BUF_SIZE - strlen(buf));
+        char *json = vt.argsToJSON(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf));
         esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
         esp32_puts(json);
         esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
@@ -166,7 +184,10 @@ process_parmCmd(clpar p[], int len) {
     free(buf);
   }
 
-
+  if (errors) {
+    db_printf("error:errno=%d\n", errno);
+    esp32_puts("error: error in processing cli cmd\n");
+  }
   return 0;
 }
 
@@ -174,7 +195,7 @@ void timers_was_modified(int vn, int tn, bool removed) {
   char buf[128];
 
   if (removed) {
-    snprintf(buf, sizeof buf, "\"timer%d.%d\":{}", vn, tn);
+    std::snprintf(buf, sizeof buf, "\"timer%d.%d\":{}", vn, tn);
     esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
     esp32_puts(buf);
     esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
@@ -184,7 +205,7 @@ void timers_was_modified(int vn, int tn, bool removed) {
   for (const RvTimer &vt : *rvt.getTimerList()) {
     if (!vt.match(vn, tn))
       continue;
-    char *json = vt.argsToJSON(buf + strlen(buf), BUF_SIZE - strlen(buf));
+    char *json = vt.argsToJSON(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf));
     esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
     esp32_puts(json);
     esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);

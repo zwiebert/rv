@@ -19,7 +19,6 @@
 #include "assert.h"
 #include "valves/valve_relays.h"
 
-extern Mcp23017 relay_16;
 #define WP_RELAY_PIN 15  // on IO expander
 #define WP_PCOUT_PIN 14  // on IO expander
 #define ON true

@@ -16,7 +16,7 @@
 
   function onClickRun() {
     let cmd = { timer: {} };
-    cmd.timer.zn = zoneIdx;
+    cmd.timer.vn = zoneIdx;
     if (document.getElementById("zrun" + zoneIdx).checked) cmd.timer.d1 = (document.getElementById("dur" + zoneIdx).valueAsNumber * 60).toFixed(0);
     httpFetch.sendRv(cmd);
   }

@@ -8,12 +8,13 @@
 #include "user_config.h"
 
 #include <loop/loop.hh>
-#include <peri/mcp23017.h>
+#include <peri/relay16.h>
 #include <rv/report.h>
 #include <water_pump/water_pump.h>
 #include <sys/_timeval.h>
 #include <sys/errno.h>
 #include <time/real_time_clock.h>
+#include <peri/uart.h>
 
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
@@ -22,17 +23,14 @@
 #include <libopencm3/stm32/f1/memorymap.h>
 
 void loop(void);
-void setup();
+void app_setup();
 
-void atFault() {
-  mcp23017_atFault();
-}
-
-void atFault_setup() {
+extern "C" void atFault() {
+  relay16_atFault();
 }
 
 void app() {
-  setup();
+  app_setup();
   report_event("mcu:started");
   wp_clearPcFailure(); //
 
@@ -42,21 +40,19 @@ void app() {
 }
 
 time_t time(time_t *p) {
+  if (p)
+    *p = curr_time;
   return curr_time;
 }
 
-// redirect any output to USART1
-int _write(int fd, char *ptr, int len) {
-  int i;
-
-  if (fd == 1) {
-    for (i = 0; i < len; i++)
-      usart_send_blocking(USART1, ptr[i]);
-    return i;
+// redirect standard output (fd 1) and stderr (fd 2)
+extern "C" int _write(int fd, char *ptr, int len) {
+  if (fd != 1 && fd != 2) {
+    errno = EIO;
+    return -1;
   }
 
-  errno = EIO;
-  return -1;
+  return esp32_write(ptr, len);
 }
 
 void loop(void) {

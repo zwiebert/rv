@@ -2,6 +2,7 @@
 #include <loop/loop.hh>
 #include <misc/int_macros.h>
 #include <peri/uart.h>
+#include <peri/i2c.h>
 #include <rv/rain_sensor.hh>
 #include <rv/report.h>
 #include <rv/rv.hh>
@@ -20,8 +21,6 @@ volatile int loop_flags_periodic;
 #endif
 
 typedef void (*lfa_funT)(void);
-
-extern "C" bool i2c2_check();
 
 static void i2c2_check_loop() {
   if (!i2c2_check()) {

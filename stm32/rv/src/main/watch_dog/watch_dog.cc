@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 #include "user_config.h"
-#include <time.h>
+
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/memorymap.h>
@@ -14,6 +14,9 @@
 #include "watch_dog.hh"
 #include "peri/uart.h"
 #include "rv/report.h"
+
+#include <cstring>
+#include <time.h>
 
 static unsigned call_time, response_time;
 static unsigned missed_responses;
@@ -67,7 +70,7 @@ void watchDog_loop() {
 
 
 bool watchDog_checkCommandLine(const char *cmdLine) {
-	if (strcmp (cmdLine, WDG_RESPONSE) == 0) {
+	if (std::strcmp (cmdLine, WDG_RESPONSE) == 0) {
 		watchDog_gotResponse();
 		return true;
 	}

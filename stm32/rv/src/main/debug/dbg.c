@@ -1,4 +1,4 @@
-#include "debug.h"
+#include <debug/dbg.h>
 #include "peri/uart.h"
 
 #include <stdio.h>
@@ -13,7 +13,7 @@ void db_print(const char *msg) {
   esp32_puts(buf);
 }
 
-void db_printf(char *format, ...) {
+void db_printf(const char *format, ...) {
   va_list args;
   char buf[120] = TRACE_MARKER;
 

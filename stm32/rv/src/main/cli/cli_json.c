@@ -12,7 +12,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "debug/debug.h"
+#include <debug/dbg.h>
 #define postcond(x)
 #define dbg_vpf(x) x
 #define D(x) x
@@ -37,7 +37,7 @@ uint16_t msgid;
 
 #include <jsmn/jsmn.h>
 
-#define DB_NO_OPT
+//#define DB_NO_OPT
 
 #ifdef DB_NO_OPT
 #pragma GCC push_options

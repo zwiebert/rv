@@ -9,10 +9,11 @@ typedef struct {
 struct RvTimerData {
 public:
   struct SetArgs {
-    int16_t mTodSpanBegin = 0, mTodSpanEnd = 0, period = 0;
-
     int8_t valve_number = -1, timer_number = 0;
-    int8_t on_duration = 0, off_duration = 0, repeats = 0, mDaysInterval = 0;
+    int16_t on_duration = 0, off_duration = 0, mTodSpanBegin = 0, mTodSpanEnd = 0, period = 0;
+
+
+    int8_t  repeats = 0, mDaysInterval = 0;
 
     bool ignoreRainSensor :1 = false;
     bool ignorePumpPause :1 = false;
@@ -35,4 +36,4 @@ public:
   }
 };
 
-static_assert(sizeof (RvTimerData::SetArgs) <= 14);
+static_assert(sizeof (RvTimerData::SetArgs) <= 16);

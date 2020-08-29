@@ -4,10 +4,11 @@
  * Created: 24.08.2017 21:45:48
  *  Author: bertw
  */
+#include <debug/dbg.h>
 #include "user_config.h"
 #include "cli_imp.h"
 #include <stdio.h>
-#include "debug/debug.h"
+#include <string.h>
 
 #define ENABLE_RESTART 1 // allow software reset
 

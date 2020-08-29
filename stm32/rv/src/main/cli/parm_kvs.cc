@@ -23,7 +23,7 @@ static const char *zoneKeysN[] = {
 
 static bool kvs_store_string(const char *key, const char *val) {
   char buf[128];
-  if (0 < snprintf(buf, sizeof buf, "{\"to\":\"cli\",\"kvs\":{\"%s\":\"%s\"}};\n", key, val)) {
+  if (0 < std::snprintf(buf, sizeof buf, "{\"to\":\"cli\",\"kvs\":{\"%s\":\"%s\"}};\n", key, val)) {
     esp32_puts(buf);
     return true;
   }
@@ -32,7 +32,7 @@ static bool kvs_store_string(const char *key, const char *val) {
 
 static int match_zoneKeyN(const char *key) {
   for (int i = 0; zoneKeysN[i]; ++i) {
-    if (key == strstr(key, zoneKeysN[i]))
+    if (key == std::strstr(key, zoneKeysN[i]))
       return i;
   }
   return -1;
@@ -57,7 +57,7 @@ int process_parmKvs(clpar p[], int len) {
         if (!kvs_store_string(key, val)) {
           ++errors;
         }
-        if (isdigit(key[strlen(key) - 1]))
+        if (isdigit(key[std::strlen(key) - 1]))
           switch (zkIdx) {
           case ZN: {
             int idx = atoi(key + 2);

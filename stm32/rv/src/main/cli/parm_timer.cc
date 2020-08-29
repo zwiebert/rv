@@ -6,7 +6,6 @@
 #include "peri/uart.h"
 #include "water_pump/water_pump.h"
 #include "rv/rv_timers.hh"
-#include "setup/app_cxx.hh"
 #include "rv/rain_sensor.hh"
 
 #define warning_unknown_option(x)
@@ -55,7 +54,8 @@ int process_parmTimer(clpar p[], int len) {
   }
 #endif
 
-  if (args.valve_number >= 0 && rvt.set(args)->scheduleRun()) {
+  RvTimer *timer;
+  if (args.valve_number >= 0 && (timer = rvt.set(args)) && timer->scheduleRun()) {
     rvt.loop(); // XXX
   } else {
     // XXX: error
@@ -70,7 +70,7 @@ int process_parmTimer(clpar p[], int len) {
     esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
 
     if (*buf)
-      esp32_write(buf, strlen(buf) - 1); // no terminating comma
+      esp32_write(buf, std::strlen(buf) - 1); // no terminating comma
 
     esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
 

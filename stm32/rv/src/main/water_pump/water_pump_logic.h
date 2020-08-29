@@ -1,16 +1,4 @@
-/*
- * water_pump_logic.h
- *
- *  Created on: 12.05.2019
- *      Author: bertw
- */
-
-#ifndef WATER_PUMP_LOGIC_H_
-#define WATER_PUMP_LOGIC_H_
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#pragma once
 
 #include "user_config.h"
 #include "water_pump.h"
@@ -26,10 +14,3 @@ void wpl_increaseMaxOnTime(void);
 time_t wpl_getMaxOnTime(void);
 
 
-
-#ifdef __cplusplus
-}
-#endif
-
-
-#endif /* WATER_PUMP_LOGIC_H_ */

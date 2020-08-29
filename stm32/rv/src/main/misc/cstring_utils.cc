@@ -4,10 +4,10 @@
 
 
 bool csu_assign(char **dst, const char *src) {
-  if (*dst && strcmp(*dst, src) == 0)
+  if (*dst && std::strcmp(*dst, src) == 0)
     return true;
 
-  size_t src_size = strlen(src) + 1;
+  size_t src_size = std::strlen(src) + 1;
 
   if (src_size == 1) {
     free(*dst);
@@ -16,7 +16,7 @@ bool csu_assign(char **dst, const char *src) {
   }
 
   if (char *ptr = static_cast<char*>(realloc(*dst, src_size))) {
-    *dst = strcpy(ptr, src);
+    *dst = std::strcpy(ptr, src);
     return true;
   }
 

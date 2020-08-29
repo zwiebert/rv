@@ -1,23 +1,11 @@
-/*
- * water_pump.h
- *
- *  Created on: 12.05.2019
- *      Author: bertw
- */
-
-#ifndef WATER_PUMP_H_
-#define WATER_PUMP_H_
+#pragma once
 
 #include "user_config.h"
 
-#include <stdbool.h>
 #include "time/real_time_clock.h"
 
 #define WP_MCP_MASK 0x0c
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 // test if PressControl wants to turn on the pump
 bool wp_isPressControlOn(bool *has_changed);
@@ -55,9 +43,4 @@ wp_err_T wp_getError(void);
 void wp_loop(void);
 void wp_setup(void);
 
-#ifdef __cplusplus
-}
-#endif
 
-
-#endif /* WATER_PUMP_H_ */

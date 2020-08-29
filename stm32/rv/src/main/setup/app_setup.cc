@@ -1,18 +1,25 @@
+#include "user_config.h"
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/f1/gpio.h>
 #include <libopencm3/stm32/f1/rcc.h>
 #include <peri/i2c.h>
-#include <peri/tm1638.h>
 #include <peri/uart.h>
-#include <peri/mcp23017.h>
+#include <peri/relay16.h>
 #include <water_pump/water_pump.h>
-#include <setup/app_cxx.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <time/real_time_clock.h>
 #include <time/systick_1ms.h>
+#ifdef USE_DLB8
+#include "peri/dlb8.h"
+#endif
+
+#include <rv/rv.hh>
+#include <rv/rv_timers.hh>
+#include <watch_dog/watch_dog.hh>
 
 
+void timers_was_modified(int vn, int tn, bool removed);
 
 
 static void clock_setup(void) {
@@ -25,7 +32,10 @@ static void led_setup(void) {
             GPIO13);
 }
 
-void setup() {
+void app_setup_cxx();
+
+
+void app_setup() {
   setenv("TZ", "CET-2", 1); //XXX
   clock_setup();
   systick_setup();
@@ -33,10 +43,15 @@ void setup() {
   i2c2_setup();
   led_setup();
   rtc_setup();
-  tm1638_setup();
-  mcp23017_setup(false);
+#ifdef USE_DLB8
+  dlb8_setup();
+#endif
+  relay16_setup(false);
   wp_setup();
-  cxx_setup();
+#ifdef USE_WDG
+    watchDog_setup();
+#endif
+    rvt.register_callback(timers_was_modified);
 #ifdef USE_TEST
   test_setup();
 #endif

@@ -28,6 +28,7 @@ SOFTWARE.
 */
 
 /* Includes */
+#include "user_config.h"
 #include <stddef.h>
 #include <stdio.h>
 #include "stm32f10x.h"
@@ -43,7 +44,7 @@ SOFTWARE.
 
 
 /* Private function prototypes */
-extern "C" void app(void);
+void app(void);
 /* Private functions */
 
 /**
@@ -105,7 +106,7 @@ void assert_failed(uint8_t* file, uint32_t line)
 /*
  * Minimal __assert_func used by the assert() macro
  * */
-extern "C" void __assert_func(const char *file, int line, const char *func, const char *failedexpr)
+extern "C" void __assert_func(const char */*file*/, int /*line*/, const char */*func*/, const char */*failedexpr*/)
 {
   NVIC_SystemReset(); // XXX
   while(1)

@@ -4,11 +4,6 @@
 #define STM32F1
 #endif
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-
 #define USE_TEST
 #define USE_JSON
 #define USE_WDG
@@ -17,7 +12,6 @@
 
 #define USE_MALLOC_IN_NEW_GLOBAL
 //#define USE_MALLOC_IN_NEW_NODE
-//#define USE_STD_LIST
 #define USE_ALLOCATOR_MALLOC
 
 #ifdef BUILD_DEBUG
