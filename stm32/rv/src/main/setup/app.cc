@@ -45,9 +45,9 @@ time_t time(time_t *p) {
   return curr_time;
 }
 
-// redirect standard output (fd 1)
-int _write(int fd, char *ptr, int len) {
-  if (fd != 1) {
+// redirect standard output (fd 1) and stderr (fd 2)
+extern "C" int _write(int fd, char *ptr, int len) {
+  if (fd != 1 && fd != 2) {
     errno = EIO;
     return -1;
   }
