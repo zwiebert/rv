@@ -98,6 +98,8 @@ static void do_work() {
   }
 
   char *reply = strstr(line, "{\"data\":");
+  if (!reply)
+    reply = strstr(line, "{\"update\":");
   if (reply) {
     ws_print_json(reply);
     DD(printf("stm32com:recv:####REPLY####: <%s>\n", reply));

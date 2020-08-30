@@ -51,12 +51,28 @@ export function http_handleResponses(obj) {
     document.getElementById("spi").value = obj.position.p;
   }
 
-  if ("data" in obj) {
-    let data = obj.data;
+  if ("data" in obj || "update" in obj) {
+    let update = "update" in obj;
+    let data = obj.data || obj.update;
     if ("version" in data) {
       Stm32McuFirmwareVersion.set(data.version);
+    } else if ("timer" in data) {
+      const timer = data.timer;
+      const update_timer = function (t) {
+        const key = "timer" + (t.vn || 0) + "." + (t.tn || 0);
+        ZoneTimers.update((o) => {
+          o[key] = data.timer;
+          return o;
+        });
+      };
+      if (!update) ZoneTimers.set({});
+
+      if (Array.isArray(timer)) {
+        timer.forEach(update_timer);
+      } else {
+        update_timer(timer);
+      }
     } else {
-      let zoneTimers = {};
       let zoneDurations = [];
       let zoneRemainingSeconds = [];
       for (let i = 0; i < ZoneCountMax; ++i) {
@@ -65,15 +81,6 @@ export function http_handleResponses(obj) {
         let rem = "rem" + sfx;
         zoneDurations[i] = dur in data ? data[dur] : 0;
         zoneRemainingSeconds[i] = rem in data ? data[rem] : 0;
-
-        for (let k = 0; k < 10; ++k) {
-          let sfx = i.toString() + "." + k;
-          let timer = "timer" + sfx;
-          if (timer in data) {
-            zoneTimers[timer] = data[timer];
-            ZoneTimers.update(obj => {obj[timer] = data[timer]; return obj; });
-          }
-        }
       }
 
       //ZoneTimers.set(zoneTimers);

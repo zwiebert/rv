@@ -84,11 +84,20 @@ public:
 
   bool operator==(const RvTimer &rhs) const { return mArgs.valve_number == rhs.mArgs.valve_number && mArgs.timer_number == rhs.mArgs.timer_number; }
 
+#if 1
+  char* argsToJSON(char *buf, int buf_size) const {
+    constexpr char prefix[] = "\"timer\":";
+    if (!strncat(buf, prefix, buf_size))
+      return 0;
+    if (!mArgs.toJSON(buf + (sizeof prefix - 1), buf_size - (sizeof prefix - 1)))
+      return 0;
+    return buf;
+  }
+
+#else
   char *argsToJSON(char *buf, int buf_size) const {
-    char *result = buf;
     if (0 <= std::snprintf(buf + std::strlen(buf), buf_size - std::strlen(buf), "\"timer%d.%d\":", getValveNumber(), getTimerNumber())) {
-      mArgs.toJSON(buf + std::strlen(buf), buf_size - std::strlen(buf));
-      return result;
+      return mArgs.toJSON(buf + std::strlen(buf), buf_size - std::strlen(buf));
     }
     return 0;
   }
@@ -99,6 +108,7 @@ public:
     }
     return 0;
   }
+#endif
 
   int getValveNumber() const {
     return mArgs.valve_number;
