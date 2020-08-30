@@ -11,16 +11,6 @@
 #define warning_unknown_option(x)
 extern "C" void timer_set(int8_t channel);
 
-#define KEY_DURATION_PREFIX "dur"
-#define KEY_DURATION_PREFIX_LEN ((sizeof KEY_DURATION_PREFIX) - 1)
-#define CMD_ASK_DURATIONS " dur=?"
-#define CMD_ASK_DURATIONS_LEN (sizeof CMD_ASK_DURATIONS - 1)
-
-#define KEY_REMAINING_PREFIX "rem"
-#define KEY_REMAINING_TIME_PREFIX_LEN ((sizeof KEY_REMAINING_TIME_PREFIX) - 1)
-#define CMD_ASK_REMAINING_TIMES " rem=?"
-#define CMD_ASK_REMAINING_TIMES_LEN (sizeof CMD_ASK_REMAINING_TIMES - 1)
-
 #define KEY_STATUS_PREFIX "status"
 #define KEY_STATUS_PREFIX_LEN ((sizeof KEY_STATUS_PREFIX) - 1)
 #define CMD_ASK_STATUS " status=?;"
@@ -39,42 +29,13 @@ const char help_parmTimer[] = "zone=[0-13]      zone number\n"
     "duration=[0-60]  how long to irrigate\n";
 
 int process_parmTimer(clpar p[], int len) {
-  RvTimer::SetArgs args = RvTimer::SetArgs(reinterpret_cast<cstr_pair *>(&p[1]), len - 1);
-
-
-#if 0
-  for (int arg_idx = 1; arg_idx < len; ++arg_idx) {
-    const char *key = p[arg_idx].key, *val = p[arg_idx].val;
-
-    break;  // nothing to do here
-
-    if (key == NULL) {
-      return -1;
-    }
-  }
-#endif
+  RvTimer::SetArgs args = RvTimer::SetArgs(reinterpret_cast<cstr_pair*>(&p[1]), len - 1);
 
   RvTimer *timer;
   if (args.valve_number >= 0 && (timer = rvt.set(args)) && timer->scheduleRun()) {
     rvt.loop(); // XXX
   } else {
     // XXX: error
-  }
-
-  if constexpr (0) {
-    char *buf = (char*) malloc(BUF_SIZE);
-    if (!buf)
-      return -1;
-    *buf = '\0';
-
-    esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
-
-    if (*buf)
-      esp32_write(buf, std::strlen(buf) - 1); // no terminating comma
-
-    esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
-
-    free(buf);
   }
 
   return 0;

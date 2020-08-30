@@ -114,10 +114,7 @@ int process_parmCmd(clpar p[], int len) {
   }
 
   if (wantsReply) {
-    char *buf = (char*) malloc(BUF_SIZE);
-    if (!buf)
-      return -1;
-    *buf = '\0';
+    char buf[BUF_SIZE] = "";
 
     esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
 
@@ -182,8 +179,6 @@ int process_parmCmd(clpar p[], int len) {
         esp32_puts(json);
         esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
       }
-
-    free(buf);
   }
 
   if (errors) {

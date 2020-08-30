@@ -2,6 +2,7 @@
   import { _ } from "../services/i18n";
   import { Z } from "../store/curr_zone";
   import { ZoneTimers } from "../store/zones";
+  import { ZoneActiveTimerMask } from "../store/curr_zone";
   import * as httpFetch from "../fetch.js";
   import { onMount } from "svelte";
 
@@ -78,9 +79,17 @@
 
     return ts;
   }
+
 </script>
 
 <input type="number" min="0" max="10" step="1" bind:value={tn} />
+<div class="flex">
+  {#each { length: 10 } as _, i}
+    <div class="{$ZoneActiveTimerMask & (1<<i) ? 'bg-selected' : ''}">
+      <input type="radio" bind:group={tn} value={i} />
+    </div>
+  {/each}
+</div>
 
 <table>
   <tr>
