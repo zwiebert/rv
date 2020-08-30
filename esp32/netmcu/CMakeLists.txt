@@ -14,7 +14,8 @@ set(COMPONENTS
 	  bootloader esptool_py partition_table soc log spi_flash micro-ecc main efuse driver esp_rom  
 )
 
-set(cxx_standard gnu++2a)
+#set environment variables to be used in components CMakeLists.txt files
+set(component_compile_opts "-std=gnu++2a" "-Wno-missing-field-initializers")
 
 
 

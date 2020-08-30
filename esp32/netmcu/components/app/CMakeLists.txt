@@ -10,4 +10,4 @@ idf_component_register(
     EMBED_TXTFILES ./esp32/ca_cert.pem
 )
 
-component_compile_options(-std=${cxx_standard})
+component_compile_options(-${component_compile_opts})

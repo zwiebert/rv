@@ -11,4 +11,4 @@ idf_component_register(
                   mbedtls
    )
    
- component_compile_options(-std=${cxx_standard})
+ component_compile_options(-${component_compile_opts})
