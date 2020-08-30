@@ -4,8 +4,12 @@
 #include "stm32_com/com_task.h"
 #include "cli_app/cli_app.h"
 #include "cli/mutex.h"
+#include "net/http_client.h"
+#include "config/config.h"
 
-void loop_setBit_mcuRestart() {
+void httpGet_setup(void); //???
+
+void mcu_restart() {
   lf_setBit(lf_mcuRestart);
 }
 
@@ -26,58 +30,50 @@ void lfa_lostIpAddr_cb() {
   lf_setBit(lf_lostIpAddr);
 }
 
-
 extern "C" void main_setup_ip_dependent() { //XXX called from library
   static int once;
   if (!once) {
     once = 1;
 
-#ifdef USE_NTP
-    ntpApp_setup();
-#endif
-#ifdef USE_MQTT
-    config_setup_mqttAppClient();
-#endif
-#ifdef  USE_HTTP_GET
-  void httpGet_setup(void);
-  httpGet_setup();
-#endif
-#ifdef  USE_HTTP_CLIENT
-    void httpClient_setup(void);
-    httpClient_setup();
-#endif
-#if defined USE_TCPS || defined USE_TCPS_TASK
-  config_setup_cliTcpServer();
-#endif
-#ifdef USE_HTTP
-  config_setup_httpServer();
-#endif
+    if constexpr (use_NTP)
+      ntpApp_setup();
+
+    if constexpr (use_MQTT)
+      config_setup_mqttAppClient();
+
+    if constexpr (use_HTTP_GET)
+      httpGet_setup();
+
+    if constexpr (use_HTTP_CLIENT)
+      httpClient_setup();
+
+    if constexpr (use_TCPS || use_TCPS_TASK)
+      config_setup_cliTcpServer();
+
+    if constexpr (use_HTTP)
+      config_setup_httpServer();
+
   }
   tmr_pingLoop_start();
 }
 
 void mcu_init() {
-#ifdef USE_EG
-  loop_eventBits_setup();
-#endif
+
+  if constexpr (use_EG)
+    loop_eventBits_setup();
 
   kvs_setup();
   config_setup_txtio();
   config_setup_global();
 
-#ifdef USE_SERIAL
-  struct cfg_stm32 cfgStm32 = {
-      .uart_tx_gpio = STM32_UART_TX_PIN,
-      .uart_rx_gpio = STM32_UART_RX_PIN,
-      .boot_gpio_is_inverse = STM32_BOOT_PIN_INV,
-      .boot_gpio = STM32_BOOT_PIN,
-      .reset_gpio = STM32_RESET_PIN,
-  };
-  stm32_setup(&cfgStm32);
+  if constexpr (use_SERIAL) {
+    struct cfg_stm32 cfgStm32 = { .uart_tx_gpio = STM32_UART_TX_PIN, .uart_rx_gpio = STM32_UART_RX_PIN, .boot_gpio_is_inverse = STM32_BOOT_PIN_INV, .boot_gpio =
+    STM32_BOOT_PIN, .reset_gpio = STM32_RESET_PIN, };
+    stm32_setup(&cfgStm32);
 
-  struct cfg_stm32com cfg_stm32com = { .enable = true };
-  stm32com_setup_task(&cfg_stm32com);
-#endif
+    struct cfg_stm32com cfg_stm32com = { .enable = true };
+    stm32com_setup_task(&cfg_stm32com);
+  }
 
   io_puts("\r\n\r\n");
 
@@ -85,60 +81,48 @@ void mcu_init() {
 
   lfPer_setBit(lf_loopWatchDog);
   lfPer_setBit(lf_loopCli);
-#ifdef USE_TCPS
-  lfPer_setBit(lf_loopTcpServer);
-#endif
+  if constexpr (use_TCPS)
+    lfPer_setBit(lf_loopTcpServer);
 
   ipnet_cbRegister_gotIpAddr(lfa_gotIpAddr_cb);
   ipnet_cbRegister_lostIpAddr(lfa_lostIpAddr_cb);
 
+  if constexpr (use_NETWORK) {
+    if (use_AP_FALLBACK || C.network != nwNone)
+      esp_netif_init();
 
-#ifdef USE_NETWORK
-#ifdef USE_AP_FALLBACK
-  esp_netif_init();
-#else
-  if (C.network != nwNone)
-    esp_netif_init();
-#endif
+    ipnet_cbRegister_gotIpAddr(lfa_gotIpAddr_cb);
+    ipnet_cbRegister_lostIpAddr(lfa_lostIpAddr_cb);
 
-  ipnet_cbRegister_gotIpAddr(lfa_gotIpAddr_cb);
-  ipnet_cbRegister_lostIpAddr(lfa_lostIpAddr_cb);
-  switch (C.network) {
-#ifdef USE_WLAN
-  case nwWlanSta:
-    config_setup_wifiStation();
-    break;
-#endif
-#ifdef USE_WLAN_AP
-  case nwWlanAp:
-    lfa_createWifiAp(); // XXX: Create the fall-back AP. Should we have a regular configured AP also?
-    break;
-#endif
-#ifdef USE_LAN
-  case nwLan:
-    config_setup_ethernet();
-#endif
-    break;
-  default:
-    break;
+    if constexpr (use_WLAN) {
+      if (C.network == nwWlanSta)
+        config_setup_wifiStation();
+    }
+
+    if constexpr (use_WLAN_AP) {
+      if (C.network == nwWlanAp)
+        lfa_createWifiAp(); // XXX: Create the fall-back AP. Should we have a regular configured AP also?
+    }
+
+    if constexpr (use_LAN) {
+      if (C.network == nwLan)
+        config_setup_ethernet();
+    }
   }
-#endif
 
-#ifdef USE_CLI_MUTEX
-  mutex_setup();
-#endif
+  if constexpr (use_CLI_MUTEX)
+    mutex_setup();
 
-#ifdef USE_AP_FALLBACK
-  if (C.network != nwWlanAp)
-    tmr_checkNetwork_start();
-#endif
+  if constexpr (use_AP_FALLBACK) {
+    if (C.network != nwWlanAp)
+      tmr_checkNetwork_start();
+  }
   ////Orig
 
   io_puts("\r\n\r\n");
 
-#ifdef USE_FS
-  stor_setup();
-#endif
+  if constexpr (use_FS)
+    stor_setup();
 
   rtc_setup();
   cliApp_setup();

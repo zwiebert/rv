@@ -61,16 +61,10 @@ extern EventGroupHandle_t loop_event_group;
 
 enum loop_flagbits {
   lf_gotIpAddr, lf_lostIpAddr,
-#if defined USE_AP_FALLBACK || defined USE_WLAN_AP
   lf_createWifiAp,
-#endif
   lf_syncStm32Time,
-#ifdef USE_WDG
   lf_pingLoop, lf_loopWatchDog,
-#endif
-#ifdef USE_TCPS
   lf_loopTcpServer,
-#endif
   lf_loopCli,
   lf_mcuRestart,
   //-------------

@@ -26,6 +26,10 @@ void io_mqtt_publish_stm32_event(const char *event);
 // interface implemented in ./mqtt.c called by MQTT implementation (mcu specific)
 void io_mqtt_received(const char *topic, int topic_len, const char *data, int data_len);
 
-void io_mqttApp_setup(struct cfg_mqtt *cfg_mqtt);
+struct cfg_mqtt_app {
+  char topic_root[16];
+};
+
+void io_mqttApp_setup(struct cfg_mqtt_app *cfg);
 
 #endif /* SRC_net_mqtt_app_H_ */

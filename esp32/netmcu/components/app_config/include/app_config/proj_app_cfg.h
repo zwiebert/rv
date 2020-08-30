@@ -4,38 +4,40 @@
 
 #define APP_VERSION "0.5.0"
 
-#define USE_HTTP
-#define USE_LAN
-#define USE_WLAN
-#define USE_WLAN_AP
-#define USE_NTP
-#define USE_JSON
-#define USE_MQTT
-#define USE_POSIX_TIME
-#define POSIX_TIME
-#define USE_SERIAL
-#define CONFIG_DICT
-#define USE_WDG
-#define USE_FS
-#define USE_HTTP_CLIENT
-#define USE_OTA
-#define USE_STM32OTA
-#define USE_TCPS_TASK
-#define USE_EG
+#define USE_HTTP true
+#define USE_LAN true
+#define USE_WLAN true
+#define USE_WLAN_AP true
+#define USE_NTP  true
+#define USE_JSON true
+#define USE_MQTT true
+#define USE_POSIX_TIME true
+#define POSIX_TIME true
+#define USE_SERIAL true
+#define CONFIG_DICT true
+#define USE_WDG true
+#define USE_FS true
+#define USE_HTTP_CLIENT true
+#define USE_OTA true
+#define USE_STM32OTA true
+#define USE_TCPS_TASK true
+#define USE_EG true
 
-#define USE_LPH
+#define USE_LPH true
 
 #define USE_WS
+
 #ifdef __cplusplus
+#include "proj_app_cfg.hh"
 extern "C"
 #endif
 void ws_send_json(const char *json);
 #define ws_print_json ws_send_json
 
-#define USE_CLI_MUTEX
-#define USE_NETWORK
+#define USE_CLI_MUTEX true
+#define USE_NETWORK true
 
-#define USE_STM32COM
+#define USE_STM32COM true
 
 
 #define STM32_RESET_PIN  (GPIO_NUM_33)
@@ -44,8 +46,9 @@ void ws_send_json(const char *json);
 #define STM32_UART_TX_PIN  (GPIO_NUM_4)
 #define STM32_UART_RX_PIN  (GPIO_NUM_36)
 
-
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
@@ -60,7 +63,7 @@ void ws_send_json(const char *json);
 #define CONFIG_LOG_DEFAULT_LEVEL 3
 #endif
 
-#define USE_AP_FALLBACK
+#define USE_AP_FALLBACK true
 #define CHECK_NETWORK_INTERVAL 15
 #define PING_INTERVAL 10
 #define LOOP_PERIODIC_INTERVAL_MS 100

@@ -35,6 +35,8 @@ if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
 #ifdef USE_MQTT
 #include "net/mqtt/app/mqtt.h"
 void config_setup_mqttAppClient() {
+  cfg_mqtt_app cfg = { "rv/" };
+  io_mqttApp_setup(&cfg);
   config_setup_mqttClient();
 }
 #endif

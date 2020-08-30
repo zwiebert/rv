@@ -94,9 +94,8 @@ extern "C" void appEsp32_main(void) {
   tmr_loopPeriodic_start();
   while (1) {
     loop();
-#ifndef USE_EG
+if constexpr (!use_EG)
     vTaskDelay(pdMS_TO_TICKS(LOOP_INTERVAL_MS));
-#endif
   }
 }
 
@@ -108,11 +107,4 @@ void  mcu_delayedRestart(unsigned delay_ms) {
   }
 }
 
-void mcu_restart(void) {
-  printf("mcu_restart()\n");
-  ets_delay_us(10000);
-  esp_restart();
-  for (;;) {
-  };
-}
 
