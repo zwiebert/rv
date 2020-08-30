@@ -16,7 +16,7 @@
 #include "nvs.h"
 #include "nvs_flash.h"
 #include "misc/int_types.h"
-#include "misc/cstring_utils.hh"
+#include "misc/cstring_utils.h"
 
 static const char *TAG = "simple_ota_example";
 extern const char ca_cert_pem[];
