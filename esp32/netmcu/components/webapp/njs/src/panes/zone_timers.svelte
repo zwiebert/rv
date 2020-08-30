@@ -8,7 +8,7 @@
   import SelectZone from "../components/select_zone.svelte";
   import RvStatus from "../components/rv_status.svelte";
   import ZoneData from "../components/zone_data.svelte";
-
+  import RvTimer from "../components/rv_timer.svelte";
 
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_NAMES | httpFetch.FETCH_ZONE_DURATIONS | httpFetch.FETCH_ZONE_REMAINING_DURATIONS);
@@ -37,21 +37,12 @@
   </div>
 
   <div class="area">
-    <button class="text-xl p-8 m-2" on:click={onClickRun}>Start</button>
-    <button class="text-xl p-8 m-2" on:click={onClickStop}>Stop</button>
-  </div>
-
-  <div class="area">
-    <p>{$_('app.duration')}: {$ZoneDurationMmss} {$_('app.remaining')}: {$ZoneRemainingMmss}</p>
-  </div>
-
-  <div class="area">
     <RvStatus />
   </div>
 
   <div class="area">
-    <ZoneData />
+    <h4>Timer</h4>
+    <RvTimer />
   </div>
-
 
 </div>
