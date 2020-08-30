@@ -1,36 +1,14 @@
-// User configuration
-#ifndef PROJ_APP_CONFIG_H_
-#define PROJ_APP_CONFIG_H_
+#pragma once
 
 #define APP_VERSION "0.5.0"
 
-#define USE_HTTP true
-#define USE_LAN true
-#define USE_WLAN true
-#define USE_WLAN_AP true
-#define USE_NTP  true
-#define USE_JSON true
-#define USE_MQTT true
-#define USE_POSIX_TIME true
-#define POSIX_TIME true
-#define USE_SERIAL true
-#define CONFIG_DICT true
-#define USE_WDG true
-#define USE_FS true
-#define USE_HTTP_CLIENT true
-#define USE_OTA true
-#define USE_STM32OTA true
-#define USE_TCPS_TASK true
-#define USE_EG true
-#define USE_LPH true
-#define USE_WS true
-#define USE_CLI_MUTEX true
-#define USE_NETWORK true
-#define USE_STM32COM true
-#define USE_AP_FALLBACK true
+#include "proj_kconfig.h"
+
+#define CONFIG_DICT
+#define POSIX_TIME USE_POSIX_TIME
 
 #ifdef __cplusplus
-#include "proj_app_cfg.hh"
+//#include "proj_app_cfg.hh"
 extern "C"
 #endif
 void ws_send_json(const char *json);
@@ -70,4 +48,3 @@ void ws_send_json(const char *json);
 
 enum board { board_ESP32_WLAN, board_OLIMEX_POE, board_OLIMEX_GATEWAY, };
 
-#endif /* PROJ_APP_CONFIG_H_ */

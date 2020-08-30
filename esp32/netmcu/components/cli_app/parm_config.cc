@@ -84,10 +84,20 @@ int process_parmConfig(clpar p[], int len) {
   bool flag_isValid = 0;
 #ifdef USE_LAN
 #define hasChanged_ethernet (changed_mask & (BIT(CB_LAN_PHY)|BIT(CB_LAN_PWR_GPIO)))
+#else
+#define hasChanged_ethernet false
 #endif
+#ifdef USE_MQTT
 #define hasChanged_mqttClient (changed_mask & (BIT(CB_MQTT_ENABLE)|BIT(CB_MQTT_PASSWD)|\
     BIT(CB_MQTT_USER)|BIT(CB_MQTT_URL)|BIT(CB_MQTT_CLIENT_ID)))
+#else
+#define hasChanged_mqttClient false
+#endif
+#ifdef USE_HTTP
 #define hasChanged_httpServer (changed_mask & (BIT(CB_HTTP_ENABLE)|BIT(CB_HTTP_PASSWD)|BIT(CB_HTTP_USER)))
+#else
+#define hasChanged_httpServer false
+#endif
 #define hasChanged_txtio (changed_mask & (BIT(CB_VERBOSE)))
 
   so_output_message(SO_CFG_begin, NULL);

@@ -7,8 +7,6 @@
 #include "net/http_client.h"
 #include "config/config.h"
 
-void httpGet_setup(void); //???
-
 void mcu_restart() {
   lf_setBit(lf_mcuRestart);
 }
@@ -40,9 +38,6 @@ extern "C" void main_setup_ip_dependent() { //XXX called from library
 
     if constexpr (use_MQTT)
       config_setup_mqttAppClient();
-
-    if constexpr (use_HTTP_GET)
-      httpGet_setup();
 
     if constexpr (use_HTTP_CLIENT)
       httpClient_setup();
