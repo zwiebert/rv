@@ -1,4 +1,3 @@
-extern "C" {
 #include "app_config/proj_app_cfg.h"
 #include "txtio/inout.h"
 #include "net/mqtt/app/mqtt.h"
@@ -11,7 +10,6 @@ extern "C" {
 #include "misc/int_macros.h"
 #include <stm32/stm32.h>
 #include "misc/base64.h"
-}
 
 #include <malloc.h>
 #include <string.h>

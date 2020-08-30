@@ -14,6 +14,7 @@
 #include "debug/debug.h"
 #include "misc/int_macros.h"
 #include "misc/ftoa.h"
+#include "misc/itoa.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -29,10 +30,10 @@ so_parse_config_key(const char *k) {
   precond((cfg_len == keys_len));
 
   SO_MSG_T result = SO_NONE;
-  int i;
-  for (i = 0; i < keys_len; ++i) {
+
+  for (int i = 0; i < keys_len; ++i) {
     if (0 == strcmp(k, cfg_keys[i])) {
-      result = SO_CFG_begin + 1 + i;
+      result = static_cast<SO_MSG_T>(SO_CFG_begin + 1 + i);
       break;
     }
   }

@@ -32,8 +32,6 @@
 
 #define D(x)
 
-u8 so_target;
-
 bool so_output_message2(so_msg_t mt, const void *arg);
 
 void so_output_message(so_msg_t mt, const void *arg) {
@@ -84,7 +82,7 @@ void so_output_message(so_msg_t mt, const void *arg) {
 
   case SO_MCU_OTA:
 #ifdef USE_OTA
-    so_out_x_reply_entry_ss("ota-url", arg);
+    so_out_x_reply_entry_ss("ota-url", static_cast<const char *>(arg));
 #endif
     break;
   case SO_MCU_OTA_STATE:
@@ -95,7 +93,7 @@ void so_output_message(so_msg_t mt, const void *arg) {
 
   case SO_MCU_STM32OTA:
 #ifdef USE_OTA
-    so_out_x_reply_entry_ss("stm32ota-url", arg);
+    so_out_x_reply_entry_ss("stm32ota-url", static_cast<const char *>(arg));
 #endif
     break;
   case SO_MCU_STM32OTA_STATE:
@@ -126,14 +124,14 @@ void so_output_message(so_msg_t mt, const void *arg) {
     break;
 
   case  SO_KVS_ZN_SINGLE: {
-    const char *key = arg;
+    const char *key = static_cast<const char *>(arg);
     if (kvs_get_string(key, buf, sizeof buf)) {
       so_out_x_reply_entry_ss(key, buf);
     }
   }
   break;
   case  SO_KVS_ZN_ALL: {
-    const char *keyBase = arg;
+    const char *keyBase = static_cast<const char *>(arg);
     for (int i=0; i < 14; ++i) {
       char key[16];
       snprintf(key, sizeof key, "%s%d", keyBase, i);
@@ -151,7 +149,7 @@ void so_output_message(so_msg_t mt, const void *arg) {
   /////////////////////////////////////////////////////////////////////////////////
   case SO_CFG_all: {
     for (i = SO_CFG_begin + 1; i < SO_CFG_end; ++i) {
-      so_output_message(i, NULL);
+      so_output_message(static_cast<so_msg_t>(i), nullptr);
     }
   }
     break;
@@ -208,27 +206,27 @@ void so_output_message(so_msg_t mt, const void *arg) {
     break;
 
   case  SO_RVE_PUMP: {
-    const so_arg_on_t *state = arg;
+    const so_arg_on_t *state = static_cast<const so_arg_on_t *>(arg);
     io_mqtt_publish_pump_status(state->on);
     so_out_x_reply_entry_sd("pump", state->on);
   }
   break;
 
   case  SO_RVE_RAIN: {
-    const so_arg_on_t *state = arg;
+    const so_arg_on_t *state = static_cast<const so_arg_on_t *>(arg);
     io_mqtt_publish_rain_sensor_status(state->on);
     so_out_x_reply_entry_sd("rain", state->on);
   }
   break;
 
   case  SO_RVE_PRESS_CTL: {
-    const so_arg_on_t *state = arg;
+    const so_arg_on_t *state = static_cast<const so_arg_on_t *>(arg);
     so_out_x_reply_entry_sd("pc", state->on);
   }
   break;
 
   case  SO_RVE_VALVES: {
-    const so_arg_valves_t *valves = arg;
+    const so_arg_valves_t *valves = static_cast<const so_arg_valves_t *>(arg);
     so_out_x_reply_entry_sl("valve_state", valves->state_bits);
     so_out_x_reply_entry_sl("valve_change", valves->changed_bits);
 
@@ -273,7 +271,7 @@ void so_output_message(so_msg_t mt, const void *arg) {
     break;
 
   case SO_PBUF_KV64: {
-    const so_arg_pbuf_t *pba = arg;
+    const so_arg_pbuf_t *pba = static_cast<const so_arg_pbuf_t *>(arg);
     size_t b64Len = 0;
     int err = mbedtls_base64_encode((uint8_t *) buf, sizeof buf, &b64Len, pba->buf, pba->buf_len);
     if (!err) {

@@ -14,7 +14,25 @@ set(COMPONENTS
 	  bootloader esptool_py partition_table soc log spi_flash micro-ecc main efuse driver esp_rom  
 )
 
+#set environment variables to be used in components CMakeLists.txt files
+set(component_compile_opts "-std=gnu++2a" "-Wno-missing-field-initializers")
+
+
+
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+
+
+add_compile_definitions(MCU_ESP32)
+if(DEFINED ENV{DISTRO})
+add_compile_definitions(DISTRIBUTION)
+endif()
+if(DEFINED ENV{FLAVOR_LAN})
+add_compile_definitions(FLAVOR_LAN)
+endif()
+if(DEFINED ENV{CELLAR})
+add_compile_definitions(CELLAR)
+endif()
+
 
 project(netmcu esptool_py                
 )

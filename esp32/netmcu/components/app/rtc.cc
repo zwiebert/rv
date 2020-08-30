@@ -11,7 +11,10 @@
 #include "config/config.h"
 #include "app/common.h"
 
+volatile time_t run_time_secs;
+
 rtc_time_source_t rtc_last_time_source;
+
 
 void set_system_time(time_t timestamp);
 

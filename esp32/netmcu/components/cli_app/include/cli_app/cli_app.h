@@ -10,7 +10,7 @@
 
 #include "cli_imp.h"
 
-
+extern "C" {
 int process_parmConfig(clpar p[], int len);
 int process_parmHelp(clpar p[], int len);
 int process_parmCmd(clpar p[], int len);
@@ -18,6 +18,7 @@ int process_parmMcu(clpar p[], int len);
 int process_parmKvs(clpar p[], int len);
 int process_parmStatus(clpar p[], int len);
 int process_parmProtoBuf(clpar p[], int len);
+}
 
 bool cli_checkStm32CommandLine(char *line);
 

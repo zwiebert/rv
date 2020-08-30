@@ -1,12 +1,6 @@
-set(srcs esp32/http_server_content.c
-
+set(srcs esp32/http_server_content.cc
 )
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
-
-if(DEFINED ENV{DISTRO})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISTRIBUTION")
-endif()
 
 idf_component_register(
     SRCS ${srcs}
@@ -16,4 +10,5 @@ idf_component_register(
     PRIV_REQUIRES cli_app cli config misc userio net_http_server webapp
                   mbedtls
    )
- 
+   
+ component_compile_options(-${component_compile_opts})

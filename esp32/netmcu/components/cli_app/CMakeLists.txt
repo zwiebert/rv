@@ -1,18 +1,12 @@
-set(srcs cli.c  cli_out.c
-    parm_cmd.c
-    parm_config.c parm_config_switch.c
-    parm_help.c
-    parm_kvs.c
-    parm_mcu.c
-    parm_status.c
+set(srcs cli.cc  cli_out.cc
+    parm_cmd.cc
+    parm_config.cc parm_config_switch.cc
+    parm_help.cc
+    parm_kvs.cc
+    parm_mcu.cc
+    parm_status.cc
     parm_proto_buf.cc
 )
-
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
-
-if(DEFINED ENV{DISTRO})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISTRIBUTION")
-endif()
 
 idf_component_register(
     SRCS ${srcs} 
@@ -23,3 +17,5 @@ idf_component_register(
                   stm32 txtio userio nanopb protobuf
                   mbedtls
 )
+
+component_compile_options(-${component_compile_opts})

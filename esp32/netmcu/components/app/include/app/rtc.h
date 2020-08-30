@@ -4,7 +4,7 @@
 #include "app_config/proj_app_cfg.h"
 #include <time.h>
 
-volatile time_t run_time_secs;
+extern volatile time_t run_time_secs;
 #define run_time(x) (run_time_secs + 0)
 
 void rtc_secTick(void);
@@ -43,7 +43,7 @@ bool ntp_set_system_time(void);
 #define rtc_tick() do { ++run_time_secs; } while (0)
 #else
 extern volatile time_t __system_time;
-#define rtc_tick() do { ++__system_time; ++run_time_secs; } while (0)
+#define rtc_tick() do { ++__system_time; } while (0)
 #endif
 
 void rtc_set_system_time(rtc_time_t stamp, rtc_time_source_t source);

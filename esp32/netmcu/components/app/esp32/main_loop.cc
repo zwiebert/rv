@@ -10,18 +10,12 @@ uint32_t loop_flags_periodic;
 
 typedef void (*lfa_funT)(void);
 
-static const lfa_funT lfa_table[lf_Len] = {
+static  lfa_funT lfa_table[lf_Len] = {
     lfa_gotIpAddr, lfa_lostIpAddr,
-#if defined USE_AP_FALLBACK || defined USE_WLAN_AP
     lfa_createWifiAp,
-#endif
     lfa_syncStm32Time,
-#ifdef USE_WDG
     ping_loop, watchDog_loop,
-#endif
-#ifdef USE_TCPS
-    tcps_loop,
-#endif
+    tcpCli_loop,
     cli_loop,
     lfa_mcuRestart,
 };

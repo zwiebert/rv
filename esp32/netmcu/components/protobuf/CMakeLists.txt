@@ -1,5 +1,5 @@
 set(srcs
-  "../protobuf/mcu_com.pb.c"
+  "mcu_com.cc"
   zone_data.cc
 )
 
@@ -16,6 +16,8 @@ idf_component_register(
     INCLUDE_DIRS "./include" "./include/protobuf"
     REQUIRES nanopb
    )
+ 
+ component_compile_options(-${component_compile_opts})
  
  add_custom_command(
      OUTPUT ${COMPONENT_DIR}/_force.h   

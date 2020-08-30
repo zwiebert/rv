@@ -64,7 +64,7 @@ void stm32_checkForInput() {
   if ((length = stm32_read(&c, 1)) <= 0)
     return;
 
-  for (int i = 1; (ptr = realloc(ptr, block_size * i)); ++i) {
+  for (int i = 1; (ptr = static_cast<char*>(realloc(ptr, block_size * i))); ++i) {
     buf = ptr;
 
     if (i == 1)
@@ -87,16 +87,15 @@ void stm32_checkForInput() {
   free(buf);
 }
 
-void appEsp32_main(void) {
+extern "C" void appEsp32_main(void) {
 
   mcu_init();
 
   tmr_loopPeriodic_start();
   while (1) {
     loop();
-#ifndef USE_EG
+if constexpr (!use_EG)
     vTaskDelay(pdMS_TO_TICKS(LOOP_INTERVAL_MS));
-#endif
   }
 }
 
@@ -108,11 +107,4 @@ void  mcu_delayedRestart(unsigned delay_ms) {
   }
 }
 
-void mcu_restart(void) {
-  printf("mcu_restart()\n");
-  ets_delay_us(10000);
-  esp_restart();
-  for (;;) {
-  };
-}
 

@@ -61,16 +61,10 @@ extern EventGroupHandle_t loop_event_group;
 
 enum loop_flagbits {
   lf_gotIpAddr, lf_lostIpAddr,
-#if defined USE_AP_FALLBACK || defined USE_WLAN_AP
   lf_createWifiAp,
-#endif
   lf_syncStm32Time,
-#ifdef USE_WDG
   lf_pingLoop, lf_loopWatchDog,
-#endif
-#ifdef USE_TCPS
   lf_loopTcpServer,
-#endif
   lf_loopCli,
   lf_mcuRestart,
   //-------------
@@ -96,7 +90,7 @@ void loop_eventBits_setup();
 u32 loop_eventBits_wait();
 
 void stm32_checkForInput();
-void main_setup_ip_dependent();
+extern "C" void main_setup_ip_dependent();
 void mcu_init();
 
 

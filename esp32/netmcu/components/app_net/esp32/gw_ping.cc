@@ -26,7 +26,7 @@
 
 #define D(x)
 
-int ping_init(void);
+extern "C" int ping_init(void);
 
 u32 ping_count = 4;  //how many pings per report
 u32 ping_timeout = 1000; //mS till we consider it timed out
@@ -53,14 +53,14 @@ extern esp_ip4_addr_t ip4_address, ip4_gateway_address, ip4_netmask;
 static void ping_send() {
   char buf[16];
 
-  ip4addr_ntoa_r(&ip4_gateway_address, buf, sizeof buf);
+  ip4addr_ntoa_r(reinterpret_cast<const ip4_addr_t*>(&ip4_gateway_address), buf, sizeof buf);
   D(printf("ping to address: %s\n", buf));
 
   esp_ping_set_target(PING_TARGET_IP_ADDRESS_COUNT, &ping_count, sizeof(u32));
   esp_ping_set_target(PING_TARGET_RCV_TIMEO, &ping_timeout, sizeof(u32));
   esp_ping_set_target(PING_TARGET_DELAY_TIME, &ping_delay, sizeof(u32));
   esp_ping_set_target(PING_TARGET_IP_ADDRESS, &ip4_gateway_address.addr, sizeof(u32));
-  esp_ping_set_target(PING_TARGET_RES_FN, &pingResults, sizeof(pingResults));
+  esp_ping_set_target(PING_TARGET_RES_FN, reinterpret_cast<void *>(&pingResults), sizeof(&pingResults));
   waiting_results = 1;
   ping_init();
 }

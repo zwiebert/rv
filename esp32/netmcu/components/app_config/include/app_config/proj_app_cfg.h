@@ -1,38 +1,20 @@
-// User configuration
-#ifndef PROJ_APP_CONFIG_H_
-#define PROJ_APP_CONFIG_H_
+#pragma once
 
 #define APP_VERSION "0.5.0"
 
-#define USE_HTTP
-#define USE_LAN
-#define USE_WLAN
-#define USE_WLAN_AP
-#define USE_NTP
-#define USE_JSON
-#define USE_MQTT
-#define USE_POSIX_TIME
-#define POSIX_TIME
-#define USE_SERIAL
+#include "proj_kconfig.h"
+
 #define CONFIG_DICT
-#define USE_WDG
-#define USE_FS
-#define USE_HTTP_CLIENT
-#define USE_OTA
-#define USE_STM32OTA
-#define USE_TCPS_TASK
-#define USE_EG
+#define POSIX_TIME USE_POSIX_TIME
 
-#define USE_LPH
-
-#define USE_WS
+#ifdef __cplusplus
+//#include "proj_app_cfg.hh"
+extern "C"
+#endif
 void ws_send_json(const char *json);
 #define ws_print_json ws_send_json
 
-#define USE_CLI_MUTEX
-#define USE_NETWORK
 
-#define USE_STM32COM
 
 
 #define STM32_RESET_PIN  (GPIO_NUM_33)
@@ -41,8 +23,9 @@ void ws_send_json(const char *json);
 #define STM32_UART_TX_PIN  (GPIO_NUM_4)
 #define STM32_UART_RX_PIN  (GPIO_NUM_36)
 
-
+#ifndef __cplusplus
 #include <stdbool.h>
+#endif
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
@@ -57,7 +40,7 @@ void ws_send_json(const char *json);
 #define CONFIG_LOG_DEFAULT_LEVEL 3
 #endif
 
-#define USE_AP_FALLBACK
+
 #define CHECK_NETWORK_INTERVAL 15
 #define PING_INTERVAL 10
 #define LOOP_PERIODIC_INTERVAL_MS 100
@@ -65,4 +48,3 @@ void ws_send_json(const char *json);
 
 enum board { board_ESP32_WLAN, board_OLIMEX_POE, board_OLIMEX_GATEWAY, };
 
-#endif /* PROJ_APP_CONFIG_H_ */
