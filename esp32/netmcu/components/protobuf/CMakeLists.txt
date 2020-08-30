@@ -17,6 +17,8 @@ idf_component_register(
     REQUIRES nanopb
    )
  
+ component_compile_options(-${component_compile_opts})
+ 
  add_custom_command(
      OUTPUT ${COMPONENT_DIR}/_force.h   
      COMMAND make -B all -C ../../../../../mcu_com

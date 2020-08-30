@@ -22,10 +22,12 @@
 #define USE_STM32OTA true
 #define USE_TCPS_TASK true
 #define USE_EG true
-
 #define USE_LPH true
-
-#define USE_WS
+#define USE_WS true
+#define USE_CLI_MUTEX true
+#define USE_NETWORK true
+#define USE_STM32COM true
+#define USE_AP_FALLBACK true
 
 #ifdef __cplusplus
 #include "proj_app_cfg.hh"
@@ -34,10 +36,7 @@ extern "C"
 void ws_send_json(const char *json);
 #define ws_print_json ws_send_json
 
-#define USE_CLI_MUTEX true
-#define USE_NETWORK true
 
-#define USE_STM32COM true
 
 
 #define STM32_RESET_PIN  (GPIO_NUM_33)
@@ -63,7 +62,7 @@ void ws_send_json(const char *json);
 #define CONFIG_LOG_DEFAULT_LEVEL 3
 #endif
 
-#define USE_AP_FALLBACK true
+
 #define CHECK_NETWORK_INTERVAL 15
 #define PING_INTERVAL 10
 #define LOOP_PERIODIC_INTERVAL_MS 100
