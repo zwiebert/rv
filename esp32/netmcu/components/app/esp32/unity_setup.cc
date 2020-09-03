@@ -9,7 +9,7 @@
 #include "storage/storage.h"
 #include "txtio/inout.h"
 #include "config/config.h"
-#include "cli/mutex.h"
+#include "cli/mutex.hh"
 
 int unit_testing;
 
@@ -24,7 +24,6 @@ void unity_suiteSetUp() {
 #else
   //config_setup();
 
-  mutex_setup();
   kvs_setup();
   config_setup_txtio();
   stor_setup();

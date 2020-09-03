@@ -105,9 +105,6 @@ void mcu_init() {
     }
   }
 
-  if constexpr (use_CLI_MUTEX)
-    mutex_setup();
-
   if constexpr (use_AP_FALLBACK) {
     if (C.network != nwWlanAp)
       tmr_checkNetwork_start();

@@ -9,7 +9,7 @@
 #include <string.h>
 #include "cli_imp.h"
 #include "cli_app.h"
-#include "cli/mutex.h"
+#include "cli/mutex.hh"
 #include "cli/cli.h"
 #include "userio/status_json.h"
 #include "stm32/stm32.h"
@@ -46,9 +46,8 @@ bool cli_checkStm32CommandLine(char *line) {
     return false;
   }
   *terminator = '\0';
-  if (mutex_cliTake()) {
+  if (auto lock = ThreadLock(cli_mutex)) {
     cli_process_cmdline(line, SO_TGT_ANY); //XXX: which target?
-    mutex_cliGive();
   }
   return true;
 }

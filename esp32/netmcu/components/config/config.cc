@@ -26,7 +26,7 @@ config C = {
 
 #ifdef USE_NETWORK
 enum nwConnection config_read_network_connection() {
-  return static_cast<enum nwConnection>(config_read_item_i8(CI(CB_NETWORK_CONNECTION), (i8)MY_NETWORK_CONNECTION));
+  return static_cast<enum nwConnection>(config_read_item_i8(CI(CB_NETWORK_CONNECTION), MY_NETWORK_CONNECTION));
 }
 #endif
 

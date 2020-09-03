@@ -4,7 +4,7 @@
 #include "stm32/stm32.h"
 #include "app/common.h"
 #include "cli/cli.h"
-#include "cli/mutex.h"
+#include "cli/mutex.hh"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_system.h"
@@ -81,7 +81,8 @@ static void do_work() {
   if (!json)
     json = strstr(line, "{\"to\":\"cli\",");
 
-  if (json && mutex_cliTake()) {
+  if (json) {
+    auto lock = ThreadLock(cli_mutex);
     DD(printf("stm32com:request: <%s>\n", json));
     cli_process_json(json, static_cast<so_target_bits>(SO_TGT_ANY | SO_TGT_STM32));
 
@@ -94,7 +95,6 @@ static void do_work() {
         sj_free_buffer();
       }
     }
-    mutex_cliGive();
   }
 
   char *reply = strstr(line, "{\"data\":");

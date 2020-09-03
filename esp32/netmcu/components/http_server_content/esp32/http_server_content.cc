@@ -10,7 +10,7 @@
 
 #include "userio/status_json.h"
 #include "config/config.h"
-#include "cli/mutex.h"
+#include "cli/mutex.hh"
 #include "cli_app/cli_imp.h"
 #include "misc/int_types.h"
 
@@ -115,7 +115,7 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
     return ESP_FAIL;
   }
 
-  if (mutex_cliTake()) {
+  if (auto lock = ThreadLock(cli_mutex)) {
     hts_query(HQT_NONE, buf, ret); // parse and process received command
 
     httpd_resp_set_type(req, "application/json");
@@ -125,7 +125,6 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
     } else {
       httpd_resp_sendstr(req, "{}");
     }
-    mutex_cliGive();
   }
 
   return ESP_OK;
@@ -288,7 +287,7 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
   }
 
 
-  if (mutex_cliTake()) {
+  if (auto lock = ThreadLock(cli_mutex)) {
     buf[ws_pkt.len] = '\0';
     hts_query0(HQT_NONE, (char*)buf); // parse and process received command
 
@@ -302,7 +301,6 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
     }
 
     sj_free_buffer();
-    mutex_cliGive();
   }
   return ret;
 }
