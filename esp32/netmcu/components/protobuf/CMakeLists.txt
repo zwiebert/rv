@@ -20,8 +20,8 @@ idf_component_register(
  component_compile_options(-${component_compile_opts})
  
  add_custom_command(
-     OUTPUT ${COMPONENT_DIR}/_force.h   
-     COMMAND make -B all -C ../../../../../mcu_com
+     OUTPUT ${COMPONENT_DIR}/_force.h ${COMPONENT_DIR}/mcu_com.cc
+     COMMAND make -B all -C ../../../../../mcu_com && ln -sf ../../../../mcu_com/build/mcu_com.pb.c mcu_com.cc
      VERBATIM)
   
 add_custom_target(pbuf_files ALL  DEPENDS ${COMPONENT_DIR}/_force.h )
