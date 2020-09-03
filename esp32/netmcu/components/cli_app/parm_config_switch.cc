@@ -2,6 +2,7 @@
 #include "config_kvs/config.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
+#include "cli_app/cli_config.h"
 #include "net/mqtt/mqtt.h"
 #include "net/http/server/http_server.h"
 #include "app/kvstore.h"
@@ -17,9 +18,7 @@
 
 #define has_changed(cb) SET_BIT(*changed_mask, cb)
 
-#ifdef USE_LAN
-const char *cfg_args_lanPhy[lanPhyLEN] = { "none", "lan8270", "rtl8201", "ip101", };
-#endif
+
 
 bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask) {
   bool result = true;

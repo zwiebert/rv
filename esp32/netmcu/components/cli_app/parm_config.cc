@@ -4,6 +4,7 @@
 #include "app/rtc.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
+#include "cli_app/cli_config.h"
 #include "net/mqtt/app/mqtt.h"
 #include "net/http/server/http_server.h"
 #include "app/kvstore.h"
@@ -12,12 +13,6 @@
 #include "app/loop.h"
 #define ENABLE_RESTART 1 // allow software reset
 
-const char *cfg_keys[SO_CFG_size] = { "rtc", "network", "wlan-ssid", "wlan-password", "lan-phy", "lan-pwr-gpio", "ntp-server", "tz", "verbose", "mqtt-enable",
-    "mqtt-url", "mqtt-user", "mqtt-password", "mqtt-client-id", "http-enable", "http-user", "http-password", "stm32-bootgpio-inv" };
-
-#ifdef USE_NETWORK
-const char *cfg_args_network[nwLEN] = { "none", "wlan", "ap", "lan" };
-#endif
 
 #ifdef CONFIG_GPIO_SIZE
 //PIN_DEFAULT=0, PIN_INPUT, PIN_INPUT_PULLUP, PIN_OUTPUT, PIN_ERROR, PIN_READ, PIN_CLEAR, PIN_SET, PIN_TOGGLE
