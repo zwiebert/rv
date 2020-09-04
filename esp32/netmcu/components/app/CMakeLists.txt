@@ -5,7 +5,7 @@ idf_component_register(
     INCLUDE_DIRS "./include" ../.. 
     PRIV_INCLUDE_DIRS . "./include/app" ../../main
     REQUIRES app_config debug misc firmware_update
-    PRIV_REQUIRES app_net app_config cli_app config debug key_value_store misc stm32 storage txtio net_mqtt_app stm32_com
+    PRIV_REQUIRES app_net app_config cli_app config debug key_value_store misc stm32 storage txtio net_mqtt_app stm32_com net_http_server http_server_content
                   nvs_flash
     EMBED_TXTFILES ./esp32/ca_cert.pem
 )
