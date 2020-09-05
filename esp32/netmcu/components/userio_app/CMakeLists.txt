@@ -8,4 +8,4 @@ idf_component_register(
     PRIV_REQUIRES  app app_config cli_app config debug misc net net_mqtt_app stm32 txtio userio
     )
     
-component_compile_options(-${component_compile_opts})
+component_compile_options(${component_compile_opts})

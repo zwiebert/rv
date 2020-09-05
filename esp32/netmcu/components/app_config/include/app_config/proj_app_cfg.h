@@ -9,10 +9,8 @@
 
 #ifdef __cplusplus
 //#include "proj_app_cfg.hh"
-extern "C"
 #endif
-void ws_send_json(const char *json);
-#define ws_print_json ws_send_json
+
 
 
 

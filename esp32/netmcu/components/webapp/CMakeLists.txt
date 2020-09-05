@@ -11,7 +11,7 @@ idf_component_register(
     INCLUDE_DIRS . "./include"
    )
  
- component_compile_options(-${component_compile_opts})
+ component_compile_options(${component_compile_opts})
  
  add_custom_command(
      OUTPUT "${COMPONENT_DIR}/build/wapp.html.gz.c"

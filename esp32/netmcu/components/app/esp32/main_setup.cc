@@ -6,6 +6,7 @@
 #include "cli/mutex.h"
 #include "net/http_client.h"
 #include "config/config.h"
+#include "net/http/server/content/setup.h"
 
 void mcu_restart() {
   lf_setBit(lf_mcuRestart);
@@ -103,11 +104,16 @@ void mcu_init() {
       if (C.network == nwLan)
         config_setup_ethernet();
     }
-  }
 
-  if constexpr (use_AP_FALLBACK) {
-    if (C.network != nwWlanAp)
-      tmr_checkNetwork_start();
+    if constexpr (use_AP_FALLBACK) {
+      if (C.network != nwWlanAp)
+        tmr_checkNetwork_start();
+    }
+
+    if constexpr (use_HTTP) {
+      hts_setup_content();
+    }
+
   }
   ////Orig
 

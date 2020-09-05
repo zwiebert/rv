@@ -7,4 +7,4 @@ idf_component_register(
     REQUIRES  app_config net_mqtt
     PRIV_REQUIRES app_config cli userio_app userio
  )
- component_compile_options(-${component_compile_opts})
+ component_compile_options(${component_compile_opts})
