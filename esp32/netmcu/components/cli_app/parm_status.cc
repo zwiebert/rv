@@ -20,6 +20,7 @@
 #include "userio/status_json.h"
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
+#include "misc/int_types.h"
 #include <stdio.h>
 
 #include <stm32/stm32.h>

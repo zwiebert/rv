@@ -13,6 +13,7 @@
 #include "userio/status_json.h"
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
+#include "misc/int_types.h"
 #include "misc/ftoa.h"
 #include "misc/itoa.h"
 #include <string.h>

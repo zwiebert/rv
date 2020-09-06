@@ -1,94 +1,94 @@
 menu "RV Project Configuration"
     
-config RV_USE_HTTP
+config APP_USE_HTTP
   bool "Activate HTTP"
   default y
 
-config RV_USE_LAN
+config APP_USE_LAN
   bool "Activate LAN"
   default y
 
-config RV_USE_WLAN
+config APP_USE_WLAN
   bool "Activate WLAN"
   default y
 
-config RV_USE_WLAN_AP
+config APP_USE_WLAN_AP
   bool "Activate WLAN_AP"
   default y
 
-config RV_USE_NTP
+config APP_USE_NTP
   bool "Activate NTP"
   default y
  
-config RV_USE_JSON
+config APP_USE_JSON
   bool "Activate JSON"
   default y
 
-config RV_USE_MQTT
+config APP_USE_MQTT
   bool "Activate MQTT"
   default y
 
-config RV_USE_POSIX_TIME
+config APP_USE_POSIX_TIME
   bool "Activate POSIX_TIME"
   default y
 
-config RV_USE_SERIAL
+config APP_USE_SERIAL
   bool "Activate SERIAL"
   default y
 
-config RV_USE_WDG
+config APP_USE_WDG
   bool "Activate WDG"
   default y
 
-config RV_USE_FS
+config APP_USE_FS
   bool "Activate FS"
   default y
 
-config RV_USE_HTTP_CLIENT
+config APP_USE_HTTP_CLIENT
   bool "Activate HTTP_CLIENT"
   default y
 
-config RV_USE_OTA
+config APP_USE_OTA
   bool "Activate OTA"
   default y
 
-config RV_USE_STM32OTA
+config APP_USE_STM32OTA
   bool "Activate STM32OTA"
   default y
 
-config RV_USE_TCPS
+config APP_USE_TCPS
   bool "Activate TCPS"
   default n
   
-config RV_USE_TCPS_TASK
+config APP_USE_TCPS_TASK
   bool "Activate TCPS_TASK"
   default y
 
-config RV_USE_EG
+config APP_USE_EG
   bool "Activate EG"
   default y
 
-config RV_USE_LPH
+config APP_USE_LPH
   bool "Activate LPH"
   default y
 
-config RV_USE_WS
+config APP_USE_WS
   bool "Activate WS"
   default y
 
-config RV_USE_CLI_MUTEX
+config APP_USE_CLI_MUTEX
   bool "Activate CLI_MUTEX"
   default y
 
-config RV_USE_NETWORK
+config APP_USE_NETWORK
   bool "Activate NETWORK"
   default y
 
-config RV_USE_STM32COM
+config APP_USE_STM32COM
   bool "Activate STM32COM"
   default y
 
-config RV_USE_AP_FALLBACK
+config APP_USE_AP_FALLBACK
   bool "Activate AP_FALLBACK"
   default y
 

@@ -2,6 +2,7 @@
 
 #define APP_VERSION "0.5.0"
 
+#include <sdkconfig.h>
 #include "proj_kconfig.h"
 
 #define CONFIG_DICT
@@ -27,9 +28,9 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include "esp32/rom/ets_sys.h"
-#include "misc/int_types.h"
-#include "txtio/inout.h"
+//#include "esp32/rom/ets_sys.h"
+//#include "misc/int_types.h"
+//#include "txtio/inout.h"
 
 #define MCU_TYPE "esp32"
 #define ISO_BUILD_TIME (__DATE__ "T" __TIME__)

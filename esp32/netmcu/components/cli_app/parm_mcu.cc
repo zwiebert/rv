@@ -14,6 +14,7 @@
 #include "stm32/stm32_ota.h"
 #include "app/ota.h"
 #include "net/http_client.h"
+#include "debug/dbg.h"
 
 
 #define KEY_BOOT_COUNT "boot-count"
@@ -45,7 +46,7 @@ process_parmMcu(clpar p[], int len) {
     } else if (strcmp(key, KEY_BOOT_COUNT) == 0 && *val == '?') {
       so_output_message(SO_MCU_BOOT_COUNT, 0);
     } else if (strcmp(key, "rbl") == 0) {
-       ets_printf("run bootloader\n");
+       db_printf("run bootloader\n");
        stm32_runBootLoader();
     } else if (strcmp(key, "blstart") == 0) {
       stm32Bl_doStart();
@@ -54,14 +55,14 @@ process_parmMcu(clpar p[], int len) {
     } else if (strcmp(key, "blget") == 0) {
       stm32Bl_get();
     } else if (strcmp(key, "rfw") == 0) {
-       ets_printf("run firmware\n");
+       db_printf("run firmware\n");
        stm32_runFirmware();
     } else if (strcmp(key, "dlrvbin") == 0) {
-      ets_printf("download rv.bin\n");
+      db_printf("download rv.bin\n");
       stm32Ota_firmwareDownload(val, STM32_FW_FILE_NAME);
       // mcu dlrvbin=http://192.168.1.70:8000/rv.bin;
     } else if (strcmp(key, "rvota") == 0) {
-      ets_printf("download rv.bin\n");
+      db_printf("download rv.bin\n");
       if (stm32Ota_firmwareDownload(val, STM32_FW_FILE_NAME)) {
         if (stm32Ota_firmwareUpdate(STM32_FW_FILE_NAME)) {
         } else {
@@ -88,9 +89,9 @@ process_parmMcu(clpar p[], int len) {
 #endif
       } else {
 #ifdef DISTRIBUTION
-        ets_printf("forbidden: ota update from given URL\n");
+        db_printf("forbidden: ota update from given URL\n");
 #else
-        ets_printf("doing ota update from given URL\n");
+        db_printf("doing ota update from given URL\n");
         stm32ota_doUpdate(val);
 #endif
       }
@@ -107,15 +108,15 @@ process_parmMcu(clpar p[], int len) {
         app_doFirmwareUpdate(OTA_FWURL_BETA);
       } else {
 #ifdef DISTRIBUTION
-        ets_printf("forbidden: ota update from given URL\n");
+        db_printf("forbidden: ota update from given URL\n");
 #else
-        ets_printf("doing ota update from given URL\n");
+        db_printf("doing ota update from given URL\n");
         app_doFirmwareUpdate(val);
 #endif
       }
 #endif
     } else if (strcmp(key, "flrvbin") == 0) {
-       ets_printf("flash rv.bin\n");
+       db_printf("flash rv.bin\n");
        stm32Bl_writeMemoryFromBinFile("/spiffs/rv.bin", 0x8000000);
     } else if (strcmp(key, "flrv") == 0) {
       stm32Ota_firmwareUpdate(STM32_FW_FILE_NAME);

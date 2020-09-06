@@ -9,6 +9,7 @@
 #define MAIN_KVSTORE_H_
 
 #include <stdbool.h>
+#include "misc/int_types.h"
 
 bool kvs_store_string(const char *key, const char *val);
 bool kvs_get_string(const char *key, char *buf, size_t buf_size);
