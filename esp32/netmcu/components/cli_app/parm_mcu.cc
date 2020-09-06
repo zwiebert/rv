@@ -8,6 +8,7 @@
 #include "app/rtc.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
+#include "cli_app/cli_app.h"
 #include "stm32/stm32.h"
 #include "stm32/stm32_bl.h"
 #include "stm32/stm32_ota.h"
@@ -100,16 +101,16 @@ process_parmMcu(clpar p[], int len) {
         so_output_message(SO_MCU_OTA_STATE, 0);
       } else if (strcmp(val, "github-master") == 0) {
         so_output_message(SO_MCU_OTA, OTA_FWURL_MASTER);
-        ota_doUpdate(OTA_FWURL_MASTER);
+        app_doFirmwareUpdate(OTA_FWURL_MASTER);
       } else if (strcmp(val, "github-beta") == 0) {
         so_output_message(SO_MCU_OTA, OTA_FWURL_BETA);
-        ota_doUpdate(OTA_FWURL_BETA);
+        app_doFirmwareUpdate(OTA_FWURL_BETA);
       } else {
 #ifdef DISTRIBUTION
         ets_printf("forbidden: ota update from given URL\n");
 #else
         ets_printf("doing ota update from given URL\n");
-        ota_doUpdate(val);
+        app_doFirmwareUpdate(val);
 #endif
       }
 #endif

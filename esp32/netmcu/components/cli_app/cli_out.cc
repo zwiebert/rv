@@ -1,10 +1,12 @@
 #include "app_config/proj_app_cfg.h"
+#include <cli/cli.h>
 #include <string.h>
 #include "config/config.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "cli_app.h"
 #include "misc/int_types.h"
+
 
 const char *Obj_tag="";
 #define SET_OBJ_TAG(tag) Obj_tag=(tag)

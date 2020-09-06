@@ -13,7 +13,7 @@
 #include "stm32/stm32_ota.h"
 #include "app/rtc.h"
 #include "cli_app/cli_config.h"
-#include "cli_app/cli_imp.h" // FIXME?
+#include "cli_app/cli_app.h" // FIXME?
 #include "config/config.h"
 #include "app/kvstore.h"
 #include "net/ipnet.h"

@@ -10,9 +10,10 @@
 #include "config/config.h"
 #include "app/rtc.h"
 #include "cli_imp.h"
+#include "cli_app/cli_app.h"
 #include "net/mqtt/app/mqtt.h"
 #include "app/kvstore.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include <ctype.h>
 #include <string.h>
 

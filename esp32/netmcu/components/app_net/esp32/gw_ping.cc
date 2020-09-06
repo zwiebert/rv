@@ -20,7 +20,7 @@
 #include "esp_netif_ip_addr.h"
 
 #include "net/ipnet.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 
 #include "misc/int_types.h"
 

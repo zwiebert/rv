@@ -11,7 +11,7 @@
 #include "userio/status_json.h"
 #include "config/config.h"
 #include "cli/mutex.hh"
-#include "cli_app/cli_imp.h"
+#include "cli_app/cli_app.h"
 #include "misc/int_types.h"
 
 #include "webapp/content.h"

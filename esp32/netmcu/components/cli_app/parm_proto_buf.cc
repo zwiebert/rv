@@ -4,9 +4,10 @@
 #include "app_config/proj_app_cfg.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
+#include "cli_app/cli_app.h"
 #include "userio_app/status_output.h"
 #include "userio/status_json.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 #include "misc/int_macros.h"
 #include <stm32/stm32.h>
 #include "misc/base64.h"

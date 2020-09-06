@@ -10,7 +10,7 @@
 #include <string.h>
 #include "driver/gpio.h"
 #include "app/net/gw_ping.h"
-#include "debug/debug.h"
+#include "debug/dbg.h"
 
 #define D(x)
 

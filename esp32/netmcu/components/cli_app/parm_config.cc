@@ -5,6 +5,7 @@
 #include "cli_imp.h"
 #include "cli/cli.h"
 #include "cli_app/cli_config.h"
+#include "cli_app/cli_app.h"
 #include "net/mqtt/app/mqtt.h"
 #include "net/http/server/http_server.h"
 #include "app/kvstore.h"
