@@ -8,8 +8,7 @@
 #include "app_config/proj_app_cfg.h"
 #ifdef USE_MQTT
 
-#include "mqtt.h"
-#include "mqtt_imp.h"
+#include "net/mqtt/app/mqtt.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -79,7 +78,7 @@ void io_mqtt_publish_stm32_event(const char *event) {
 
 
 // implementation interface
-void io_mqtt_connected () {
+static void io_mqtt_connected () {
   std::array<char,80> buf;
 
   io_mqtt_subscribe(strcat(strcpy(buf.data(), topic_root), TOPIC_CLI), 0);
@@ -87,7 +86,7 @@ void io_mqtt_connected () {
   io_mqtt_publish(strcat(strcpy(buf.data(), topic_root), TOPIC_CMD), "connected"); // for autocreate (ok???)
 }
 
-void io_mqtt_received(const char *topic, int topic_len, const char *data, int data_len) {
+static void io_mqtt_received(const char *topic, int topic_len, const char *data, int data_len) {
 
   if (!topic_startsWith(topic, topic_len, topic_root)) {
     return; // all topics start with this
@@ -123,26 +122,11 @@ void io_mqtt_received(const char *topic, int topic_len, const char *data, int da
 }
 
 
-void io_mqttApp_enable(bool enable) {
-  if (enable) {
-
-  } else {
-
-  }
-}
-
-void io_mqttApp_disconnected() {
-}
-void io_mqttApp_subscribed(const char *topic, int topic_len) {
-}
-void io_mqttApp_unsubscribed(const char *topic, int topic_len) {
-}
-void io_mqttApp_published(int msg_id) {
-}
-
 void io_mqttApp_setup(struct cfg_mqtt_app *cfg) {
   topic_root_len = strlen(cfg->topic_root);
   strcpy(topic_root, cfg->topic_root);
+  io_mqtt_received_cb = io_mqtt_received;
+  io_mqtt_connected_cb = io_mqtt_connected;
 }
 
 

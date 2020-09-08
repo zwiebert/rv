@@ -12,8 +12,7 @@ endif()
 
 idf_component_register(
     SRCS ${srcs}
-    INCLUDE_DIRS "./include" ../.. 
-    PRIV_INCLUDE_DIRS "./include/app/net" ../../main
+    INCLUDE_DIRS "./include"
     #REQUIRES  
     PRIV_REQUIRES debug misc net
                   lwip

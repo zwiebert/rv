@@ -50,12 +50,10 @@ bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask) 
 #ifdef USE_LAN
   case SO_CFG_LAN_PHY: {
     NODEFAULT();
-    bool success = false;
     u8 i;
     for (i = 0; i < lanPhyLEN; ++i) {
       if (strcasecmp(val, cfg_args_lanPhy[i]) == 0) {
         set_optN(i8, i, CB_LAN_PHY);
-        success = true;
         break;
       }
     }

@@ -4,7 +4,7 @@
 #include "config/config.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
-#include "cli_app.h"
+#include "cli_app/cli_app.h"
 #include "misc/int_types.h"
 
 

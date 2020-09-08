@@ -8,7 +8,7 @@
 #include "app_config/proj_app_cfg.h"
 #include <string.h>
 #include "cli_imp.h"
-#include "cli_app.h"
+#include "cli_app/cli_app.h"
 #include "cli/mutex.hh"
 #include "cli/cli.h"
 #include "userio/status_json.h"

@@ -87,6 +87,9 @@ void mcu_init() {
     if (use_AP_FALLBACK || C.network != nwNone)
       esp_netif_init();
 
+    //XXX reset tcp/ip adapter here instead of reboot?
+    ping_restart_cb = mcu_restart;
+
     ipnet_cbRegister_gotIpAddr(lfa_gotIpAddr_cb);
     ipnet_cbRegister_lostIpAddr(lfa_lostIpAddr_cb);
 

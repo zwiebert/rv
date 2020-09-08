@@ -40,6 +40,15 @@ void lfa_lostIpAddr(void) {
   ipnet_disconnected();
 }
 
+
+void  mcu_delayedRestart(unsigned delay_ms) {
+  printf("mcu_restart()\n");
+  vTaskDelay(pdMS_TO_TICKS(delay_ms));
+  esp_restart();
+  for (;;) {
+  }
+}
+
 void lfa_mcuRestart(void) {
   mcu_delayedRestart(1500);
 }
@@ -87,7 +96,7 @@ void stm32_checkForInput() {
   free(buf);
 }
 
-extern "C" void appEsp32_main(void) {
+extern "C" void app_main(void) {
 
   mcu_init();
 
@@ -99,12 +108,5 @@ if constexpr (!use_EG)
   }
 }
 
-void  mcu_delayedRestart(unsigned delay_ms) {
-  printf("mcu_restart()\n");
-  vTaskDelay(pdMS_TO_TICKS(delay_ms));
-  esp_restart();
-  for (;;) {
-  }
-}
 
 

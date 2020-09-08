@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "gw_ping.h"
+#include "app/net/gw_ping.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
@@ -25,6 +25,8 @@
 #include "misc/int_types.h"
 
 #define D(x)
+
+void (*ping_restart_cb)();
 
 extern "C" int ping_init(void);
 
@@ -72,9 +74,9 @@ void ping_loop() {
     D(db_printf("gw_ping: ping echo received\n"));
   } else if (++ping_error_count > PING_ERROR_LIMIT) {
     ping_error_count = 0;
-   //XXX reset tcp/ip adapter here instead of reboot
-    extern void  mcu_restart(void);
-    mcu_restart();
+
+    if (ping_restart_cb)
+      ping_restart_cb();
   }
   ping_send();
 }
