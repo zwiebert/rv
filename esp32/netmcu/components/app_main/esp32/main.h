@@ -18,7 +18,7 @@
 #include "config/config.h"
 #include "driver/gpio.h"
 #include "key_value_store/kvs_wrapper.h"
-#include "kvstore.h"
+#include "app/kvstore.h"
 #include "misc/int_macros.h"
 #include "misc/int_types.h"
 #include "net/ethernet.h"
@@ -32,7 +32,7 @@
 #include "stm32/stm32.h"
 #include "storage/storage.h"
 #include "txtio/inout.h"
-#include "watch_dog.h"
+#include "app/watch_dog.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/timers.h"
