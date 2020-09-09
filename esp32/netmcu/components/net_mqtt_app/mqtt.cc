@@ -95,7 +95,7 @@ static void io_mqtt_received(const char *topic, int topic_len, const char *data,
   topic += topic_root_len;
   topic_len -= topic_root_len;
 
-  if (auto lock = ThreadLock(cli_mutex)) {
+  { LockGuard lock(cli_mutex); 
     char line[40 + data_len];
     if (topic_endsWith(topic, topic_len, TOPIC_DUR_END)) {
       const char *addr = topic;

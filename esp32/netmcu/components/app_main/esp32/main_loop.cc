@@ -12,13 +12,14 @@ uint32_t loop_flags_periodic;
 typedef void (*lfa_funT)(void);
 
 static  lfa_funT lfa_table[lf_Len] = {
-    lfa_gotIpAddr, lfa_lostIpAddr,
+    ipnet_connected,
+    ipnet_disconnected,
     lfa_createWifiAp,
     lfa_syncStm32Time,
     ping_loop, watchDog_loop,
     tcpCli_loop,
     cli_loop,
-    lfa_mcuRestart,
+    [] { mcu_delayedRestart(1500); }
 };
 
 #ifndef USE_EG
@@ -55,45 +56,37 @@ void loop_eventBits_check() {
 }
 #endif
 
-static void tmr_checkNetwork_cb(TimerHandle_t xTimer) {
-  if (!ipnet_isConnected()) {
-    lf_setBit(lf_createWifiAp);
-  }
-}
-
 void tmr_checkNetwork_start() {
-  TimerHandle_t tmr;
-  int interval = pdMS_TO_TICKS(1000 * CHECK_NETWORK_INTERVAL);
-  tmr = xTimerCreate("CheckNetworkTimer", interval, pdFALSE, (void*) lf_createWifiAp, tmr_checkNetwork_cb);
-  if (xTimerStart(tmr, 10 ) != pdPASS) {
+  const int interval = pdMS_TO_TICKS(1000 * CHECK_NETWORK_INTERVAL);
+  TimerHandle_t tmr = xTimerCreate("CheckNetworkTimer", interval, pdFALSE, (void*) lf_createWifiAp, [](TimerHandle_t xTimer) {
+    if (!ipnet_isConnected()) {
+      lf_setBit(lf_createWifiAp);
+    }
+  });
+  if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {
     printf("CheckNetworkTimer start error");
   }
 }
 
-static void tmr_pingLoop_cb(TimerHandle_t xTimer) {
-  if (!wifi_ap_active) {
-    lf_setBit(lf_pingLoop);
-  }
-}
-
 void tmr_pingLoop_start() {
-  TimerHandle_t tmr;
-  int interval = pdMS_TO_TICKS(1000 * PING_INTERVAL);
-  tmr = xTimerCreate("PingLoopTimer", interval, pdTRUE, (void*) lf_pingLoop, tmr_pingLoop_cb);
-  if (xTimerStart(tmr, 10 ) != pdPASS) {
+  const int interval = pdMS_TO_TICKS(1000 * PING_INTERVAL);
+  TimerHandle_t tmr = xTimerCreate("PingLoopTimer", interval, pdTRUE, nullptr, [] (TimerHandle_t xTimer) {
+    if (!wifi_ap_active) {
+      lf_setBit(lf_pingLoop);
+    }
+  });
+  if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {
     printf("PingLoopTimer start error");
   }
 }
 
-static void tmr_loopPeriodic_cb(TimerHandle_t xTimer) {
-  lf_setBits(loop_flags_periodic);
-}
 
 void tmr_loopPeriodic_start() {
-  TimerHandle_t tmr;
-  int interval = pdMS_TO_TICKS(LOOP_PERIODIC_INTERVAL_MS);
-  tmr = xTimerCreate("PingLoopTimer", interval, pdTRUE, (void*) 0, tmr_loopPeriodic_cb);
-  if (xTimerStart(tmr, 10 ) != pdPASS) {
+  const int interval = pdMS_TO_TICKS(LOOP_PERIODIC_INTERVAL_MS);
+  TimerHandle_t tmr = xTimerCreate("PingLoopTimer", interval, pdTRUE, nullptr, [](TimerHandle_t xTimer) {
+    lf_setBits(loop_flags_periodic);
+  });
+  if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {
     printf("PingLoopTimer start error");
   }
 }

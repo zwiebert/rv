@@ -12,21 +12,13 @@ void mcu_restart() {
   lf_setBit(lf_mcuRestart);
 }
 
-void ntpApp_sync_time_cb(struct timeval *tv) {
-  ets_printf("ntp synced: %ld\n", time(0));
-  lf_setBit(lf_syncStm32Time);
-}
-
 void ntpApp_setup(void) {
-  sntp_set_time_sync_notification_cb(ntpApp_sync_time_cb);
-  config_setup_ntpClient();
-}
+  sntp_set_time_sync_notification_cb([](struct timeval *tv) {
+    ets_printf("ntp synced: %ld\n", time(0));
+    lf_setBit(lf_syncStm32Time);
+  });
 
-void lfa_gotIpAddr_cb() {
-  lf_setBit(lf_gotIpAddr);
-}
-void lfa_lostIpAddr_cb() {
-  lf_setBit(lf_lostIpAddr);
+  config_setup_ntpClient();
 }
 
 extern "C" void main_setup_ip_dependent() { //XXX called from library
@@ -80,18 +72,20 @@ void mcu_init() {
   if constexpr (use_TCPS)
     lfPer_setBit(lf_loopTcpServer);
 
-  ipnet_cbRegister_gotIpAddr(lfa_gotIpAddr_cb);
-  ipnet_cbRegister_lostIpAddr(lfa_lostIpAddr_cb);
-
   if constexpr (use_NETWORK) {
     if (use_AP_FALLBACK || C.network != nwNone)
       esp_netif_init();
 
     //XXX reset tcp/ip adapter here instead of reboot?
-    ping_restart_cb = mcu_restart;
-
-    ipnet_cbRegister_gotIpAddr(lfa_gotIpAddr_cb);
-    ipnet_cbRegister_lostIpAddr(lfa_lostIpAddr_cb);
+    ping_restart_cb = [] {
+      lf_setBit(lf_mcuRestart);
+    };
+    ipnet_gotIpAddr_cb = [] {
+      lf_setBit(lf_gotIpAddr);
+    };
+    ipnet_lostIpAddr_cb = [] {
+      lf_setBit(lf_lostIpAddr);
+    };
 
     if constexpr (use_WLAN) {
       if (C.network == nwWlanSta)

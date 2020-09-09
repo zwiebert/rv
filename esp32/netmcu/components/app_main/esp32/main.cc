@@ -33,14 +33,6 @@ void lfa_syncStm32Time(void) {
   }
 }
 
-void lfa_gotIpAddr(void) {
-  ipnet_connected();
-}
-void lfa_lostIpAddr(void) {
-  ipnet_disconnected();
-}
-
-
 void  mcu_delayedRestart(unsigned delay_ms) {
   printf("mcu_restart()\n");
   vTaskDelay(pdMS_TO_TICKS(delay_ms));
@@ -48,11 +40,6 @@ void  mcu_delayedRestart(unsigned delay_ms) {
   for (;;) {
   }
 }
-
-void lfa_mcuRestart(void) {
-  mcu_delayedRestart(1500);
-}
-
 
 static void stm32_processInputLine(char *line) {
   if (watchDog_checkCommandLine(line)) {

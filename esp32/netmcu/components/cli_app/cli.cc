@@ -46,7 +46,7 @@ bool cli_checkStm32CommandLine(char *line) {
     return false;
   }
   *terminator = '\0';
-  if (auto lock = ThreadLock(cli_mutex)) {
+  { LockGuard lock(cli_mutex); 
     cli_process_cmdline(line, SO_TGT_ANY); //XXX: which target?
   }
   return true;

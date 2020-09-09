@@ -82,7 +82,7 @@ static void do_work() {
     json = strstr(line, "{\"to\":\"cli\",");
 
   if (json) {
-    auto lock = ThreadLock(cli_mutex);
+    LockGuard lock(cli_mutex);
     DD(printf("stm32com:request: <%s>\n", json));
     cli_process_json(json, static_cast<so_target_bits>(SO_TGT_ANY | SO_TGT_STM32));
 

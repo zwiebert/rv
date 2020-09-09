@@ -115,7 +115,7 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
     return ESP_FAIL;
   }
 
-  if (auto lock = ThreadLock(cli_mutex)) {
+  { LockGuard lock(cli_mutex); 
     hts_query(HQT_NONE, buf, ret); // parse and process received command
 
     httpd_resp_set_type(req, "application/json");
@@ -287,7 +287,7 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
   }
 
 
-  if (auto lock = ThreadLock(cli_mutex)) {
+  { LockGuard lock(cli_mutex); 
     buf[ws_pkt.len] = '\0';
     hts_query0(HQT_NONE, (char*)buf); // parse and process received command
 

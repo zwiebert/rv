@@ -89,6 +89,8 @@ void tmr_pingLoop_start();
 void loop_eventBits_setup();
 u32 loop_eventBits_wait();
 
+void  mcu_delayedRestart(unsigned delay_ms);
+
 void stm32_checkForInput();
 extern "C" void main_setup_ip_dependent();
 void mcu_init();
