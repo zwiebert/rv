@@ -6,7 +6,7 @@
  */
 
 #include "app_config/proj_app_cfg.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "config/config.h"
 #include "app/rtc.h"
 #include "cli_imp.h"

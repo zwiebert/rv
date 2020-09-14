@@ -8,7 +8,7 @@
 #include "net/http/server/http_server.h"
 #include "net/http/server/esp32/register_uris.h"
 
-#include "userio/status_json.h"
+#include "uout/status_json.h"
 #include "config/config.h"
 #include "cli/mutex.hh"
 #include "cli_app/cli_app.h"

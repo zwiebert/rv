@@ -1,6 +1,6 @@
 #pragma once
 #include "app_config/proj_app_cfg.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 
 //key strings used for parsing and printing config commands by CLI/HTTP/MQTT
 //keys must be in same order as their SO_CFG_xxx counterparts in so_msg_t

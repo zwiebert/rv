@@ -6,7 +6,7 @@
 #include "net/mqtt/mqtt.h"
 #include "net/http/server/http_server.h"
 #include "app/kvstore.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "misc/int_macros.h"
 #include "misc/int_types.h"
 

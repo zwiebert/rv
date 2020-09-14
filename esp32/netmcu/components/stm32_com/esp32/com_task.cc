@@ -19,7 +19,7 @@
 #include "net/tcp_cli_server.h"
 #include "time.h"
 #include "txtio/inout.h"
-#include "userio/status_json.h"
+#include "uout/status_json.h"
 #include <errno.h>
 #include <string.h>
 #include <sys/select.h>
@@ -101,7 +101,7 @@ static void do_work() {
   if (!reply)
     reply = strstr(line, "{\"update\":");
   if (reply) {
-    ws_print_json(reply);
+    uoApp_event_wsJson(reply);
     DD(printf("stm32com:recv:####REPLY####: <%s>\n", reply));
   }
 }

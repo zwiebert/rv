@@ -11,9 +11,9 @@
 #include "cli_app/cli_app.h"
 #include "cli/mutex.hh"
 #include "cli/cli.h"
-#include "userio/status_json.h"
+#include "uout/status_json.h"
 #include "stm32/stm32.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "config/config.h"
 
 bool cli_isJson;

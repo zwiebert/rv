@@ -7,3 +7,6 @@ idf_component_register(
     PRIV_REQUIRES app_config cli userio_app userio
  )
  component_compile_options(${component_compile_opts})
+component_compile_features(${component_compile_features})
+component_compile_features(${component_compile_features})
+component_compile_features(${component_compile_features})

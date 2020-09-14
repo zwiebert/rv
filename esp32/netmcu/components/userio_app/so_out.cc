@@ -10,7 +10,7 @@
 #include "cli_app/cli_app.h" // FIXME?
 #include "cli_app/cli_config.h"
 #include "txtio/inout.h"
-#include "userio/status_json.h"
+#include "uout/status_json.h"
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
 #include "misc/int_types.h"

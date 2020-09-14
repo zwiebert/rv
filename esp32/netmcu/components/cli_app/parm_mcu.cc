@@ -4,7 +4,7 @@
 
 
 #include "txtio/inout.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "app/rtc.h"
 #include "cli_imp.h"
 #include "cli/cli.h"

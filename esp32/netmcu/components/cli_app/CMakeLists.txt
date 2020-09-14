@@ -18,3 +18,6 @@ idf_component_register(
 )
 
 component_compile_options(${component_compile_opts})
+component_compile_features(${component_compile_features})
+component_compile_features(${component_compile_features})
+component_compile_features(${component_compile_features})

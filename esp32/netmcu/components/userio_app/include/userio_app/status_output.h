@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "userio/status_output.h"
+#include "uout/status_output.h"
 
 
 #define SO_CFG_size (SO_CFG_end - SO_CFG_begin - 1)

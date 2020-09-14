@@ -14,8 +14,8 @@
 #include <stdio.h>
 #include "cli/cli.h"
 #include "cli/mutex.hh"
-#include "userio/status_json.h"
-#include "userio_app/status_output.h"
+#include "uout/status_json.h"
+#include "uout_app/status_output.h"
 
 #include <array>
 

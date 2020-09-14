@@ -1,5 +1,5 @@
 #include "app_config/proj_app_cfg.h"
-#include "userio_app/status_output.h"
+#include "uout_app/status_output.h"
 #include "config/config.h"
 #include "app/rtc.h"
 #include "cli_imp.h"
@@ -60,11 +60,8 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
     "stm32-bootgpio-inv   Invert Boot-Pin for STM32 OTA\n"
 //  "set-expert-password=\n"
 ;
-
-#define isValid_optStr(cfg, new) true
 #define set_optStr(v, cb) config_save_item_s(static_cast<configItem>(cb), v)
 #define set_optBlob(v, cb) config_save_item_b(static_cast<configItem>(cb), &v, sizeof v)
-#define set_optStr_ifValid set_optStr
 #define set_opt(t, v, cb) (config_save_item_##t(static_cast<configItem>(cb),v) && config_item_modified(static_cast<configItem>(cb)))
 #define set_optN(t, v, cb) (config_save_item_n_##t(static_cast<configItem>(cb),v) && config_item_modified(static_cast<configItem>(cb)))
 
@@ -154,7 +151,7 @@ int process_parmConfig(clpar p[], int len) {
 
         case SO_CFG_TZ:
           if constexpr (use_POSIX_TIME) {
-            if (set_optStr_ifValid(val, CB_TZ)) {
+            if (set_optStr(val, CB_TZ)) {
               rtc_setup();
             }
 
@@ -174,7 +171,7 @@ int process_parmConfig(clpar p[], int len) {
         }
 
     } else if (strcmp(key, "set-pw") == 0) {
-      if (set_optStr_ifValid(val, CB_CFG_PASSWD)) {
+      if (set_optStr(val, CB_CFG_PASSWD)) {
       }
 
       if (!flag_isValid)
