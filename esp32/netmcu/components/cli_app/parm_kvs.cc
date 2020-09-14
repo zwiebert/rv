@@ -7,8 +7,9 @@
 
 #include "app_config/proj_app_cfg.h"
 #include "uout_app/status_output.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "app/rtc.h"
+#include <uout/cli_out.h>
 #include "cli_imp.h"
 #include "cli_app/cli_app.h"
 #include "net/mqtt/app/mqtt.h"

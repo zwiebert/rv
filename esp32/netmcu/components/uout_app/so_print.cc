@@ -1,7 +1,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "so_out.h"
 
-#include "config/config.h"
+#include "config/app/config.h"
 #include "txtio/inout.h"
 
 

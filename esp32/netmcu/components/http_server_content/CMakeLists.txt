@@ -6,11 +6,11 @@ idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS . "./include"
     REQUIRES ""
-    PRIV_REQUIRES cli_app cli config misc userio net_http_server webapp
+    PRIV_REQUIRES cli_app cli config_app misc uout net_http_server webapp
                   mbedtls
    )
    
- component_compile_options(${component_compile_opts})
-component_compile_features(${component_compile_features})
-component_compile_features(${component_compile_features})
-component_compile_features(${component_compile_features})
+ component_compile_options(${comp_compile_opts})
+component_compile_features(${comp_compile_feats})
+component_compile_features(${comp_compile_feats})
+component_compile_features(${comp_compile_feats})

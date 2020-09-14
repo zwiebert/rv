@@ -5,7 +5,5 @@ idf_component_register(SRCS ${srcs}
     REQUIRES app_config config_kvs net net_http_server net_mqtt
     PRIV_REQUIRES app_config key_value_store misc net_mqtt_app    
 )
-component_compile_options(${component_compile_opts})
-component_compile_features(${component_compile_features})
-component_compile_features(${component_compile_features})
-component_compile_features(${component_compile_features})
+component_compile_options(${comp_compile_opts})
+component_compile_features(${comp_compile_feats})

@@ -1,6 +1,6 @@
 # The following lines of boilerplate have to be in your project's
 # CMakeLists in this exact order for cmake to work correctly
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.16)
 
 set(PROJECT_NAME "tronferno-mcu")
 
@@ -10,9 +10,10 @@ set(COMPONENTS app_main
 	  bootloader esptool_py partition_table soc log spi_flash micro-ecc main efuse driver esp_rom  
 )
 
-#set environment variables to be used in components CMakeLists.txt files
-set(component_compile_opts "-std=gnu++2a" "-Wno-missing-field-initializers")
-
+#set environment variables to be used in components
+set(comp_compile_feats cxx_std_20)
+set(comp_compile_opts "$<$<COMPILE_LANGUAGE:CXX>:-Wno-narrowing>" -Wno-missing-field-initializers)
+#set(comp_compile_opts ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++2a>")
 
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
@@ -29,6 +30,9 @@ if(DEFINED ENV{CELLAR})
 add_compile_definitions(CELLAR)
 endif()
 
+function(component_compile_features)
+    target_compile_features(${COMPONENT_LIB} PRIVATE ${ARGV})
+endfunction()
 
 project(netmcu esptool_py                
 )

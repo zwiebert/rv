@@ -8,7 +8,7 @@
 #include "app_config/proj_app_cfg.h"
 
 
-#include "config/config.h"
+#include "config/app/config.h"
 #include "misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"

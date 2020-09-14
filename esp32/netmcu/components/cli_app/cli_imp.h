@@ -1,5 +1,6 @@
 #pragma once
 #include "cli/cli.h"
+#include <uout/cli_out.h>
 
 extern const char pin_state_args[];
 
@@ -9,9 +10,7 @@ extern const char pin_state_args[];
 
 void cli_out_config_reply_entry(const char *key, const char *val, int len);
 void cli_out_mcu_reply_entry(const char *key, const char *val, int len);
-//void cli_out_set_x(const char *obj_tag);
-//void cli_out_close(void);
-//void cli_out_x_reply_entry(const char *key, const char *val, int len);
+
 
 bool config_receiver(const char *val);
 bool config_transmitter(const char *val);

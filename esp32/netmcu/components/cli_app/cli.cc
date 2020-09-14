@@ -14,7 +14,7 @@
 #include "uout/status_json.h"
 #include "stm32/stm32.h"
 #include "uout_app/status_output.h"
-#include "config/config.h"
+#include "config/app/config.h"
 
 bool cli_isJson;
 

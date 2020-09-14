@@ -11,10 +11,10 @@ idf_component_register(
     INCLUDE_DIRS . "./include"
    )
  
- component_compile_options(${component_compile_opts})
-component_compile_features(${component_compile_features})
-component_compile_features(${component_compile_features})
-component_compile_features(${component_compile_features})
+ component_compile_options(${comp_compile_opts})
+component_compile_features(${comp_compile_feats})
+component_compile_features(${comp_compile_feats})
+component_compile_features(${comp_compile_feats})
  
  add_custom_command(
      OUTPUT "${COMPONENT_DIR}/build/wapp.html.gz.c"

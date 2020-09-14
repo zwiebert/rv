@@ -1,6 +1,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "uout_app/status_output.h"
-#include "config/config.h"
+#include <uout/cli_out.h>
+#include "config/app/config.h"
 #include "app/rtc.h"
 #include "cli_imp.h"
 #include "cli/cli.h"

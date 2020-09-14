@@ -1,11 +1,11 @@
 #include "main.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "stm32/stm32.h"
 #include "stm32_com/com_task.h"
 #include "cli_app/cli_app.h"
 #include "cli/mutex.h"
 #include "net/http_client.h"
-#include "config/config.h"
+#include "config/app/config.h"
 #include "net/http/server/content/setup.h"
 
 void mcu_restart() {

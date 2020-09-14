@@ -6,6 +6,7 @@
  */
 
 #include "cli/cli.h"
+#include <uout/cli_out.h>
 #include "txtio/inout.h"
 #include "debug/dbg.h"
 #include "cli_app/cli_app.h"
