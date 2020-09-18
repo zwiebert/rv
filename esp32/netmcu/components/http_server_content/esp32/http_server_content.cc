@@ -105,7 +105,7 @@ static esp_err_t trigger_async_send(httpd_handle_t handle, httpd_req_t *req)
 
 ////////////////////////// URI handlers /////////////////////////////////
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
-  char buf[256];
+  char buf[256] = "";
   int ret, remaining = req->content_len;
 
   if (!check_access_allowed(req))
@@ -115,8 +115,11 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
     return ESP_FAIL;
   }
 
-  { LockGuard lock(cli_mutex); 
-    hts_query(HQT_NONE, buf, ret); // parse and process received command
+  {
+    LockGuard lock(cli_mutex);
+
+    TargetDesc td {-1, SO_TGT_HTTP };
+    cli_process_json(buf, td);// parse and process received command
 
     httpd_resp_set_type(req, "application/json");
     if (sj_get_json()) {
@@ -289,7 +292,9 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
 
   { LockGuard lock(cli_mutex); 
     buf[ws_pkt.len] = '\0';
-    hts_query0(HQT_NONE, (char*)buf); // parse and process received command
+    TargetDesc td { fd, static_cast<so_target_bits>(SO_TGT_WS | SO_TGT_FLAG_JSON) };
+    cli_process_json((char*) buf, td); // parse and process received command
+
 
     ws_pkt.payload = (u8*)sj_get_json();
     ws_pkt.len = strlen((char*)ws_pkt.payload);
