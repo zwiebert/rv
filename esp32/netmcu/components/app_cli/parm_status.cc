@@ -5,19 +5,19 @@
  *      Author: bertw
  */
 
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 
 #include <string.h>
 #include <stdbool.h>
 
 #include "txtio/inout.h"
 #include "net/mqtt/app/mqtt.h"
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
-#include "cli_app/cli_app.h"
+#include "app/cli/cli_app.h"
 #include "uout_app/status_output.h"
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include <uout/cli_out.h>
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
@@ -43,7 +43,7 @@
 #define MAX_DURATION 60
 
 int
-process_parmStatus(clpar p[], int len) {
+process_parmStatus(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
 
   so_output_message(SO_RVE_begin, NULL);

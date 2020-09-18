@@ -5,20 +5,20 @@
  *  Author: bertw
  */
 
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include <string.h>
 #include "cli_imp.h"
-#include "cli_app/cli_app.h"
+#include "app/cli/cli_app.h"
 #include "cli/mutex.hh"
 #include "cli/cli.h"
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include "stm32/stm32.h"
 #include "uout_app/status_output.h"
 #include "config/app/config.h"
 
 bool cli_isJson;
 
-int process_parmHelp(clpar p[], int len);
+int process_parmHelp(clpar p[], int len, const struct TargetDesc &td);
 
 const char cli_help_parmHelp[]  =
 "type 'help command;'  or 'help all;'\ncommands are: ";

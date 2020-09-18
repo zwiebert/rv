@@ -8,13 +8,13 @@
 #ifndef APP_ESP32_MAIN_H_
 #define APP_ESP32_MAIN_H_
 
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "app/common.h"
 #include "app/rtc.h"
 #include "app/timer.h"
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "app/net/gw_ping.h"
-#include "cli_app/cli_app.h"
+#include "app/cli/cli_app.h"
 #include "config/app/config.h"
 #include "driver/gpio.h"
 #include "key_value_store/kvs_wrapper.h"

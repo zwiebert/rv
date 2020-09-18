@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "stm32_com/com_task.h"
 
 #include "stm32/stm32.h"
@@ -19,7 +19,7 @@
 #include "net/tcp_cli_server.h"
 #include "time.h"
 #include "txtio/inout.h"
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include <errno.h>
 #include <string.h>
 #include <sys/select.h>
@@ -86,13 +86,13 @@ static void do_work() {
     DD(printf("stm32com:request: <%s>\n", json));
     cli_process_json(json, static_cast<so_target_bits>(SO_TGT_ANY | SO_TGT_STM32));
 
-    if (sj_get_json()) {
-      DD(printf("stm32com:response: <%s>\n", sj_get_json()));
+    if (td.sj().get_json()) {
+      DD(printf("stm32com:response: <%s>\n", td.sj().get_json()));
       if (stm32_mutexTake()) {
-        stm32_write(sj_get_json(), strlen(sj_get_json()));
+        stm32_write(td.sj().get_json(), strlen(td.sj().get_json()));
         stm32_write("\n", 2);
         stm32_mutexGive();
-        sj_free_buffer();
+        td.sj().free_buffer();
       }
     }
   }

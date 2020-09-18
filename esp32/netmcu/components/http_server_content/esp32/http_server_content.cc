@@ -8,10 +8,10 @@
 #include "net/http/server/http_server.h"
 #include "net/http/server/esp32/register_uris.h"
 
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include "config/app/config.h"
 #include "cli/mutex.hh"
-#include "cli_app/cli_app.h"
+#include "app/cli/cli_app.h"
 #include "misc/int_types.h"
 
 #include "webapp/content.h"
@@ -122,9 +122,9 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
     cli_process_json(buf, td);// parse and process received command
 
     httpd_resp_set_type(req, "application/json");
-    if (sj_get_json()) {
-      httpd_resp_sendstr(req, sj_get_json());
-      sj_free_buffer();
+    if (td.sj().get_json()) {
+      httpd_resp_sendstr(req, td.sj().get_json());
+      td.sj().free_buffer();
     } else {
       httpd_resp_sendstr(req, "{}");
     }
@@ -296,7 +296,7 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
     cli_process_json((char*) buf, td); // parse and process received command
 
 
-    ws_pkt.payload = (u8*)sj_get_json();
+    ws_pkt.payload = (u8*)td.sj().get_json();
     ws_pkt.len = strlen((char*)ws_pkt.payload);
     ws_pkt.type = HTTPD_WS_TYPE_TEXT;
 
@@ -305,7 +305,7 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
       ESP_LOGE(TAG, "httpd_ws_send_frame failed with %d", ret);
     }
 
-    sj_free_buffer();
+    td.sj().free_buffer();
   }
   return ret;
 }

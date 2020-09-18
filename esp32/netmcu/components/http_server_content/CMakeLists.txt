@@ -6,7 +6,7 @@ idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS . "./include"
     REQUIRES ""
-    PRIV_REQUIRES cli_app cli config_app misc uout net_http_server webapp
+    PRIV_REQUIRES app_cli cli config_app misc uout net_http_server webapp
                   mbedtls
    )
    

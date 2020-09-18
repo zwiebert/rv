@@ -9,9 +9,9 @@
 #include <uout/cli_out.h>
 #include "txtio/inout.h"
 #include "debug/dbg.h"
-#include "cli_app/cli_app.h"
+#include "app/cli/cli_app.h"
 
-int process_parmHelp(clpar p[], int len) {
+int process_parmHelp(clpar p[], int len, const struct TargetDesc &td) {
   int i;
 
   static const char usage[] = "syntax: command option=value ...;\n"

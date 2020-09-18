@@ -1,12 +1,12 @@
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "uout_app/status_output.h"
 #include <uout/cli_out.h>
 #include "config/app/config.h"
 #include "app/rtc.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
-#include "cli_app/cli_config.h"
-#include "cli_app/cli_app.h"
+#include "app/cli/cli_config.h"
+#include "app/cli/cli_app.h"
 #include "net/mqtt/app/mqtt.h"
 #include "net/http/server/http_server.h"
 #include "app/kvstore.h"
@@ -70,7 +70,7 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
 
 bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask);
 
-int process_parmConfig(clpar p[], int len) {
+int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
   int errors = 0;
   so_msg_t so_key = SO_NONE;

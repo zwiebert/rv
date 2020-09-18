@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 
 #include <string.h>
 
@@ -8,7 +8,7 @@
 #include "app/rtc.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
-#include "cli_app/cli_app.h"
+#include "app/cli/cli_app.h"
 #include "stm32/stm32.h"
 #include "stm32/stm32_bl.h"
 #include "stm32/stm32_ota.h"
@@ -32,7 +32,7 @@ const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 
 
 int
-process_parmMcu(clpar p[], int len) {
+process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
   int error_count = 0;
 

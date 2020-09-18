@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #ifdef USE_MQTT
 
 #include "net/mqtt/app/mqtt.h"
@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include "cli/cli.h"
 #include "cli/mutex.hh"
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include "uout_app/status_output.h"
 
 #include <array>

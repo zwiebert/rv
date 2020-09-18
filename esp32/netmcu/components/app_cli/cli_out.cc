@@ -1,10 +1,10 @@
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include <cli/cli.h>
 #include <string.h>
 #include "config/app/config.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
-#include "cli_app/cli_app.h"
+#include "app/cli/cli_app.h"
 #include "misc/int_types.h"
 
 

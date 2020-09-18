@@ -5,13 +5,13 @@
  *      Author: bertw
  */
 
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "uout_app/status_output.h"
 #include "config/app/config.h"
 #include "app/rtc.h"
 #include <uout/cli_out.h>
 #include "cli_imp.h"
-#include "cli_app/cli_app.h"
+#include "app/cli/cli_app.h"
 #include "net/mqtt/app/mqtt.h"
 #include "app/kvstore.h"
 #include "debug/dbg.h"
@@ -38,7 +38,7 @@ static bool match_kvsKey(const char *key) {
 
 
 
-int process_parmKvs(clpar p[], int len) {
+int process_parmKvs(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
   int errors = 0;
 

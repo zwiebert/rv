@@ -1,12 +1,12 @@
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "txtio/inout.h"
 #include "net/mqtt/app/mqtt.h"
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
-#include "cli_app/cli_app.h"
+#include "app/cli/cli_app.h"
 #include "uout_app/status_output.h"
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
 #include <stm32/stm32.h>
@@ -64,7 +64,7 @@ int Lph[RV_VALVE_COUNT] = {
     };
 
 extern "C" int
-process_parmProtoBuf(clpar p[], int len) {
+process_parmProtoBuf(clpar p[], int len, const struct TargetDesc &td) {
 
   so_output_message(SO_PBUF_begin, NULL);
 

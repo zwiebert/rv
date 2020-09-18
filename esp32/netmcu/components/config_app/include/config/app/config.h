@@ -8,7 +8,7 @@
 #ifndef MAIN_CONFIG_CONFIG_H_
 #define MAIN_CONFIG_CONFIG_H_
 
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "config_kvs/config.h"
 
 

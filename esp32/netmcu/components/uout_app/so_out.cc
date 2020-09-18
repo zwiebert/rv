@@ -4,13 +4,13 @@
  *  Created on: 13.03.2019
  *      Author: bertw
  */
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "so_out.h"
 
-#include "cli_app/cli_app.h" // FIXME?
-#include "cli_app/cli_config.h"
+#include "app/cli/cli_app.h" // FIXME?
+#include "app/cli/cli_config.h"
 #include "txtio/inout.h"
-#include "uout/status_json.h"
+#include "uout/status_json.hh"
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
 #include "misc/int_types.h"
@@ -53,14 +53,14 @@ gk(SO_MSG_T so_key) {
 void so_out_x_open(const char *name) {
   if (so_cco) cli_out_set_x(name);
   if (so_jco) {
-    sj_add_object(name);
+    td.sj().add_object(name);
   }
 }
 
 void so_out_x_close() {
   if (so_cco) cli_out_close();
   if (so_jco) {
-    sj_close_object();
+    td.sj().close_object();
 
   }
 }
@@ -76,25 +76,25 @@ void so_out_x_reply_entry(SO_MSG_T key, const char *val) {
 
 void so_out_x_reply_entry_s(SO_MSG_T key, const char *val) {
   if (so_cco) cli_out_x_reply_entry2(gk(key), val);
-  if (so_jco) sj_add_key_value_pair_s(gk(key), val);
+  if (so_jco) td.sj().add_key_value_pair_s(gk(key), val);
 }
 
 void so_out_x_reply_entry_ss(const char *key, const char *val) {
   if (so_cco) cli_out_x_reply_entry2(key, val);
-  if (so_jco) sj_add_key_value_pair_s(key, val);
+  if (so_jco) td.sj().add_key_value_pair_s(key, val);
 }
 void so_out_x_reply_entry_sd(const char *key, int val) {
   char buf[20];
   itoa(val, buf, 10);
   if (so_cco) cli_out_x_reply_entry2(key, buf);
-  if (so_jco) sj_add_key_value_pair_d(key, val);
+  if (so_jco) td.sj().add_key_value_pair_d(key, val);
 }
 
 void so_out_x_reply_entry_sl(const char *key, int val) {
   char buf[20];
   ltoa(val, buf, 10);
   if (so_cco) cli_out_x_reply_entry2(key, buf);
-  if (so_jco) sj_add_key_value_pair_d(key, val);
+  if (so_jco) td.sj().add_key_value_pair_d(key, val);
 }
 
 void so_out_x_reply_entry_d(SO_MSG_T key, int val) {
@@ -109,12 +109,12 @@ void so_out_x_reply_entry_lx(SO_MSG_T key, int val) {
   char buf[20];
   ltoa(val, buf, 16);
   if (so_cco) cli_out_x_reply_entry2(gk(key), buf);
-  if (so_jco) sj_add_key_value_pair_s(gk(key), buf); //no hex in json. use string
+  if (so_jco) td.sj().add_key_value_pair_s(gk(key), buf); //no hex in json. use string
 }
 
 void so_out_x_reply_entry_f(SO_MSG_T key, float val, int n) {
   char buf[20];
   ftoa(val, buf, 5);
   if (so_cco) cli_out_x_reply_entry2(gk(key), buf);
-  if (so_jco) sj_add_key_value_pair_f(gk(key), val);
+  if (so_jco) td.sj().add_key_value_pair_f(gk(key), val);
 }
