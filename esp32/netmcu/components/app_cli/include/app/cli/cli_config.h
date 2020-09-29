@@ -9,7 +9,7 @@ constexpr cfg_keysT cfg_keys = { "rtc", "network", "wlan-ssid", "wlan-password",
     "mqtt-url", "mqtt-user", "mqtt-password", "mqtt-client-id", "http-enable", "http-user", "http-password", "stm32-bootgpio-inv" };
 
 #ifdef USE_NETWORK
-#include <config/app/config.h>
+#include <app/settings/config.h>
 using cfg_args_networkT = const char *[nwLEN];
 constexpr cfg_args_networkT cfg_args_network = { "none", "wlan", "ap", "lan" };
 #endif

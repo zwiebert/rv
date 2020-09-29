@@ -47,3 +47,11 @@
 
 enum board { board_ESP32_WLAN, board_OLIMEX_POE, board_OLIMEX_GATEWAY, };
 
+#ifdef __cplusplus
+#include <misc/cstring_utils.hh>
+#define STRLCPY(dst,src,size) csu_copy((dst),(size),(src))
+#define STRCPY(dst,src) csu_copy((dst),(src))
+#else
+#define STRLCPY(dst,src,size) strlcpy((dst),(src),(size))
+#define STRCPY(dst,src) strcpy((dst),(src))
+#endif

@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "config/app/config.h"
+#include "app/settings/config.h"
 #include "config/app/config_defaults.h"
 #include "config_kvs.h"
 

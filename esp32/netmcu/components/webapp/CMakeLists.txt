@@ -1,3 +1,4 @@
+if(NOT UNIT_TESTING) 
 set(srcs
 "../webapp/build/wapp.html.gz.c"
 "../webapp/build/wapp.js.gz.c"
@@ -28,3 +29,5 @@ component_compile_features(${comp_compile_feats})
   
 add_custom_target(content_files ALL  DEPENDS ${COMPONENT_DIR}/_force.h )
 add_dependencies(  ${COMPONENT_LIB} content_files)
+
+endif()

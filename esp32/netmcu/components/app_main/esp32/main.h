@@ -15,7 +15,7 @@
 #include "app/config/proj_app_cfg.h"
 #include "app/net/gw_ping.h"
 #include "app/cli/cli_app.h"
-#include "config/app/config.h"
+#include "app/settings/config.h"
 #include "driver/gpio.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "app/kvstore.h"

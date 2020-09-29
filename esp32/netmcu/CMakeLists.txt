@@ -2,6 +2,12 @@
 # CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.16)
 
+option(BUILD_HOST_TESTS "build host test" OFF)
+
+if (BUILD_HOST_TESTS)
+include(host_tests.cmake)
+else()
+
 set(PROJECT_NAME "tronferno-mcu")
 
 set(EXTRA_COMPONENT_DIRS ./components-mcu/components)
@@ -36,3 +42,4 @@ endfunction()
 
 project(netmcu esptool_py                
 )
+endif()

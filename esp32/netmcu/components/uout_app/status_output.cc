@@ -14,7 +14,7 @@
 #include "app/rtc.h"
 #include "app/cli/cli_config.h"
 #include "app/cli/cli_app.h" // FIXME?
-#include "config/app/config.h"
+#include "app/settings/config.h"
 #include "app/kvstore.h"
 #include "net/ipnet.h"
 #include "net/mqtt/app/mqtt.h"

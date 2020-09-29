@@ -8,7 +8,7 @@
 #ifdef POSIX_TIME
 #include <sys/time.h>
 #endif
-#include "config/app/config.h"
+#include "app/settings/config.h"
 #include "app/common.h"
 
 volatile time_t run_time_secs;

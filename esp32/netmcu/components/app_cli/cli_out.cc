@@ -1,7 +1,7 @@
 #include "app/config/proj_app_cfg.h"
 #include <cli/cli.h>
 #include <string.h>
-#include "config/app/config.h"
+#include "app/settings/config.h"
 #include "misc/bcd.h"
 #include "cli_imp.h"
 #include "app/cli/cli_app.h"

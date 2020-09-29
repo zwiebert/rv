@@ -9,7 +9,7 @@
 #include "net/http/server/esp32/register_uris.h"
 
 #include "uout/status_json.hh"
-#include "config/app/config.h"
+#include "app/settings/config.h"
 #include "cli/mutex.hh"
 #include "app/cli/cli_app.h"
 #include "misc/int_types.h"

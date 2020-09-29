@@ -9,16 +9,17 @@
 default: print-help
 clean: esp32-clean http_clean
 
+
+THIS_ROOT := $(realpath .)
+BUILD_BASE ?= $(THIS_ROOT)/build
+
+
 ifdef V
 esp32_build_opt_verbose = -v
 endif
-ifndef BUILD_BASE
-esp32_build_cmd := idf.py $(esp32_build_opt_verbose) -C .
-esp32_build_dir := ./build
-else
-esp32_build_cmd := idf.py $(esp32_build_opt_verbose) -C . -B $(BUILD_BASE)
-esp32_build_dir := $(BUILD_BASE)
-endif
+
+esp32_build_dir := $(BUILD_BASE)/esp32
+esp32_build_cmd := idf.py $(esp32_build_opt_verbose) -C . -B $(esp32_build_dir)
 esp32_ocd_sh :=  sh $(realpath ./esp32_ocd.sh)
 
 .PHONY: http_proxy http_clean
@@ -74,3 +75,33 @@ win_copy:
 win_copy_release:
 	$(MAKE) clean
 	$(MAKE) win_copy DISTRIBUTION=1
+	
+	
+	############## On Host ########################
+HOST_TEST_BUILD_PATH=$(BUILD_BASE)/host/test
+
+.PHONY: test.cm.configure test.cm.build
+
+test.cm.configure:
+	rm -fr $(HOST_TEST_BUILD_PATH)
+	mkdir -p $(HOST_TEST_BUILD_PATH)
+	cmake -B $(HOST_TEST_BUILD_PATH) -D BUILD_HOST_TESTS=ON -S $(realpath .) #-G Ninja
+
+cm_build := make -C $(HOST_TEST_BUILD_PATH) -k  $(make_verbose_opts)
+#cm_build := (cd $(HOST_TEST_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
+
+	
+test.cm.build:
+	$(cm_build)
+
+test.cm.ctest: test.cm.build
+	$(cm_build) test
+	
+test.cm.ctest.current: test.cm.build
+	(cd  $(HOST_TEST_BUILD_PATH) && ctest --verbose -R "fernotron_trx.test_send")
+
+
+host-test-all:
+	make -s --no-print-directory  test.cm.configure test.cm.ctest
+
+	
