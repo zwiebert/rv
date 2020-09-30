@@ -15,7 +15,7 @@
 
 #define D(x) 
 
-#define CFG_NAMESPACE "Tronferno"
+
 #define CFG_KEY "global.C"
 
 extern const char *const config_keys[] = {

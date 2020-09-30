@@ -1,19 +1,7 @@
-/*
- * status_output.h
- *
- *  Created on: 13.03.2019
- *      Author: bertw
- */
+#pragma once
 
-#ifndef USER_MAIN_STATUS_OUTPUT_H_
-#define USER_MAIN_STATUS_OUTPUT_H_
-
+#include <uout/status_output.h>
 #include <stdint.h>
-#include <stdbool.h>
-#include "uout/status_output.h"
-
-
-#define SO_CFG_size (SO_CFG_end - SO_CFG_begin - 1)
 
 
 typedef enum {
@@ -55,9 +43,6 @@ typedef enum {
 
 } so_msg_t;
 
-void so_output_message(so_msg_t mt, const void *arg);
-so_msg_t so_parse_config_key(const char *k);
-
 typedef struct {
   bool on;
 } so_arg_on_t;
@@ -72,5 +57,3 @@ typedef struct {
   int buf_len;
 } so_arg_pbuf_t;
 
-
-#endif /* USER_MAIN_STATUS_OUTPUT_H_ */

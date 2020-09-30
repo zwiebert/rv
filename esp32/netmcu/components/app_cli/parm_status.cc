@@ -16,7 +16,7 @@
 #include "cli_imp.h"
 #include "cli/cli.h"
 #include "app/cli/cli_app.h"
-#include "uout_app/status_output.h"
+#include "app/uout/status_output.h"
 #include "uout/status_json.hh"
 #include <uout/cli_out.h>
 #include "debug/dbg.h"
@@ -77,7 +77,7 @@ process_parmStatus(clpar p[], int len, const struct TargetDesc &td) {
       so_arg_on_t state = { .on = *val != '0' };
       so_output_message(SO_RVE_PRESS_CTL, &state);
     } else {
-      cli_warning_optionUnknown(key);
+      cli_warning_optionUnknown(td, key);
     }
   }
 

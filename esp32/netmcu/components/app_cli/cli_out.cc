@@ -16,7 +16,7 @@ const char *Obj_tag="";
 #define OBJ_TAG_MCU "mcu"
 #define OBJ_TAG_SEND "send"
 
-
+#if 0
 static void  cli_out_top_tag(void) {
     io_puts("tf: ");
 }
@@ -124,3 +124,4 @@ void  cli_out_mcu_reply_entry(const char *key, const char *val, int len) {
     return;
   cli_out_entry(cli_out_start_mcu_reply, key, val, len);
 }
+#endif

@@ -14,7 +14,7 @@
  */
 #include "app/config/proj_app_cfg.h"
 #include "app/settings/config.h"
-#include "config/app/config_defaults.h"
+#include "app/settings/config_defaults.h"
 #include "misc/base64.h"
 
 #define D(x) 

@@ -1,12 +1,12 @@
 #pragma once
 #include "cli/cli.h"
+#include "app/cli/cli_app.h"
 #include <uout/cli_out.h>
 
 extern const char pin_state_args[];
 
 
-#define NODEFAULT() if (val==0) return cli_replyFailure()
-
+#define NODEFAULT() if (val==0) return cli_replyFailure(td)
 
 void cli_out_config_reply_entry(const char *key, const char *val, int len);
 void cli_out_mcu_reply_entry(const char *key, const char *val, int len);

@@ -40,6 +40,9 @@
 #endif
 
 
+#define CFG_NAMESPACE "Tronferno"
+
+
 #define CHECK_NETWORK_INTERVAL 15
 #define PING_INTERVAL 10
 #define LOOP_PERIODIC_INTERVAL_MS 100

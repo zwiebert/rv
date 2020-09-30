@@ -4,7 +4,7 @@
 
 
 #include "txtio/inout.h"
-#include "uout_app/status_output.h"
+#include "app/uout/status_output.h"
 #include "app/rtc.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
@@ -169,13 +169,13 @@ process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
       if (*val == '?') {
         so_output_message(SO_MCU_RUN_TIME, NULL);
       } else {
-        reply_message("error:mcu:up-time", "option is read-only");
+        reply_message(td, "error:mcu:up-time", "option is read-only");
       }
 
     } else if (strcmp(key, "version") == 0) {
       so_output_message(SO_MCU_VERSION, NULL);
     } else {
-      cli_warning_optionUnknown(key);
+      cli_warning_optionUnknown(td, key);
     }
 
   }

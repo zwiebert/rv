@@ -15,11 +15,12 @@
 #include "txtio/inout.h"
 #include "uout/status_json.hh"
 #include "uout/status_json.hh"
-#include "uout_app/status_output.h"
+#include "app/uout/status_output.h"
 
 #include "misc/int_macros.h"
 #include "misc/int_types.h"
 #include "misc/base64.h"
+#include <misc/time/run_time.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -122,58 +123,8 @@ void soMsg_KVS_end(const struct TargetDesc &td) {
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-void soCfg_all(const struct TargetDesc &td) {
-  for (i = SO_CFG_begin + 1; i < SO_CFG_end; ++i) {
-    so_output_message(static_cast<so_msg_t>(i), nullptr);
-  }
-}
 
-void soCfg_RTC(const struct TargetDesc &td) {
-  char buf[64];
-  if (rtc_get_by_string (buf)) {
-    so_out_x_reply_entry_s(mt, buf);
-  }
-}
 
-void soCfg_NETWORK(const struct TargetDesc &td) {
-#ifdef USE_NETWORK
-    so_out_x_reply_entry_s(mt, cfg_args_network[config_read_network_connection()]);
-#endif
-}
-void soCfg_TZ(const struct TargetDesc &td) {
-#ifdef POSIX_TIME
-    so_out_x_reply_entry_s(mt, config_read_tz(buf, sizeof buf));
-#endif
-}
-
-void soCfg_GPIO_PIN(const struct TargetDesc &td, const so_arg_pch_t a, bool broadcast) {
-  char buf[64];
-
-  if (so_cco) {
-    io_printf("tf:reply: mcu gpio%d=%d;\n", (int) a.gpio_num, (int) a.level);
-  }
-
-  if (so_jco) {
-    char buf[64];
-    snprintf(buf, sizeof buf, "gpio%d", (int) a.gpio_num);
-    td.sj().add_key_value_pair_d(buf, (int) a.level);
-  }
-
-  if (broadcast)
-    uoApp_publish_pinChange(a);
-}
-
-void soCfg_STM32_BOOTGPIO_INV(const struct TargetDesc &td) {
-  so_out_x_reply_entry_d(mt, config_read_stm32_inv_bootpin());
-}
-
-void soCfg_begin(const struct TargetDesc &td) {
-  td.so().x_open("config");
-}
-
-void soCfg_end(const struct TargetDesc &td) {
-  td.so().x_close();
-}
 
 /////////////////////////////////////////////////////////////////////////////////
 void soMsg_RVE_begin(const struct TargetDesc &td) {

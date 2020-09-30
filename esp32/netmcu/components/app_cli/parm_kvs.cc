@@ -6,7 +6,7 @@
  */
 
 #include "app/config/proj_app_cfg.h"
-#include "uout_app/status_output.h"
+#include "app/uout/status_output.h"
 #include "app/settings/config.h"
 #include "app/rtc.h"
 #include <uout/cli_out.h>
@@ -104,7 +104,7 @@ int process_parmKvs(clpar p[], int len, const struct TargetDesc &td) {
   }
 
   so_output_message(SO_KVS_end, NULL);
-  cli_replyResult(errors == 0);
+  cli_replyResult(td, errors == 0);
   return 0;
 }
 

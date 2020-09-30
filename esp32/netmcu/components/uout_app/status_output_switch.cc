@@ -8,7 +8,7 @@
 #include "txtio/inout.h"
 #include "uout/status_json.hh"
 #include "app/uout/status_output.h"
-
+#include <app/opt_map.hh>
 #include <string.h>
 #include <stdio.h>
 #include <time.h>

@@ -1,14 +1,16 @@
 #include "app/config/proj_app_cfg.h"
+#include <app/config/options.hh>
 #include "config_kvs/config.h"
 #include "cli_imp.h"
-#include "cli/cli.h"
 #include "app/cli/cli_config.h"
+#include "cli/cli.h"
 #include "net/mqtt/mqtt.h"
 #include "net/http/server/http_server.h"
-#include "app/kvstore.h"
-#include "uout_app/status_output.h"
+#include "app/uout/status_output.h"
 #include "misc/int_macros.h"
 #include "misc/int_types.h"
+#include <net/ethernet.h>
+#include <string.h>
 
 #define isValid_optStr(cfg, new) true
 #define set_optStr(v, cb) if (config_save_item_s(cb, v)) has_changed(cb)
@@ -20,7 +22,7 @@
 
 
 
-bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask) {
+bool process_parmKvsConfig(const struct TargetDesc &td, so_msg_t so_key, const char *val, u32 *changed_mask) {
   bool result = true;
   bool flag_isValid = true;
 
@@ -35,7 +37,7 @@ bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask) 
     set_optStr(val, CB_WIFI_SSID);
 
     if (!flag_isValid)
-      cli_replyFailure();
+      cli_replyFailure(td);
   }
     break;
 
@@ -43,17 +45,19 @@ bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask) 
     set_optStr(val, CB_WIFI_PASSWD);
 
     if (!flag_isValid)
-      cli_replyFailure();
+      cli_replyFailure(td);
   }
     break;
 #endif // USE_WLAN
 #ifdef USE_LAN
   case SO_CFG_LAN_PHY: {
     NODEFAULT();
+    bool success = false;
     u8 i;
     for (i = 0; i < lanPhyLEN; ++i) {
       if (strcasecmp(val, cfg_args_lanPhy[i]) == 0) {
         set_optN(i8, i, CB_LAN_PHY);
+        success = true;
         break;
       }
     }

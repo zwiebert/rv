@@ -13,7 +13,7 @@
 #include "cli/mutex.hh"
 #include "app/cli/cli_app.h"
 #include "misc/int_types.h"
-
+#include <uout/so_target_bits.h>
 #include "webapp/content.h"
 
 bool check_access_allowed(httpd_req_t *req); //XXX move this to a header file

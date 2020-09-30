@@ -8,7 +8,7 @@
 #include "app/config/options.hh"
 #include "so_out.h"
 #include "so_print.h"
-#include "app/uout/callbacks.h"
+//#include "app/uout/callbacks.h"
 #include "app/common.h"
 #include "app/firmware.h"
 #include "app/rtc.h"
@@ -17,8 +17,8 @@
 #include "txtio/inout.h"
 #include "uout/status_json.hh"
 #include "app/uout/status_output.h"
-#include "fernotron/astro.h"
 #include <app/uout/so_config.h>
+#include <misc/time/run_time.h>
 
 //#include "misc/int_macros.h"
 
@@ -44,10 +44,6 @@ void soCfg_RTC(const struct TargetDesc &td) {
   }
 }
 
-void soCfg_CU(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_CU), cfg_getCuId(), 16);
-}
-
 void soCfg_NETWORK(const struct TargetDesc &td) {
 #ifdef USE_NETWORK
   td.so().print(gk(SO_CFG_NETWORK),cfg_args_network[config_read_network_connection()]);
@@ -61,13 +57,6 @@ void soCfg_TZ(const struct TargetDesc &td) {
 #endif
 }
 
-void soCfg_LONGITUDE(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_LONGITUDE), config_read_longitude(), 5);
-}
-
-void soCfg_LATITUDE(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_LATITUDE), config_read_latitude(), 5);
-}
 
 void soCfg_TIMEZONE(const struct TargetDesc &td) {
 #ifndef POSIX_TIME
@@ -85,21 +74,6 @@ void soCfg_DST(const struct TargetDesc &td) {
 #endif
 }
 
-void soCfg_GM_USED(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_GM_USED),config_read_used_members(), 16);
-}
-
-void soCfg_GPIO_RFOUT(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_GPIO_RFOUT),config_read_rfout_gpio());
-}
-
-void soCfg_GPIO_RFIN(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_GPIO_RFIN),config_read_rfin_gpio());
-}
-
-void soCfg_GPIO_SETBUTTON(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_GPIO_SETBUTTON),config_read_setbutton_gpio());
-}
 
 void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
 #ifdef ACCESS_GPIO
@@ -161,9 +135,11 @@ void soCfg_GPIO_MODES_AS_STRING(const struct TargetDesc &td) {
 #endif
 }
 
-void soCfg_ASTRO_CORRECTION(const struct TargetDesc &td) {
-  td.so().print(gk(SO_CFG_ASTRO_CORRECTION),config_read_astro_correction());
+
+void soCfg_STM32_BOOTGPIO_INV(const struct TargetDesc &td) {
+  td.so().print(gk(SO_CFG_STM32_BOOTGPIO_INV), config_read_stm32_inv_bootpin());
 }
+
 
 void soCfg_begin(const struct TargetDesc &td) {
   td.so().x_open("config");
@@ -190,12 +166,6 @@ void so_output_message(const struct TargetDesc &td, so_msg_t mt, const void *arg
   case SO_CFG_begin:
     soCfg_begin(td);
     break;
-  case SO_CFG_CU:
-    soCfg_CU(td);
-    break;
-  case SO_CFG_BAUD:
-    soCfg_BAUD(td);
-    break;
   case SO_CFG_RTC:
     soCfg_RTC(td);
     break;
@@ -205,46 +175,15 @@ void so_output_message(const struct TargetDesc &td, so_msg_t mt, const void *arg
   case SO_CFG_TZ:
     soCfg_TZ(td);
     break;
-  case SO_CFG_LONGITUDE:
-    soCfg_LONGITUDE(td);
-    break;
-  case SO_CFG_LATITUDE:
-    soCfg_LATITUDE(td);
-    break;
-  case SO_CFG_TIMEZONE:
-    soCfg_TIMEZONE(td);
-    break;
-  case SO_CFG_DST:
-    soCfg_DST(td);
-    break;
-  case SO_CFG_GM_USED:
-    soCfg_GM_USED(td);
-    break;
-  case SO_CFG_GPIO_RFOUT:
-    soCfg_GPIO_RFOUT(td);
-    break;
-  case SO_CFG_GPIO_RFIN:
-    soCfg_GPIO_RFIN(td);
-    break;
-  case SO_CFG_GPIO_SETBUTTON:
-    soCfg_GPIO_SETBUTTON(td);
-    break;
   case SO_CFG_GPIO_PIN:
     soCfg_GPIO_PIN(td, *(int*) arg);
     break;
-  case SO_CFG_GPIO_MODES:
-    soCfg_GPIO_MODES(td);
-    break;
-  case SO_CFG_GPIO_MODES_AS_STRING:
-    soCfg_GPIO_MODES_AS_STRING(td);
-    break;
-  case SO_CFG_ASTRO_CORRECTION:
-    soCfg_ASTRO_CORRECTION(td);
+  case SO_CFG_STM32_BOOTGPIO_INV:
+    soCfg_STM32_BOOTGPIO_INV(td);
     break;
   case SO_CFG_end:
     soCfg_end(td);
     break;
-
   default:
 #ifndef DISTRIBUTION
     char buf[64];

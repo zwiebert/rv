@@ -4,7 +4,8 @@ idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 
     REQUIRES uout 
-    PRIV_REQUIRES  app_misc app_config app_cli app_settings utils_debug utils_misc net net_mqtt_app stm32 txtio uout
+    PRIV_REQUIRES  app_misc app_config app_cli app_settings utils_debug utils_misc net net_mqtt_app stm32 txtio uout utils_time
+                   app_update
     )
     
 component_compile_options(${comp_compile_opts})

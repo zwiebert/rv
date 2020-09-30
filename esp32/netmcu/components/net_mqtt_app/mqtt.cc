@@ -15,7 +15,7 @@
 #include "cli/cli.h"
 #include "cli/mutex.hh"
 #include "uout/status_json.hh"
-#include "uout_app/status_output.h"
+#include "app/uout/status_output.h"
 //#include <app/uout/callbacks.h>
 #include <net/mqtt/mqtt.hh>
 #include <array>
@@ -52,7 +52,7 @@ static void io_mqtt_publish_topic_end(const char *topic_end, const char *json) {
   char topic[64];
   snprintf(topic, sizeof topic, "%s%s", TOPIC_ROOT, topic_end);
 
-  io_mqtt_publish(topic, json);
+  Net_Mqtt::mqtt_publish(topic, json);
 }
 
 static void io_mqtt_publish_topic_end_get_json(const TargetDesc &td, const char *topic_end) {
@@ -64,8 +64,7 @@ static void io_mqtt_publish_topic_end_get_json(const TargetDesc &td, const char 
 
 
 void io_mqtt_publish_config(const char *s)  {
-  if (so_tgt_test(SO_TGT_MQTT)) //FIXME: implement this better
-    io_mqtt_publish("tfmcu/config_out", s);
+    Net_Mqtt::mqtt_publish("tfmcu/config_out", s);
 }
 
 void io_mqtt_publish_valve_status(int valve_number, bool state) {
@@ -73,7 +72,7 @@ void io_mqtt_publish_valve_status(int valve_number, bool state) {
 
   snprintf(topic, 64, "%szone/%d/valve", io_mqtt_topic_root, valve_number);
 
-  io_mqtt_publish(topic, state ? "on" : "off");
+  Net_Mqtt::mqtt_publish(topic, state ? "on" : "off");
 }
 
 void io_mqtt_publish_rain_sensor_status(bool state) {
@@ -81,7 +80,7 @@ void io_mqtt_publish_rain_sensor_status(bool state) {
 
   snprintf(topic, 64, "%s%s/rain", io_mqtt_topic_root, TOPIC_STATUS);
 
-  io_mqtt_publish(topic, state ? "on" : "off");
+  Net_Mqtt::mqtt_publish(topic, state ? "on" : "off");
 }
 
 void io_mqtt_publish_pump_status(bool state) {
@@ -89,7 +88,7 @@ void io_mqtt_publish_pump_status(bool state) {
 
   snprintf(topic, 64, "%s%s/pump", io_mqtt_topic_root, TOPIC_STATUS);
 
-  io_mqtt_publish(topic, state ? "on" : "off");
+  Net_Mqtt::mqtt_publish(topic, state ? "on" : "off");
 }
 
 void io_mqtt_publish_stm32_event(const char *event) {
@@ -97,12 +96,13 @@ void io_mqtt_publish_stm32_event(const char *event) {
 
   snprintf(topic, 64, "%s%s/event", io_mqtt_topic_root, TOPIC_STATUS);
 
-  io_mqtt_publish(topic, event);
+  Net_Mqtt::mqtt_publish(topic, event);
 }
 
 static class AppNetMqtt final : public Net_Mqtt {
-  virtual void mqtt_received(const char *topic, int topic_len, const char *data, int data_len) {
 
+  virtual void received(const char *topic, int topic_len, const char *data, int data_len) override {
+    TargetDesc td { SO_TGT_MQTT };
     if (!topic_startsWith(topic, topic_len, io_mqtt_topic_root)) {
       return; // all topics start with this
     }
@@ -136,16 +136,16 @@ static class AppNetMqtt final : public Net_Mqtt {
     }
   }
 
-  virtual void mqtt_connected() {
+  virtual void connected() override {
     std::array<char,80> buf;
 
-     io_mqtt_subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CLI), 0);
-     io_mqtt_subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), 0);
-     io_mqtt_publish(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), "connected"); // for autocreate (ok???)
+     Net_Mqtt::subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CLI), 0);
+     Net_Mqtt::subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), 0);
+     Net_Mqtt::mqtt_publish(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), "connected"); // for autocreate (ok???)
 
   }
 
-  virtual void mqtt_disconnected() {
+  virtual void disconnected() override {
     //uoCb_unsubscribe(io_mqttApp_uoutPublish_cb);
   }
 } MyMqtt;

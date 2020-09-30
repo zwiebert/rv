@@ -21,7 +21,7 @@
 #include "txtio/inout.h"
 #include "uout/status_json.hh"
 #include "uout/status_json.hh"
-#include "uout_app/status_output.h"
+#include "app/uout/status_output.h"
 
 #include "misc/int_macros.h"
 #include "misc/int_types.h"

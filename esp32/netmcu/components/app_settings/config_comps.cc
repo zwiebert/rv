@@ -4,11 +4,10 @@
  *  Created on: 21.04.2020
  *      Author: bertw
  */
-
+#include "app/config/proj_app_cfg.h"
 #include "app/settings/config.h"
-#include "config/app/config_defaults.h"
+#include "app/settings/config_defaults.h"
 #include "config_kvs.h"
-
 #include "misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "misc/int_types.h"
@@ -35,8 +34,7 @@ if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
 #ifdef USE_MQTT
 #include "net/mqtt/app/mqtt.h"
 void config_setup_mqttAppClient() {
-  cfg_mqtt_app cfg = { "rv/" };
-  io_mqttApp_setup(&cfg);
+  io_mqttApp_setup("rv/");
   config_setup_mqttClient();
 }
 #endif

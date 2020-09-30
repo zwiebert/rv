@@ -5,7 +5,7 @@
 #include "cli_imp.h"
 #include "cli/cli.h"
 #include "app/cli/cli_app.h"
-#include "uout_app/status_output.h"
+#include "app/uout/status_output.h"
 #include "uout/status_json.hh"
 #include "debug/dbg.h"
 #include "misc/int_macros.h"

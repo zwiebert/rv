@@ -1,5 +1,5 @@
 #include "app/config/proj_app_cfg.h"
-
+#include "app/config/options.hh"
 #include <string.h>
 
 
@@ -9,7 +9,7 @@
 #include "cli_imp.h"
 #include "cli/cli.h"
 #include "app/cli/cli_app.h"
-#include "uout_app/status_output.h"
+#include "app/uout/status_output.h"
 #include "uout/status_json.hh"
 #include <uout/cli_out.h>
 #include "debug/dbg.h"
@@ -101,7 +101,7 @@ process_parmCmd(clpar p[], int len, const struct TargetDesc &td) {
         }
       }
     } else {
-      cli_warning_optionUnknown(key);
+      cli_warning_optionUnknown(td,key);
     }
   }
 

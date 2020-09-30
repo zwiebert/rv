@@ -13,8 +13,11 @@
 #include "cli/cli.h"
 #include "uout/status_json.hh"
 #include "stm32/stm32.h"
-#include "uout_app/status_output.h"
+#include "app/uout/status_output.h"
 #include "app/settings/config.h"
+#include <cli/cli_json.h>
+#include <app/uout/so_config.h>
+#include <app/uout/so_msg.h>
 
 bool cli_isJson;
 
@@ -68,7 +71,7 @@ static bool cliApp_redirect_to_rv(char *json) {
   return false;
 }
 
-static bool cliApp_checkPassword(clpar p[], int len, so_target_bits tgt) {
+static bool cliApp_checkPassword(clpar p[], int len, const struct TargetDesc &td) {
   if (len < 2)
     return true;
 
@@ -79,17 +82,19 @@ static bool cliApp_checkPassword(clpar p[], int len, so_target_bits tgt) {
     return true;
   if (strcmp(p[1].key, "pw") == 0) {
     if (strcmp(p[1].val, C.app_configPassword) == 0) {
-      so_output_message(SO_CFGPASSWD_OK, NULL);
+      soMsg_cfgpasswd_ok(td);
       return true;
     } else {
-      so_output_message(SO_CFGPASSWD_WRONG, NULL);
+      soMsg_cfgpasswd_wrong(td);
     }
   } else {
-    so_output_message(SO_CFGPASSWD_MISSING, NULL);
+    soMsg_cfgpasswd_missing(td);
   }
 
   return false;
 }
+
+
 
 
 

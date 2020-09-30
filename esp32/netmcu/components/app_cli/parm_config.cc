@@ -1,5 +1,6 @@
 #include "app/config/proj_app_cfg.h"
-#include "uout_app/status_output.h"
+#include <app/config/options.hh>
+#include "app/uout/status_output.h"
 #include <uout/cli_out.h>
 #include "app/settings/config.h"
 #include "app/rtc.h"
@@ -100,7 +101,7 @@ int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
 
     if (key == NULL || val == NULL) {  // don't allow any default values in config
-      return cli_replyFailure();
+      return cli_replyFailure(td);
 #if ENABLE_RESTART
     } else if (strcmp(key, "restart") == 0) {
       extern void mcu_restart(void);
@@ -120,7 +121,7 @@ int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
         switch (so_key) {
 
         case SO_CFG_RTC: {
-          cli_replyResult(val ? rtc_set_by_string(val) : false);
+          cli_replyResult(td, val ? rtc_set_by_string(val) : false);
         }
           break;
 
@@ -145,7 +146,7 @@ int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
             }
           }
           if (!success)
-            cli_replyFailure();
+            cli_replyFailure(td);
         }
           break;
 #endif
@@ -157,7 +158,7 @@ int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
             }
 
             if (!flag_isValid)
-              cli_replyFailure();
+              cli_replyFailure(td);
           }
           break;
 
@@ -176,10 +177,10 @@ int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
       }
 
       if (!flag_isValid)
-        cli_replyFailure();
+        cli_replyFailure(td);
     } else {
       ++errors;
-      cli_warning_optionUnknown(key);
+      cli_warning_optionUnknown(td,key);
     }
   }
 
@@ -203,6 +204,6 @@ int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
   }
 
   so_output_message(SO_CFG_end, NULL);
-  cli_replyResult(errors == 0);
+  cli_replyResult(td,errors == 0);
   return 0;
 }
