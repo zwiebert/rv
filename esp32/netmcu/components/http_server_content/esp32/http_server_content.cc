@@ -140,7 +140,8 @@ static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
 #else
     TargetDesc td { static_cast<so_target_bits>(SO_TGT_HTTP | SO_TGT_FLAG_JSON)};
     cli_process_json(buf, td); // parse and process received command
-    httpd_resp_sendstr(req, td.sj().get_json()) == ESP_OK || (result = ESP_FAIL);
+    const char *json = td.sj().get_json() ? td.sj().get_json() : "{}";
+    httpd_resp_sendstr(req, json) == ESP_OK || (result = ESP_FAIL);
 #endif
   }
 

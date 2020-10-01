@@ -47,7 +47,7 @@ static char line[BUF_SIZE];
 struct TargetDescStm32 final: public TargetDesc {
 public:
   TargetDescStm32(so_target_bits tgt) :
-      TargetDesc(static_cast<so_target_bits>(tgt | SO_TGT_STM32)) {
+      TargetDesc(static_cast<so_target_bits>(tgt | SO_TGT_STM32 )) {
   }
 
   TargetDescStm32(const TargetDescStm32&) = delete;
@@ -103,7 +103,7 @@ static void do_work() {
   if (json) {
     LockGuard lock(cli_mutex);
 
-    TargetDescStm32 td { static_cast<so_target_bits>(SO_TGT_ANY)};
+    TargetDescStm32 td { static_cast<so_target_bits>(SO_TGT_FLAG_JSON)};
     DD(printf("stm32com:from_rv:request: <%s>\n", json));
     cli_process_json(json, td);
 
