@@ -6,6 +6,7 @@ option(BUILD_HOST_TESTS "build host test" OFF)
 
 if (BUILD_HOST_TESTS)
 include(host_tests.cmake)
+doxy_create_input()
 else()
 
 set(PROJECT_NAME "tronferno-mcu")

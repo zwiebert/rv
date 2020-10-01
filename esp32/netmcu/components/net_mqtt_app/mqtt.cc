@@ -16,7 +16,7 @@
 #include "cli/mutex.hh"
 #include "uout/status_json.hh"
 #include "app/uout/status_output.h"
-//#include <app/uout/callbacks.h>
+#include <app/uout/callbacks.h>
 #include <net/mqtt/mqtt.hh>
 #include <array>
 
@@ -99,6 +99,16 @@ void io_mqtt_publish_stm32_event(const char *event) {
   Net_Mqtt::publish(topic, event);
 }
 
+
+
+
+static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
+  if (auto vs = uoCb_valveState_FromMsg(msg))
+    io_mqtt_publish_valve_status(vs->valve_number, vs->is_open);
+}
+
+
+
 static class AppNetMqtt final : public Net_Mqtt {
 
   virtual void received(const char *topic, int topic_len, const char *data, int data_len) override {
@@ -143,10 +153,15 @@ static class AppNetMqtt final : public Net_Mqtt {
      Net_Mqtt::subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), 0);
      Net_Mqtt::publish(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), "connected"); // for autocreate (ok???)
 
+     uo_flagsT flags {};
+     flags.tgt.mqtt = true;
+     flags.evt.valve_change = true;
+     flags.fmt.obj = true;
+     uoCb_subscribe(io_mqttApp_uoutPublish_cb, flags);
   }
 
   virtual void disconnected() override {
-    //uoCb_unsubscribe(io_mqttApp_uoutPublish_cb);
+    uoCb_unsubscribe(io_mqttApp_uoutPublish_cb);
   }
 } MyMqtt;
 

@@ -5,7 +5,7 @@
 #include <sys/param.h>
 #include <mbedtls/base64.h>
 #include <uout/so_target_desc.hh>
-#include <uout/callbacks.h>
+#include <app/uout/callbacks.h>
 #include <uout/status_output.h>
 #include "net/http/server/http_server.h"
 #include "net/http/server/esp32/register_uris.h"
@@ -341,8 +341,7 @@ void hts_setup_content() {
 #ifdef USE_WS
   uo_flagsT flags;
   flags.tgt.websocket = true;
-  flags.evt.pin_change = true;
-  flags.evt.pct_change = true;
+  flags.evt.valve_change = true;
   flags.evt.async_http_resp = true;
   flags.fmt.json = true;
   uoCb_subscribe(ws_send_json_cb, flags);

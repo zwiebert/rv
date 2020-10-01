@@ -1,1 +1,1 @@
-../../../../../esp32/netmcu/components-mcu/components/misc/include/misc/int_macros.h
+../../../../../esp32/netmcu/components-mcu/components/utils_misc/include/misc/int_macros.h

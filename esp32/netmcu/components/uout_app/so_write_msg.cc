@@ -16,7 +16,7 @@
 #include "uout/status_json.hh"
 #include "uout/status_json.hh"
 #include "app/uout/status_output.h"
-
+#include "app/uout/callbacks.h"
 #include "misc/int_macros.h"
 #include "misc/int_types.h"
 #include "misc/base64.h"
@@ -152,7 +152,7 @@ void soMsg_RVE_VALVES(const struct TargetDesc &td, const so_arg_valves_t *valves
   u32 mask = valves->changed_bits;
   for (int i = 0; mask; ++i, (mask >>= 1)) {
     if (mask & 1) {
-      io_mqtt_publish_valve_status(i, GET_BIT(valves->state_bits, i));
+      uoAPp_publish_valve_change({i, GET_BIT(valves->state_bits, i)});
     }
   }
 }

@@ -104,11 +104,11 @@ static void do_work() {
     LockGuard lock(cli_mutex);
 
     TargetDescStm32 td { static_cast<so_target_bits>(SO_TGT_ANY)};
-    DD(printf("stm32com:request: <%s>\n", json));
+    DD(printf("stm32com:from_rv:request: <%s>\n", json));
     cli_process_json(json, td);
 
     if (td.sj().get_json()) {
-      DD(printf("stm32com:response: <%s>\n", td.sj().get_json()));
+      DD(printf("stm32com:from_netmcu:response: <%s>\n", td.sj().get_json()));
       if (stm32_mutexTake()) {
         stm32_write(td.sj().get_json(), strlen(td.sj().get_json()));
         stm32_write("\n", 2);

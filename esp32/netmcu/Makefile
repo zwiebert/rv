@@ -120,4 +120,19 @@ test.cm.ctest.current: test.cm.build
 host-test-all:
 	make -s --no-print-directory  test.cm.configure test.cm.ctest
 
+############# Doxygen ###################
+
+DOXY_BUILD_PATH=$(THIS_ROOT)/build/doxy
+DOXY_CONFIG_FILES = ./Doxyfile $(HOST_TEST_BUILD_PATH)/doxy_input_file.txt
+DOXY_CONFIG_FILE = /tmp/Doxyfile
+
+.PHONY: doxy doxy.cm.configure doxy.cm.build
+
+$(DOXY_CONFIG_FILE): test.cm.configure
+	cat $(DOXY_CONFIG_FILES) >$(DOXY_CONFIG_FILE)
+doxy-build: $(DOXY_CONFIG_FILE)
+	doxygen $(DOXY_CONFIG_FILE)
+	
+doxy-view: doxy-build
+	xdg-open $(DOXY_BUILD_PATH)/html/index.html
 	
