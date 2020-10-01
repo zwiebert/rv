@@ -57,3 +57,12 @@ typedef struct {
   int buf_len;
 } so_arg_pbuf_t;
 
+typedef struct {
+  const char *key, *val;
+} so_arg_kvs_t;
+
+typedef struct {
+  const char *key;
+  int val;
+} so_arg_kvd_t;
+

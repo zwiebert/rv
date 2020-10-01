@@ -30,7 +30,7 @@ enum nwConnection config_read_network_connection() {
 }
 #endif
 
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
 const char* config_read_tz(char *d, unsigned d_size) {
   return config_read_item_s(CI(CB_TZ), d, d_size, MY_GEO_TZ);
 }

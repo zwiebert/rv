@@ -48,14 +48,14 @@ constexpr cfg_keysT cfg_keys = { "rtc", "network", "wlan-ssid", "wlan-password",
     "mqtt-url", "mqtt-user", "mqtt-password", "mqtt-client-id", "http-enable", "http-user", "http-password", "stm32-bootgpio-inv" };
 #endif
 
-constexpr const_cstringT otok_strings[static_cast<otokBaseT>(otok::SIZE)] = {
+constexpr const_cstringT otok_strings[] = {
 //// config keys ///
     "rtc", //
     "network", "wlan-ssid", "wlan-password", "lan-phy", "lan-pwr-gpio", //
     "ntp-server", "tz", "verbose", //
     "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password", "mqtt-client-id",//
     "http-enable", "http-user", "http-password",//
-    "stm32-bootgpio-inv"
+    "stm32-bootgpio-inv",
     /// end of config keys ///
     "a", "g", "m", "mm", "c",  //
     "restart", "all", "cuas", "set-pw", "receiver", "transmitter", // config
@@ -65,4 +65,5 @@ constexpr const_cstringT otok_strings[static_cast<otokBaseT>(otok::SIZE)] = {
     "weekly", "daily", "astro", "rtc-only", "random", "sun-auto", "f" // auto
 
     };
-
+static_assert(!((sizeof otok_strings / sizeof otok_strings[0]) > (size_t)otok::SIZE));
+static_assert(!((sizeof otok_strings / sizeof otok_strings[0]) < (size_t)otok::SIZE));

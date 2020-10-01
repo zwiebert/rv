@@ -12,6 +12,7 @@
 #include "app/uout/status_output.h"
 #include "uout/status_json.hh"
 #include <uout/cli_out.h>
+#include "app/opt_map.hh"
 #include "debug/dbg.h"
 #include "misc/int_macros.h"
 #include <stdio.h>
@@ -62,10 +63,19 @@ process_parmCmd(clpar p[], int len, const struct TargetDesc &td) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
     db_printf("key=%s, val=%s\n", key, val);
 
-    if (key == NULL) {
+    if (!key)
       return -1;
+#if 1
+    otok kt = optMap_findToken(key);
+    if (kt != otok::NONE) {
+      switch (kt) {
 
-    } else if (*val == '?') {
+      default:
+        break;
+      }
+    }
+#endif
+    if (*val == '?') {
       if (strcmp(key, RV_VERSION) == 0) {
         strcat(buf, CMD_ASK_VERSION);
       } else {

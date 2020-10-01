@@ -1,6 +1,6 @@
 project(netmcu-test)
 
-set(COMPONENT_DIRECTORIES components components-mcu/components)
+set(COMPONENT_DIRECTORIES components "components-mcu/components")
 #list(TRANSFORM COMPONENT_DIRECTORIES PREPEND ${CMAKE_CURRENT_LIST_DIR})
 set(comp_compile_feats cxx_std_20)
 set(comp_compile_opts "$<$<COMPILE_LANGUAGE:CXX>:-Wno-narrowing>" -Wno-missing-field-initializers)
@@ -9,7 +9,7 @@ set(comp_compile_opts ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++
 include(components-mcu/components/test_host/host_test.cmake)
 
 
-add_subdirectory(components-mcu/components/test_host)
+add_subdirectory(components/app_main)
 
 
 message("all_libs: ${COMPONENT_LIBS}")

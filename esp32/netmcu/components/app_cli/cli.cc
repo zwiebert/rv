@@ -18,6 +18,8 @@
 #include <cli/cli_json.h>
 #include <app/uout/so_config.h>
 #include <app/uout/so_msg.h>
+#include <algorithm>
+#include <iterator>
 
 bool cli_isJson;
 
@@ -38,10 +40,23 @@ static struct parm_handler handlers[] = {
     { "pbuf", process_parmProtoBuf, cli_help_None},
   };
 
-const struct parm_handlers parm_handlers = {
-    .handlers = handlers,
-    .count = sizeof(handlers) / sizeof(handlers[0]),
-};
+static const struct parm_handlers our_parm_handlers = { .handlers = handlers, .count = sizeof(handlers) / sizeof(handlers[0]), };
+
+const parm_handler* cli_parmHandler_find(const char *key) {
+  auto handler = std::find_if(std::begin(handlers), std::end(handlers), [&key](auto el) {
+    return strcmp(key, el.parm) == 0;
+  });
+  if (std::end(handlers) == handler) {
+    if (strcmp("timer", key) == 0)  // alias
+      return cli_parmHandler_find("auto");
+    if (strcmp("send", key) == 0)  // alias
+      return cli_parmHandler_find("cmd");
+
+    return nullptr;
+  }
+
+  return handler;
+}
 
 bool cli_checkStm32CommandLine(char *line) {
   char *terminator = &line[strlen(line) - 1];
@@ -101,5 +116,8 @@ static bool cliApp_checkPassword(clpar p[], int len, const struct TargetDesc &td
 void cliApp_setup() {
   cli_hook_process_json = cliApp_redirect_to_rv;
   cli_hook_checkPassword = cliApp_checkPassword;
+
+  cli_parmHandler_find_cb = cli_parmHandler_find;
+  cli_parm_handlers = &our_parm_handlers;
 }
 

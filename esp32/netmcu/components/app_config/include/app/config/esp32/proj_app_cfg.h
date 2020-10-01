@@ -1,7 +1,7 @@
-#ifndef ESP32_USER_CONFIG_H_
-#define ESP32_USER_CONFIG_H_
-
+#pragma once
 #define MCU_TYPE "esp32"
+
+#include <sdkconfig.h>
 
 //extern const char *const build_date;
 #define ISO_BUILD_TIME (__DATE__ "T" __TIME__)
@@ -23,7 +23,7 @@
 //#undef POSIX_TIME
 #undef MDR_TIME
 //#undef USE_PAIRINGS
-
+#define USE_ESP_GET_TIME
 #ifndef FLAVOR_LAN
 #undef USE_LAN
 #endif
@@ -33,5 +33,5 @@
 
 #include "esp_attr.h"
 
-#endif
+
 

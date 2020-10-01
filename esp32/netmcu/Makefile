@@ -18,8 +18,10 @@ ifdef V
 esp32_build_opt_verbose = -v
 endif
 
+esp32_src_dir := $(THIS_ROOT)
 esp32_build_dir := $(BUILD_BASE)/esp32
-esp32_build_cmd := idf.py $(esp32_build_opt_verbose) -C . -B $(esp32_build_dir)
+esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
+esp32_build_cmd := idf.py $(esp32_build_opt_verbose) -C . -B $(esp32_build_dir) -p /dev/ttyUSB0
 esp32_ocd_sh :=  sh $(realpath ./esp32_ocd.sh)
 
 .PHONY: http_proxy http_clean
@@ -30,7 +32,7 @@ http_clean:
 
 
 
-esp32_tgts_auto := menuconfig clean fullclean app
+esp32_tgts_auto := menuconfig clean fullclean app monitor
 define GEN_RULE
 .PHONY: esp32-$(1)
 esp32-$(1):
@@ -47,9 +49,23 @@ esp32-cellar:
 esp32-flash: 
 	$(esp32_build_cmd) -p /dev/ttyUSB2 flash
 
+############# graphviz #################################
+esp32-png: $(esp32_build_dir)/netmcu.png
+esp32-dot: $(esp32_build_dir)/netmcu.dot
+esp32-graph-view: esp32-png
+	xdg-open $(esp32_build_dir)/netmcu.png&
+
+$(esp32_build_dir)/netmcu.dot: FORCE
+	$(esp32_cmake_cmd) --graphviz=$(esp32_build_dir)/netmcu.dot
+	
+	
+%.png:%.dot
+	dot -Tpng -o $@ $<
+
+FORCE:
 
 
-
+############ openocd ###################################
 esp32-flash-ocd: 
 	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash)
 esp32-flash-app-ocd: 

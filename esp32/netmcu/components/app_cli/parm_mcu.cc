@@ -15,6 +15,7 @@
 #include "app/ota.h"
 #include "net/http_client.h"
 #include "debug/dbg.h"
+#include <app/uout/so_msg.h>
 
 
 #define KEY_BOOT_COUNT "boot-count"
@@ -36,7 +37,8 @@ process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
   int error_count = 0;
 
-  so_output_message(SO_MCU_begin, NULL);
+  soMsg_MCU_begin(td);
+
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -44,7 +46,7 @@ process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
     if (key == NULL || val == NULL) {
       return -1;
     } else if (strcmp(key, KEY_BOOT_COUNT) == 0 && *val == '?') {
-      so_output_message(SO_MCU_BOOT_COUNT, 0);
+      soMsg_MCU_BOOT_COUNT(td);
     } else if (strcmp(key, "rbl") == 0) {
        db_printf("run bootloader\n");
        stm32_runBootLoader();
@@ -76,15 +78,15 @@ process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 #ifdef USE_STM32OTA
     } else if (strcmp(key, "stm32ota") == 0) {
       if (*val == '?') {
-        so_output_message(SO_MCU_STM32OTA_STATE, 0);
+        soMsg_MCU_STM32OTA_STATE(td);
 #ifdef STM32OTA_FWURL_MASTER
       } else if (strcmp(val, "github-master") == 0) {
-        so_output_message(SO_MCU_STM32OTA, STM32OTA_FWURL_MASTER);
+        soMsg_MCU_STM32OTA(STM32OTA_FWURL_MASTER);
         stm32ota_doUpdate(STM32OTA_FWURL_MASTER);
 #endif
 #ifdef STM32OTA_FWURL_BETA
       } else if (strcmp(val, "github-beta") == 0) {
-        so_output_message(SO_STM32MCU_OTA, STM32OTA_FWURL_BETA);
+        soMsg_STM32MCU_OTA(STM32OTA_FWURL_BETA);
         stm32ota_doUpdate(STM32OTA_FWURL_BETA);
 #endif
       } else {
@@ -99,12 +101,12 @@ process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 #ifdef USE_OTA
     } else if (strcmp(key, "ota") == 0) {
       if (*val == '?') {
-        so_output_message(SO_MCU_OTA_STATE, 0);
+        soMsg_MCU_OTA_STATE(td);
       } else if (strcmp(val, "github-master") == 0) {
-        so_output_message(SO_MCU_OTA, OTA_FWURL_MASTER);
+        soMsg_MCU_OTA(td, OTA_FWURL_MASTER);
         app_doFirmwareUpdate(OTA_FWURL_MASTER);
       } else if (strcmp(val, "github-beta") == 0) {
-        so_output_message(SO_MCU_OTA, OTA_FWURL_BETA);
+        soMsg_MCU_OTA(td, OTA_FWURL_BETA);
         app_doFirmwareUpdate(OTA_FWURL_BETA);
       } else {
 #ifdef DISTRIBUTION
@@ -121,23 +123,24 @@ process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
     } else if (strcmp(key, "flrv") == 0) {
       stm32Ota_firmwareUpdate(STM32_FW_FILE_NAME);
 
-#ifdef CONFIG_GPIO_SIZE
+#ifdef ACCESS_GPIO
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
-      mcu_pin_state ps = 0, ps_result = 0;
+
 
       if (!is_gpio_number_usable(gpio_number, true)) {
-        reply_message("gpio:error", "gpio number cannot be used");
+        reply_message(td, "gpio:error", "gpio number cannot be used");
         return -1;
       } else {
 
         const char *error = NULL;
-        for (ps = 0; pin_state_args[ps] != 0; ++ps) {
-          if (pin_state_args[ps] == *val) {
+        int psi;
+        for (psi = 0; pin_state_args[psi] != 0; ++psi) {
+          if (pin_state_args[psi] == *val) {
             break;
           }
         }
-
+        mcu_pin_state ps = (mcu_pin_state)psi, ps_result = PIN_READ;
         switch (ps) {
 
           case PIN_CLEAR:
@@ -149,7 +152,7 @@ process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
           case PIN_READ:
           error = mcu_access_pin(gpio_number, &ps_result, ps);
           if (!error) {
-            cli_out_mcu_reply_entry(key, (ps_result == PIN_SET ? "1" : "0"), 0);
+            soMsg_gpio_pin(td, so_arg_pch_t {gpio_number, ps_result});
           }
           break;
 
@@ -159,29 +162,30 @@ process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
         }
 
         if (error) {
-          reply_message("gpio:failure", error);
+          reply_message(td, "gpio:failure", error);
           return -1;
         }
       }
 #endif
 
+
     } else if (strcmp(key, "up-time") == 0) {
       if (*val == '?') {
-        so_output_message(SO_MCU_RUN_TIME, NULL);
+        soMsg_MCU_RUN_TIME(td);
       } else {
         reply_message(td, "error:mcu:up-time", "option is read-only");
       }
 
     } else if (strcmp(key, "version") == 0) {
-      so_output_message(SO_MCU_VERSION, NULL);
+      soMsg_MCU_VERSION(td);
     } else {
       cli_warning_optionUnknown(td, key);
     }
 
   }
 
-  so_output_message(error_count ? SO_STATUS_ERROR : SO_STATUS_OK, 0);
-  so_output_message(SO_MCU_end, NULL);
+  so_output_message(td, error_count ? SO_STATUS_ERROR : SO_STATUS_OK, 0);
+  so_output_message(td, SO_MCU_end, NULL);
 
   return 0;
 }

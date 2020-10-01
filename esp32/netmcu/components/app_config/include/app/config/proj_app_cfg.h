@@ -1,18 +1,30 @@
 #pragma once
 
-#define APP_VERSION "0.5.0"
+#include <stdint.h>
+typedef uint8_t u8;
+typedef int8_t i8;
+typedef uint16_t u16;
+typedef int16_t i16;
+typedef uint32_t u32;
+typedef int32_t i32;
+typedef uint64_t u64;
+typedef int64_t i64;
 
-#include <sdkconfig.h>
-#include "proj_kconfig.h"
+#if defined TEST_HOST
+#include "app/config/host/proj_app_cfg.h"
 
-#define CONFIG_DICT
-#define POSIX_TIME USE_POSIX_TIME
+#elif defined MCU_ESP8266
+#include "app/config/esp8266/proj_app_cfg.h"
 
-#ifdef __cplusplus
-//#include "proj_app_cfg.hh"
+#elif defined MCU_ESP32
+#include "app/config/esp32/proj_app_cfg.h"
+
+#else
+#error "no supported MCU"
+
 #endif
 
-
+#include "proj_kconfig.h"
 
 
 
@@ -32,7 +44,6 @@
 //#include "misc/int_types.h"
 //#include "txtio/inout.h"
 
-#define MCU_TYPE "esp32"
 #define ISO_BUILD_TIME (__DATE__ "T" __TIME__)
 
 #ifndef CONFIG_LOG_DEFAULT_LEVEL

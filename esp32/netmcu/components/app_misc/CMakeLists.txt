@@ -1,4 +1,4 @@
-set(srcs rtc.cc watch_dog.cc esp32/kvstore.cc) 
+set(srcs rtc.cc watch_dog.cc esp32/kvstore.cc opt_map.cc) 
 
 idf_component_register(
     SRCS ${srcs}
@@ -10,6 +10,4 @@ idf_component_register(
 )
 
 component_compile_options(${comp_compile_opts})
-component_compile_features(${comp_compile_feats})
-component_compile_features(${comp_compile_feats})
 component_compile_features(${comp_compile_feats})

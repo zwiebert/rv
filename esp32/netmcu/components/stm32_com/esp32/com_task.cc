@@ -4,6 +4,7 @@
 #include "stm32/stm32.h"
 #include "app/common.h"
 #include "cli/cli.h"
+#include "cli/cli_json.h"
 #include "cli/mutex.hh"
 #include "esp_event.h"
 #include "esp_log.h"
@@ -17,6 +18,7 @@
 #include "misc/int_types.h"
 #include "net/http/server/http_server.h"
 #include "net/tcp_cli_server.h"
+#include <uout/callbacks.h>
 #include "time.h"
 #include "txtio/inout.h"
 #include "uout/status_json.hh"
@@ -40,6 +42,23 @@
 
 #define BUF_SIZE 512
 static char line[BUF_SIZE];
+
+
+struct TargetDescStm32 final: public TargetDesc {
+public:
+  TargetDescStm32(so_target_bits tgt) :
+      TargetDesc(static_cast<so_target_bits>(tgt | SO_TGT_STM32)) {
+  }
+
+  TargetDescStm32(const TargetDescStm32&) = delete;
+  virtual ~TargetDescStm32() = default;
+
+private:
+  virtual int priv_write(const char *s, ssize_t len, bool final) const {
+    return stm32_write(s, len);
+  }
+};
+
 
 static bool stmTrace_checkCommandLine(const char *line) {
   if (strncmp(TRACE_MARKER, line, TRACE_MARKER_LEN) != 0)
@@ -83,8 +102,10 @@ static void do_work() {
 
   if (json) {
     LockGuard lock(cli_mutex);
+
+    TargetDescStm32 td { static_cast<so_target_bits>(SO_TGT_ANY)};
     DD(printf("stm32com:request: <%s>\n", json));
-    cli_process_json(json, static_cast<so_target_bits>(SO_TGT_ANY | SO_TGT_STM32));
+    cli_process_json(json, td);
 
     if (td.sj().get_json()) {
       DD(printf("stm32com:response: <%s>\n", td.sj().get_json()));
@@ -101,7 +122,7 @@ static void do_work() {
   if (!reply)
     reply = strstr(line, "{\"update\":");
   if (reply) {
-    uoApp_event_wsJson(reply);
+    uoApp_publish_wsJson(reply);
     DD(printf("stm32com:recv:####REPLY####: <%s>\n", reply));
   }
 }

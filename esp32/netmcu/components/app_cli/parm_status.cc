@@ -46,7 +46,8 @@ int
 process_parmStatus(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
 
-  so_output_message(SO_RVE_begin, NULL);
+  soMsg_RVE_begin(td);
+
 
   bool hasValveBits = false, hasValveChangeMask = false;
   u32 valveBits = 0, valveChangeMask = 0;
@@ -65,17 +66,17 @@ process_parmStatus(clpar p[], int len, const struct TargetDesc &td) {
       valveChangeMask = strtol(val, 0, 16);
     } else if (strcmp(key, KEY_RAIN_SENSOR) == 0) {
       so_arg_on_t state = { .on = *val != '0' };
-      so_output_message(SO_RVE_RAIN, &state);
+      soMsg_RVE_RAIN(td, &state);
     } else if (strcmp(key, KEY_EVENT) == 0) {
       io_mqtt_publish_stm32_event(val);
     } else if (strcmp(key, KEY_PB) == 0) {
        const char *b64 = val; // TODO: implement protobuf handler
     } else if (strcmp(key, KEY_PUMP) == 0) {
       so_arg_on_t state = { .on = *val != '0' };
-      so_output_message(SO_RVE_PUMP, &state);
+      soMsg_RVE_PUMP(td, &state);
     } else if (strcmp(key, KEY_PRESS_CTL) == 0) {
       so_arg_on_t state = { .on = *val != '0' };
-      so_output_message(SO_RVE_PRESS_CTL, &state);
+      soMsg_RVE_PRESS_CTL(td, &state);
     } else {
       cli_warning_optionUnknown(td, key);
     }
@@ -83,11 +84,11 @@ process_parmStatus(clpar p[], int len, const struct TargetDesc &td) {
 
   if (hasValveBits && hasValveChangeMask) {
     so_arg_valves_t valves = { .state_bits = valveBits, .changed_bits = valveChangeMask };
-    so_output_message(SO_RVE_VALVES, &valves);
+    soMsg_RVE_VALVES(td, &valves);
   }
 
 
-  so_output_message(SO_RVE_end, NULL);
+  soMsg_RVE_end(td);
 
   return 0;
 }

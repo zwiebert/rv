@@ -44,7 +44,7 @@ int process_parmKvs(clpar p[], int len, const struct TargetDesc &td) {
 
   dbg_vpf(db_printf("process_parmKvs()\n"));
 
-  so_output_message(SO_KVS_begin, NULL);
+  soMsg_KVS_begin(td);
 
   int needSecondPass = 0;
 
@@ -91,19 +91,19 @@ int process_parmKvs(clpar p[], int len, const struct TargetDesc &td) {
     if (match_zoneKeyN(key)) {
       if (!isdigit(key[strlen(key) - 1])) {
 
-        so_output_message(SO_KVS_ZN_ALL, key);
+        soMsg_KVS_ZN_ALL(td, key);
       } else {
-        so_output_message(SO_KVS_ZN_SINGLE, key);
+        soMsg_KVS_ZN_SINGLE(td, key);
       }
     }
 
     if (match_kvsKey(key)) {
-      so_output_message(SO_KVS_ZN_SINGLE, key);
+      soMsg_KVS_ZN_SINGLE(td, key);
     }
 
   }
 
-  so_output_message(SO_KVS_end, NULL);
+  soMsg_KVS_end(td);
   cli_replyResult(td, errors == 0);
   return 0;
 }

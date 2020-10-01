@@ -11,13 +11,15 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "uout/status_output.h"
+#include "so_msg.h"
+#include "so_config.h"
 #include "so_types.h"
 
 
 #define SO_CFG_size (SO_CFG_end - SO_CFG_begin - 1)
 
 
-void so_output_message(so_msg_t mt, const void *arg);
+void so_output_message(const struct TargetDesc &td, so_msg_t mt, const void *arg);
 so_msg_t so_parse_config_key(const char *k);
 
 

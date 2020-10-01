@@ -165,7 +165,7 @@ void so_output_message(so_msg_t mt, const void *arg) {
 #endif
     break;
   case SO_CFG_TZ:
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
     so_out_x_reply_entry_s(mt, config_read_tz(buf, sizeof buf));
 #endif
   break;

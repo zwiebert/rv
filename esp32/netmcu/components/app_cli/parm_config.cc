@@ -47,7 +47,7 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
     "http-user=NAME    user name on server\n"
     "http-password=PW  user password on server\n"
 #endif
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
     "tz=(POSIX_TZ|?)    time zone for RTC/NTP\n"
 #endif
     "verbose=(0..5|?)   diagnose output verbosity level\n"
@@ -69,7 +69,7 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
 
 #define has_changed() SET_BIT(*changed_mask, so_key)
 
-bool process_parmKvsConfig(so_msg_t so_key, const char *val, u32 *changed_mask);
+bool process_parmKvsConfig(const struct TargetDesc &td, so_msg_t so_key, const char *val, u32 *changed_mask);
 
 int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
   int arg_idx;
@@ -95,7 +95,7 @@ int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
 #endif
 #define hasChanged_txtio (changed_mask & (BIT(CB_VERBOSE)))
 
-  so_output_message(SO_CFG_begin, NULL);
+  so_output_message(td, SO_CFG_begin, NULL);
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -110,12 +110,12 @@ int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
 
     } else if (strcmp(key, "all") == 0) {
       if (*val == '?') {
-        so_output_message(SO_CFG_all, "cj");
+        so_output_message(td, SO_CFG_all, "cj");
       }
     } else if (SO_NONE != (so_key = so_parse_config_key(key))) {
       if (0 == strcmp("?", val)) {
-        so_output_message(so_key, NULL);
-      } else if (process_parmKvsConfig(so_key, val, &changed_mask)) {
+        so_output_message(td, so_key, NULL);
+      } else if (process_parmKvsConfig(td, so_key, val, &changed_mask)) {
 
       } else
         switch (so_key) {
@@ -203,7 +203,7 @@ int process_parmConfig(clpar p[], int len, const struct TargetDesc &td) {
     config_setup_txtio();
   }
 
-  so_output_message(SO_CFG_end, NULL);
+  so_output_message(td, SO_CFG_end, NULL);
   cli_replyResult(td,errors == 0);
   return 0;
 }

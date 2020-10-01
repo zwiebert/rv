@@ -173,6 +173,19 @@ void soMsg_CFGPASSWD_MISSING(const struct TargetDesc &td) {
 }
 
 /////////////////////////////////////////////////////////////////////////////////
+void soMsg_cfgpasswd_ok(const struct TargetDesc &td) {
+  // td.write("password ok\n");
+}
+void soMsg_cfgpasswd_wrong(const struct TargetDesc &td) {
+  td.write("wrong config password\n");
+}
+
+void soMsg_cfgpasswd_missing(const struct TargetDesc &td) {
+  td.write("missing config password\n");
+}
+
+
+/////////////////////////////////////////////////////////////////////////////////
 
 void soMsg_INET_PRINT_ADDRESS(const struct TargetDesc &td) {
 #if defined USE_LAN || defined USE_WLAN

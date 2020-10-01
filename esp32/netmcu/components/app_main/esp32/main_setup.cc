@@ -21,7 +21,7 @@ void ntpApp_setup(void) {
   config_setup_ntpClient();
 }
 
-extern "C" void main_setup_ip_dependent() { //XXX called from library
+void main_setup_ip_dependent() {
   static int once;
   if (!once) {
     once = 1;
@@ -73,6 +73,9 @@ void mcu_init() {
     lfPer_setBit(lf_loopTcpServer);
 
   if constexpr (use_NETWORK) {
+
+    ipnet_CONNECTED_cb = main_setup_ip_dependent;
+
     if (use_AP_FALLBACK || C.network != nwNone)
       esp_netif_init();
 

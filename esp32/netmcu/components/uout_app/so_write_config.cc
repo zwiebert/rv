@@ -51,29 +51,11 @@ void soCfg_NETWORK(const struct TargetDesc &td) {
 }
 
 void soCfg_TZ(const struct TargetDesc &td) {
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
   char buf[64];
   td.so().print(gk(SO_CFG_TZ),config_read_tz(buf, sizeof buf));
 #endif
 }
-
-
-void soCfg_TIMEZONE(const struct TargetDesc &td) {
-#ifndef POSIX_TIME
-  td.so().print(gk(SO_CFG_TIMEZONE), config_read_timezone(), 5);
-#endif
-}
-
-void soCfg_DST(const struct TargetDesc &td) {
-#ifdef MDR_TIME
-  {
-    enum dst geo_dst = config_read_dst();
-    const char *dst = (geo_dst == dstEU ? "eu" : (geo_dst == dstNone ? "0" : "1"));
-    td.so().print(gk(SO_CFG_DST), dst);
-  }
-#endif
-}
-
 
 void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
 #ifdef ACCESS_GPIO

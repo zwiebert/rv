@@ -19,3 +19,5 @@ void soCfg_GPIO_MODES_AS_STRING(const struct TargetDesc &td);
 void soCfg_ASTRO_CORRECTION(const struct TargetDesc &td);
 void soCfg_begin(const struct TargetDesc &td);
 void soCfg_end(const struct TargetDesc &td);
+
+void soCfg_STM32_BOOTGPIO_INV(const struct TargetDesc &td);

@@ -66,7 +66,7 @@ int Lph[RV_VALVE_COUNT] = {
 extern "C" int
 process_parmProtoBuf(clpar p[], int len, const struct TargetDesc &td) {
 
-  so_output_message(SO_PBUF_begin, NULL);
+  soMsg_PBUF_begin(td);
 
   for (int arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
@@ -93,7 +93,7 @@ process_parmProtoBuf(clpar p[], int len, const struct TargetDesc &td) {
         struct zd_arg zd_arg = { .lph_arr = Lph, .lph_arr_len = RV_VALVE_COUNT };
         int msgBufLen = encode_zoneData(msgBuf, sizeof(msgBuf), &zd_arg);
         so_arg_pbuf_t pba = { .key = "zd", .buf = msgBuf, .buf_len = msgBufLen };
-        so_output_message(SO_PBUF_KV64, &pba);
+        soMsg_PBUF_KV64(td, &pba);
       } else {
         struct zd_arg zd_arg = { .lph_arr = Lph, .lph_arr_len = RV_VALVE_COUNT };
         decode_zoneData(msgBuf, msgBufLen, &zd_arg);
@@ -103,7 +103,7 @@ process_parmProtoBuf(clpar p[], int len, const struct TargetDesc &td) {
     }
   }
 
-  so_output_message(SO_PBUF_end, NULL);
+  soMsg_PBUF_end(td);
 
   return 0;
 }

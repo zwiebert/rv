@@ -52,7 +52,7 @@ static void io_mqtt_publish_topic_end(const char *topic_end, const char *json) {
   char topic[64];
   snprintf(topic, sizeof topic, "%s%s", TOPIC_ROOT, topic_end);
 
-  Net_Mqtt::mqtt_publish(topic, json);
+  Net_Mqtt::publish(topic, json);
 }
 
 static void io_mqtt_publish_topic_end_get_json(const TargetDesc &td, const char *topic_end) {
@@ -64,7 +64,7 @@ static void io_mqtt_publish_topic_end_get_json(const TargetDesc &td, const char 
 
 
 void io_mqtt_publish_config(const char *s)  {
-    Net_Mqtt::mqtt_publish("tfmcu/config_out", s);
+    Net_Mqtt::publish("tfmcu/config_out", s);
 }
 
 void io_mqtt_publish_valve_status(int valve_number, bool state) {
@@ -72,7 +72,7 @@ void io_mqtt_publish_valve_status(int valve_number, bool state) {
 
   snprintf(topic, 64, "%szone/%d/valve", io_mqtt_topic_root, valve_number);
 
-  Net_Mqtt::mqtt_publish(topic, state ? "on" : "off");
+  Net_Mqtt::publish(topic, state ? "on" : "off");
 }
 
 void io_mqtt_publish_rain_sensor_status(bool state) {
@@ -80,7 +80,7 @@ void io_mqtt_publish_rain_sensor_status(bool state) {
 
   snprintf(topic, 64, "%s%s/rain", io_mqtt_topic_root, TOPIC_STATUS);
 
-  Net_Mqtt::mqtt_publish(topic, state ? "on" : "off");
+  Net_Mqtt::publish(topic, state ? "on" : "off");
 }
 
 void io_mqtt_publish_pump_status(bool state) {
@@ -88,7 +88,7 @@ void io_mqtt_publish_pump_status(bool state) {
 
   snprintf(topic, 64, "%s%s/pump", io_mqtt_topic_root, TOPIC_STATUS);
 
-  Net_Mqtt::mqtt_publish(topic, state ? "on" : "off");
+  Net_Mqtt::publish(topic, state ? "on" : "off");
 }
 
 void io_mqtt_publish_stm32_event(const char *event) {
@@ -96,7 +96,7 @@ void io_mqtt_publish_stm32_event(const char *event) {
 
   snprintf(topic, 64, "%s%s/event", io_mqtt_topic_root, TOPIC_STATUS);
 
-  Net_Mqtt::mqtt_publish(topic, event);
+  Net_Mqtt::publish(topic, event);
 }
 
 static class AppNetMqtt final : public Net_Mqtt {
@@ -141,7 +141,7 @@ static class AppNetMqtt final : public Net_Mqtt {
 
      Net_Mqtt::subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CLI), 0);
      Net_Mqtt::subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), 0);
-     Net_Mqtt::mqtt_publish(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), "connected"); // for autocreate (ok???)
+     Net_Mqtt::publish(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), "connected"); // for autocreate (ok???)
 
   }
 
