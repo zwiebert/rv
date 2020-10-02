@@ -9,7 +9,7 @@
 #include <uout/status_output.h>
 #include "net/http/server/http_server.h"
 #include "net/http/server/esp32/register_uris.h"
-#include <cli/cli_json.h>
+#include <cli/cli.h>
 #include "uout/status_json.hh"
 #include "app/settings/config.h"
 #include "cli/mutex.hh"

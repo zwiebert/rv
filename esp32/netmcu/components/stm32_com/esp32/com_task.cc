@@ -4,7 +4,6 @@
 #include "stm32/stm32.h"
 #include "app/common.h"
 #include "cli/cli.h"
-#include "cli/cli_json.h"
 #include "cli/mutex.hh"
 #include "esp_event.h"
 #include "esp_log.h"

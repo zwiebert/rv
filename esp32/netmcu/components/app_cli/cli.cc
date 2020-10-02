@@ -15,7 +15,6 @@
 #include "stm32/stm32.h"
 #include "app/uout/status_output.h"
 #include "app/settings/config.h"
-#include <cli/cli_json.h>
 #include <app/uout/so_config.h>
 #include <app/uout/so_msg.h>
 #include <algorithm>

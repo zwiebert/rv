@@ -23,10 +23,6 @@ int process_parmStatus(clpar p[], int len, const struct TargetDesc &td);
 int process_parmProtoBuf(clpar p[], int len, const struct TargetDesc &td);
 }
 
-void cli_out_set_x(const char *obj_tag);
-void cli_out_close(void);
-void cli_out_x_reply_entry(const char *key, const char *val, int len);
-void cli_out_timer_reply_entry(const char *key, const char *val, int len);
 
 bool cli_checkStm32CommandLine(char *line);
 

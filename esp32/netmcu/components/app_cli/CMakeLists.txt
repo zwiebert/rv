@@ -1,4 +1,4 @@
-set(srcs cli.cc  cli_out.cc
+set(srcs cli.cc
     parm_cmd.cc
     parm_config.cc parm_config_switch.cc
     parm_help.cc
