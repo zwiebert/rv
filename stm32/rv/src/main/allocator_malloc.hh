@@ -1,3 +1,7 @@
+/**
+ * \file   allocator_malloc.hh
+ * \brief   Malloc(3) based allocator template.
+ */
 #pragma once
 
 #include <list>

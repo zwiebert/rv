@@ -1,3 +1,8 @@
+/**
+ * \file      app/config/options.hh
+ * \brief     defines strings used in user interface
+ */
+
 #pragma once
 #include "proj_app_cfg.h"
 #include <stdint.h>
@@ -22,16 +27,17 @@ constexpr cfg_args_lanPhyT cfg_args_lanPhy = { "none", "lan8270", "rtl8201", "ip
 
 
 typedef int8_t otokBaseT;
+/// \brief options as enum (matching the string options in \link otok_strings \endlink )
 enum class otok : otokBaseT  {
   NONE = -1,  // not existing
-      //// config keys ///
+      /////////// begin of config keys //////////////////
       rtc,//
       network, wlan_ssid, wlan_password, lan_phy, lan_pwr_gpio, //
       npt_server, tz, verbose, //
       mqtt_enable, mqtt_url, mqtt_user, mqtt_password, mqtt_client_id, //
       http_enable, http_user, http_password, //
       stm32_bootgpio_inv, //
-      /// end of config keys ///
+      ///////////// end of config keys /////////////////
 
   a, g, m, mm, c, //
   restart, all, cuas, set_pw, receiver, transmitter, // config
@@ -48,15 +54,16 @@ constexpr cfg_keysT cfg_keys = { "rtc", "network", "wlan-ssid", "wlan-password",
     "mqtt-url", "mqtt-user", "mqtt-password", "mqtt-client-id", "http-enable", "http-user", "http-password", "stm32-bootgpio-inv" };
 #endif
 
+/// \brief options as null terminated strings (matching the enum options in \link otok \endlink )
 constexpr const_cstringT otok_strings[] = {
-//// config keys ///
+     /////////// begin of config keys //////////////////
     "rtc", //
     "network", "wlan-ssid", "wlan-password", "lan-phy", "lan-pwr-gpio", //
     "ntp-server", "tz", "verbose", //
     "mqtt-enable", "mqtt-url", "mqtt-user", "mqtt-password", "mqtt-client-id",//
     "http-enable", "http-user", "http-password",//
     "stm32-bootgpio-inv",
-    /// end of config keys ///
+    ///////////// end of config keys /////////////////
     "a", "g", "m", "mm", "c",  //
     "restart", "all", "cuas", "set-pw", "receiver", "transmitter", // config
     "r", "p", "SEP", // cmd

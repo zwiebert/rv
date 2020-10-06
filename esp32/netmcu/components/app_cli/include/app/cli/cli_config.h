@@ -1,3 +1,8 @@
+/**
+ * \file   cli/cli_config.h
+ * \brief  Options strings for CLI config command
+ */
+
 #pragma once
 #include "app/config/proj_app_cfg.h"
 #include "app/uout/status_output.h"

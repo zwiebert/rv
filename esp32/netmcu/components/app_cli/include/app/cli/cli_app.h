@@ -1,3 +1,8 @@
+/**
+ * \file   cli/cli_app.h
+ * \brief  CLI main header file
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

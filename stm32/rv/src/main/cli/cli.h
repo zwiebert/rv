@@ -1,8 +1,6 @@
-/*
- * cli.h
- *
- *  Created on: 15.05.2019
- *      Author: bertw
+/**
+ * \file   cli/cli.h
+ * \brief  Public CLI header.
  */
 
 #ifndef CLI_H_

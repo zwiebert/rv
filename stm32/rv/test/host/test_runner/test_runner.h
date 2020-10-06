@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+  extern "C" {
+#endif
+
 // Copyright 2016-2018 Espressif Systems (Shanghai) PTE LTD
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -208,3 +212,7 @@ void unity_run_menu(void);
 #define _UNITY_DFT_3(TARGET, ...)   (CONFIG_IDF_TARGET_##TARGET || _UNITY_DFT_2(__VA_ARGS__))
 #define _UNITY_DFT_2(TARGET, ...)   (CONFIG_IDF_TARGET_##TARGET || _UNITY_DFT_1(__VA_ARGS__))
 #define _UNITY_DFT_1(TARGET, ...)   (CONFIG_IDF_TARGET_##TARGET)
+
+#ifdef __cplusplus
+  }
+#endif

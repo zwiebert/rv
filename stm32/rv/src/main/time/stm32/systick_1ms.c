@@ -13,7 +13,7 @@
 #include <libopencm3/cm3/systick.h>
 
 
-#include "systick_1ms.h"
+#include "../systick_1ms.h"
 #include "loop/loop.hh"
 #include "misc/int_macros.h"
 

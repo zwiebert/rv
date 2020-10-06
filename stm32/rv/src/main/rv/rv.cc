@@ -6,7 +6,14 @@
 #include <valves/valve_relays.h>
 
 
-RvTimers rvt = RvTimers(0, app_switch_valves);
+static void sw_valve(int vn, bool isOpen) {
+  const uint16_t bits = isOpen ? BIT(vn) : 0;
+  const uint16_t mask = BIT(vn);
+  app_switch_valves(bits, mask);
+}
+
+
+RvTimers rvt = RvTimers(sw_valve);
 RainSensor rs;
 RvZones rvz;
 

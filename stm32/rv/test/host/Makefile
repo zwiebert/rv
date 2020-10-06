@@ -1,7 +1,7 @@
 .PHONY: all tests clean_out init all_tests
 
 
-TESTS = test_cli_json
+TESTS = test_timers test_cli_json
 
 .PHONY: $(TESTS)
 
@@ -47,7 +47,7 @@ C_WARN ?= -Wall -Wno-unused-result
 INCLUDE := $(addprefix -I,$(EXTRA_INCDIR))
 
 build/test_%.out:
-	$(Q) gcc  -g3 $(C_WARN) -flto -O0 -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -lm #-H
+	$(Q) g++  -g3 $(C_WARN) -flto -O0 -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -DMCU_HOST -lm #-H
 
 
 %.log:%.out
@@ -58,5 +58,6 @@ build/test_%.out:
 
 setup=test_runner/setup.c
 ################################
-build/test_cli_json.out: src/test_cli_json.c $(SRC_BASE)/src/main/cli/cli_json.c $(SRC_BASE)/src/main/json/json.c
-
+build/test_cli_json.out: src/test_cli_json.c $(SRC_BASE)/src/main/cli/cli_json.c $(SRC_BASE)/src/main/jsmn/jsmn.c
+build/test_timers.out: src/test_timers.cc $(addprefix $(SRC_BASE)/src/main/,rv/rv_timers.cc rv/rv_timer.cc rv/rv_timer_pause.cc rv/rv_zones.cc rv/report.cc \
+                                                                            time/host/real_time_clock.cc operator_new_malloc.cc)

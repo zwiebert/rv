@@ -1,7 +1,7 @@
 #define UNITY_SUPPORT_TEST_CASES
 #include "../test_runner/test_runner.h";
 #include "unity.h"
-//#include "cli/cli_json.c"
+#include "cli/cli_imp.h"
 
 
 char *json_get_command_object(char *s, char **ret_name, char **next_name);
@@ -14,17 +14,9 @@ char *json_get_command_object(char *s, char **ret_name, char **next_name);
 #include <stdint.h>
 #include <stdlib.h>
 #define postcond(x) assert((x))
-int msgid;
+uint16_t msgid;
 
-typedef struct {
-  char *key;
-  char *val;
-} clpar;
 #define MAX_PAR 20
-struct cli_parm {
-  clpar *par;
-  unsigned size;
-};
 
 
 #define NAME      "timer"
@@ -37,7 +29,7 @@ struct cli_parm {
 #define JSON "{\"to\":\"tfmcu\",\"" NAME "\":{" CMD_OBJ "},\"" NAME2 "\":{" CMD_OBJ2 "}" ",\"" NAME3 "\":{" CMD_OBJ3  "}" "}";
 //#define JSON "{\"to\":\"tfmcu\",\"" NAME "\":{" CMD_OBJ "},\"" NAME2 "\":{" CMD_OBJ2 "}" "}";
 
-static count = 0;
+static int count = 0;
 
 static int test_process_parm(clpar cli_par[], int parm_len) {
   int i=0;
@@ -99,6 +91,16 @@ static void test_json() {
   char json[] = JSON;
   count = 0;
   cli_process_json(json, test_process_parm);
+}
+
+
+
+void setUp() {
+
+}
+
+void tearDown() {
+
 }
 
 

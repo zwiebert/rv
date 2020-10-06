@@ -27,6 +27,9 @@ volatile time_t curr_time;
 volatile run_time_T run_time;
 volatile bool timer_rang, timer_noticed;
 
+void rtc_setCurrentTime(time_t t) {
+   rtc_set_counter_val(t);
+}
 
 static void nvic_setup(void)
 {

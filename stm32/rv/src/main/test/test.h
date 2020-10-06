@@ -1,8 +1,10 @@
-/*
- * test.hh
+/**
+ * \file test/test.h
+ * \brief Test program for zone timers (Obsolete?)
  *
- *  Created on: 06.07.2019
- *      Author: bertw
+ * This program was called from main after setup and run a long time while programming timers and
+ * checking the states while waiting for completion.
+ *
  */
 
 #ifndef MAIN_TEST_TEST_H_

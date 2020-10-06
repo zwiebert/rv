@@ -1,3 +1,8 @@
+/**
+ * \file user_config.h
+ * \brief  Configure the application here.
+ */
+
 #pragma once
 
 #ifndef STM32F1
@@ -28,6 +33,8 @@
 //#error "cellar"
 #undef USE_TEST
 #define VERSION "rv(cellar)-" __DATE__ " " __TIME__
+#elif defined TEST_HOST
+#define VERSION "rv(host_test)-" __DATE__ " " __TIME__
 #else
 #error "build version missing"
 #endif

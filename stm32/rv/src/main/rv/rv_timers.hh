@@ -1,3 +1,8 @@
+/**
+ * \file  rv/rv_timers.hh
+ * \brief A container and scheduler of zone timers
+ */
+
 #pragma once
 
 #include <misc/int_macros.h>
@@ -16,16 +21,9 @@ typedef TList<RvTimer> RvtList;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
+/// \brief  Create, manage and schedule zone timers.
 class RvTimers {
-  static uint16_t valve_bits, valve_mask;
-  static void switch_valve_2(int valve_number, bool state) {
-    SET_BIT(valve_mask, valve_number);
-    if (state)
-      SET_BIT(valve_bits, valve_number);
-  }
 private:
-  RvtList mActiveTimers, mFreeTimers;
-
   RvTimer* create_timer() {
     if (mFreeTimers.empty()) {
       mActiveTimers.emplace_back();
@@ -58,29 +56,36 @@ private:
   }
 
 
-  switch_valve_cb mSvCb; // XXX
-  switch_valves_cb mSvsCb;
-  timer_was_modified_cb mTwmCb = 0;
+public:
+  RvTimers(switch_valve_cb cb) :
+      mSvCb(cb) {
+  }
 
 public:
 
+  /// \brief   Get count of existing zone timers (of any state)
   unsigned get_used_count() const {
     return mActiveTimers.size();
   }
-  //unsigned get_free_count() { return mRvTimers.get_free_count(); }
 
-  RvTimers(switch_valve_cb cb, switch_valves_cb cb2) :
-      mSvCb(cb), mSvsCb(cb2) {
-
-  }
-
+  /// \brief   register callback to actuate any valve
+  /// \param cb    a callback to switch multiple valves by bit-masks
   void register_callback(switch_valve_cb cb) {
     mSvCb = cb; // XXX
   }
+
+  /// \brief      register callback to notify about any modified timer
+  /// \param  cb  a callback to notify about change of timer by VALVE_NUMBER, TIMER_NUMBER and flag if timer was REMOVED
   void register_callback(timer_was_modified_cb cb) {
     mTwmCb = cb; // XXX
   }
 
+  /// \brief     Create, overwrite or delete a timer by given options in ARGS
+  ///
+  /// If on_duration in ARGS is 0, then delete the existing timer with the same VN/TN
+  ///
+  /// \args      Describing the new timer by VALVER_NUMBER, TIMER_NUMBER and options.
+  /// \return    A pointer to the created timer or NULL.
   RvTimer* set(RvTimer::SetArgs &args) {
 
     for (auto it = mActiveTimers.begin(); it != mActiveTimers.end(); ++it) {
@@ -97,7 +102,8 @@ public:
       return 0;
 
     if (RvTimer *timer = create_timer()) {
-      timer->register_callback((mSvCb ? mSvCb : switch_valve_2), args.valve_number);
+      if (mSvCb)
+        timer->register_callback(mSvCb, args.valve_number);
       timer->set(args);
       if (mTwmCb)
         mTwmCb(args.valve_number, args.timer_number, false);
@@ -107,6 +113,12 @@ public:
 
   }
 
+  /// \brief                Create, overwrite or delete a timer by given options
+  ///
+  /// If on_duration is 0, then delete the existing timer with the same VN/ID
+  ///
+  /// \valve_number,id      Describing the new timer by VALVER_NUMBER, TIMER_NUMBER and options.
+  /// \return               A pointer to the created timer or NULL.
   RvTimer* set(int valve_number, int on_duration, int id = 0) {
     RvTimer::SetArgs args;
     args.on_duration = on_duration;
@@ -115,7 +127,8 @@ public:
     return set(args);
   }
 
-  void unset(int valve_number, int id) {
+  //// \brief   Unused function (XXX: Remove this function)
+  void XXXunset(int valve_number, int id) {
     mActiveTimers.remove_if([&](RvTimer &vt) -> bool {
       return vt.match(valve_number, id);
     });
@@ -124,11 +137,19 @@ public:
       mTwmCb(valve_number, id, true);
   }
 
+  /// \brief   Do work
   void loop();
 
 public:
+  /// \brief  Get all timers as pointer to a list
   const RvtList* getTimerList() const {
     return &mActiveTimers;
   }
+
+
+private:
+  RvtList mActiveTimers, mFreeTimers;
+  switch_valve_cb mSvCb;
+  timer_was_modified_cb mTwmCb = 0;
 };
 

@@ -1,3 +1,8 @@
+/**
+ * \file   loop/loop.hh
+ * \brief  App main loop scheduler (flag-bit based).
+ */
+
 #pragma once
 
 #define loop_flags_periodic 0 // not used

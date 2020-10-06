@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-void intTimer_setup(void);
+void app_timerISR_setup(void);
 
 extern volatile uint32_t run_time_s10_;
 #define get_now_time_ts(x) (run_time_s10_ + 0)

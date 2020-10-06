@@ -1,3 +1,8 @@
+/**
+ * \file   rv/rv.hh
+ * \brief  Settings and forward declarations of the RV app
+ */
+
 #pragma once
 
 

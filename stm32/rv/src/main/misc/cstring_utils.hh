@@ -1,3 +1,8 @@
+/**
+ * \file    misc/cstring_utils.hh
+ * \brief   Helpers for null terminated strings
+ */
+
 #pragma once
 
 #include <cstring>

@@ -1,4 +1,9 @@
 #pragma once
+/**
+ * \file app/uout/callbacks.h
+ * \brief pub/sub interface to publish asynchronously to MQTT servers, HTTP-client web-sockets, USB-console, TCP-sockets/consoles
+ */
+
 #include <stdint.h>
 #include <stddef.h>
 #include <app/uout/status_output.h>
@@ -12,8 +17,8 @@ struct so_arg_valve_state_t {
 
 
 inline const so_arg_valve_state_t *uoCb_valveState_FromMsg(const uoCb_msgT msg) {
-  if (msg.flags.evt.valve_change && msg.flags.fmt.obj)
-    return static_cast<const so_arg_valve_state_t *>(msg.cv_ptr);
+  if (msg.flags.evt.valve_change && msg.flags.fmt.raw)
+    return static_cast<const so_arg_valve_state_t *>(msg.cptr);
   return nullptr;
 }
 

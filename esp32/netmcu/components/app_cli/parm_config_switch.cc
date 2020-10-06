@@ -11,6 +11,8 @@
 #include "misc/int_types.h"
 #include <net/ethernet.h>
 #include <string.h>
+#include <algorithm>
+#include <iterator>
 
 #define isValid_optStr(cfg, new) true
 #define set_optStr(v, cb) if (config_save_item_s(cb, v)) has_changed(cb)
@@ -19,8 +21,6 @@
 #define set_optN(t, v, cb) if (config_save_item_n_##t(cb,v)) has_changed(cb)
 
 #define has_changed(cb) SET_BIT(*changed_mask, cb)
-
-
 
 bool process_parmKvsConfig(const struct TargetDesc &td, so_msg_t so_key, const char *val, u32 *changed_mask) {
   bool result = true;
@@ -52,15 +52,19 @@ bool process_parmKvsConfig(const struct TargetDesc &td, so_msg_t so_key, const c
 #ifdef USE_LAN
   case SO_CFG_LAN_PHY: {
     NODEFAULT();
-    bool success = false;
-    u8 i;
-    for (i = 0; i < lanPhyLEN; ++i) {
-      if (strcasecmp(val, cfg_args_lanPhy[i]) == 0) {
-        set_optN(i8, i, CB_LAN_PHY);
-        success = true;
+#if 1
+    if (auto it = std::find(std::begin(cfg_args_lanPhy), std::end(cfg_args_lanPhy), val); it != std::end(cfg_args_lanPhy)) {
+      int idx = std::distance(std::begin(cfg_args_lanPhy), it);
+      set_optN(i8, idx, CB_LAN_PHY);
+    }
+#else
+    for (u8 phy = 0; phy < lanPhyLEN; ++phy) {
+      if (strcasecmp(val, cfg_args_lanPhy[phy]) == 0) {
+        set_optN(i8, phy, CB_LAN_PHY);
         break;
       }
     }
+#endif
   }
     break;
   case SO_CFG_LAN_PWR_GPIO: {

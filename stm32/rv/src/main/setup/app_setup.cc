@@ -16,6 +16,7 @@
 
 #include <rv/rv.hh>
 #include <rv/rv_timers.hh>
+#include <rv/report.h>
 #include <watch_dog/watch_dog.hh>
 
 
@@ -40,6 +41,7 @@ void app_setup() {
   clock_setup();
   systick_setup();
   uart_setup();
+  report_setup({esp32_puts});
   i2c2_setup();
   led_setup();
   rtc_setup();

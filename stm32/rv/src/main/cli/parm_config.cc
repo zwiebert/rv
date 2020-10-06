@@ -78,7 +78,7 @@ int process_parmConfig(clpar p[], int len) {
 #endif
 
     } else if (std::strcmp(key, "time") == 0) {
-      rtc_set_counter_val(atol(val));
+      rtc_setCurrentTime(atol(val));
     } else if (std::strcmp(key, "tz") == 0) {
       setenv("TZ", val, 1);
     } else if ((zkIdx = match_zoneKeyN(key)) >= 0) {

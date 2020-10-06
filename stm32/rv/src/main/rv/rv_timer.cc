@@ -3,6 +3,7 @@
 #include "rv_zones.hh"
 #include "water_pump/water_pump.h"
 #include "report.h"
+#include "debug/dbg.h"
 #include <algorithm>
 
 
@@ -63,6 +64,7 @@ void RvTimer::pause() {
 }
 
 void RvTimer::unpause() {
+  precond(mState == STATE_PAUSED);
   changeState(STATE_RUN);
 }
 

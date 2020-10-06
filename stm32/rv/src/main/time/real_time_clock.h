@@ -1,15 +1,13 @@
-/*
- * rtc.h
- *
- *  Created on: 01.05.2019
- *      Author: bertw
+/**
+ * \file   real_time_clock.h
+ * \brief  Provide real time (POSIX stamp) and seconds since startup
+ * \author bertw
  */
 
 #ifndef RTC_H_
 #define RTC_H_
 
 #include "user_config.h"
-#include <libopencm3/stm32/rtc.h>
 #include <stdint.h>
 #include <time.h>
 
@@ -25,10 +23,24 @@ void rtc_setup(void);
 
 typedef uint32_t run_time_T;
 
-extern volatile time_t curr_time;
-extern volatile run_time_T run_time;
 
-#define runTime() (run_time + 0)
+run_time_T runTime();
+time_t currentTime();
+void rtc_setCurrentTime(time_t t);
+
+
+
+#ifndef MCU_HOST
+inline run_time_T runTime() {
+  extern volatile run_time_T run_time;
+  return run_time;
+}
+
+inline time_t currentTime() {
+  extern volatile time_t curr_time;
+  return curr_time;
+}
+#endif
 
 #ifdef __cplusplus
 }
