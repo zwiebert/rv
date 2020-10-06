@@ -176,7 +176,8 @@ public:
     mDoneOn = 0;
   }
 
-  /// \brief     mark this timer as ready to run, if not STATE_DONE already
+  /// \brief     Mark this timer as ready to run, if not STATE_DONE already
+  /// \note      This should be called after adding a new timer
   RvTimer *scheduleRun() {
     if (mState == STATE_DONE)
       return this;

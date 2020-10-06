@@ -15,7 +15,7 @@ endif
 grep_results := grep -H -e IGNORE -e FAIL -e Aborted 
 
 all_tests:
-	$(Q) $(make) all C_WARN='-w'
+	$(Q) $(make) all #C_WARN='-w'
 
 all: clean_out init
 	@echo "\n### Making and running tests: " $(TESTS) "\n"
@@ -31,7 +31,6 @@ init:
 	$(Q) mkdir -p build
 	$(Q) mkdir -p test_env
 
-	
 tests = $(addsuffix .log,$(addprefix build/,$(TESTS)))
 tests: $(tests)
 	$(Q) $(grep_results) build/*.log  || true
@@ -43,11 +42,16 @@ COMPSHARE_PATH := $(SRC_BASE)/$(COMPSHARE_DIR)
 COMP_PATH := $(SRC_BASE)/$(COMP_DIR)
 EXTRA_INCDIR = test_runner $(SRC_BASE)/src/main ./unity/src
 C_WARN ?= -Wall -Wno-unused-result
+EXTRA_DEFS := UNITY_OUTPUT_COLOR UNITY_SUPPORT_TEST_CASES
 
 INCLUDE := $(addprefix -I,$(EXTRA_INCDIR))
+DEFINES := $(addprefix -D,$(EXTRA_DEFS))
+
+
 
 build/test_%.out:
-	$(Q) g++  -g3 $(C_WARN) -flto -O0 -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) -DHOST_TESTING -DTEST_HOST -DTEST -DMCU_HOST -lm #-H
+	$(Q) g++-10  -g3 $(C_WARN) -Og -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) $(DEFINES) -DHOST_TESTING -DTEST_HOST -DTEST -DMCU_HOST -lm -std=c++2a \
+	         # -flto which  -fdiagnostics-path-format=separate-events
 
 
 %.log:%.out

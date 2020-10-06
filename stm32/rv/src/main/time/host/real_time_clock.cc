@@ -4,13 +4,11 @@
 
 static time_t start_time;
 
-
-
-
 static struct Init {
-  Init() { start_time = time(0); }
+  Init() {
+    start_time = time(0);
+  }
 } init;
-
 
 run_time_T runTime() {
   return time(0) - start_time;
@@ -19,12 +17,6 @@ run_time_T runTime() {
 time_t currentTime() {
   return time(0);
 }
-
-
-
-
-
-
 
 #endif
 
