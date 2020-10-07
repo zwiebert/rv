@@ -2,8 +2,44 @@ THIS_ROOT := $(realpath .)
 BUILD_BASE ?= $(THIS_ROOT)/build
 SRC_DIRS = src/main
 
+############# STM32F1-XXX ####################
 
-############## On Host ########################
+STM32F1_XXX_BUILD_PATH=$(BUILD_BASE)/stm32f1/xxx
+
+stm32f1_xxx.cm.configure:
+	rm -fr $(STM32F1_XXX_BUILD_PATH)
+	mkdir -p $(STM32F1_XXX_BUILD_PATH)
+	env PATH=.:/usr/bin:$$PATH cmake -B $(STM32F1_XXX_BUILD_PATH) -DCMAKE_TOOLCHAIN_FILE=arm-gcc-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -D BUILD_STM32F1_XXX=ON -S $(realpath .) #-G Ninja
+	
+stm32f1_xxx.cm.build.make := make -C $(STM32F1_XXX_BUILD_PATH) -k  $(make_verbose_opts)
+stm32f1_xxx.cm.build.ninja := (cd $(STM32F1_XXX_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
+
+	
+stm32f1_xxx.cm.build:
+	$(stm32f1_xxx.cm.build.make) -- bin
+	
+stm32f1_xxx.cm.flash:
+	$(stm32f1_xxx.cm.build.make) -- flash
+
+############# HOST-XXX ####################
+
+HOST_XXX_BUILD_PATH=$(BUILD_BASE)/host/xxx
+
+xxx.cm.configure:
+	rm -fr $(HOST_XXX_BUILD_PATH)
+	mkdir -p $(HOST_XXX_BUILD_PATH)
+	cmake -B $(HOST_XXX_BUILD_PATH) -D BUILD_HOST_TESTS=OFF -D BUILD_HOST_XXX=ON -S $(realpath .) #-G Ninja
+	
+xxx.cm.build.make := make -C $(HOST_XXX_BUILD_PATH) -k  $(make_verbose_opts)
+xxx.cm.build.ninja := (cd $(HOST_XXX_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
+
+	
+xxx.cm.build:
+	$(xxx.cm.build.make) 
+
+
+
+############## On Host Test ########################
 HOST_TEST_BUILD_PATH=$(BUILD_BASE)/host/test
 
 .PHONY: test.cm.configure test.cm.build

@@ -36,7 +36,7 @@
 #elif defined TEST_HOST
 #define VERSION "rv(host_test)-" __DATE__ " " __TIME__
 #else
-#error "build version missing"
+#define VERSION "rv(xxx)-" __DATE__ " " __TIME__
 #endif
 
 
