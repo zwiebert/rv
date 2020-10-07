@@ -1,4 +1,4 @@
-#include "../test_runner/test_runner.h"
+#include "test_runner.h"
 #include "unity.h"
 
 #include <stdint.h>

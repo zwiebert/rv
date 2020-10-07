@@ -3,6 +3,34 @@ BUILD_BASE ?= $(THIS_ROOT)/build
 SRC_DIRS = src/main
 
 
+############## On Host ########################
+HOST_TEST_BUILD_PATH=$(BUILD_BASE)/host/test
+
+.PHONY: test.cm.configure test.cm.build
+
+test.cm.configure:
+	rm -fr $(HOST_TEST_BUILD_PATH)
+	mkdir -p $(HOST_TEST_BUILD_PATH)
+	cmake -B $(HOST_TEST_BUILD_PATH) -D BUILD_HOST_TESTS=ON -S $(realpath .) #-G Ninja
+
+cm_build := make -C $(HOST_TEST_BUILD_PATH) -k  $(make_verbose_opts)
+#cm_build := (cd $(HOST_TEST_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
+
+	
+test.cm.build:
+	$(cm_build)
+
+test.cm.ctest: test.cm.build
+	$(cm_build) test
+	
+test.cm.ctest.current: test.cm.build
+	(cd  $(HOST_TEST_BUILD_PATH) && ctest --verbose -R "fernotron_trx.test_send")
+
+
+host-test-all:
+	make -s --no-print-directory  test.cm.configure test.cm.ctest
+
+
 
 ############# Doxygen ###################
 DOXY_BUILD_PATH=$(THIS_ROOT)/build/doxy

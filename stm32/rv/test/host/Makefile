@@ -42,7 +42,7 @@ COMPSHARE_PATH := $(SRC_BASE)/$(COMPSHARE_DIR)
 COMP_PATH := $(SRC_BASE)/$(COMP_DIR)
 EXTRA_INCDIR = test_runner $(SRC_BASE)/src/main ./unity/src
 C_WARN ?= -Wall -Wno-unused-result
-EXTRA_DEFS := UNITY_OUTPUT_COLOR UNITY_SUPPORT_TEST_CASES
+EXTRA_DEFS := UNITY_OUTPUT_COLOR UNITY_SUPPORT_TEST_CASES HOST_TESTING TEST_HOST TEST MCU_HOST
 
 INCLUDE := $(addprefix -I,$(EXTRA_INCDIR))
 DEFINES := $(addprefix -D,$(EXTRA_DEFS))
@@ -50,7 +50,7 @@ DEFINES := $(addprefix -D,$(EXTRA_DEFS))
 
 
 build/test_%.out:
-	$(Q) g++-10  -g3 $(C_WARN) -Og -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) $(DEFINES) -DHOST_TESTING -DTEST_HOST -DTEST -DMCU_HOST -lm -std=c++2a \
+	$(Q) g++-10  -g3 $(C_WARN) -Og -o $@  $^ unity/src/unity.c test_runner/test_runner.c $(setup) $(INCLUDE) $(DEFINES)  -lm -std=c++2a \
 	         # -flto which  -fdiagnostics-path-format=separate-events
 
 

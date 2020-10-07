@@ -1,5 +1,4 @@
-#define UNITY_SUPPORT_TEST_CASES
-#include "../test_runner/test_runner.h";
+#include "../test_runner/test_runner.h"
 #include "unity.h"
 #include "cli/cli_imp.h"
 
