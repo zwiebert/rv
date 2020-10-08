@@ -40,8 +40,9 @@ SOFTWARE.
 
 /* Private macro */
 /* Private variables */
+#ifdef USE_STDPERIPH_DRIVER
  USART_InitTypeDef USART_InitStructure;
-
+#endif
 
 /* Private function prototypes */
 void app(void);
