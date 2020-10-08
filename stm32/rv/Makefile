@@ -2,99 +2,82 @@ THIS_ROOT := $(realpath .)
 BUILD_BASE ?= $(THIS_ROOT)/build
 SRC_DIRS = src/main
 
-############# STM32F1-XXX ####################
 
-STM32F1_XXX_BUILD_PATH=$(BUILD_BASE)/stm32f1/xxx
-
-stm32f1_xxx.cm.configure:
-	rm -fr $(STM32F1_XXX_BUILD_PATH)
-	mkdir -p $(STM32F1_XXX_BUILD_PATH)
-	env PATH=.:/usr/bin:$$PATH cmake -B $(STM32F1_XXX_BUILD_PATH) -DCMAKE_TOOLCHAIN_FILE=arm-gcc-toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -D BUILD_STM32F1_XXX=ON -S $(realpath .) #-G Ninja
+help:
+	@$(info targets: stm32f1.fw.configure, .build, .flash  (Set BUILD_TYPE to Debug,Release,Cellar on commandline))
+	@$(info targets: host.fw.configure, .build)
+	@$(info targets: doxy-usr-build, doxy-usr-view)
+	@$(info targets: doxy-dev-build, doxy-dev-view)
+	@$(info targets: doxy-api-build, doxy-api-view)
 	
-stm32f1_xxx.cm.build.make := make -C $(STM32F1_XXX_BUILD_PATH) -k  $(make_verbose_opts)
-stm32f1_xxx.cm.build.ninja := (cd $(STM32F1_XXX_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
+############# STM32F1/FIRMWARE ####################
+BUILD_TYPE ?= Debug # Debug,Release,Cellar
 
+STM32F1_FW_BUILD_DIR = $(BUILD_BASE)/stm32f1/$(BUILD_TYPE)
+
+stm32f1.fw.configure:
+	rm -fr $(STM32F1_FW_BUILD_DIR)
+	mkdir -p $(STM32F1_FW_BUILD_DIR)
+	env PATH=.:/usr/bin:$$PATH cmake -S $(realpath .) -B $(STM32F1_FW_BUILD_DIR) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)  -DTARGET_ARCH=STM32F1  #-G Ninja
 	
-stm32f1_xxx.cm.build:
-	$(stm32f1_xxx.cm.build.make) -- bin
+stm32f1.fw.build.make := make -C $(STM32F1_FW_BUILD_DIR) -k  $(make_verbose_opts)
+stm32f1.fw.build.ninja := (cd $(STM32F1_FW_BUILD_DIR) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
 	
-stm32f1_xxx.cm.flash:
-	$(stm32f1_xxx.cm.build.make) -- flash
-
-############# HOST-XXX ####################
-
-HOST_XXX_BUILD_PATH=$(BUILD_BASE)/host/xxx
-
-xxx.cm.configure:
-	rm -fr $(HOST_XXX_BUILD_PATH)
-	mkdir -p $(HOST_XXX_BUILD_PATH)
-	cmake -B $(HOST_XXX_BUILD_PATH) -D BUILD_HOST_TESTS=OFF -D BUILD_HOST_XXX=ON -S $(realpath .) #-G Ninja
+stm32f1.fw.build:
+	$(stm32f1.fw.build.make) -- bin
 	
-xxx.cm.build.make := make -C $(HOST_XXX_BUILD_PATH) -k  $(make_verbose_opts)
-xxx.cm.build.ninja := (cd $(HOST_XXX_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
+stm32f1.fw.flash:
+	$(stm32f1.fw.build.make) -- flash
 
+
+############# HOST/FIRMWARE ####################
+HOST_FW_BUILD_DIR=$(BUILD_BASE)/host/xxx
+
+host.fw.configure:
+	rm -fr $(HOST_FW_BUILD_DIR)
+	mkdir -p $(HOST_FW_BUILD_DIR)
+	cmake -B $(HOST_FW_BUILD_DIR) -DTARGET_ARCH=HOST -S $(realpath .) #-G Ninja
 	
-xxx.cm.build:
-	$(xxx.cm.build.make) 
-
-
-
-############## On Host Test ########################
-HOST_TEST_BUILD_PATH=$(BUILD_BASE)/host/test
-
-.PHONY: test.cm.configure test.cm.build
-
-test.cm.configure:
-	rm -fr $(HOST_TEST_BUILD_PATH)
-	mkdir -p $(HOST_TEST_BUILD_PATH)
-	cmake -B $(HOST_TEST_BUILD_PATH) -D BUILD_HOST_TESTS=ON -S $(realpath .) #-G Ninja
-
-cm_build := make -C $(HOST_TEST_BUILD_PATH) -k  $(make_verbose_opts)
-#cm_build := (cd $(HOST_TEST_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
+host.fw.build.make := make -C $(HOST_FW_BUILD_DIR) -k  $(make_verbose_opts)
+host.fw.build.ninja := (cd $(HOST_FW_BUILD_DIR) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
 
 	
-test.cm.build:
-	$(cm_build)
+host.fw.build:
+	$(host.fw.build.make) 
 
-test.cm.ctest: test.cm.build
-	$(cm_build) test
+
+############## HOST/TESTS_ONLY ########################
+HOST_TESTS_BUILD_DIR=$(BUILD_BASE)/host/test
+
+.PHONY: host.tests.configure host.tests.build
+
+host.tests.configure:
+	rm -fr $(HOST_TESTS_BUILD_DIR)
+	mkdir -p $(HOST_TESTS_BUILD_DIR)
+	cmake -B $(HOST_TESTS_BUILD_DIR) -DTARGET_ARCH=HOST  -DBUILD_ONLY_TESTS=ON -S $(realpath .) #-G Ninja
+
+host.tests.build.make := make -C $(HOST_TESTS_BUILD_DIR) -k  $(make_verbose_opts)
+host.tests.build.ninja := (cd $(HOST_TESTS_BUILD_DIR) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
+host.tests.build = $(host.tests.build.make)
+
+host.tests.build:
+	$(host.tests.build) 
+
+host.tests.ctest: host.tests.build
+	$(host.tests.build) test
 	
-test.cm.ctest.current: test.cm.build
-	(cd  $(HOST_TEST_BUILD_PATH) && ctest --verbose -R "fernotron_trx.test_send")
+host.tests.ctest.current: host.tests.build
+	(cd  $(HOST_TESTS_BUILD_DIR) && ctest --verbose -R "fernotron_trx.test_send")
 
 
 host-test-all:
-	make -s --no-print-directory  test.cm.configure test.cm.ctest
-
+	make -s --no-print-directory  host.tests.configure host.tests.ctest
 
 
 ############# Doxygen ###################
 DOXY_BUILD_PATH=$(THIS_ROOT)/build/doxy
 
-DOXY_INPUT_FILE =  /tmp/doxy_input_file.txt
-DOXY_CONFIG_FILES = ./Doxyfile $(DOXY_INPUT_FILE)
-DOXY_CONFIG_FILE = /tmp/Doxyfile
 
-.PHONY: doxy doxy.cm.configure doxy.cm.build
-
-$(DOXY_CONFIG_FILE): $(DOXY_INPUT_FILE)
-	cat $(DOXY_CONFIG_FILES) >$(DOXY_CONFIG_FILE)
-
-doxy-build: $(DOXY_CONFIG_FILE)
-	mkdir -p $(DOXY_BUILD_PATH)
-	doxygen $(DOXY_CONFIG_FILE)
-	
-doxy-view: doxy-build
-	xdg-open $(DOXY_BUILD_PATH)/html/index.html
-	
-$(DOXY_INPUT_FILE):
-	find $(SRC_DIRS) '(' -name '*.h' -o -name '*.hh' -o -name '*.c' -o -name '*.cc' -o -name '*.hpp' -o -name '*.cpp' ')' -printf 'INPUT += %p\n' > $@
-	
-
-############# Doxygen ###################
-DOXY_BUILD_PATH=$(THIS_ROOT)/build/doxy
-
-.PHONY: FORCE
 .PHONY: doxy-usr-view  doxy-dev-view  doxy-api-view
 .PHONY: doxy-usr-build doxy-dev-build doxy-api-build 
 
@@ -106,31 +89,26 @@ $(DOXY_BUILD_PATH)/%/html/index.html: /tmp/doxy_%_file
 doxy-usr-build: $(DOXY_BUILD_PATH)/usr/html/index.html FORCE
 doxy-usr-view: doxy-usr-build
 	xdg-open $(DOXY_BUILD_PATH)/usr/html/index.html &
-
 doxy-dev-build: $(DOXY_BUILD_PATH)/dev/html/index.html FORCE
 doxy-dev-view: doxy-dev-build
 	xdg-open $(DOXY_BUILD_PATH)/dev/html/index.html &
-	
 doxy-api-build: $(DOXY_BUILD_PATH)/api/html/index.html FORCE
 doxy-api-view: doxy-api-build
 	xdg-open $(DOXY_BUILD_PATH)/api/html/index.html &
 
 
-
 /tmp/doxy_%_file: ./Doxyfile_% /tmp/doxy_input_%
 	cat $^ > $@
-
 /tmp/doxy_input_dev: FORCE
 	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | fgrep -v -e CMSIS -e STM32F10x | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
 /tmp/doxy_input_api: FORCE
 	git ls-files '*.h' '*.hh' | fgrep -v -e CMSIS -e STM32F10x | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
-
 /tmp/doxy_input_usr: FORCE
 	echo "" > $@
-	
 doxy-%-view: doxy-%-build FORCE
 	xdg-open $(DOXY_BUILD_PATH)/$*/html/index.html
 	
-	
+
+
+.PHONY: FORCE	
 FORCE:
-	
