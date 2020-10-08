@@ -38,13 +38,10 @@ bool RainSensor::getState(time_t delay) {
     return true;
 #endif
 
-	bool result = false;
-	if (!delay)
-	    result = gpio_get(RAIN_SENSOR_PORT, RAIN_SENSOR_PIN); //rainSensor_isRainSensorActive();
-	else
-		result = mOffTime + delay < time(0);
-
-	return result;
+  if (!delay)
+    return gpio_get(RAIN_SENSOR_PORT, RAIN_SENSOR_PIN); //rainSensor_isRainSensorActive();
+  else
+    return mOffTime + delay < time(0);
 }
 
 void RainSensor::loop(void) {

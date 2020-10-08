@@ -39,10 +39,11 @@ void app() {
   }
 }
 
+#ifndef MCU_HOST
 time_t time(time_t *p) {
   if (p)
-    *p = curr_time;
-  return curr_time;
+    *p = currentTime();
+  return currentTime();
 }
 
 // redirect standard output (fd 1) and stderr (fd 2)
@@ -54,6 +55,7 @@ extern "C" int _write(int fd, char *ptr, int len) {
 
   return esp32_write(ptr, len);
 }
+#endif
 
 void loop(void) {
 #ifdef USE_TEST

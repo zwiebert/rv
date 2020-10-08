@@ -1,8 +1,7 @@
-/*
- * systick_1ms.h
- *
- *  Created on: 19.06.2019
- *      Author: bertw
+/**
+ * \file systick_1ms.h
+ * \brief  Provide  milliseconds since startup
+ * \author bertw
  */
 
 #ifndef MAIN_SYSTICK_1MS_H_

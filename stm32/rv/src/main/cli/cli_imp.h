@@ -1,3 +1,8 @@
+/**
+ * \file cli/cli_imp.h
+ * \brief Private CLI header
+ */
+
 #ifndef cli_imp_h_
 #define cli_imp_h_
 #include "cli.h"

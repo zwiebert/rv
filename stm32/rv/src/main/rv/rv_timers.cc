@@ -9,9 +9,6 @@
 #include "water_pump/water_pump.h"
 
 
-uint16_t RvTimers::valve_bits;
-uint16_t RvTimers::valve_mask;
-
 void RvTimers::loop() {
 
   for (auto it = mActiveTimers.begin(); it != mActiveTimers.end();) {
@@ -55,11 +52,6 @@ void RvTimers::loop() {
       break;
     }
 
-  }
-
-  if (valve_mask && mSvsCb) {
-    mSvsCb(valve_bits, valve_mask);
-    valve_bits = valve_mask = 0;
   }
 }
 

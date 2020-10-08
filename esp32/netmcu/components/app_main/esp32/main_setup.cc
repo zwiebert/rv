@@ -1,11 +1,11 @@
 #include "main.h"
-#include "config/config.h"
+#include "app/settings/config.h"
 #include "stm32/stm32.h"
 #include "stm32_com/com_task.h"
-#include "cli_app/cli_app.h"
+#include "app/cli/cli_app.h"
 #include "cli/mutex.h"
 #include "net/http_client.h"
-#include "config/config.h"
+#include "app/settings/config.h"
 #include "net/http/server/content/setup.h"
 
 void mcu_restart() {
@@ -21,7 +21,7 @@ void ntpApp_setup(void) {
   config_setup_ntpClient();
 }
 
-extern "C" void main_setup_ip_dependent() { //XXX called from library
+void main_setup_ip_dependent() {
   static int once;
   if (!once) {
     once = 1;
@@ -73,6 +73,9 @@ void mcu_init() {
     lfPer_setBit(lf_loopTcpServer);
 
   if constexpr (use_NETWORK) {
+
+    ipnet_CONNECTED_cb = main_setup_ip_dependent;
+
     if (use_AP_FALLBACK || C.network != nwNone)
       esp_netif_init();
 

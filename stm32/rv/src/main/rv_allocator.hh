@@ -1,3 +1,7 @@
+/**
+ * \file rv_allocator.hh
+ * \brief Provide allocator for use with STL container
+ */
 #pragma once
 
 #ifdef USE_ALLOCATOR_MALLOC

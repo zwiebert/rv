@@ -13,7 +13,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <debug/dbg.h>
-#define postcond(x)
 #define dbg_vpf(x) x
 #define D(x) x
 uint16_t msgid;

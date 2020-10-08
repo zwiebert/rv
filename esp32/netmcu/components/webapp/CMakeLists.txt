@@ -1,3 +1,4 @@
+if(NOT UNIT_TESTING) 
 set(srcs
 "../webapp/build/wapp.html.gz.c"
 "../webapp/build/wapp.js.gz.c"
@@ -11,7 +12,10 @@ idf_component_register(
     INCLUDE_DIRS . "./include"
    )
  
- component_compile_options(${component_compile_opts})
+ component_compile_options(${comp_compile_opts})
+component_compile_features(${comp_compile_feats})
+component_compile_features(${comp_compile_feats})
+component_compile_features(${comp_compile_feats})
  
  add_custom_command(
      OUTPUT "${COMPONENT_DIR}/build/wapp.html.gz.c"
@@ -25,3 +29,5 @@ idf_component_register(
   
 add_custom_target(content_files ALL  DEPENDS ${COMPONENT_DIR}/_force.h )
 add_dependencies(  ${COMPONENT_LIB} content_files)
+
+endif()

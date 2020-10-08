@@ -1,3 +1,8 @@
+/**
+ * \file    protobuf/zone_data.hh
+ * \brief   Conversion from struct ZD_ARG to protobuf message and vice versa
+ */
+
 #pragma once
 
 #include <stdbool.h>

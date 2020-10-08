@@ -8,8 +8,7 @@
 #ifndef SRC_net_mqtt_app_H_
 #define SRC_net_mqtt_app_H_
 
-#include "app_config/proj_app_cfg.h"
-#include "net/mqtt/mqtt.h"
+#include "app/config/proj_app_cfg.h"
 
 void io_mqtt_enable(bool enable);
 
@@ -32,10 +31,6 @@ void io_mqtt_publish_stm32_event(const char *event);
 #endif
 
 
-struct cfg_mqtt_app {
-  char topic_root[16];
-};
-
-void io_mqttApp_setup(struct cfg_mqtt_app *cfg);
+void io_mqttApp_setup(const char *topic_root);
 
 #endif /* SRC_net_mqtt_app_H_ */

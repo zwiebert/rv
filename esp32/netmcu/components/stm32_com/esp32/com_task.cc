@@ -1,4 +1,4 @@
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include "stm32_com/com_task.h"
 
 #include "stm32/stm32.h"
@@ -17,9 +17,10 @@
 #include "misc/int_types.h"
 #include "net/http/server/http_server.h"
 #include "net/tcp_cli_server.h"
+#include <uout/callbacks.h>
 #include "time.h"
 #include "txtio/inout.h"
-#include "userio/status_json.h"
+#include "uout/status_json.hh"
 #include <errno.h>
 #include <string.h>
 #include <sys/select.h>
@@ -40,6 +41,23 @@
 
 #define BUF_SIZE 512
 static char line[BUF_SIZE];
+
+
+struct TargetDescStm32 final: public TargetDesc {
+public:
+  TargetDescStm32(so_target_bits tgt) :
+      TargetDesc(static_cast<so_target_bits>(tgt | SO_TGT_STM32 )) {
+  }
+
+  TargetDescStm32(const TargetDescStm32&) = delete;
+  virtual ~TargetDescStm32() = default;
+
+private:
+  virtual int priv_write(const char *s, ssize_t len, bool final) const {
+    return stm32_write(s, len);
+  }
+};
+
 
 static bool stmTrace_checkCommandLine(const char *line) {
   if (strncmp(TRACE_MARKER, line, TRACE_MARKER_LEN) != 0)
@@ -83,16 +101,18 @@ static void do_work() {
 
   if (json) {
     LockGuard lock(cli_mutex);
-    DD(printf("stm32com:request: <%s>\n", json));
-    cli_process_json(json, static_cast<so_target_bits>(SO_TGT_ANY | SO_TGT_STM32));
 
-    if (sj_get_json()) {
-      DD(printf("stm32com:response: <%s>\n", sj_get_json()));
+    TargetDescStm32 td { static_cast<so_target_bits>(SO_TGT_FLAG_JSON)};
+    DD(printf("stm32com:from_rv:request: <%s>\n", json));
+    cli_process_json(json, td);
+
+    if (td.sj().get_json()) {
+      DD(printf("stm32com:from_netmcu:response: <%s>\n", td.sj().get_json()));
       if (stm32_mutexTake()) {
-        stm32_write(sj_get_json(), strlen(sj_get_json()));
+        stm32_write(td.sj().get_json(), strlen(td.sj().get_json()));
         stm32_write("\n", 2);
         stm32_mutexGive();
-        sj_free_buffer();
+        td.sj().free_buffer();
       }
     }
   }
@@ -101,7 +121,7 @@ static void do_work() {
   if (!reply)
     reply = strstr(line, "{\"update\":");
   if (reply) {
-    ws_print_json(reply);
+    uoApp_publish_wsJson(reply);
     DD(printf("stm32com:recv:####REPLY####: <%s>\n", reply));
   }
 }

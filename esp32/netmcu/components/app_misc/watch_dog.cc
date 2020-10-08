@@ -6,7 +6,7 @@
  */
 #include <stm32/stm32.h>
 #include <time.h>
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include <string.h>
 #include "driver/gpio.h"
 #include "app/net/gw_ping.h"

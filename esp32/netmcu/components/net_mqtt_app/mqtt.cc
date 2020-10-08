@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #ifdef USE_MQTT
 
 #include "net/mqtt/app/mqtt.h"
@@ -14,19 +14,30 @@
 #include <stdio.h>
 #include "cli/cli.h"
 #include "cli/mutex.hh"
-#include "userio/status_json.h"
-#include "userio_app/status_output.h"
-
+#include "uout/status_json.hh"
+#include "app/uout/status_output.h"
+#include <app/uout/callbacks.h>
+#include <net/mqtt/mqtt.hh>
 #include <array>
 
-static char topic_root[16] = "rv/";
-static size_t topic_root_len = 3;
+static char *io_mqtt_topic_root;
+
+#define TOPIC_ROOT io_mqtt_topic_root
+
+#define TOPIC_CMD_END "/duration"
+#define TOPIC_CLI_END "/cli"
+
 
 #define TOPIC_CLI  "cli"
 #define TOPIC_STATUS  "status"
 #define TOPIC_DUR_END "/duration"
 #define TOPIC_DUR_MID "+"
 #define TOPIC_CMD  TOPIC_DUR_MID TOPIC_DUR_END
+
+#define TOPIC_CLI_OUT_END "cli_out"
+#define TOPIC_CMD_OUT_END "cmd_out"
+#define TOPIC_PCT_OUT_END "pct_out"
+#define TOPIC_GPO_OUT_END "gpo_out"
 
 #define TAG_CLI "cli "
 #define TAG_CLI_LEN (sizeof(TAG_CLI) - 1)
@@ -37,96 +48,134 @@ static size_t topic_root_len = 3;
 #define TAG_TIMER "timer "
 #define TAG_TIMER_LEN (sizeof(TAG_TIMER) - 1)
 
-void io_mqtt_publish_config(const char *s)  {
-  if (so_tgt_test(SO_TGT_MQTT)) //FIXME: implement this better
-    io_mqtt_publish("tfmcu/config_out", s);
+static void io_mqtt_publish_topic_end(const char *topic_end, const char *json) {
+  char topic[64];
+  snprintf(topic, sizeof topic, "%s%s", TOPIC_ROOT, topic_end);
+
+  Net_Mqtt::publish(topic, json);
 }
 
+static void io_mqtt_publish_topic_end_get_json(const TargetDesc &td, const char *topic_end) {
+  char *json = td.sj().get_json();
+  if (!json && !*json)
+    return;
+  io_mqtt_publish_topic_end(topic_end, json);
+}
+
+
+void io_mqtt_publish_config(const char *s)  {
+    Net_Mqtt::publish("tfmcu/config_out", s);
+}
 
 void io_mqtt_publish_valve_status(int valve_number, bool state) {
   char topic[64]; //, data[16];
 
-  snprintf(topic, 64, "%szone/%d/valve", topic_root, valve_number);
+  snprintf(topic, 64, "%szone/%d/valve", io_mqtt_topic_root, valve_number);
 
-  io_mqtt_publish(topic, state ? "on" : "off");
+  Net_Mqtt::publish(topic, state ? "on" : "off");
 }
 
 void io_mqtt_publish_rain_sensor_status(bool state) {
   char topic[64]; //, data[16];
 
-  snprintf(topic, 64, "%s%s/rain", topic_root, TOPIC_STATUS);
+  snprintf(topic, 64, "%s%s/rain", io_mqtt_topic_root, TOPIC_STATUS);
 
-  io_mqtt_publish(topic, state ? "on" : "off");
+  Net_Mqtt::publish(topic, state ? "on" : "off");
 }
 
 void io_mqtt_publish_pump_status(bool state) {
   char topic[64]; //, data[16];
 
-  snprintf(topic, 64, "%s%s/pump", topic_root, TOPIC_STATUS);
+  snprintf(topic, 64, "%s%s/pump", io_mqtt_topic_root, TOPIC_STATUS);
 
-  io_mqtt_publish(topic, state ? "on" : "off");
+  Net_Mqtt::publish(topic, state ? "on" : "off");
 }
 
 void io_mqtt_publish_stm32_event(const char *event) {
   char topic[64]; //, data[16];
 
-  snprintf(topic, 64, "%s%s/event", topic_root, TOPIC_STATUS);
+  snprintf(topic, 64, "%s%s/event", io_mqtt_topic_root, TOPIC_STATUS);
 
-  io_mqtt_publish(topic, event);
+  Net_Mqtt::publish(topic, event);
 }
 
 
 
-// implementation interface
-static void io_mqtt_connected () {
-  std::array<char,80> buf;
 
-  io_mqtt_subscribe(strcat(strcpy(buf.data(), topic_root), TOPIC_CLI), 0);
-  io_mqtt_subscribe(strcat(strcpy(buf.data(), topic_root), TOPIC_CMD), 0);
-  io_mqtt_publish(strcat(strcpy(buf.data(), topic_root), TOPIC_CMD), "connected"); // for autocreate (ok???)
+static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
+  if (auto vs = uoCb_valveState_FromMsg(msg))
+    io_mqtt_publish_valve_status(vs->valve_number, vs->is_open);
 }
 
-static void io_mqtt_received(const char *topic, int topic_len, const char *data, int data_len) {
 
-  if (!topic_startsWith(topic, topic_len, topic_root)) {
-    return; // all topics start with this
-  }
 
-  topic += topic_root_len;
-  topic_len -= topic_root_len;
+static class AppNetMqtt final : public Net_Mqtt {
 
-  { LockGuard lock(cli_mutex); 
-    char line[40 + data_len];
-    if (topic_endsWith(topic, topic_len, TOPIC_DUR_END)) {
-      const char *addr = topic;
-      int addr_len = topic_len - (sizeof TOPIC_DUR_END - 1);
-      sprintf(line, "cmd dur%.*s=%.*s", addr_len, addr, data_len, data);
-      cli_process_cmdline(line, SO_TGT_MQTT);
-    } else if (strlen(TOPIC_CLI) == topic_len && 0 == strncmp(topic, TOPIC_CLI, topic_len)) {
-      if (data_len > TAG_CLI_LEN && strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {
-        data += TAG_CLI_LEN;
-        data_len -= TAG_CLI_LEN;
-      }
-      memcpy(line, data, data_len);
-      line[data_len] = '\0';
-      cli_process_cmdline(line, SO_TGT_MQTT);
-    } else if ((0 == strncmp(data, TAG_SEND, TAG_SEND_LEN)) || (0 == strncmp(data, TAG_CONFIG, TAG_CONFIG_LEN))
-        || (0 == strncmp(data, TAG_TIMER, TAG_TIMER_LEN))) {
-      memcpy(line, data, data_len);
-      line[data_len] = '\0';
-      cli_process_cmdline(line, SO_TGT_MQTT);
+  virtual void received(const char *topic, int topic_len, const char *data, int data_len) override {
+    TargetDesc td { SO_TGT_MQTT };
+    if (!topic_startsWith(topic, topic_len, io_mqtt_topic_root)) {
+      return; // all topics start with this
     }
 
-    // RETURN:
+    {
+      LockGuard lock(cli_mutex);
+      char line[40 + data_len];
+      if (topic_endsWith(topic, topic_len, TOPIC_DUR_END)) {
+        const char *addr = topic;
+        int addr_len = topic_len - (sizeof TOPIC_DUR_END - 1);
+        sprintf(line, "cmd dur%.*s=%.*s", addr_len, addr, data_len, data);
+        cli_process_cmdline(line, td);
+      } else if (topic_endsWith(topic, topic_len, TOPIC_CLI_END)) {
+        if (data_len > TAG_CLI_LEN && strncmp(data, TAG_CLI, TAG_CLI_LEN) == 0) {
+          data += TAG_CLI_LEN;
+          data_len -= TAG_CLI_LEN;
+        }
+        memcpy(line, data, data_len);
+        line[data_len] = '\0';
+        cli_process_cmdline(line, td);
+        io_mqtt_publish_topic_end_get_json(td, TOPIC_CLI_OUT_END);
+
+      } else if ((0 == strncmp(data, TAG_SEND, TAG_SEND_LEN)) || (0 == strncmp(data, TAG_CONFIG, TAG_CONFIG_LEN))
+          || (0 == strncmp(data, TAG_TIMER, TAG_TIMER_LEN))) {
+        memcpy(line, data, data_len);
+        line[data_len] = '\0';
+        cli_process_cmdline(line, td);
+      }
+
+      // RETURN:
+    }
   }
-}
 
+  virtual void connected() override {
+    std::array<char,80> buf;
 
-void io_mqttApp_setup(struct cfg_mqtt_app *cfg) {
-  topic_root_len = strlen(cfg->topic_root);
-  strcpy(topic_root, cfg->topic_root);
-  io_mqtt_received_cb = io_mqtt_received;
-  io_mqtt_connected_cb = io_mqtt_connected;
+     Net_Mqtt::subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CLI), 0);
+     Net_Mqtt::subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), 0);
+     Net_Mqtt::publish(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), "connected"); // for autocreate (ok???)
+
+     uo_flagsT flags {};
+     flags.tgt.mqtt = true;
+     flags.evt.valve_change = true;
+     flags.fmt.raw = true;
+     uoCb_subscribe(io_mqttApp_uoutPublish_cb, flags);
+  }
+
+  virtual void disconnected() override {
+    uoCb_unsubscribe(io_mqttApp_uoutPublish_cb);
+  }
+} MyMqtt;
+
+void io_mqttApp_setup(const char *topic_root) {
+  if (topic_root && *topic_root && (!io_mqtt_topic_root || 0 != strcmp(io_mqtt_topic_root, topic_root))) {
+    char *tr = (char*)malloc(strlen(topic_root)+1);
+    if (tr) {
+      STRCPY (tr, topic_root);
+      free(io_mqtt_topic_root);
+      io_mqtt_topic_root = tr;
+    }
+  }
+
+  Net_Mqtt::setup(&MyMqtt);
 }
 
 

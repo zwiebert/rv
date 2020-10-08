@@ -1,8 +1,8 @@
-/*
- * board_dlb8.h
- * "LED&KEY" module with TM1638 and 8 digits, 8 Mono-LEDs, 8 buttons
- *  Created on: 02.05.2019
- *      Author: bertw
+/**
+ * \file boards/dlb8.h
+ * \brief "LED&KEY" board with 8 LED-digits, 8 Mono-LEDs, 8 buttons. IC: TM1638 (IIC Bus)
+ * \date  02.05.2019
+ * \author bertw
  */
 #include "../tm1638.h"
 
@@ -15,7 +15,7 @@
 #define LED_KEY_POS_TO_REG(pos) ((pos)*2)
 
 
-// bits in output of Tm1638_read() ... not needed for dlb8_get_button()
+/// \brief bits in output of Tm1638_read() ... not needed for dlb8_get_button()
 #define LED_KEY_BUTTON_0 0x00000001
 #define LED_KEY_BUTTON_1 0x00000100
 #define LED_KEY_BUTTON_2 0x00010000
@@ -32,38 +32,31 @@ typedef struct {
 
 } Dlb8;
 
-// get pressed button
-// return value:
-//   if no button is pressed: 0
-//   if one or more buttons are pressed: bits 0..7 are set representing the pressed buttons 0..7 (or 1..8)
-//
+/// \brief get pressed button
+/// \return
+///   - if no button is pressed: 0
+///   - if one or more buttons are pressed: bits 0..7 are set representing the pressed buttons 0..7 (or 1..8)
 uint8_t dlb8_get_buttons(Dlb8 *obj);
 
-// get only pressed buttons which were not pressed at the last call of this function
+/// \brief  get only pressed buttons which were not pressed at the last call of this function
 uint8_t dlb8_get_changed_buttons(Dlb8 *obj);
 
-// return buttons which were hold pressed while NMB_CALLS of get_buttons()/get_changed_buttons()
+/// \brief  return buttons which were hold pressed while NMB_CALLS of get_buttons()/get_changed_buttons()
 uint8_t dlb8_calculate_hold_buttons(Dlb8 *obj, uint8_t nmb_calls);
 
-//  put led on or off
-// parameters:
-//    mask: bit mask of LEDs to be addressed
-//    value: on=true, off=false
-// return value:
-//    if success: true
-//
+/// \brief           put led on or off
+/// \param mask      bit mask of LEDs to be addressed
+/// \param value     on=true, off=false
+/// \return          if success: true
 bool dlb8_put_leds(Dlb8 *obj, uint8_t mask, bool value);
 
-//  put value to digit
-// parameters:
-//    mask: bit mask of Digits to be addressed
-//    value: bits 0..6 are representing digit segments a..g. bit 7 represents decimal point.
-// return value:
-//    if success: true
-//
+/// \brief          put value to digit
+/// \param mask     bit mask of Digits to be addressed
+/// \param value    bits 0..6 are representing digit segments a..g. bit 7 represents decimal point.
+/// \return         if success: true
 bool dlb8_put_digits(Dlb8 *obj, uint8_t mask, uint8_t value);
 
-// put char to digit
+/// \brief          put char to digit
 #define dlb8_put_chars(obj,mask,c, dp) dlb8_put_digits(obj,mask, Tm1638_char_to_7s((c)) | ((dp)?0x80:0))
 
 #endif /* TM1638_INCLUDE_BOARD_D8L8K8_H_ */

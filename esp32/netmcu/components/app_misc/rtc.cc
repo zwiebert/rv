@@ -1,14 +1,14 @@
 #include <string.h>
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 
 #include "app/rtc.h"
 
 
 #include <time.h>
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
 #include <sys/time.h>
 #endif
-#include "config/config.h"
+#include "app/settings/config.h"
 #include "app/common.h"
 
 volatile time_t run_time_secs;
@@ -21,7 +21,7 @@ void set_system_time(time_t timestamp);
 
 void  rtc_set_system_time(rtc_time_t stamp, rtc_time_source_t source) {
   rtc_last_time_source = source;
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
   struct timeval tv = {.tv_sec = stamp, .tv_usec = 0 };
   settimeofday(&tv, NULL);
 #else
@@ -75,7 +75,7 @@ rtc_get_by_string(char *s) {
   time_t timer = time(NULL);
   struct tm t;
   localtime_r(&timer, &t);
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
   strftime(s, 20, "%FT%H:%M:%S", &t);
 #else
   isotime_r(&t, s);

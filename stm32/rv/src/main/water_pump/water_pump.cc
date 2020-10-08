@@ -42,7 +42,7 @@ static bool wp_pc_sample, wp_ub_sample;
 // busy-loop wait for N seconds
 static void delay_secs(int secs) {
 	while (secs--)
-		for(int i = 0; i < 4500000; ++i) {
+		for(uint32_t i = 0; i < 4500000; ++i) {
 			__asm__("nop");
 		}
 }

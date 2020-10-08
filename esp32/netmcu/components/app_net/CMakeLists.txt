@@ -1,19 +1,12 @@
 set(srcs esp32/gw_ping.cc) 
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DMCU_ESP32")
-
-if(DEFINED ENV{DISTRO})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DDISTRIBUTION")
-endif()
-if(DEFINED ENV{FLAVOR_LAN})
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DFLAVOR_LAN")
-endif()
-
-
 idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS "./include"
     #REQUIRES  
-    PRIV_REQUIRES debug misc net
+    PRIV_REQUIRES utils_debug utils_misc net
                   lwip
 )
+
+component_compile_options(${comp_compile_opts})
+component_compile_features(${comp_compile_feats})

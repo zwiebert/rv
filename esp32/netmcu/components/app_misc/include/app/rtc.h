@@ -1,7 +1,7 @@
 #ifndef RTC_H_
 #define RTC_H_
 
-#include "app_config/proj_app_cfg.h"
+#include "app/config/proj_app_cfg.h"
 #include <time.h>
 
 extern volatile time_t run_time_secs;
@@ -39,7 +39,7 @@ typedef enum { RTC_SRC_NONE, RTC_SRC_NTP, RTC_SRC_CLI } rtc_time_source_t;
 
 bool ntp_set_system_time(void);
 
-#ifdef POSIX_TIME
+#ifdef USE_POSIX_TIME
 #define rtc_tick() do { ++run_time_secs; } while (0)
 #else
 extern volatile time_t __system_time;

@@ -1,3 +1,7 @@
+/**
+ * \file  peri/dlb8.h
+ * \brief  Interface to TM1638 based Board DLB8  (8 Buttons + 8 7-segment-LEDs)
+ */
 #pragma once
 
 #include "../../../Libraries/tm1638/include/boards/dlb8.h"

@@ -1,8 +1,7 @@
-/*
- * stm32f1-opencm3.h
- *
- *  Created on: 03.05.2019
- *      Author: bertw
+/**
+ * \file stm32f1-opencm3.h
+ * \brief Wrappers around some opencm3 functions.
+ * \author: bertw
  */
 
 #ifndef TM1638_SRC_STM32F1_OPENCM3_H_

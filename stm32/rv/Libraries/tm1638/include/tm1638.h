@@ -1,8 +1,7 @@
-/*
- * tm1638.h
- *
- *  Created on: 02.05.2019
- *      Author: bertw
+/**
+ * \file tm1638.h
+ * \brief Access TM1638 (on IIC Bus)
+ * \author  bertw
  */
 
 #ifndef TM1638_INCLUDE_TM1638_H_

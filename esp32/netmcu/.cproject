@@ -199,8 +199,6 @@
                 				
                 <buildCommand>make</buildCommand>
                 				
-                <buildArguments/>
-                				
                 <buildTarget>esp32-wlan</buildTarget>
                 				
                 <stopOnError>true</stopOnError>
@@ -214,8 +212,6 @@
             <target name="Copy To Windows" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
                 				
                 <buildCommand>win_cp.sh</buildCommand>
-                				
-                <buildArguments/>
                 				
                 <stopOnError>true</stopOnError>
                 				
@@ -365,8 +361,6 @@
                 				
                 <buildCommand>make</buildCommand>
                 				
-                <buildArguments/>
-                				
                 <buildTarget>esp32-lan</buildTarget>
                 				
                 <stopOnError>true</stopOnError>
@@ -380,6 +374,8 @@
             <target name="clean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
                 				
                 <buildCommand>make</buildCommand>
+                				
+                <buildArguments/>
                 				
                 <buildTarget>clean</buildTarget>
                 				
@@ -395,8 +391,6 @@
                 				
                 <buildCommand>make</buildCommand>
                 				
-                <buildArguments/>
-                				
                 <buildTarget>esp32-flash</buildTarget>
                 				
                 <stopOnError>true</stopOnError>
@@ -410,8 +404,6 @@
             <target name="esp32-flash-ocd" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
                 				
                 <buildCommand>make</buildCommand>
-                				
-                <buildArguments/>
                 				
                 <buildTarget>esp32-flash-ocd</buildTarget>
                 				
@@ -427,8 +419,6 @@
                 				
                 <buildCommand>make</buildCommand>
                 				
-                <buildArguments/>
-                				
                 <buildTarget>esp32-flash-app-ocd</buildTarget>
                 				
                 <stopOnError>true</stopOnError>
@@ -443,8 +433,6 @@
                 				
                 <buildCommand>make</buildCommand>
                 				
-                <buildArguments/>
-                				
                 <buildTarget>esp32-wlan esp32-flash-app-ocd</buildTarget>
                 				
                 <stopOnError>true</stopOnError>
@@ -458,6 +446,8 @@
             <target name="esp32-fullclean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
                 				
                 <buildCommand>make</buildCommand>
+                				
+                <buildArguments/>
                 				
                 <buildTarget>esp32-fullclean</buildTarget>
                 				
@@ -508,6 +498,228 @@
                 <buildArguments>-C ../../stm32/rv/test/host</buildArguments>
                 				
                 <buildTarget>all_tests</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="host-test-all" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments/>
+                				
+                <buildTarget>host-test-all</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="test.cm.configure" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>-j6</buildArguments>
+                				
+                <buildTarget>test.cm.configure</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>true</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="test.cm.build" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>V=1</buildArguments>
+                				
+                <buildTarget>test.cm.build</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="test.cm.ctest" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>-j6</buildArguments>
+                				
+                <buildTarget>test.cm.ctest</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>true</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="test.cm.ctest.current" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>-j6</buildArguments>
+                				
+                <buildTarget>test.cm.ctest.current</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>true</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="esp32-graph-view" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildTarget>esp32-graph-view</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="doxy-view" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>V=1</buildArguments>
+                				
+                <buildTarget>doxy-view</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="doxy-build" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>V=1</buildArguments>
+                				
+                <buildTarget>doxy-build</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="doxy-api-build" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>V=1</buildArguments>
+                				
+                <buildTarget>doxy-api-build</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="doxy-api-view" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>V=1</buildArguments>
+                				
+                <buildTarget>doxy-api-view</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="doxy-dev-build" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>V=1</buildArguments>
+                				
+                <buildTarget>doxy-dev-build</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="doxy-dev-view" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>V=1</buildArguments>
+                				
+                <buildTarget>doxy-dev-view</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="doxy-usr-build" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>V=1</buildArguments>
+                				
+                <buildTarget>doxy-usr-build</buildTarget>
+                				
+                <stopOnError>true</stopOnError>
+                				
+                <useDefaultCommand>false</useDefaultCommand>
+                				
+                <runAllBuilders>true</runAllBuilders>
+                			
+            </target>
+            			
+            <target name="doxy-usr-view" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+                				
+                <buildCommand>make</buildCommand>
+                				
+                <buildArguments>V=1</buildArguments>
+                				
+                <buildTarget>doxy-usr-view</buildTarget>
                 				
                 <stopOnError>true</stopOnError>
                 				
