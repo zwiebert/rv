@@ -8,6 +8,7 @@ option(CMAKE_BUILD_TYPE "Set to one of: Debug, Release, Cellar" Debug)
 if(${TARGET_ARCH} STREQUAL "HOST" AND ${BUILD_ONLY_TESTS})
 #####################################################################################
 
+
 include(test/host/host_test.cmake)
 
 
