@@ -12,10 +12,10 @@
  *  Created on: 16.09.2017
  *      Author: bertw
  */
-#include "app/config/proj_app_cfg.h"
-#include "app/settings/config.h"
-#include "app/settings/config_defaults.h"
-#include "misc/base64.h"
+#include "app_config/proj_app_cfg.h"
+#include "app_settings/config.h"
+#include "app_settings/config_defaults.h"
+#include "utils_misc/base64.h"
 
 #define D(x) 
 

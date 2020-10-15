@@ -1,6 +1,6 @@
 #pragma once
 #include <stdint.h>
-#include <app/config/options.hh>
+#include <app_config/options.hh>
 
 otok optMap_findToken(const char *key);
 

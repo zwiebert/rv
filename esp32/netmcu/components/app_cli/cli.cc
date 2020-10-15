@@ -5,7 +5,7 @@
  *  Author: bertw
  */
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include <string.h>
 #include "cli_imp.h"
 #include "app/cli/cli_app.h"
@@ -14,7 +14,7 @@
 #include "uout/status_json.hh"
 #include "stm32/stm32.h"
 #include "app/uout/status_output.h"
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include <app/uout/so_config.h>
 #include <app/uout/so_msg.h>
 #include <algorithm>

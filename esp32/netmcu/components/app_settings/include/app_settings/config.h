@@ -8,7 +8,7 @@
 #ifndef MAIN_CONFIG_CONFIG_H_
 #define MAIN_CONFIG_CONFIG_H_
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "config_kvs/config.h"
 
 
@@ -16,13 +16,13 @@
 #include "net/ethernet.h"
 #endif
 #ifdef USE_MQTT
-#include "net/mqtt/mqtt.h"
+#include "net_mqtt/mqtt.h"
 #endif
 #ifdef USE_WLAN
 #include "net/wifistation.h"
 #endif
 #ifdef USE_HTTP
-#include "net/http/server/http_server.h"
+#include "net_http_server/http_server.h"
 #endif
 #ifdef USE_NTP
 #include "net/ntp.h"

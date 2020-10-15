@@ -8,7 +8,7 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "storage/storage.h"
 #include "txtio/inout.h"
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include "cli/mutex.hh"
 
 int unit_testing;

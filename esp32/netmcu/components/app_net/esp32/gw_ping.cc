@@ -22,7 +22,7 @@
 #include "net/ipnet.h"
 #include "debug/dbg.h"
 
-#include "misc/int_types.h"
+#include "utils_misc/int_types.h"
 
 #define D(x)
 

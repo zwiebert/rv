@@ -1,5 +1,5 @@
 /**
- * \file      app/config/options.hh
+ * \file      app_config/options.hh
  * \brief     defines strings used in user interface
  */
 

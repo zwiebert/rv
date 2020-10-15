@@ -1,5 +1,5 @@
 #include <string.h>
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 #include "app/rtc.h"
 
@@ -8,7 +8,7 @@
 #ifdef USE_POSIX_TIME
 #include <sys/time.h>
 #endif
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include "app/common.h"
 
 volatile time_t run_time_secs;

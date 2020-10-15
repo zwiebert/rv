@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "uout/status_output.h"
+#include "uout/uo_types.h"
 #include "so_msg.h"
 #include "so_config.h"
 #include "so_types.h"

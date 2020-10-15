@@ -23,9 +23,6 @@ set(comp_compile_feats cxx_std_20)
 set(comp_compile_opts "$<$<COMPILE_LANGUAGE:CXX>:-Wno-narrowing>" -Wno-missing-field-initializers)
 #set(comp_compile_opts ${comp_compile_opts} "$<$<COMPILE_LANGUAGE:CXX>:-std=gnu++2a>")
 
-add_link_options(-fsanitize=address)
-add_compile_options(-fsanitize=address)
-
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
 

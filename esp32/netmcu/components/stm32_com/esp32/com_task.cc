@@ -1,4 +1,4 @@
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "stm32_com/com_task.h"
 
 #include "stm32/stm32.h"
@@ -14,10 +14,10 @@
 #include "freertos/task.h"
 #include "lwip/netdb.h"
 #include "lwip/sockets.h"
-#include "misc/int_types.h"
-#include "net/http/server/http_server.h"
+#include "utils_misc/int_types.h"
+#include "net_http_server/http_server.h"
 #include "net/tcp_cli_server.h"
-#include <uout/callbacks.h>
+#include <uout/uo_callbacks.h>
 #include "time.h"
 #include "txtio/inout.h"
 #include "uout/status_json.hh"

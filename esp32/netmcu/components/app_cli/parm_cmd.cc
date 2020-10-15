@@ -1,11 +1,11 @@
-#include "app/config/proj_app_cfg.h"
-#include "app/config/options.hh"
+#include "app_config/proj_app_cfg.h"
+#include "app_config/options.hh"
 #include <string.h>
 
 
 #include "txtio/inout.h"
-#include "net/mqtt/app/mqtt.h"
-#include "app/config/proj_app_cfg.h"
+#include "app_mqtt/mqtt.h"
+#include "app_config/proj_app_cfg.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
 #include "app/cli/cli_app.h"
@@ -14,7 +14,7 @@
 #include <uout/cli_out.h>
 #include "app/opt_map.hh"
 #include "debug/dbg.h"
-#include "misc/int_macros.h"
+#include "utils_misc/int_macros.h"
 #include <stdio.h>
 
 #include <stm32/stm32.h>

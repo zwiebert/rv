@@ -1,18 +1,18 @@
-#include "app/config/proj_app_cfg.h"
-#include <app/config/options.hh>
+#include "app_config/proj_app_cfg.h"
+#include <app_config/options.hh>
 #include "app/uout/status_output.h"
 #include <uout/cli_out.h>
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include "app/rtc.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
 #include "app/cli/cli_config.h"
 #include "app/cli/cli_app.h"
-#include "net/mqtt/app/mqtt.h"
-#include "net/http/server/http_server.h"
+#include "app_mqtt/mqtt.h"
+#include "net_http_server/http_server.h"
 #include "app/kvstore.h"
-#include "misc/int_macros.h"
-#include "misc/int_types.h"
+#include "utils_misc/int_macros.h"
+#include "utils_misc/int_types.h"
 #include "app/loop.h"
 #define ENABLE_RESTART 1 // allow software reset
 

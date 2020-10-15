@@ -4,7 +4,7 @@
  */
 
 #pragma once
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "app/uout/status_output.h"
 
 //key strings used for parsing and printing config commands by CLI/HTTP/MQTT

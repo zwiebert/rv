@@ -5,14 +5,14 @@
  *      Author: bertw
  */
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "app/uout/status_output.h"
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include "app/rtc.h"
 #include <uout/cli_out.h>
 #include "cli_imp.h"
 #include "app/cli/cli_app.h"
-#include "net/mqtt/app/mqtt.h"
+#include "app_mqtt/mqtt.h"
 #include "app/kvstore.h"
 #include "debug/dbg.h"
 #include <ctype.h>

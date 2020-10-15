@@ -8,7 +8,7 @@
 #ifndef SRC_net_mqtt_app_H_
 #define SRC_net_mqtt_app_H_
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 
 void io_mqtt_enable(bool enable);
 

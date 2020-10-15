@@ -4,23 +4,23 @@
  *  Created on: 13.03.2019
  *      Author: bertw
  */
-#include "app/config/proj_app_cfg.h"
-#include "app/config/options.hh"
+#include "app_config/proj_app_cfg.h"
+#include "app_config/options.hh"
 #include "so_out.h"
 #include "so_print.h"
 //#include "app/uout/callbacks.h"
 #include "app/common.h"
 #include "app/firmware.h"
 #include "app/rtc.h"
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include "net/ipnet.h"
 #include "txtio/inout.h"
 #include "uout/status_json.hh"
 #include "app/uout/status_output.h"
 #include <app/uout/so_config.h>
-#include <misc/time/run_time.h>
+#include <utils_time/run_time.h>
 
-//#include "misc/int_macros.h"
+//#include "utils_misc/int_macros.h"
 
 #include <string.h>
 #include <stdio.h>

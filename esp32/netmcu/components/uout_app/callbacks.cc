@@ -1,6 +1,6 @@
 
-#include <misc/int_macros.h>
-#include <misc/cstring_utils.hh>
+#include <utils_misc/int_macros.h>
+#include <utils_misc/cstring_utils.hh>
 #include <cli/mutex.hh>
 #include <txtio/txtio_mutex.hh>
 #include <app/uout/so_msg.h>
@@ -11,7 +11,7 @@
 #include <debug/dbg.h>
 
 #define UOUT_PROTECTED
-#include <uout/callbacks.h>
+#include <uout/uo_callbacks.h>
 #include <app/uout/callbacks.h>
 
 

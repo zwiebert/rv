@@ -5,10 +5,10 @@
  *      Author: bertw
  */
 
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #ifdef USE_MQTT
 
-#include "net/mqtt/app/mqtt.h"
+#include "app_mqtt/mqtt.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -17,7 +17,7 @@
 #include "uout/status_json.hh"
 #include "app/uout/status_output.h"
 #include <app/uout/callbacks.h>
-#include <net/mqtt/mqtt.hh>
+#include <net_mqtt/mqtt.hh>
 #include <array>
 
 static char *io_mqtt_topic_root;

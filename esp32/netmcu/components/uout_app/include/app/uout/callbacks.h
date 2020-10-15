@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <app/uout/status_output.h>
-#include <uout/callbacks.h>
+#include <uout/uo_callbacks.h>
 #include <type_traits>
 
 struct so_arg_valve_state_t {

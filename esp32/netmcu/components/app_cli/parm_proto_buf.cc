@@ -1,16 +1,16 @@
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "txtio/inout.h"
-#include "net/mqtt/app/mqtt.h"
-#include "app/config/proj_app_cfg.h"
+#include "app_mqtt/mqtt.h"
+#include "app_config/proj_app_cfg.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
 #include "app/cli/cli_app.h"
 #include "app/uout/status_output.h"
 #include "uout/status_json.hh"
 #include "debug/dbg.h"
-#include "misc/int_macros.h"
+#include "utils_misc/int_macros.h"
 #include <stm32/stm32.h>
-#include "misc/base64.h"
+#include "utils_misc/base64.h"
 
 #include <malloc.h>
 #include <string.h>

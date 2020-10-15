@@ -6,15 +6,15 @@
 #include <mbedtls/base64.h>
 #include <uout/so_target_desc.hh>
 #include <app/uout/callbacks.h>
-#include <uout/status_output.h>
-#include "net/http/server/http_server.h"
-#include "net/http/server/esp32/register_uris.h"
+#include <uout/uo_types.h>
+#include "net_http_server/http_server.h"
+#include "net_http_server/esp32/register_uris.h"
 #include <cli/cli.h>
 #include "uout/status_json.hh"
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include "cli/mutex.hh"
 #include "app/cli/cli_app.h"
-#include "misc/int_types.h"
+#include "utils_misc/int_types.h"
 #include <uout/so_target_bits.h>
 #include "webapp/content.h"
 

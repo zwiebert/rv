@@ -4,7 +4,7 @@
  *  Created on: 13.03.2019
  *      Author: bertw
  */
-#include "app/config/proj_app_cfg.h"
+#include "app_config/proj_app_cfg.h"
 #include "so_out.h"
 #include "so_print.h"
 
@@ -14,18 +14,18 @@
 #include "app/rtc.h"
 #include "app/cli/cli_config.h"
 #include "app/cli/cli_app.h" // FIXME?
-#include "app/settings/config.h"
+#include "app_settings/config.h"
 #include "app/kvstore.h"
 #include "net/ipnet.h"
-#include "net/mqtt/app/mqtt.h"
+#include "app_mqtt/mqtt.h"
 #include "txtio/inout.h"
 #include "uout/status_json.hh"
 #include "uout/status_json.hh"
 #include "app/uout/status_output.h"
 
-#include "misc/int_macros.h"
-#include "misc/int_types.h"
-#include "misc/base64.h"
+#include "utils_misc/int_macros.h"
+#include "utils_misc/int_types.h"
+#include "utils_misc/base64.h"
 
 #include <string.h>
 #include <stdio.h>
