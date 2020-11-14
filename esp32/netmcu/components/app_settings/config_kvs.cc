@@ -18,21 +18,17 @@
 
 #define CFG_KEY "global.C"
 
-extern const char *const config_keys[] = {
-    "C_CFG_PW", "C_TZ",
-#ifdef USE_NETWORK
-    "C_NW_CONN",
-#endif
-    "C_STM_INV_BP",
-#ifdef USE_LPH
-    "C_LPH",
-#endif
-    };
 
 bool config_item_modified(enum configItem item) {
+  return config_item_modified((configAppItem)item);
+}
+bool config_item_modified(enum configAppItem item) {
   kvshT h;
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
-    switch (item) {
+    switch ((int)item) {
+    case CB_VERBOSE:
+      config_setup_txtio();
+      break;
     default:
       break;
     }

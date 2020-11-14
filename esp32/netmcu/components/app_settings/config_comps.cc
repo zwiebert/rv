@@ -22,7 +22,7 @@ void config_setup_global() {
     .network = MY_NETWORK_CONNECTION,
   };
 if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
-  C.network = static_cast<nwConnection>(kvs_get_i8(h, cfg_key(CB_NETWORK_CONNECTION), C.network, 0));
+  C.network = static_cast<nwConnection>(kvs_get_i8(h, settings_get_kvsKey(CB_NETWORK_CONNECTION), C.network, 0));
   kvs_close(h);
 }
 

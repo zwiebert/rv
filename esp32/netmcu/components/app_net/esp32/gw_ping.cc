@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "app/net/gw_ping.h"
+#include "app_net/gw_ping.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"

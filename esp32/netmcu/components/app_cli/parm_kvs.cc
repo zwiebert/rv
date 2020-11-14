@@ -6,14 +6,14 @@
  */
 
 #include "app_config/proj_app_cfg.h"
-#include "app/uout/status_output.h"
+#include "app_uout/status_output.h"
 #include "app_settings/config.h"
-#include "app/rtc.h"
+#include "app_misc/rtc.h"
 #include <uout/cli_out.h>
 #include "cli_imp.h"
-#include "app/cli/cli_app.h"
+#include "app_cli/cli_app.h"
 #include "app_mqtt/mqtt.h"
-#include "app/kvstore.h"
+#include "app_misc/kvstore.h"
 #include "debug/dbg.h"
 #include <ctype.h>
 #include <string.h>

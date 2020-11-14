@@ -2,7 +2,7 @@
 #include "app_settings/config.h"
 #include "stm32/stm32.h"
 #include "stm32_com/com_task.h"
-#include "app/cli/cli_app.h"
+#include "app_cli/cli_app.h"
 #include "cli/mutex.h"
 #include "net/http_client.h"
 #include "app_settings/config.h"
@@ -32,10 +32,7 @@ void main_setup_ip_dependent() {
     if constexpr (use_MQTT)
       config_setup_mqttAppClient();
 
-    if constexpr (use_HTTP_CLIENT)
-      httpClient_setup();
-
-    if constexpr (use_TCPS || use_TCPS_TASK)
+    if constexpr (use_TCPS_TASK)
       config_setup_cliTcpServer();
 
     if constexpr (use_HTTP)
@@ -69,9 +66,6 @@ void mcu_init() {
 
   lfPer_setBit(lf_loopWatchDog);
   lfPer_setBit(lf_loopCli);
-  if constexpr (use_TCPS)
-    lfPer_setBit(lf_loopTcpServer);
-
   if constexpr (use_NETWORK) {
 
     ipnet_CONNECTED_cb = main_setup_ip_dependent;

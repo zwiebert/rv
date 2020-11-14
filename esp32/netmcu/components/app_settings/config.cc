@@ -14,48 +14,49 @@
  */
 #include "app_config/proj_app_cfg.h"
 #include "app_settings/config.h"
+#include "app_settings/app_settings.hh"
 #include "app_settings/config_defaults.h"
 #include "utils_misc/base64.h"
+#include <config_kvs/config.h>
 
 #define D(x) 
 
-#define CI(cb) static_cast<configItem>(cb)
 config C = {
 
 };
 
 #ifdef USE_NETWORK
 enum nwConnection config_read_network_connection() {
-  return static_cast<enum nwConnection>(config_read_item_i8(CI(CB_NETWORK_CONNECTION), MY_NETWORK_CONNECTION));
+  return static_cast<enum nwConnection>(config_read_item((CB_NETWORK_CONNECTION), MY_NETWORK_CONNECTION));
 }
 #endif
 
 #ifdef USE_POSIX_TIME
 const char* config_read_tz(char *d, unsigned d_size) {
-  return config_read_item_s(CI(CB_TZ), d, d_size, MY_GEO_TZ);
+  return config_read_item((CB_TZ), d, d_size, MY_GEO_TZ);
 }
 #endif
 
 bool config_read_stm32_inv_bootpin() {
-  return !!config_read_item_i8(CI(CB_STM32_INV_BOOTPIN), MY_STM32_INV_BOOTPIN);
+  return !!config_read_item((CB_STM32_INV_BOOTPIN), MY_STM32_INV_BOOTPIN);
 }
 
 #ifdef USE_LPH
 bool config_read_lph(uint16_t lph[14]) {
-  return config_read_item_b(CI(CB_LPH), lph, sizeof(uint16_t) * 14, 0) != 0;
+  return config_read_item_b(settings_get_kvsKey(CB_LPH), (void*)lph, sizeof(uint16_t) * 14, (void*)0) != 0;
 }
 bool config_save_lph(uint16_t lph[14]) {
-  return config_save_item_b(CI(CB_LPH), lph, sizeof(uint16_t) * 14);
+  return config_save_item_b(settings_get_kvsKey(CB_LPH), (void*)lph, sizeof(uint16_t) * 14);
 }
 #endif
 
 
 bool config_save_pb64(enum configItem item, const char *pb64) {
-  return config_save_item_s(item, pb64);
+  return config_save_item_s(settings_get_kvsKey(item), pb64);
 }
 
 bool config_read_pb64(enum configItem item, char *pb64_buf, size_t buf_size) {
-  return config_read_item_s(item, pb64_buf, buf_size, "");
+  return config_read_item_s(settings_get_kvsKey(item), pb64_buf, buf_size, "");
 }
 
 bool config_save_pb(enum configItem item, const uint8_t *pb, size_t pb_len) {

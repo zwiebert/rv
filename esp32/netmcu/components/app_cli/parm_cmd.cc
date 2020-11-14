@@ -8,11 +8,11 @@
 #include "app_config/proj_app_cfg.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
-#include "app/cli/cli_app.h"
-#include "app/uout/status_output.h"
+#include "app_cli/cli_app.h"
+#include "app_uout/status_output.h"
 #include "uout/status_json.hh"
 #include <uout/cli_out.h>
-#include "app/opt_map.hh"
+#include "app_misc/opt_map.hh"
 #include "debug/dbg.h"
 #include "utils_misc/int_macros.h"
 #include <stdio.h>

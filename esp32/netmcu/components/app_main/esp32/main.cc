@@ -4,6 +4,7 @@
 #include "freertos/semphr.h"
 #include <lwip/apps/sntp.h>
 #include <lwip/apps/sntp_opts.h>
+#include <net/tcp_cli_server_setup.hh>
 
 i32 boot_counter;
 #define WIFI_AP_SSID "rv"
@@ -15,8 +16,10 @@ void lfa_createWifiAp() {
     wifi_ap_active = true;
     wifiAp_setup(WIFI_AP_SSID, WIFI_AP_PASSWD);
 
-    struct cfg_tcps cfg_tcps = { .enable = true };
-    tcpCli_setup(&cfg_tcps);
+#ifdef USE_TCPS_TASK
+    struct cfg_tcps cfg_tcps = { .enable = true }; // XXX: user-flags not set
+    tcpCli_setup_task(&cfg_tcps);
+#endif
 
     struct cfg_http cfg_http = { .enable = true };
     hts_setup(&cfg_http);

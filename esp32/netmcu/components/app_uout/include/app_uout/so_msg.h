@@ -1,5 +1,5 @@
 #pragma once
-#include <app/uout/so_types.h>
+#include <app_uout/so_types.h>
 
 void soMsg_fw_start_msg_print(const struct TargetDesc &td);
 void soMsg_status_ok(const struct TargetDesc &td);

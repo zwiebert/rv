@@ -15,8 +15,8 @@
 #include "cli/cli.h"
 #include "cli/mutex.hh"
 #include "uout/status_json.hh"
-#include "app/uout/status_output.h"
-#include <app/uout/callbacks.h>
+#include "app_uout/status_output.h"
+#include <app_uout/callbacks.h>
 #include <net_mqtt/mqtt.hh>
 #include <array>
 

@@ -11,21 +11,23 @@
 #include "app_config/proj_app_cfg.h"
 #include "config_kvs/config.h"
 
+#include "app_settings.hh"
+
 
 #ifdef USE_LAN
-#include "net/ethernet.h"
+#include "net/ethernet_setup.h"
 #endif
 #ifdef USE_MQTT
 #include "net_mqtt/mqtt.h"
 #endif
 #ifdef USE_WLAN
-#include "net/wifistation.h"
+#include "net/wifi_station_setup.h"
 #endif
 #ifdef USE_HTTP
-#include "net_http_server/http_server.h"
+#include "net_http_server/http_server_setup.h"
 #endif
 #ifdef USE_NTP
-#include "net/ntp.h"
+#include "net/ntp_client_setup.h"
 #endif
 #include <stdint.h>
 
@@ -44,19 +46,7 @@ typedef struct {
 
 extern config C;
 
-enum configAppItem {
-  CBA_start = CB_size - 1,
-  CB_CFG_PASSWD,  CB_TZ,
-#ifdef USE_NETWORK
-  CB_NETWORK_CONNECTION,
-#endif
-  CB_STM32_INV_BOOTPIN,
-#ifdef USE_LPH
-  CB_LPH,
-#endif
-//-----------
-  CBA_size
-};
+
 
 // save C to persistent storage
 void save_config_all();

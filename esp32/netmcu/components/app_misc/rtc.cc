@@ -1,7 +1,7 @@
 #include <string.h>
 #include "app_config/proj_app_cfg.h"
 
-#include "app/rtc.h"
+#include "app_misc/rtc.h"
 
 
 #include <time.h>
@@ -9,7 +9,7 @@
 #include <sys/time.h>
 #endif
 #include "app_settings/config.h"
-#include "app/common.h"
+#include "app_misc/common.h"
 
 volatile time_t run_time_secs;
 

@@ -9,30 +9,30 @@
 #define APP_ESP32_MAIN_H_
 
 #include "app_config/proj_app_cfg.h"
-#include "app/common.h"
-#include "app/rtc.h"
-#include "app/timer.h"
+#include "app_misc/common.h"
+#include "app_misc/rtc.h"
+#include "app_misc/timer.h"
 #include "app_config/proj_app_cfg.h"
-#include "app/net/gw_ping.h"
-#include "app/cli/cli_app.h"
+#include "app_net/gw_ping.h"
+#include "app_cli/cli_app.h"
 #include "app_settings/config.h"
 #include "driver/gpio.h"
 #include "key_value_store/kvs_wrapper.h"
-#include "app/kvstore.h"
+#include "app_misc/kvstore.h"
 #include "utils_misc/int_macros.h"
 #include "utils_misc/int_types.h"
-#include "net/ethernet.h"
+#include "net/ethernet_setup.h"
 #include "net/ipnet.h"
 #include "app_mqtt/mqtt.h"
-#include "net/ntp.h"
+#include "net/ntp_client_setup.h"
 #include "net/tcp_cli_server.h"
-#include "net/wifi_ap.h"
-#include "net/wifistation.h"
+#include "net/wifi_ap_setup.h"
+#include "net/wifi_station_setup.h"
 #include "nvs_flash.h"
 #include "stm32/stm32.h"
 #include "storage/storage.h"
 #include "txtio/inout.h"
-#include "app/watch_dog.h"
+#include "app_misc/watch_dog.h"
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/timers.h"
@@ -64,7 +64,6 @@ enum loop_flagbits {
   lf_createWifiAp,
   lf_syncStm32Time,
   lf_pingLoop, lf_loopWatchDog,
-  lf_loopTcpServer,
   lf_loopCli,
   lf_mcuRestart,
   //-------------

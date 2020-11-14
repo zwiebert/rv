@@ -17,7 +17,6 @@ static  lfa_funT lfa_table[lf_Len] = {
     lfa_createWifiAp,
     lfa_syncStm32Time,
     ping_loop, watchDog_loop,
-    tcpCli_loop,
     cli_loop,
     [] { mcu_delayedRestart(1500); }
 };

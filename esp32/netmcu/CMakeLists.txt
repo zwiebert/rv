@@ -45,10 +45,12 @@ project(netmcu esptool_py
 )
 
 
-#set_target_properties(${CMAKE_PROJECT_NAME}.elf PROPERTIES LINK_INTERFACE_MULTIPLICITY 10)
+
+set_target_properties(__idf_stm32 PROPERTIES LINK_INTERFACE_MULTIPLICITY 3)
+
 
 set(comps app_main app_settings  utils_misc utils_debug txtio uout cli jsmn 
- net_http_server net_mqtt_app uout_app app_misc app_net net app_cli protobuf nanopb stm32 config_kvs 
+ net_http_server net_mqtt_app app_uout app_misc app_net net app_cli protobuf nanopb stm32 config_kvs 
  key_value_store net_mqtt stm32_com http_server_content firmware_update storage utils_time) 
 
 foreach(comp ${comps})

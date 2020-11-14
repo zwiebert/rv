@@ -8,15 +8,15 @@
 #include "app_config/proj_app_cfg.h"
 #include <string.h>
 #include "cli_imp.h"
-#include "app/cli/cli_app.h"
+#include "app_cli/cli_app.h"
 #include "cli/mutex.hh"
 #include "cli/cli.h"
 #include "uout/status_json.hh"
 #include "stm32/stm32.h"
-#include "app/uout/status_output.h"
+#include "app_uout/status_output.h"
 #include "app_settings/config.h"
-#include <app/uout/so_config.h>
-#include <app/uout/so_msg.h>
+#include <app_uout/so_config.h>
+#include <app_uout/so_msg.h>
 #include <algorithm>
 #include <iterator>
 

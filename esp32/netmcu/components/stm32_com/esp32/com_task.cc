@@ -2,7 +2,7 @@
 #include "stm32_com/com_task.h"
 
 #include "stm32/stm32.h"
-#include "app/common.h"
+#include "app_misc/common.h"
 #include "cli/cli.h"
 #include "cli/mutex.hh"
 #include "esp_event.h"
@@ -15,7 +15,7 @@
 #include "lwip/netdb.h"
 #include "lwip/sockets.h"
 #include "utils_misc/int_types.h"
-#include "net_http_server/http_server.h"
+#include "net_http_server/http_server_setup.h"
 #include "net/tcp_cli_server.h"
 #include <uout/uo_callbacks.h>
 #include "time.h"
@@ -121,7 +121,7 @@ static void do_work() {
   if (!reply)
     reply = strstr(line, "{\"update\":");
   if (reply) {
-    uoApp_publish_wsJson(reply);
+    uoCb_publish_wsJson(reply);
     DD(printf("stm32com:recv:####REPLY####: <%s>\n", reply));
   }
 }

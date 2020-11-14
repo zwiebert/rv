@@ -4,18 +4,18 @@
 
 
 #include "txtio/inout.h"
-#include "app/uout/status_output.h"
-#include "app/rtc.h"
+#include "app_uout/status_output.h"
+#include "app_misc/rtc.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
-#include "app/cli/cli_app.h"
+#include "app_cli/cli_app.h"
 #include "stm32/stm32.h"
 #include "stm32/stm32_bl.h"
 #include "stm32/stm32_ota.h"
-#include "app/ota.h"
+#include "app_misc/ota.h"
 #include "net/http_client.h"
 #include "debug/dbg.h"
-#include <app/uout/so_msg.h>
+#include <app_uout/so_msg.h>
 
 
 #define KEY_BOOT_COUNT "boot-count"
@@ -184,8 +184,7 @@ process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
 
   }
 
-  so_output_message(td, error_count ? SO_STATUS_ERROR : SO_STATUS_OK, 0);
-  so_output_message(td, SO_MCU_end, NULL);
+  soMsg_MCU_end(td);
 
   return 0;
 }
