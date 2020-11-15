@@ -1,16 +1,16 @@
 <script>
-  import { _ } from './services/i18n';
-  import * as appDebug from "./app_debug.js";
-  import * as httpFetch from "./fetch.js";
-  import * as misc from "./misc.js";
+  import { _ } from 'services/i18n';
+  import * as appDebug from "app/app_debug.js";
+  import * as httpFetch from "app/fetch.js";
+  import * as misc from "app/misc.js";
   import {
     McuFirmwareUpdProgress,
     McuFirmwareUpdState,
     McuFirmwareUpdChip,
-  } from "./store/mcu_firmware";
+  } from "stores/mcu_firmware";
 
   "use strict";
-  import { ReloadProgress } from "./store/app_state.js";
+  import { ReloadProgress } from "stores/app_state.js";
 
   export let fwbtns = [];
   export let chip = "";

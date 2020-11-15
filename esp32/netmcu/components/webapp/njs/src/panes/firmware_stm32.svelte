@@ -1,8 +1,8 @@
 <script>
-  import { _ } from "../services/i18n";
-  import * as misc from "../misc.js";
-  import McuFirmwareUpd from "../mcu_firmware_upd.svelte";
-  import Stm32McuFirmwareInfo from "../stm32_mcu_firmware_info.svelte";
+  import { _ } from "services/i18n";
+  import * as misc from "app/misc.js";
+  import McuFirmwareUpd from "app/mcu_firmware_upd.svelte";
+  import Stm32McuFirmwareInfo from "app/stm32_mcu_firmware_info.svelte";
 
   let stm32_fwbtns = [
     { name: "latest master", ota_name: "stm32-github-master" },

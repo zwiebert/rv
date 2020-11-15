@@ -1,15 +1,30 @@
 // rollup.config.js
-import json from '@rollup/plugin-json';
-import { terser } from 'rollup-plugin-terser';
-import strip from '@rollup/plugin-strip';
-import { eslint } from "rollup-plugin-eslint";
-import svelte from 'rollup-plugin-svelte';
-import resolve from '@rollup/plugin-node-resolve';
+import json from "@rollup/plugin-json";
+import strip from "@rollup/plugin-strip";
+import resolve from "@rollup/plugin-node-resolve";
 import commonjs from '@rollup/plugin-commonjs';
-import sveltePreprocess from 'svelte-preprocess';
+import alias from "@rollup/plugin-alias";
+import svelte from "rollup-plugin-svelte";
+import sveltePreprocess from "svelte-preprocess";
+import { eslint } from "rollup-plugin-eslint";
+import { terser } from "rollup-plugin-terser";
 
 export const isProduction = process.env.NODE_ENV === "production";
 export const isDistro = process.env.DISTRO === "yes";
+
+let wdir = __dirname + "/";
+
+const aliases = alias({
+  resolve: [".svelte", ".js"], //optional, by default this will just look for .js files or folders
+  entries: [
+    { find: "components", replacement: wdir + "src/components" },
+    { find: "services", replacement: wdir + "src/services" },
+    { find: "stores", replacement: wdir + "src/store" },
+    { find: "panes", replacement: wdir + "src/panes" },
+    { find: "app", replacement: wdir + "src/app" },
+    { find: "main", replacement: wdir + "src" },
+  ],
+});
 
 export default {
   onwarn(warning, rollupWarn) {
@@ -63,6 +78,7 @@ export default {
     }
   },
   plugins: [
+    aliases,
     json(),
     ...isProduction ? [
       strip({
@@ -105,7 +121,7 @@ export default {
       browser: true,
       dedupe: ['svelte'],
     }),
-    commonjs({})
+    commonjs()
   ]
 };
 

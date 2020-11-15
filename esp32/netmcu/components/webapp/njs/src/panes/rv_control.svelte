@@ -1,10 +1,10 @@
 <script>
-  import * as httpFetch from "../fetch.js";
-  import { _ } from "../services/i18n";
-  import Zones from "../zones.svelte";
-  import RvStatus from "../components/rv_status.svelte";
-  import { Stm32Time } from "../store/zones.js";
-  import PollZoneData from "../poll_zone_data.svelte";
+  import * as httpFetch from "app/fetch.js";
+  import { _ } from "services/i18n";
+  import Zones from "app/zones.svelte";
+  import RvStatus from "components/rv_status.svelte";
+  import { Stm32Time } from "stores/zones.js";
+  import PollZoneData from "app/poll_zone_data.svelte";
 </script>
 
 <PollZoneData />

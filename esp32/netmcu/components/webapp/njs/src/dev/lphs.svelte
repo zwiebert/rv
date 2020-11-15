@@ -1,6 +1,6 @@
 <script>
-  import { ZoneLPHs } from "../store/zones.js";
-  import * as httpFetch from "../fetch.js";
+  import { ZoneLPHs } from "stores/zones.js";
+  import * as httpFetch from "app/fetch.js";
   import { onMount } from "svelte";
 
 onMount(() => {

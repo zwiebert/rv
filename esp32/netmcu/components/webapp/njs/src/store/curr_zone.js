@@ -1,7 +1,7 @@
 import { derived } from "svelte/store";
 import { PersistentIntStore } from "./custom_stores.js";
 import { ZoneNames, ZoneDurations, ZoneRemainingSeconds, ZoneLPHs, ZoneTimers } from "./zones.js";
-import { formatSecondsToMMSS } from "../misc.js";
+import { formatSecondsToMMSS } from "app/misc.js";
 
 export const Z = PersistentIntStore("group");
 export const ZoneName = derived([Z, ZoneNames], ([z, names]) => names[z] || "");

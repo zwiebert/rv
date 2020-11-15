@@ -1,13 +1,13 @@
 <script>
   "use strict";
-  import { _ } from './services/i18n';
+  import { _ } from 'services/i18n';
   import {
     ZoneCount,
     ZoneNames,
     ZoneDisabled,
-  } from "./store/zones";
-  import Zone from "./zone.svelte";
-  import * as httpFetch from "./fetch.js";
+  } from "stores/zones";
+  import Zone from "app/zone.svelte";
+  import * as httpFetch from "app/fetch.js";
   import { onMount} from "svelte";
 
   onMount(() => {

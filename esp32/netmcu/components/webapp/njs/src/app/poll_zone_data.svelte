@@ -1,8 +1,8 @@
 <script>
   import {
     PressControlStatus,
-  } from "./store/zones";
-  import * as httpFetch from "./fetch.js";
+  } from "stores/zones";
+  import * as httpFetch from "app/fetch.js";
   import { onMount, onDestroy } from "svelte";
 
   export let pollInterval = 1000;

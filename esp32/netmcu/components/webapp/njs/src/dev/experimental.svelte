@@ -1,5 +1,5 @@
 <script>
-  import * as pbuf from "../pbuf/mcu_com_pb.js";
+  import * as pbuf from "main/pbuf/mcu_com_pb.js";
   import * as b64 from "js-base64";
   import LPHs from "./lphs.svelte";
 

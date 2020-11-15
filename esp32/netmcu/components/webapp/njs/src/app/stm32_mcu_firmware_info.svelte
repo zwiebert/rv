@@ -1,7 +1,7 @@
 <script>
   "use strict";
-  import { Stm32McuFirmwareVersion } from "./store/mcu_firmware.js";
-  import * as httpFetch from "./fetch.js";
+  import { Stm32McuFirmwareVersion } from "stores/mcu_firmware.js";
+  import * as httpFetch from "app/fetch.js";
   import { onMount } from "svelte";
 
   onMount(() => {

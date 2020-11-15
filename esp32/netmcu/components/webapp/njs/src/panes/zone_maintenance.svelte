@@ -1,13 +1,13 @@
 <script>
-  import { _ } from "../services/i18n";
-  import { Z, ZoneDurationMmss, ZoneRemainingMmss } from "../store/curr_zone";
+  import { _ } from "services/i18n";
+  import { Z, ZoneDurationMmss, ZoneRemainingMmss } from "stores/curr_zone";
 
-  import * as httpFetch from "../fetch.js";
+  import * as httpFetch from "app/fetch.js";
   import { onMount } from "svelte";
-  import PollZoneData from "../poll_zone_data.svelte";
-  import SelectZone from "../components/select_zone.svelte";
-  import RvStatus from "../components/rv_status.svelte";
-  import ZoneData from "../components/zone_data.svelte";
+  import PollZoneData from "app/poll_zone_data.svelte";
+  import SelectZone from "components/select_zone.svelte";
+  import RvStatus from "components/rv_status.svelte";
+  import ZoneData from "components/zone_data.svelte";
 
 
   onMount(() => {

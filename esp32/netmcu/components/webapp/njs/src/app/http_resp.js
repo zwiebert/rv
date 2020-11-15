@@ -1,9 +1,9 @@
 "use strict";
 
-import * as mcuComPb from "./pbuf/mcu_com_pb.js";
+import * as mcuComPb from "main/pbuf/mcu_com_pb.js";
 import * as b64 from "js-base64";
 
-import { McuConfig } from "./store/mcu_config.js";
+import { McuConfig } from "stores/mcu_config.js";
 import {
   McuBootCount,
   McuGitTagNames,
@@ -13,8 +13,8 @@ import {
   Stm32McuFirmwareVersion,
   McuFirmwareUpdProgress,
   McuFirmwareUpdState,
-} from "./store/mcu_firmware.js";
-import { McuDocs } from "./store/mcu_docs.js";
+} from "stores/mcu_firmware.js";
+import { McuDocs } from "stores/mcu_docs.js";
 import {
   ZoneLPHs,
   ZoneDataMsg,
@@ -27,7 +27,7 @@ import {
   WaterPumpStatus,
   RainSensorStatus,
   Stm32Time,
-} from "./store/zones.js";
+} from "stores/zones.js";
 
 export function http_handleResponses(obj) {
   console.log("reply-json: " + JSON.stringify(obj));
