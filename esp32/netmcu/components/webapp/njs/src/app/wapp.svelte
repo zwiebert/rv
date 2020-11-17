@@ -12,8 +12,6 @@
   import PaneZoneTimers from "panes/zone_timers.svelte";
   import { TabIdx } from "stores/app_state.js";
 
-  import Dev from "main/dev/experimental.svelte";
-
   $: tabIdxMain = $TabIdx["main"] || 0;
   $: tabIdxCfg = $TabIdx["cfg"] || 0;
   $: tabIdxFw = $TabIdx["fw"] || 0;

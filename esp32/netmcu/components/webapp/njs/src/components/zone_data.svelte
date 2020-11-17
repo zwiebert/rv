@@ -6,8 +6,6 @@
   import {
     Z, ZoneLPH,
   } from "stores/curr_zone";
-  import * as McuComPb from "main/pbuf/mcu_com_pb.js";
-  import * as Base64 from "js-base64";
   import * as httpFetch from "app/fetch.js";
   import { onMount } from "svelte";
 

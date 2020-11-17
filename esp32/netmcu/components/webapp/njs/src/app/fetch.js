@@ -10,7 +10,6 @@ export const FETCH_ZONE_NAMES = (bit <<= 1);
 export const FETCH_ZONE_LPHS = (bit <<= 1);
 export const FETCH_ZONE_DURATIONS = (bit <<= 1);
 export const FETCH_ZONE_REMAINING_DURATIONS = (bit <<= 1);
-export const FETCH_ZONE_DATA = (bit <<= 1);
 export const FETCH_ZONE_TIMERS = (bit <<= 1);
 export const FETCH_RV_STATUS = (bit <<= 1);
 export const FETCH_VERSION = (bit <<= 1);
@@ -20,7 +19,7 @@ export const FETCH_RV_VERSION = (bit <<= 1);
 export const FETCH_GIT_TAGS = 0; //XXX
 
 
-const FETCHES_TARGET_STM32 =  FETCH_ZONE_DURATIONS | FETCH_ZONE_REMAINING_DURATIONS | FETCH_ZONE_DATA | FETCH_ZONE_TIMERS | FETCH_RV_STATUS | FETCH_RV_VERSION;
+const FETCHES_TARGET_STM32 =  FETCH_ZONE_DURATIONS | FETCH_ZONE_REMAINING_DURATIONS | FETCH_ZONE_TIMERS | FETCH_RV_STATUS | FETCH_RV_VERSION;
 const FETCHES_REPLY_BY_WS = FETCHES_TARGET_STM32;
 
 const MAX_RETRY_COUNT = 3;
@@ -29,13 +28,6 @@ export function sendCmd(cmd) {
   let url = "/cmd.json";
   let obj = { from: "wapp" };
   obj.cmd = cmd;
-  http_postRequest(url, obj);
-}
-
-export function sendPbuf(cmd) {
-  let url = "/cmd.json";
-  let obj = { from: "wapp" };
-  obj.pbuf = cmd;
   http_postRequest(url, obj);
 }
 
@@ -166,8 +158,6 @@ function fetchByMask2(mask, target) {
     ZoneTimers.set({});
     add_kv(tfmcu, "cmd", "timer", "?");
   }
-
-  if (mask & FETCH_ZONE_DATA) add_kv(tfmcu, "pbuf", "zd", "?");
 
   if (mask & FETCH_RV_STATUS) {
     add_kv(tfmcu, "cmd", "status", "?");

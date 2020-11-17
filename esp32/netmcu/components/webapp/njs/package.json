@@ -16,7 +16,6 @@
 		"@rollup/plugin-strip": "^2.0.0",
 		"eslint-plugin-svelte3": "^2.7.3",
 		"js-base64": "^3.6.0",
-		"jshint": "^2.12.0",
 		"node-sass": "^5.0.0",
 		"nollup": "^0.13.13",
 		"postcss": "^8.1.7",
