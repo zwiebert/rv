@@ -66,6 +66,16 @@ enum loop_flagbits {
   lf_pingLoop, lf_loopWatchDog,
   lf_loopCli,
   lf_mcuRestart,
+#ifdef USE_LAN
+    lf_configEthernet,
+#endif
+#ifdef USE_MQTT
+    lf_configMqttAppClient,
+#endif
+#ifdef USE_HTTP
+    lf_configHttpServer,
+#endif
+    lf_configTxtio,
   //-------------
   lf_Len
 };

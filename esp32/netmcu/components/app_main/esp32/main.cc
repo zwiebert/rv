@@ -5,6 +5,7 @@
 #include <lwip/apps/sntp.h>
 #include <lwip/apps/sntp_opts.h>
 #include <net/tcp_cli_server_setup.hh>
+#include "../app_private.h"
 
 i32 boot_counter;
 #define WIFI_AP_SSID "rv"
@@ -42,6 +43,33 @@ void  mcu_delayedRestart(unsigned delay_ms) {
   esp_restart();
   for (;;) {
   }
+}
+
+void cli_run_mainLoop(enum mainLoop req) {
+  switch (req) {
+  case mainLoop_mcuRestart:
+    lf_setBit(lf_mcuRestart);
+    return;
+#ifdef USE_LAN
+  case mainLoop_configEthernet:
+    lf_setBit(lf_configEthernet);
+    return;
+#endif
+#ifdef USE_MQTT
+  case mainLoop_configMqttAppClient:
+    lf_setBit(lf_configMqttAppClient);
+    return;
+#endif
+#ifdef USE_HTTP
+  case mainLoop_configHttpServer:
+    lf_setBit(lf_configHttpServer);
+    return;
+#endif
+  case mainLoop_configTxtio:
+    lf_setBit(lf_configTxtio);
+    return;
+  }
+
 }
 
 static void stm32_processInputLine(char *line) {

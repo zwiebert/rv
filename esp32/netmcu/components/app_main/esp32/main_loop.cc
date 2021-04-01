@@ -1,5 +1,6 @@
 #include "main.h"
 #include <cli/cli.h>
+#include <config_kvs/config.h>
 
 EventGroupHandle_t loop_event_group;
 #define EVT_BITS  ((1 << lf_Len) - 1)
@@ -18,7 +19,17 @@ static  lfa_funT lfa_table[lf_Len] = {
     lfa_syncStm32Time,
     ping_loop, watchDog_loop,
     cli_loop,
-    [] { mcu_delayedRestart(1500); }
+    [] { mcu_delayedRestart(1500); },
+#ifdef USE_LAN
+    config_setup_ethernet,
+#endif
+#ifdef USE_MQTT
+    config_setup_mqttAppClient,
+#endif
+#ifdef USE_HTTP
+    config_setup_httpServer,
+#endif
+    config_setup_txtio,
 };
 
 #ifndef USE_EG

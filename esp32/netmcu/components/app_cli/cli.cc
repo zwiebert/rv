@@ -77,7 +77,7 @@ static bool cliApp_redirect_to_rv(char *json) {
   if (strncmp(json, TO_RV, TO_RV_LEN) == 0) {
     if (stm32_mutexTake()) {
       stm32_write(json, strlen(json));
-      stm32_write(";\n", 2);
+      stm32_write(";\r\n", 3);
       stm32_mutexGive();
     }
     return true;

@@ -7,6 +7,7 @@
 #include "net/http_client.h"
 #include "app_settings/config.h"
 #include "app_http_server/setup.h"
+#include "../app_private.h"
 
 void mcu_restart() {
   lf_setBit(lf_mcuRestart);
@@ -64,8 +65,11 @@ void mcu_init() {
 
   ESP_ERROR_CHECK(esp_event_loop_create_default());
 
+  cli_run_mainLoop_cb = cli_run_mainLoop;
+
   lfPer_setBit(lf_loopWatchDog);
   lfPer_setBit(lf_loopCli);
+
   if constexpr (use_NETWORK) {
 
     ipnet_CONNECTED_cb = main_setup_ip_dependent;

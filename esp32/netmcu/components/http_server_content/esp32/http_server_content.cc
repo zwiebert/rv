@@ -24,7 +24,7 @@ bool check_access_allowed(httpd_req_t *req); //XXX move this to a header file
 #define URI_WAPP_CSS "/f/css/wapp.css"
 #define URI_WAPP_JS "/f/js/wapp.js"
 #define URI_WAPP_JS_MAP "/f/js/wapp.js.map"
-#define URI_WAPP_CSS_MAP "/f/css/wapp.css.map"
+//#define URI_WAPP_CSS_MAP "/f/css/wapp.css.map"
 //#define SERVE_BR
 
 static const char *TAG="APP";

@@ -8,6 +8,7 @@ import svelte from "rollup-plugin-svelte";
 import sveltePreprocess from "svelte-preprocess";
 import { eslint } from "rollup-plugin-eslint";
 import { terser } from "rollup-plugin-terser";
+import css from 'rollup-plugin-css-only';
 
 export const isProduction = process.env.NODE_ENV === "production";
 export const isDistro = process.env.DISTRO === "yes";
@@ -89,17 +90,6 @@ export default {
       })] : [],
     //eslint(),
     svelte({
-
-      dev: !isProduction,
-      //emitCss: true,
-      css: css => { css.write(isProduction ? 'build/wapp.css' : 'build_dev/wapp.css'); },
-      onwarn: (warning, handler) => {
-        // e.g. don't warn on <marquee> elements, cos they're cool
-        if (warning.code === 'a11y-no-onchange') return;
-
-        // let Rollup handle all other warnings normally
-        handler(warning);
-      },
       preprocess: [
         sveltePreprocess({
         postcss: true,
@@ -110,8 +100,23 @@ export default {
             ['//NODE_ENV_DEV', isProduction ? 'if(false)' : 'if(true)'],
          ],
       })],
+      compilerOptions: {
+        dev: !isProduction,
+       // css: (css) => {css.write("wapp.css"); },
+      },
+      emitCss: true,
+      onwarn: (warning, handler) => {
+        if (warning.code === "a11y-no-onchange") return;
+        if (warning.code === "css-unused-selector") return;
+        if (/A11y:/.test(warning.message)) return;
+
+        // let Rollup handle all other warnings normally
+        handler(warning);
+      },
+
 
     }),
+    css({ output: 'wapp.css' }),
     // If you have external dependencies installed from
     // npm, you'll most likely need these plugins. In
     // some cases you'll need additional configuration -
