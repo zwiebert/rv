@@ -7,8 +7,6 @@
 
 #define ENABLE_RESTART 1 // allow software reset
 
-extern void (*mcu_restart_cb)();
-
 #define isValid_optStr(cfg, new) true
 #define set_optStr(v, cb) config_save_item_s(settings_get_kvsKey(cb), v)
 #define set_optBlob(v, cb) config_save_item_b(settings_get_kvsKey(cb), &v, sizeof v)

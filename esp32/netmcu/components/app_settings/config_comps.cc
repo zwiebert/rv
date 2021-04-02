@@ -34,7 +34,8 @@ if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
 #ifdef USE_MQTT
 #include "app_mqtt/mqtt.h"
 void config_setup_mqttAppClient() {
-  io_mqttApp_setup("rv/");
   config_setup_mqttClient();
+  char buf[32];
+  io_mqttApp_setup(config_read_mqtt_root_topic(buf, sizeof buf));
 }
 #endif

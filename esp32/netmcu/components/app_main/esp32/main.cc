@@ -30,7 +30,7 @@ void lfa_createWifiAp() {
 void lfa_syncStm32Time(void) {
   char buf[80];
   sprintf(buf, "{\"config\":{\"time\":%ld}};", time(0));
-  dbg_vpf(ets_printf("to-strm32: <%s>", buf));
+  dbg_vpf(ets_printf("to-strm32: <%s>\n", buf));
   if (stm32_mutexTake()) {
     stm32_write(buf, strlen(buf));
     stm32_mutexGive();
@@ -48,7 +48,8 @@ void  mcu_delayedRestart(unsigned delay_ms) {
 void cli_run_mainLoop(enum mainLoop req) {
   switch (req) {
   case mainLoop_mcuRestart:
-    lf_setBit(lf_mcuRestart);
+    mcu_restart();
+    //lf_setBit(lf_mcuRestart);
     return;
 #ifdef USE_LAN
   case mainLoop_configEthernet:

@@ -121,8 +121,8 @@ static class AppNetMqtt final : public Net_Mqtt {
       LockGuard lock(cli_mutex);
       char line[40 + data_len];
       if (topic_endsWith(topic, topic_len, TOPIC_DUR_END)) {
-        const char *addr = topic;
-        int addr_len = topic_len - (sizeof TOPIC_DUR_END - 1);
+        const char *addr = topic + strlen(TOPIC_ROOT);
+        int addr_len = topic_len - (sizeof TOPIC_DUR_END - 1) - strlen(TOPIC_ROOT);
         sprintf(line, "cmd dur%.*s=%.*s", addr_len, addr, data_len, data);
         cli_process_cmdline(line, td);
       } else if (topic_endsWith(topic, topic_len, TOPIC_CLI_END)) {
@@ -167,11 +167,9 @@ static class AppNetMqtt final : public Net_Mqtt {
 
 void io_mqttApp_setup(const char *topic_root) {
   if (topic_root && *topic_root && (!io_mqtt_topic_root || 0 != strcmp(io_mqtt_topic_root, topic_root))) {
-    char *tr = (char*)malloc(strlen(topic_root)+1);
-    if (tr) {
-      STRCPY (tr, topic_root);
-      free(io_mqtt_topic_root);
-      io_mqtt_topic_root = tr;
+    free(io_mqtt_topic_root);
+    if ((io_mqtt_topic_root = static_cast<char *>(malloc(strlen(topic_root) + 2)))) {
+      strcat(strcpy(io_mqtt_topic_root, topic_root), "/");
     }
   }
 
