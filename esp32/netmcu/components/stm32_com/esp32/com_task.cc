@@ -134,7 +134,7 @@ static void stm32com_task(void *pvParameters) {
 }
 
 static TaskHandle_t xHandle = NULL;
-#define STACK_SIZE  3000
+#define STACK_SIZE  5000
 
 void stm32com_setup_task(const struct cfg_stm32com *cfg_stm32com) {
   static uint8_t ucParameterToPass;
