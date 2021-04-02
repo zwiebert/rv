@@ -77,10 +77,12 @@ void mcu_init() {
     if (use_AP_FALLBACK || C.network != nwNone)
       esp_netif_init();
 
+#ifdef PING_NOT_BROKEN // pings will timeout with latest ESP-IDF (was working April 2020, broken April 2021 or earlier)
     //XXX reset tcp/ip adapter here instead of reboot?
     ping_restart_cb = [] {
       lf_setBit(lf_mcuRestart);
     };
+#endif
     ipnet_gotIpAddr_cb = [] {
       lf_setBit(lf_gotIpAddr);
     };

@@ -75,6 +75,7 @@ void ping_loop() {
   } else if (++ping_error_count > PING_ERROR_LIMIT) {
     ping_error_count = 0;
 
+    io_printf("netmcu: no ping received from gateway\n");
     if (ping_restart_cb)
       ping_restart_cb();
   }
