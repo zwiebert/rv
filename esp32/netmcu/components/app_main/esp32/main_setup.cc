@@ -1,4 +1,5 @@
 #include "main.h"
+#include <cli/cli.h>
 #include "app_settings/config.h"
 #include "stm32/stm32.h"
 #include "stm32_com/com_task.h"
@@ -8,15 +9,12 @@
 #include "app_settings/config.h"
 #include "app_http_server/setup.h"
 #include "../app_private.h"
-
-void mcu_restart() {
-  lf_setBit(lf_mcuRestart);
-}
+#include "main_loop/main_queue.hh"
 
 void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb([](struct timeval *tv) {
     ets_printf("ntp synced: %ld\n", time(0));
-    lf_setBit(lf_syncStm32Time);
+    mainLoop_callFun(lfa_syncStm32Time);
   });
 
   config_setup_ntpClient();
@@ -43,10 +41,15 @@ void main_setup_ip_dependent() {
   tmr_pingLoop_start();
 }
 
-void mcu_init() {
 
-  if constexpr (use_EG)
-    loop_eventBits_setup();
+void lfPer100ms_mainFun() {
+  cli_loop();
+  watchDog_loop();
+}
+
+
+void mcu_init() {
+  mainLoop_setup(32);
 
   kvs_setup();
   config_setup_txtio();
@@ -65,11 +68,6 @@ void mcu_init() {
 
   ESP_ERROR_CHECK(esp_event_loop_create_default());
 
-  cli_run_mainLoop_cb = cli_run_mainLoop;
-
-  lfPer_setBit(lf_loopWatchDog);
-  lfPer_setBit(lf_loopCli);
-
   if constexpr (use_NETWORK) {
 
     ipnet_CONNECTED_cb = main_setup_ip_dependent;
@@ -83,12 +81,6 @@ void mcu_init() {
       lf_setBit(lf_mcuRestart);
     };
 #endif
-    ipnet_gotIpAddr_cb = [] {
-      lf_setBit(lf_gotIpAddr);
-    };
-    ipnet_lostIpAddr_cb = [] {
-      lf_setBit(lf_lostIpAddr);
-    };
 
     if constexpr (use_WLAN) {
       if (C.network == nwWlanSta)

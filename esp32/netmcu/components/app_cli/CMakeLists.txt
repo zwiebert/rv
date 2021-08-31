@@ -12,7 +12,7 @@ idf_component_register(
     SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 
     REQUIRES cli app_uout
-    PRIV_REQUIRES app_config stm32 app_misc cli app_settings config_kvs utils_debug utils_misc net net_http_server net_mqtt_app net_mqtt  txtio uout nanopb protobuf
+    PRIV_REQUIRES main_loop app_config stm32 app_misc cli app_settings config_kvs utils_debug utils_misc net net_http_server net_mqtt_app net_mqtt  txtio uout nanopb protobuf
                   mbedtls
 )
 

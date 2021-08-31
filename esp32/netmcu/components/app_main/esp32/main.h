@@ -1,14 +1,8 @@
-/*
- * main.h
- *
- *  Created on: 24.03.2020
- *      Author: bertw
- */
-
-#ifndef APP_ESP32_MAIN_H_
-#define APP_ESP32_MAIN_H_
+#pragma once
 
 #include "app_config/proj_app_cfg.h"
+#include "main_loop_periodic.h"
+
 #include "app_misc/common.h"
 #include "app_misc/rtc.h"
 #include "app_misc/timer.h"
@@ -48,40 +42,7 @@
 
 
 #define KEY_BOOT_COUNTER "BOOT_CT"
-#ifdef USE_EG
-extern EventGroupHandle_t loop_event_group;
-#define lf_setBits(v) xEventGroupSetBits(loop_event_group, (v))
-#else
-#define lf_setBits(v) (loop_flags |= (v))
-#endif
 
-#define lf_setBit(v)  lf_setBits(1<<(v))
-#define lfPer_setBits(v) (loop_flags_periodic |= (v))
-#define lfPer_setBit(v)  lfPer_setBits(1<<(v))
-
-enum loop_flagbits {
-  lf_gotIpAddr, lf_lostIpAddr,
-  lf_createWifiAp,
-  lf_syncStm32Time,
-  lf_pingLoop, lf_loopWatchDog,
-  lf_loopCli,
-  lf_mcuRestart,
-#ifdef USE_LAN
-    lf_configEthernet,
-#endif
-#ifdef USE_MQTT
-    lf_configMqttAppClient,
-#endif
-#ifdef USE_HTTP
-    lf_configHttpServer,
-#endif
-    lf_configTxtio,
-  //-------------
-  lf_Len
-};
-
-extern volatile uint32_t loop_flags;
-extern uint32_t loop_flags_periodic;
 extern i32 boot_counter;
 extern bool wifi_ap_active;
 
@@ -106,4 +67,4 @@ void mcu_init();
 
 
 #define D(x) x
-#endif /* APP_ESP32_MAIN_H_ */
+

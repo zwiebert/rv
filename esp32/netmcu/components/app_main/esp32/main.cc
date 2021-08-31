@@ -45,34 +45,6 @@ void  mcu_delayedRestart(unsigned delay_ms) {
   }
 }
 
-void cli_run_mainLoop(enum mainLoop req) {
-  switch (req) {
-  case mainLoop_mcuRestart:
-    mcu_restart();
-    //lf_setBit(lf_mcuRestart);
-    return;
-#ifdef USE_LAN
-  case mainLoop_configEthernet:
-    lf_setBit(lf_configEthernet);
-    return;
-#endif
-#ifdef USE_MQTT
-  case mainLoop_configMqttAppClient:
-    lf_setBit(lf_configMqttAppClient);
-    return;
-#endif
-#ifdef USE_HTTP
-  case mainLoop_configHttpServer:
-    lf_setBit(lf_configHttpServer);
-    return;
-#endif
-  case mainLoop_configTxtio:
-    lf_setBit(lf_configTxtio);
-    return;
-  }
-
-}
-
 static void stm32_processInputLine(char *line) {
   if (watchDog_checkCommandLine(line)) {
     return; // command-line consumed by watch-dog

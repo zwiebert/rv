@@ -4,6 +4,8 @@
 #include "app_config/proj_app_cfg.h"
 #include <time.h>
 
+#include "utils_time/ut_constants.hh"
+
 extern volatile time_t run_time_secs;
 #define run_time(x) (run_time_secs + 0)
 
@@ -22,16 +24,6 @@ int get_dst(void);
 int16_t rtc_get_next_minute(void); // get next minute_of_day or -1 until next minute begins
 
 void rtc_setup(void);
-
-#define MSEC_PER_SEC 1000
-#define MINT_PER_HOUR  60
-#define MINT_PER_DAY  (60 * 24)
-#define SECS_PER_MINT  60
-#define HOUR_PER_DAY   24
-#define MONT_PER_YEAR  12
-#define DAYS_PER_WEEK   7
-#define SECS_PER_DAY 86400
-#define SECS_PER_HOUR (60 * 60)
 
 
 typedef time_t rtc_time_t;
