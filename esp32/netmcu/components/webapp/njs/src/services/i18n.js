@@ -48,7 +48,7 @@ const de = {
     }
 } ;
 
-function setupI18n({ withLocale: _locale } = { withLocale: 'en' }) {
+function setupI18n() {
     addMessages('en', en);
     addMessages('de', de);
 
