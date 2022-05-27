@@ -12,6 +12,7 @@ clean: esp32-clean http_clean
 
 THIS_ROOT := $(realpath .)
 BUILD_BASE ?= $(THIS_ROOT)/build
+PORT ?= /dev/ttyUSB1
 
 
 ifdef V
@@ -47,7 +48,7 @@ esp32-lan:
 esp32-cellar:
 	make esp32-lan CELLAR=1 FLAVOR_LAN=1
 esp32-flash: 
-	$(esp32_build_cmd) -p /dev/ttyUSB2 flash
+	$(esp32_build_cmd) -p $(PORT) flash
 
 ############# graphviz #################################
 esp32-png: $(esp32_build_dir)/netmcu.png
