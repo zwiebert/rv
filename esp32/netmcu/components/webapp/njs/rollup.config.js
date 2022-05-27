@@ -6,7 +6,6 @@ import commonjs from '@rollup/plugin-commonjs';
 import alias from "@rollup/plugin-alias";
 import svelte from "rollup-plugin-svelte";
 import sveltePreprocess from "svelte-preprocess";
-import { eslint } from "rollup-plugin-eslint";
 import { terser } from "rollup-plugin-terser";
 import css from 'rollup-plugin-css-only';
 

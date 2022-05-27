@@ -18,7 +18,7 @@
   $: tabIdxSettings = $TabIdx["settings"] || 0;
 </script>
 
-<style type="text/scss">
+<style lang="scss">
   @import "../styles/app.scss";
 </style>
 

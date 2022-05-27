@@ -5,11 +5,12 @@ module.exports = {
   corePlugins: {
     preflight: false,
   },
-  purge: [
-   "./src/**/*.svelte",
-   "./src/**/*.css",
-   "./src/**/*.scss",
-  ],
+  content: [
+    "./src/**/*.html",
+    "./src/**/*.svelte",
+     "./src/**/*.css",
+     "./src/**/*.scss",
+    ],
   theme: {
     extend: {
       color: {
