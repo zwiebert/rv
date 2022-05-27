@@ -46,8 +46,8 @@ void tmr_loopPeriodic_start() {
         const time_t now = time(0);
         struct tm tms;
         if (auto tmp = localtime_r(&now, &tms)) {
-          if (tmp->tm_hour == 3 && tmp->tm_min >= 33)
-            mainLoop_mcuRestart(0);  // XXX: restart every >=24 hours at 03:33
+          if (tmp->tm_hour == 23 && tmp->tm_min >= 33)
+            mainLoop_mcuRestart(0);  // XXX: restart every >=24 hours at 23:33
         }
       }
     }
