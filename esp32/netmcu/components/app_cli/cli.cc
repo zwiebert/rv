@@ -75,11 +75,9 @@ static bool cliApp_redirect_to_rv(char *json) {
 #define TO_RV "{\"to\":\"rv\""
 #define TO_RV_LEN ( sizeof TO_RV - 1)
   if (strncmp(json, TO_RV, TO_RV_LEN) == 0) {
-    if (stm32_mutexTake()) {
-      stm32_write(json, strlen(json));
-      stm32_write(";\r\n", 3);
-      stm32_mutexGive();
-    }
+    LockGuard lock(stm32_mutex);
+    stm32_write(json, strlen(json));
+    stm32_write(";\r\n", 3);
     return true;
   }
   return false;

@@ -107,12 +107,12 @@ static void do_work() {
 
     if (td.sj().get_json()) {
       DD(printf("stm32com:from_netmcu:response: <%s>\n", td.sj().get_json()));
-      if (stm32_mutexTake()) {
-        stm32_write(td.sj().get_json(), strlen(td.sj().get_json()));
-        stm32_write("\n", 2);
-        stm32_mutexGive();
-        td.sj().free_buffer();
-      }
+      LockGuard lock(stm32_mutex);
+
+      stm32_write(td.sj().get_json(), strlen(td.sj().get_json()));
+      stm32_write("\n", 2);
+
+      td.sj().free_buffer();
     }
   }
 

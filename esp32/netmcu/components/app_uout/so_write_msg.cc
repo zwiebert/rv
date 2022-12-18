@@ -6,8 +6,6 @@
 #include "app_misc/ota.h"
 #include "stm32/stm32_ota.h"
 #include "app_misc/rtc.h"
-#include "app_cli/cli_config.h"
-#include "app_cli/cli_app.h" // FIXME?
 #include "app_settings/config.h"
 #include "app_misc/kvstore.h"
 #include "net/ipnet.h"

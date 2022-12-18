@@ -116,13 +116,11 @@ process_parmCmd(clpar p[], int len, const struct TargetDesc &td) {
   }
 
   if (hasCmdLine) {
-    buf[strlen(buf)-1] = '\0';
+    buf[strlen(buf) - 1] = '\0';
     strcat(buf, "}}\n");
     dbg_vpf(db_printf("cmd2stm32: <%s>\n", buf));
-    if (stm32_mutexTake()) {
-      stm32_write(buf, strlen(buf));
-      stm32_mutexGive();
-    }
+    LockGuard lock(stm32_mutex);
+    stm32_write(buf, strlen(buf));
   }
 
   return 0;

@@ -30,9 +30,9 @@ void tmr_pingLoop_start() {
 }
 
 void stm32loop() {
-  if (stm32_mutexTakeTry()) {
+  if (stm32_mutex.try_lock()) {
     stm32_checkForInput();
-    stm32_mutexGive();
+    stm32_mutex.unlock();
   }
 }
 

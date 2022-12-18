@@ -1,7 +1,6 @@
 
 #include <utils_misc/int_macros.h>
 #include <utils_misc/cstring_utils.hh>
-#include <cli/mutex.hh>
 #include <txtio/txtio_mutex.hh>
 #include <app_uout/so_msg.h>
 #include <app_uout/so_types.h>
