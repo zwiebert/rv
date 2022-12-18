@@ -5,7 +5,7 @@ idf_component_register(
     INCLUDE_DIRS "./include"
     REQUIRES app_settings utils_debug utils_misc firmware_update
     PRIV_REQUIRES main_loop utils_time net app_net app_misc app_settings app_cli app_settings utils_debug key_value_store utils_misc stm32 storage txtio net_mqtt_app stm32_com net_http_server http_server_content
-                  nvs_flash
+                  nvs_flash driver esp_event esp_netif
 )
 
 component_compile_options(${comp_compile_opts})

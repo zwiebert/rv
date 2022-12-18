@@ -7,10 +7,12 @@
 #include "app_config/proj_app_cfg.h"
 #include "app_settings/config.h"
 #include "app_settings/config_defaults.h"
+#include "app_uout/callbacks.h"
 #include "config_kvs.h"
 #include "utils_misc/int_macros.h"
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
+
 
 
 
@@ -39,3 +41,18 @@ void config_setup_mqttAppClient() {
   io_mqttApp_setup(config_read_mqtt_root_topic(buf, sizeof buf));
 }
 #endif
+
+void config_ext_setup_txtio() {
+  uo_flagsT flags;
+  flags.evt.uo_evt_flag_valveChange = true;
+  config_setup_txtio(&flags);
+
+}
+
+void config_ext_setup_cliTcpServer() {
+  uo_flagsT flags;
+  flags.evt.uo_evt_flag_valveChange = true;
+#ifndef TEST_HOST
+  config_setup_cliTcpServer(&flags);
+#endif
+}

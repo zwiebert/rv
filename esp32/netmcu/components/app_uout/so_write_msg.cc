@@ -147,7 +147,7 @@ void soMsg_RVE_PRESS_CTL(const struct TargetDesc &td, const so_arg_on_t *state) 
 
 void soMsg_RVE_VALVES(const struct TargetDesc &td, const so_arg_valves_t *valves) {
   td.so().print("valve_state", valves->state_bits);
-  td.so().print("valve_change", valves->changed_bits);
+  td.so().print("uo_evt_flag_valveChange", valves->changed_bits);
 
   u32 mask = valves->changed_bits;
   for (int i = 0; mask; ++i, (mask >>= 1)) {

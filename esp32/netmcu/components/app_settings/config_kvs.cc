@@ -27,7 +27,7 @@ bool config_item_modified(enum configAppItem item) {
   if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
     switch ((int)item) {
     case CB_VERBOSE:
-      config_setup_txtio();
+      config_ext_setup_txtio();
       break;
     default:
       break;

@@ -5,7 +5,7 @@ idf_component_register(
     INCLUDE_DIRS "./include"
     #REQUIRES  
     PRIV_REQUIRES utils_debug utils_misc net
-                  lwip
+                  lwip esp_event esp_netif
 )
 
 component_compile_options(${comp_compile_opts})

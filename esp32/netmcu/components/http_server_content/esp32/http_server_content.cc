@@ -1,5 +1,3 @@
-#include <esp_wifi.h>
-#include <esp_event.h>
 #include <esp_log.h>
 #include <esp_system.h>
 #include <sys/param.h>
@@ -347,7 +345,7 @@ void hts_setup_content() {
 #ifdef USE_WS
   uo_flagsT flags;
   flags.tgt.websocket = true;
-  flags.evt.valve_change = true;
+  flags.evt.uo_evt_flag_valveChange = true;
   flags.evt.async_http_resp = true;
   flags.fmt.json = true;
   uoCb_subscribe(ws_send_json_cb, flags);

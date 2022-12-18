@@ -7,8 +7,8 @@ const httpProxy = require('http-proxy');
 var expressWs = require('express-ws')
 
 let cont_dir=__dirname
-let mcu = 'http://192.168.1.69:80';
-let mcu_ws = 'ws://192.168.1.69:80';
+let mcu = 'http://192.168.1.85:80';
+let mcu_ws = 'ws://192.168.1.85:80';
 
 let app = express();
  expressWs(app);

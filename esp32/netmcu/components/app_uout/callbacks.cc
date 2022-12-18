@@ -17,7 +17,7 @@
 
 void uoAPp_publish_valve_change(so_arg_valve_state_t vs) {
   uo_flagsT flags;
-  flags.evt.valve_change = true;
+  flags.evt.uo_evt_flag_valveChange = true;
 
   flags.fmt.raw = true;
   if (auto idxs = uoCb_filter(flags); idxs.size) {

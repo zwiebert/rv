@@ -6,6 +6,7 @@ idf_component_register(
     INCLUDE_DIRS . "./include" 
     #REQUIRES 
     PRIV_REQUIRES app_config app_misc cli app_settings config_kvs utils_debug utils_misc net net_http_server net_mqtt_app net_mqtt stm32 txtio uout 
+                 
 )
 
 component_compile_options(${comp_compile_opts})

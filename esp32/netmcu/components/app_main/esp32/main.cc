@@ -29,7 +29,7 @@ void lfa_createWifiAp() {
 
 void lfa_syncStm32Time(void) {
   char buf[80];
-  sprintf(buf, "{\"config\":{\"time\":%ld}};", time(0));
+  sprintf(buf, "{\"config\":{\"time\":%lld}};", time(0));
   dbg_vpf(ets_printf("to-strm32: <%s>\n", buf));
   if (stm32_mutexTake()) {
     stm32_write(buf, strlen(buf));

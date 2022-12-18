@@ -155,7 +155,7 @@ static class AppNetMqtt final : public Net_Mqtt {
 
      uo_flagsT flags {};
      flags.tgt.mqtt = true;
-     flags.evt.valve_change = true;
+     flags.evt.uo_evt_flag_valveChange = true;
      flags.fmt.raw = true;
      uoCb_subscribe(io_mqttApp_uoutPublish_cb, flags);
   }

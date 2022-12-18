@@ -10,6 +10,8 @@
 #include <uout/uo_callbacks.h>
 #include <type_traits>
 
+#define uo_evt_flag_valveChange uo_evt_flag_F
+
 struct so_arg_valve_state_t {
   uint8_t valve_number;
   bool is_open;
@@ -17,7 +19,7 @@ struct so_arg_valve_state_t {
 
 
 inline const so_arg_valve_state_t *uoCb_valveState_FromMsg(const uoCb_msgT msg) {
-  if (msg.flags.evt.valve_change && msg.flags.fmt.raw)
+  if (msg.flags.evt.uo_evt_flag_valveChange && msg.flags.fmt.raw)
     return static_cast<const so_arg_valve_state_t *>(msg.cptr);
   return nullptr;
 }

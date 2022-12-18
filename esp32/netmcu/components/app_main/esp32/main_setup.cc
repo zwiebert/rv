@@ -10,6 +10,7 @@
 #include "app_http_server/setup.h"
 #include "../app_private.h"
 #include "main_loop/main_queue.hh"
+#include <esp_netif.h>
 
 void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb([](struct timeval *tv) {
@@ -32,7 +33,7 @@ void main_setup_ip_dependent() {
       config_setup_mqttAppClient();
 
     if constexpr (use_TCPS_TASK)
-      config_setup_cliTcpServer();
+      config_ext_setup_cliTcpServer();
 
     if constexpr (use_HTTP)
       config_setup_httpServer();
@@ -52,7 +53,7 @@ void mcu_init() {
   mainLoop_setup(32);
 
   kvs_setup();
-  config_setup_txtio();
+  config_ext_setup_txtio();
   config_setup_global();
 
   if constexpr (use_SERIAL) {

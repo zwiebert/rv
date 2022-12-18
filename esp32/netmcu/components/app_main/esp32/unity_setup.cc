@@ -25,7 +25,7 @@ void unity_suiteSetUp() {
   //config_setup();
 
   kvs_setup();
-  config_setup_txtio();
+  config_ext_setup_txtio();
   stor_setup();
 #endif
 
