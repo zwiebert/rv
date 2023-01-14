@@ -94,8 +94,9 @@ extern "C" void app_main(void) {
   tmr_loopPeriodic_start();
   while (1) {
     loop();
-if constexpr (!use_EG)
+#ifdef CONFIG_APP_USE_EG
     vTaskDelay(pdMS_TO_TICKS(LOOP_INTERVAL_MS));
+#endif
   }
 }
 

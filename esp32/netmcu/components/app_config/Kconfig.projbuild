@@ -1,95 +1,79 @@
 menu "RV Project Configuration"
-    
-config APP_USE_HTTP
-  bool "Activate HTTP"
-  default y
 
-config APP_USE_LAN
-  bool "Activate LAN"
-  default y
+    config APP_USE_HTTP
+        bool "Activate HTTP"
+        default y
 
-config APP_USE_WLAN
-  bool "Activate WLAN"
-  default y
+    config APP_USE_JSON
+        bool "Activate JSON"
+        default y
 
-config APP_USE_WLAN_AP
-  bool "Activate WLAN_AP"
-  default y
+    config APP_USE_MQTT
+        bool "Activate MQTT"
+        default y
 
-config APP_USE_NTP
-  bool "Activate NTP"
-  default y
- 
-config APP_USE_JSON
-  bool "Activate JSON"
-  default y
+    config APP_USE_POSIX_TIME
+        bool "Activate POSIX_TIME"
+        default y
 
-config APP_USE_MQTT
-  bool "Activate MQTT"
-  default y
+    config APP_USE_SERIAL
+        bool "Activate SERIAL"
+        default y
 
-config APP_USE_POSIX_TIME
-  bool "Activate POSIX_TIME"
-  default y
+    config APP_USE_WDG
+        bool "Activate WDG"
+        default y
 
-config APP_USE_SERIAL
-  bool "Activate SERIAL"
-  default y
+    config APP_USE_FS
+        bool "Activate FS"
+        default y
 
-config APP_USE_WDG
-  bool "Activate WDG"
-  default y
+    config APP_USE_HTTP_CLIENT
+        bool "Activate HTTP_CLIENT"
+        default y
 
-config APP_USE_FS
-  bool "Activate FS"
-  default y
+    config APP_USE_OTA
+        bool "Activate OTA"
+        default y
 
-config APP_USE_HTTP_CLIENT
-  bool "Activate HTTP_CLIENT"
-  default y
+    config APP_USE_STM32OTA
+        bool "Activate STM32OTA"
+        default y
 
-config APP_USE_OTA
-  bool "Activate OTA"
-  default y
+    config APP_USE_TCPS
+        bool "Activate TCPS"
+        default n
 
-config APP_USE_STM32OTA
-  bool "Activate STM32OTA"
-  default y
+    config APP_USE_TCPS_TASK
+        bool "Activate TCPS_TASK"
+        default y
 
-config APP_USE_TCPS
-  bool "Activate TCPS"
-  default n
-  
-config APP_USE_TCPS_TASK
-  bool "Activate TCPS_TASK"
-  default y
+    config APP_USE_EG
+        bool "Activate EG"
+        default y
 
-config APP_USE_EG
-  bool "Activate EG"
-  default y
+    config APP_USE_LPH
+        bool "Activate LPH"
+        default y
 
-config APP_USE_LPH
-  bool "Activate LPH"
-  default y
+    config APP_USE_WS
+        bool "Activate WS"
+        default y
 
-config APP_USE_WS
-  bool "Activate WS"
-  default y
+    config APP_USE_CLI_MUTEX
+        bool "Activate CLI_MUTEX"
+        default y
 
-config APP_USE_CLI_MUTEX
-  bool "Activate CLI_MUTEX"
-  default y
+    config APP_USE_NETWORK
+        bool "Activate NETWORK"
+        default y
 
-config APP_USE_NETWORK
-  bool "Activate NETWORK"
-  default y
+    config APP_USE_STM32COM
+        bool "Activate STM32COM"
+        default y
 
-config APP_USE_STM32COM
-  bool "Activate STM32COM"
-  default y
+    config APP_USE_AP_FALLBACK
+        bool "Activate AP_FALLBACK"
+        default y
 
-config APP_USE_AP_FALLBACK
-  bool "Activate AP_FALLBACK"
-  default y
-
-  endmenu
+endmenu

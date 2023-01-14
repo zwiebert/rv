@@ -25,7 +25,7 @@ config C = {
 
 };
 
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
 enum nwConnection config_read_network_connection() {
   return static_cast<enum nwConnection>(config_read_item((CB_NETWORK_CONNECTION), MY_NETWORK_CONNECTION));
 }
@@ -41,7 +41,7 @@ bool config_read_stm32_inv_bootpin() {
   return !!config_read_item((CB_STM32_INV_BOOTPIN), MY_STM32_INV_BOOTPIN);
 }
 
-#ifdef USE_LPH
+#ifdef CONFIG_APP_USE_LPH
 bool config_read_lph(uint16_t lph[14]) {
   return config_read_item_b(settings_get_kvsKey(CB_LPH), (void*)lph, sizeof(uint16_t) * 14, (void*)0) != 0;
 }

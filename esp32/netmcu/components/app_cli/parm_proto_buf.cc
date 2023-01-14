@@ -64,7 +64,7 @@ int Lph[RV_VALVE_COUNT] = {
     };
 
 extern "C" int
-process_parmProtoBuf(clpar p[], int len, const struct TargetDesc &td) {
+process_parmProtoBuf(clpar p[], int len, const class UoutWriter &td) {
 
   soMsg_PBUF_begin(td);
 

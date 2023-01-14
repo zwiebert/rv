@@ -30,33 +30,33 @@
 
 #define D(x)
 
-void soCfg_BAUD(const struct TargetDesc &td) {
+void soCfg_BAUD(const class UoutWriter &td) {
 #ifndef MCU_ESP32
   td.so().print(settings_get_optKeyStr(CB_BAUD), config_read_baud());
 #endif
 }
 
-void soCfg_RTC(const struct TargetDesc &td) {
+void soCfg_RTC(const class UoutWriter &td) {
   char buf[64];
   if (rtc_get_by_string(buf)) {
     td.so().print(otok_strings[(int)otok::k_rtc], buf);
   }
 }
 
-void soCfg_NETWORK(const struct TargetDesc &td) {
-#ifdef USE_NETWORK
+void soCfg_NETWORK(const class UoutWriter &td) {
+#ifdef CONFIG_APP_USE_NETWORK
   td.so().print(settings_get_optKeyStr(CB_NETWORK_CONNECTION),cfg_args_network[config_read_network_connection()]);
 #endif
 }
 
-void soCfg_TZ(const struct TargetDesc &td) {
+void soCfg_TZ(const class UoutWriter &td) {
 #ifdef USE_POSIX_TIME
   char buf[64];
   td.so().print(settings_get_optKeyStr(CB_TZ),config_read_tz(buf, sizeof buf));
 #endif
 }
 
-void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
+void soCfg_GPIO_PIN(const class UoutWriter &td, const int gpio_number) {
 #ifdef ACCESS_GPIO
   {
     char buf[64];
@@ -72,7 +72,7 @@ void soCfg_GPIO_PIN(const struct TargetDesc &td, const int gpio_number) {
 #endif
 }
 
-void soCfg_GPIO_MODES(const struct TargetDesc &td) {
+void soCfg_GPIO_MODES(const class UoutWriter &td) {
 #ifdef ACCESS_GPIO
   {
     char buf[64];
@@ -97,7 +97,7 @@ void soCfg_GPIO_MODES(const struct TargetDesc &td) {
 #endif
 }
 
-void soCfg_GPIO_MODES_AS_STRING(const struct TargetDesc &td) {
+void soCfg_GPIO_MODES_AS_STRING(const class UoutWriter &td) {
 #ifdef ACCESS_GPIO
   {
     int gpio_number;
@@ -117,7 +117,7 @@ void soCfg_GPIO_MODES_AS_STRING(const struct TargetDesc &td) {
 }
 
 
-void soCfg_STM32_BOOTGPIO_INV(const struct TargetDesc &td) {
+void soCfg_STM32_BOOTGPIO_INV(const class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_STM32_INV_BOOTPIN), config_read_stm32_inv_bootpin());
 }
 
@@ -154,28 +154,28 @@ void soCfg_STM32_BOOTGPIO_INV(const struct TargetDesc &td) {
 
 #define D(x)
 
-void soCfg_begin(const struct TargetDesc &td) {
+void soCfg_begin(const class UoutWriter &td) {
   td.so().x_open("config");
 }
 
-void soCfg_end(const struct TargetDesc &td) {
+void soCfg_end(const class UoutWriter &td) {
   td.so().x_close();
 }
 
-void soCfg_all_net(const struct TargetDesc &td) {
+void soCfg_all_net(const class UoutWriter &td) {
   soCfg_NETWORK(td);
-#ifdef USE_WLAN
+#ifdef CONFIG_APP_USE_WLAN
   soCfg_WLAN_SSID(td);
   soCfg_WLAN_PASSWORD(td);
 #endif
-#ifdef USE_NTP
+#ifdef CONFIG_APP_USE_NTP
   soCfg_NTP_SERVER(td);
 #endif
-#ifdef USE_LAN
+#ifdef CONFIG_APP_USE_LAN
   soCfg_LAN_PHY(td);
   soCfg_LAN_PWR_GPIO(td);
 #endif
-#ifdef USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
   soCfg_MQTT_ENABLE(td);
   soCfg_MQTT_URL(td);
   soCfg_MQTT_USER(td);
@@ -183,18 +183,18 @@ void soCfg_all_net(const struct TargetDesc &td) {
   soCfg_MQTT_CLIENT_ID(td);
   soCfg_MQTT_ROOT_TOPIC(td);
 #endif
-#ifdef USE_HTTP
+#ifdef CONFIG_APP_USE_HTTP
   soCfg_HTTP_ENABLE(td);
   soCfg_HTTP_USER(td);
   soCfg_HTTP_PASSWORD(td);
 #endif
 }
 
-void soCfg_all_rv(const struct TargetDesc &td) {
+void soCfg_all_rv(const class UoutWriter &td) {
   soCfg_STM32_BOOTGPIO_INV(td);
 }
 
-void soCfg_all_time(const struct TargetDesc &td) {
+void soCfg_all_time(const class UoutWriter &td) {
   soCfg_RTC(td);
 #ifdef USE_POSIX_TIME
   soCfg_TZ(td);
@@ -203,7 +203,7 @@ void soCfg_all_time(const struct TargetDesc &td) {
   soCfg_DST(td);
 #endif
 }
-void soCfg_all(const struct TargetDesc &td) {
+void soCfg_all(const class UoutWriter &td) {
   soCfg_VERBOSE(td);
 
   soCfg_all_time(td);

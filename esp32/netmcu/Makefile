@@ -4,26 +4,31 @@
 #
 .PHONY: xxx win_copy win_copy_release esp32wlan esp32poe esp32gateway clean
 
-.PHONY: esp32-wlan esp32-lan esp32-flash esp32-flash-ocd esp32-flash-app esp32-flash-app-ocd
+.PHONY: esp32-all esp32-flash esp32-flash-ocd esp32-flash-app esp32-flash-app-ocd
+
+flavors = esp32 esp32dbg
+flavor ?= esp32
+PORT ?= /dev/ttyUSB1
 
 default: print-help
 clean: esp32-clean http_clean
 
 
-THIS_ROOT := $(realpath .)
-BUILD_BASE ?= $(THIS_ROOT)/build
-PORT ?= /dev/ttyUSB1
 
+
+IDF_PY = $(IDF_PYTHON_ENV_PATH)/bin/python $(IDF_PATH)/tools/idf.py
 
 ifdef V
 esp32_build_opt_verbose = -v
 endif
 
-esp32_src_dir := $(THIS_ROOT)
-esp32_build_dir := $(BUILD_BASE)/esp32
+THIS_ROOT := $(realpath .)
+BUILD_BASE ?= $(THIS_ROOT)/build/$(flavor)
+esp32_src_dir := $(THIS_ROOT)/src/$(flavor)
+esp32_build_dir := $(BUILD_BASE)
+esp32_build_cmd := $(IDF_PY) -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)  $(esp32_build_opts)
 esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
-esp32_build_cmd := idf.py $(esp32_build_opt_verbose) -C . -B $(esp32_build_dir) -p /dev/ttyUSB0
-esp32_ocd_sh :=  sh $(realpath ./esp32_ocd.sh)
+
 
 .PHONY: http_proxy http_clean
 http_proxy:
@@ -33,7 +38,7 @@ http_clean:
 
 
 
-esp32_tgts_auto := menuconfig clean fullclean app monitor
+esp32_tgts_auto := menuconfig clean fullclean app flash monitor gdb gdbgui
 define GEN_RULE
 .PHONY: esp32-$(1)
 esp32-$(1):
@@ -41,12 +46,10 @@ esp32-$(1):
 endef
 $(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
-esp32-wlan:
+esp32-all:
 	$(esp32_build_cmd) reconfigure all
-esp32-lan:
-	env FLAVOR_LAN=1 $(esp32_build_cmd) reconfigure all
 esp32-cellar:
-	make esp32-lan CELLAR=1 FLAVOR_LAN=1
+	make esp32-all CELLAR=1
 esp32-flash: 
 	$(esp32_build_cmd) -p $(PORT) flash
 
@@ -67,12 +70,14 @@ FORCE:
 
 
 ############ openocd ###################################
-esp32-flash-ocd: 
-	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash)
-esp32-flash-app-ocd: 
-	(cd $(esp32_build_dir) && $(esp32_ocd_sh) flash_app)
+esp32_ocd_sh :=  $(realpath ./src/esp32/esp32_ocd.sh) $(esp32_src_dir) $(esp32_build_dir)
+
+esp32-flash-ocd:
+	$(esp32_ocd_sh) flash
+esp32-flash-app-ocd:
+	$(esp32_ocd_sh) flash_app
 esp32-ocd:
-	$(esp32_ocd_sh) server
+	$(esp32_ocd_sh)  server
 esp32-ocd-loop:
 	$(esp32_ocd_sh) server_loop
 

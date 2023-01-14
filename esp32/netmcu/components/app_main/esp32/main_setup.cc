@@ -26,17 +26,18 @@ void main_setup_ip_dependent() {
   if (!once) {
     once = 1;
 
-    if constexpr (use_NTP)
-      ntpApp_setup();
-
-    if constexpr (use_MQTT)
-      config_setup_mqttAppClient();
-
-    if constexpr (use_TCPS_TASK)
-      config_ext_setup_cliTcpServer();
-
-    if constexpr (use_HTTP)
-      config_setup_httpServer();
+#ifdef CONFIG_APP_USE_NTP
+    ntpApp_setup();
+#endif
+#ifdef CONFIG_APP_USE_MQTT
+    config_setup_mqttAppClient();
+#endif
+#ifdef CONFIG_APP_USE_TCPS_TASK
+    config_ext_setup_cliTcpServer();
+#endif
+#ifdef CONFIG_APP_USE_HTTP
+  config_setup_httpServer();
+#endif
 
   }
   tmr_pingLoop_start();
@@ -44,7 +45,9 @@ void main_setup_ip_dependent() {
 
 
 void lfPer100ms_mainFun() {
+#ifndef CONFIG_APP_USE_CLI_TASK
   cli_loop();
+#endif
   watchDog_loop();
 }
 
@@ -117,6 +120,11 @@ void mcu_init() {
 
   rtc_setup();
   cliApp_setup();
+#ifdef CONFIG_APP_USE_CLI_TASK
+  cli_setup_task(true);
+#else
+#error "currently unsupported" // FIXME: support CLI without its own task, or remove that APP_USE_CLI_TASK kconfig option
+#endif
 
   kvs_get_int32(KEY_BOOT_COUNTER, &boot_counter), kvs_store_int32(KEY_BOOT_COUNTER, ++boot_counter);
 }

@@ -16,14 +16,14 @@
 #include "cli_imp.h"
 #include "utils_misc/stof.h"
 #include "utils_misc/cstring_utils.h"
-#ifdef USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
 #include "app_mqtt/mqtt.h"
 #endif
-#ifdef USE_HTTP
+#ifdef CONFIG_APP_USE_HTTP
 #include "net_http_server/http_server_setup.h"
 #endif
-#ifdef USE_NTP
-#include "net/ntp_client_setup.h"
+#ifdef CONFIG_APP_USE_NTP
+#include "net/ntp_client_setup.hh"
 #endif
 
 
@@ -37,7 +37,7 @@
 #include <algorithm>
 
 
-bool process_parmConfig_get_app(otok kt, const char *val, const struct TargetDesc &td) {
+bool process_parmConfig_get_app(otok kt, const char *val, const class UoutWriter &td) {
   switch (kt) {
 
   case otok::k_stm32_bootgpio_inv:
@@ -49,7 +49,7 @@ bool process_parmConfig_get_app(otok kt, const char *val, const struct TargetDes
   }
 }
 
-bool process_parmConfig_app(otok kt, const char *key, const char *val, const struct TargetDesc &td, int &errors, u32 &changed_mask) {
+bool process_parmConfig_app(otok kt, const char *key, const char *val, const class UoutWriter &td, int &errors, u32 &changed_mask) {
   switch (kt) {
 
   case otok::NONE:

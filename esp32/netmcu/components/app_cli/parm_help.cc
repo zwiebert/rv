@@ -7,7 +7,7 @@ extern "C++" {
 #include "cli_imp.h"
 #include <string.h>
 
-int process_parmHelp(clpar p[], int len, const struct TargetDesc &td) {
+int process_parmHelp(clpar p[], int len, const class UoutWriter &td) {
   int i;
 
 

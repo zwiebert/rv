@@ -10,14 +10,14 @@
 #include <config_kvs/config.h>
 #include <uout/cli_out.h>
 
-#ifdef USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
 #include <app_mqtt/mqtt.h>
 #endif
-#ifdef USE_HTTP
+#ifdef CONFIG_APP_USE_HTTP
 #include <net_http_server/http_server_setup.h>
 #endif
-#ifdef USE_NTP
-#include <net/ntp_client_setup.h>
+#ifdef CONFIG_APP_USE_NTP
+#include <net/ntp_client_setup.hh>
 #endif
 
 #include "main_loop/main_queue.hh"
@@ -31,7 +31,7 @@
 #include <iterator>
 #include <algorithm>
 
-bool process_parmConfig_get_comp(otok kt, const char *val, const struct TargetDesc &td) {
+bool process_parmConfig_get_comp(otok kt, const char *val, const class UoutWriter &td) {
   switch (kt) {
 
   case otok::k_all: {
@@ -110,7 +110,7 @@ SettData get_settingsData(otok kt, u32 &changed_mask) {
   return settData;
 }
 
-bool process_parmConfig_comp(otok kt, const char *key, const char *val, const struct TargetDesc &td, int &errors, u32 &changed_mask) {
+bool process_parmConfig_comp(otok kt, const char *key, const char *val, const class UoutWriter &td, int &errors, u32 &changed_mask) {
   switch (kt) {
 #if ENABLE_RESTART
   case otok::k_restart:
@@ -119,7 +119,7 @@ bool process_parmConfig_comp(otok kt, const char *key, const char *val, const st
 #endif
 
     ////////////////////////////////////////////////////////////
-#ifdef USE_LAN
+#ifdef CONFIG_APP_USE_LAN
   case otok::k_lan_phy: {
     NODEFAULT();
     if (auto it = std::find(std::begin(cfg_args_lanPhy), std::end(cfg_args_lanPhy), val); it != std::end(cfg_args_lanPhy)) {
@@ -133,14 +133,14 @@ bool process_parmConfig_comp(otok kt, const char *key, const char *val, const st
     set_opt(i8, val, CB_LAN_PWR_GPIO);
   }
     break;
-#endif // USE_LAN
+#endif // CONFIG_APP_USE_LAN
 
-#ifdef USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
   case otok::k_mqtt_enable:
     set_optN(i8, (*val == '1'), CB_MQTT_ENABLE);
     break;
-#endif //USE_MQTT
-#ifdef USE_HTTP
+#endif //CONFIG_APP_USE_MQTT
+#ifdef CONFIG_APP_USE_HTTP
   case otok::k_http_enable:
     set_optN(i8, (*val == '1'), CB_HTTP_ENABLE);
     break;
@@ -152,19 +152,19 @@ bool process_parmConfig_comp(otok kt, const char *key, const char *val, const st
   }
     break;
 
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
   case otok::k_network: {
     int i;
     NODEFAULT();
     bool success = false;
     for (i = 0; i < nwLEN; ++i) {
-#ifndef USE_LAN
+#ifndef CONFIG_APP_USE_LAN
     if (i == nwLan)
     {
       continue;
     }
 #endif
-#ifndef USE_WLAN
+#ifndef CONFIG_APP_USE_WLAN
     if (i == nwWlanSta || i == nwWlanAp)
     {
       continue;
@@ -194,17 +194,17 @@ void parmConfig_reconfig_comp(uint32_t changed_mask) {
     rtc_setup();
   }
 
-#ifdef USE_LAN
+#ifdef CONFIG_APP_USE_LAN
   if (changed_mask & CMB_lan) {
     mainLoop_callFun(config_setup_ethernet);
   }
 #endif
-#ifdef USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
   if (changed_mask & CBM_mqttClient) {
     mainLoop_callFun(config_setup_mqttAppClient);
   }
 #endif
-#ifdef USE_HTTP
+#ifdef CONFIG_APP_USE_HTTP
   if (changed_mask & CBM_httpServer) {
     mainLoop_callFun(config_setup_httpServer);
   }

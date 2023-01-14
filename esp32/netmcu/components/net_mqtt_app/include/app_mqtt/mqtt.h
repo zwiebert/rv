@@ -14,7 +14,7 @@ void io_mqtt_enable(bool enable);
 
 void io_mqtt_publish_config(const char *json);
 
-#ifdef USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
 void io_mqtt_publish_config(const char *json);
 void io_mqtt_publish_status(const char *json);
 void io_mqtt_publish_valve_status(int valve_number, bool state);
@@ -31,6 +31,6 @@ void io_mqtt_publish_stm32_event(const char *event);
 #endif
 
 
-void io_mqttApp_setup(const char *topic_root);
+void io_mqttApp_setup(struct cfg_mqtt *cp);
 
 #endif /* SRC_net_mqtt_app_H_ */

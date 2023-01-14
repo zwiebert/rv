@@ -3,7 +3,7 @@
 #ifdef USE_OTA
 #include "firmware_update/ota.h"
 
-#ifdef USE_LAN
+#ifdef CONFIG_APP_USE_LAN
 #define OTA_FWURL_MASTER "https://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/master/firmware/esp32/tronferno-mcu-lan.bin"
 #define OTA_FWURL_BETA "https://raw.githubusercontent.com/zwiebert/tronferno-mcu-bin/beta/firmware/esp32/tronferno-mcu-lan.bin"
 #else

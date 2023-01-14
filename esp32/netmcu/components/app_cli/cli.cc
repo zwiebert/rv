@@ -22,7 +22,7 @@
 
 bool cli_isJson;
 
-int process_parmHelp(clpar p[], int len, const struct TargetDesc &td);
+int process_parmHelp(clpar p[], int len, const class UoutWriter &td);
 
 const char cli_help_parmHelp[]  =
 "type 'help command;'  or 'help all;'\ncommands are: ";
@@ -83,7 +83,7 @@ static bool cliApp_redirect_to_rv(char *json) {
   return false;
 }
 
-static bool cliApp_checkPassword(clpar p[], int len, const struct TargetDesc &td) {
+static bool cliApp_checkPassword(clpar p[], int len, const class UoutWriter &td) {
   if (len < 2)
     return true;
 

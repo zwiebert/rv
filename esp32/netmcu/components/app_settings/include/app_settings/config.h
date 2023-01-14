@@ -14,24 +14,24 @@
 #include "app_settings.hh"
 
 
-#ifdef USE_LAN
-#include "net/ethernet_setup.h"
+#ifdef CONFIG_APP_USE_LAN
+#include "net/ethernet_setup.hh"
 #endif
-#ifdef USE_MQTT
-#include "net_mqtt/mqtt.h"
+#ifdef CONFIG_APP_USE_MQTT
+#include "net_mqtt/mqtt.hh"
 #endif
-#ifdef USE_WLAN
-#include "net/wifi_station_setup.h"
+#ifdef CONFIG_APP_USE_WLAN
+#include "net/wifi_station_setup.hh"
 #endif
-#ifdef USE_HTTP
+#ifdef CONFIG_APP_USE_HTTP
 #include "net_http_server/http_server_setup.h"
 #endif
-#ifdef USE_NTP
-#include "net/ntp_client_setup.h"
+#ifdef CONFIG_APP_USE_NTP
+#include "net/ntp_client_setup.hh"
 #endif
 #include <stdint.h>
 
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
 enum nwConnection {
   nwNone, nwWlanSta, nwWlanAp, nwLan, nwLEN,
 };
@@ -39,7 +39,7 @@ enum nwConnection {
 
 typedef struct {
 	char app_configPassword[16];
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
   enum nwConnection network;
 #endif
 } config;

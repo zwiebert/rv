@@ -38,7 +38,7 @@ static bool match_kvsKey(const char *key) {
 
 
 
-int process_parmKvs(clpar p[], int len, const struct TargetDesc &td) {
+int process_parmKvs(clpar p[], int len, const class UoutWriter &td) {
   int arg_idx;
   int errors = 0;
 

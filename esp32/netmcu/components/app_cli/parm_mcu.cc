@@ -33,7 +33,7 @@ const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 
 
 int
-process_parmMcu(clpar p[], int len, const struct TargetDesc &td) {
+process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
   int arg_idx;
   int error_count = 0;
 

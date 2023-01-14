@@ -43,7 +43,7 @@
 #define MAX_DURATION 60
 
 int
-process_parmStatus(clpar p[], int len, const struct TargetDesc &td) {
+process_parmStatus(clpar p[], int len, const class UoutWriter &td) {
   int arg_idx;
 
   soMsg_RVE_begin(td);

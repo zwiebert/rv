@@ -17,11 +17,11 @@ enum configAppItem : i8 {
   CBA_start = CB_size - 1, //
   //----------------
   CB_CFG_PASSWD,  CB_TZ,
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
   CB_NETWORK_CONNECTION,
 #endif
   CB_STM32_INV_BOOTPIN,
-#ifdef USE_LPH
+#ifdef CONFIG_APP_USE_LPH
   CB_LPH,
 #endif
 
@@ -37,16 +37,14 @@ public:
 public:
   constexpr AppSettings() {
     initField(CB_CFG_PASSWD, "C_CFG_PW", otok::NONE, CBT_str, 0, STF_direct);
-#ifndef USE_POSIX_TIME
-#error
-#else
     initField(CB_TZ, "C_TZ", otok::k_tz, CBT_str, soCfg_TZ, STF_direct);
-#endif
-#ifdef USE_NETWORK
+#ifdef CONFIG_APP_USE_NETWORK
     initField(CB_NETWORK_CONNECTION, "C_NW_CONN", otok::k_network, CBT_i8, soCfg_NETWORK);
 #endif
     initField(CB_STM32_INV_BOOTPIN, "C_STM_INV_BP", otok::k_stm32_bootgpio_inv, CBT_i8, soCfg_STM32_BOOTGPIO_INV, STF_direct);
+#ifdef CONFIG_APP_USE_LPH
     initField(CB_LPH, "C_LPH", otok::NONE, CBT_blob, nullptr);
+#endif
   }
 
 };

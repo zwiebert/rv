@@ -6,7 +6,7 @@
  */
 
 #include "app_config/proj_app_cfg.h"
-#ifdef USE_MQTT
+#ifdef CONFIG_APP_USE_MQTT
 
 #include "app_mqtt/mqtt.h"
 
@@ -17,6 +17,7 @@
 #include "uout/status_json.hh"
 #include "app_uout/status_output.h"
 #include <app_uout/callbacks.h>
+#include <uout/uo_callbacks.h>
 #include <net_mqtt/mqtt.hh>
 #include <array>
 
@@ -48,71 +49,14 @@ static char *io_mqtt_topic_root;
 #define TAG_TIMER "timer "
 #define TAG_TIMER_LEN (sizeof(TAG_TIMER) - 1)
 
-static void io_mqtt_publish_topic_end(const char *topic_end, const char *json) {
-  char topic[64];
-  snprintf(topic, sizeof topic, "%s%s", TOPIC_ROOT, topic_end);
-
-  Net_Mqtt::publish(topic, json);
-}
-
-static void io_mqtt_publish_topic_end_get_json(const TargetDesc &td, const char *topic_end) {
-  char *json = td.sj().get_json();
-  if (!json && !*json)
-    return;
-  io_mqtt_publish_topic_end(topic_end, json);
-}
-
-
-void io_mqtt_publish_config(const char *s)  {
-    Net_Mqtt::publish("tfmcu/config_out", s);
-}
-
-void io_mqtt_publish_valve_status(int valve_number, bool state) {
-  char topic[64]; //, data[16];
-
-  snprintf(topic, 64, "%szone/%d/valve", io_mqtt_topic_root, valve_number);
-
-  Net_Mqtt::publish(topic, state ? "on" : "off");
-}
-
-void io_mqtt_publish_rain_sensor_status(bool state) {
-  char topic[64]; //, data[16];
-
-  snprintf(topic, 64, "%s%s/rain", io_mqtt_topic_root, TOPIC_STATUS);
-
-  Net_Mqtt::publish(topic, state ? "on" : "off");
-}
-
-void io_mqtt_publish_pump_status(bool state) {
-  char topic[64]; //, data[16];
-
-  snprintf(topic, 64, "%s%s/pump", io_mqtt_topic_root, TOPIC_STATUS);
-
-  Net_Mqtt::publish(topic, state ? "on" : "off");
-}
-
-void io_mqtt_publish_stm32_event(const char *event) {
-  char topic[64]; //, data[16];
-
-  snprintf(topic, 64, "%s%s/event", io_mqtt_topic_root, TOPIC_STATUS);
-
-  Net_Mqtt::publish(topic, event);
-}
-
-
-
-
-static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
-  if (auto vs = uoCb_valveState_FromMsg(msg))
-    io_mqtt_publish_valve_status(vs->valve_number, vs->is_open);
-}
-
+static void io_mqtt_publish_topic_end_get_json(const UoutWriter &td, const char *topic_end);
+static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg);
 
 
 static class AppNetMqtt final : public Net_Mqtt {
 
   virtual void received(const char *topic, int topic_len, const char *data, int data_len) override {
-    TargetDesc td { SO_TGT_MQTT };
+    UoutWriter td { SO_TGT_MQTT };
     if (!topic_startsWith(topic, topic_len, io_mqtt_topic_root)) {
       return; // all topics start with this
     }
@@ -149,9 +93,9 @@ static class AppNetMqtt final : public Net_Mqtt {
   virtual void connected() override {
     std::array<char,80> buf;
 
-     Net_Mqtt::subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CLI), 0);
-     Net_Mqtt::subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), 0);
-     Net_Mqtt::publish(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), "connected"); // for autocreate (ok???)
+     subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CLI), 0);
+     subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), 0);
+     publish(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), "connected"); // for autocreate (ok???)
 
      uo_flagsT flags {};
      flags.tgt.mqtt = true;
@@ -165,7 +109,10 @@ static class AppNetMqtt final : public Net_Mqtt {
   }
 } MyMqtt;
 
-void io_mqttApp_setup(const char *topic_root) {
+void io_mqttApp_setup(struct cfg_mqtt *cp) {
+  io_mqtt_setup(cp);
+
+  const char *topic_root = cp->root_topic;
   if (topic_root && *topic_root && (!io_mqtt_topic_root || 0 != strcmp(io_mqtt_topic_root, topic_root))) {
     free(io_mqtt_topic_root);
     if ((io_mqtt_topic_root = static_cast<char *>(malloc(strlen(topic_root) + 2)))) {
@@ -177,5 +124,67 @@ void io_mqttApp_setup(const char *topic_root) {
 }
 
 
-#endif // USE_MQTT
+
+static void io_mqtt_publish_topic_end(const char *topic_end, const char *json) {
+  char topic[64];
+  snprintf(topic, sizeof topic, "%s%s", TOPIC_ROOT, topic_end);
+
+  MyMqtt.publish(topic, json);
+}
+
+static void io_mqtt_publish_topic_end_get_json(const UoutWriter &td, const char *topic_end) {
+  char *json = td.sj().get_json();
+  if (!json && !*json)
+    return;
+  io_mqtt_publish_topic_end(topic_end, json);
+}
+
+
+void io_mqtt_publish_config(const char *s)  {
+    MyMqtt.publish("tfmcu/config_out", s);
+}
+
+void io_mqtt_publish_valve_status(int valve_number, bool state) {
+  char topic[64]; //, data[16];
+
+  snprintf(topic, 64, "%szone/%d/valve", io_mqtt_topic_root, valve_number);
+
+  MyMqtt.publish(topic, state ? "on" : "off");
+}
+
+void io_mqtt_publish_rain_sensor_status(bool state) {
+  char topic[64]; //, data[16];
+
+  snprintf(topic, 64, "%s%s/rain", io_mqtt_topic_root, TOPIC_STATUS);
+
+  MyMqtt.publish(topic, state ? "on" : "off");
+}
+
+void io_mqtt_publish_pump_status(bool state) {
+  char topic[64]; //, data[16];
+
+  snprintf(topic, 64, "%s%s/pump", io_mqtt_topic_root, TOPIC_STATUS);
+
+  MyMqtt.publish(topic, state ? "on" : "off");
+}
+
+void io_mqtt_publish_stm32_event(const char *event) {
+  char topic[64]; //, data[16];
+
+  snprintf(topic, 64, "%s%s/event", io_mqtt_topic_root, TOPIC_STATUS);
+
+  MyMqtt.publish(topic, event);
+}
+
+
+
+
+static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg) {
+  if (auto vs = uoCb_valveState_FromMsg(msg))
+    io_mqtt_publish_valve_status(vs->valve_number, vs->is_open);
+}
+
+
+
+#endif // CONFIG_APP_USE_MQTT
 

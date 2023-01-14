@@ -18,13 +18,13 @@ extern const char cli_help_parmStatus[];
 extern const char cli_help_parmHelp[];
 
 extern "C" {
-int process_parmConfig(clpar p[], int len, const struct TargetDesc &td);
-int process_parmHelp(clpar p[], int len, const struct TargetDesc &td);
-int process_parmCmd(clpar p[], int len, const struct TargetDesc &td);
-int process_parmMcu(clpar p[], int len, const struct TargetDesc &td);
-int process_parmKvs(clpar p[], int len, const struct TargetDesc &td);
-int process_parmStatus(clpar p[], int len, const struct TargetDesc &td);
-int process_parmProtoBuf(clpar p[], int len, const struct TargetDesc &td);
+int process_parmConfig(clpar p[], int len, const class UoutWriter &td);
+int process_parmHelp(clpar p[], int len, const class UoutWriter &td);
+int process_parmCmd(clpar p[], int len, const class UoutWriter &td);
+int process_parmMcu(clpar p[], int len, const class UoutWriter &td);
+int process_parmKvs(clpar p[], int len, const class UoutWriter &td);
+int process_parmStatus(clpar p[], int len, const class UoutWriter &td);
+int process_parmProtoBuf(clpar p[], int len, const class UoutWriter &td);
 }
 
 

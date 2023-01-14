@@ -52,7 +52,7 @@ const char cli_help_parmCmd[]  =
 #define MAX_DURATION 60
 
 int
-process_parmCmd(clpar p[], int len, const struct TargetDesc &td) {
+process_parmCmd(clpar p[], int len, const class UoutWriter &td) {
   int arg_idx;
   char buf[BUF_SIZE] = "{\"cmd\":{";
   int buf_idx = sizeof(buf);

@@ -75,14 +75,8 @@ rtc_get_by_string(char *s) {
   time_t timer = time(NULL);
   struct tm t;
   localtime_r(&timer, &t);
-#ifdef USE_POSIX_TIME
   strftime(s, 20, "%FT%H:%M:%S", &t);
-#else
-  isotime_r(&t, s);
-  s[10] = 'T';
-#endif
   return true;
-
 }
 
 time_t  time_iso2time(const char *dateTimeString) {
