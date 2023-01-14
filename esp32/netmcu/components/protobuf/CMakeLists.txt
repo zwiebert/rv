@@ -24,7 +24,7 @@ component_compile_features(${comp_compile_feats})
  
  add_custom_command(
      OUTPUT ${COMPONENT_DIR}/_force.h ${COMPONENT_DIR}/mcu_com.cc
-     COMMAND make -B all -C ${pb_path}
+     COMMAND make -B all -C ${pb_path} pbgen=${COMPONENT_DIR}/../../components-mcu/nanopb/nanopb/generator/nanopb_generator.py
      COMMAND echo "//////////////////////////////"
      COMMAND ln -sf ${pb_path}/build/mcu_com.pb.c ${COMPONENT_DIR}/mcu_com.cc
      COMMAND echo "//////////////////////////////"

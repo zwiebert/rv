@@ -36,7 +36,9 @@ static struct parm_handler handlers[] = {
     { "mcu", process_parmMcu, cli_help_parmMcu },
     { "kvs", process_parmKvs, cli_help_parmKvs },
     { "status", process_parmStatus, cli_help_None},
+#ifdef CONFIG_APP_USE_PROTOBUF
     { "pbuf", process_parmProtoBuf, cli_help_None},
+#endif
   };
 
 static const struct parm_handlers our_parm_handlers = { .handlers = handlers, .count = sizeof(handlers) / sizeof(handlers[0]), };
