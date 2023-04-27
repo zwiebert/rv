@@ -19,11 +19,23 @@
 bool check_access_allowed(httpd_req_t *req); //XXX move this to a header file
 
 #define URI_WAPP_HTML "/"
-#define URI_WAPP_CSS "/f/css/wapp.css"
-#define URI_WAPP_JS "/f/js/wapp.js"
-#define URI_WAPP_JS_MAP "/f/js/wapp.js.map"
-//#define URI_WAPP_CSS_MAP "/f/css/wapp.css.map"
-//#define SERVE_BR
+
+
+#define WAPP_JS_URI "/f/js/wapp.js"
+#ifdef CONFIG_APP_USE_HTTP_SERVE_JS_MAP
+#define WAPP_JS_URI_MAP WAPP_JS_URI ".map"
+#define WAPP_JS_MAP_FILE build_wapp_js_map_br
+#define WAPP_JS_MAP_FILE_SIZE build_wapp_js_map_br_len
+#define WAPP_JS_MAP_FILE_ENCODING "br"
+#endif
+
+#define WAPP_CSS_URI "/f/css/wapp.css"
+#ifdef CONFIG_APP_USE_HTTP_SERVE_CSS_MAP
+#define WAPP_CSS_URI_MAP WAPP_CSS_URI ".map"
+#define WAPP_CSS_MAP_FILE build_wapp_css_map_br
+#define WAPP_CSS_MAP_FILE_SIZE build_wapp_css_map_br_len
+#define WAPP_CSS_MAP_FILE_ENCODING "br"
+#endif
 
 static const char *TAG="APP";
 
@@ -232,37 +244,27 @@ static esp_err_t handle_uri_get_file(httpd_req_t *req) {
     fm.file = build_wapp_html_gz;
     fm.file_size = build_wapp_html_gz_len;
     fm.type = "text/html";
-  } else  if (strcmp(req->uri, URI_WAPP_CSS) == 0) {
+  } else  if (strcmp(req->uri, WAPP_CSS_URI) == 0) {
     fm.file = build_wapp_css_gz;
     fm.file_size = build_wapp_css_gz_len;
     fm.type = "text/css";
-  } else  if (strcmp(req->uri, URI_WAPP_JS) == 0) {
+  } else  if (strcmp(req->uri, WAPP_JS_URI) == 0) {
     fm.file = build_wapp_js_gz;
     fm.file_size = build_wapp_js_gz_len;
     fm.type = "text/javascript";
-#ifdef URI_WAPP_JS_MAP
-  } else  if (strcmp(req->uri, URI_WAPP_JS_MAP) == 0) {
+#ifdef CONFIG_APP_USE_HTTP_SERVE_JS_MAP
+  } else  if (strcmp(req->uri, WAPP_JS_URI_MAP) == 0) {
     fm.type = "text/javascript";
-#ifdef SERVE_BR
-    fm.file = build_wapp_js_map_br;
-    fm.file_size = build_wapp_js_map_br_len;
-    encoding = "br";
-#else
-    fm.file = build_wapp_js_map_gz;
-    fm.file_size = build_wapp_js_map_gz_len;
+    fm.file = WAPP_JS_MAP_FILE;
+    fm.file_size = WAPP_JS_MAP_FILE_SIZE;
+    encoding = WAPP_JS_MAP_FILE_ENCODING;
 #endif
-#endif
-#ifdef URI_WAPP_CSS_MAP
-  } else  if (strcmp(req->uri, URI_WAPP_CSS_MAP) == 0) {
+#ifdef CONFIG_APP_USE_HTTP_SERVE_CSS_MAP
+  } else  if (strcmp(req->uri, WAPP_CSS_URI_MAP) == 0) {
     fm.type = "text/css";
-#ifdef SERVE_BR
-    fm.file = build_wapp_css_map_br;
-    fm.file_size = build_wapp_css_map_br_len;
-    encoding = "br";
-#else
-    fm.file = build_wapp_css_map_gz;
-    fm.file_size = build_wapp_css_map_gz_len;
-#endif
+    fm.file = WAPP_CSS_MAP_FILE;
+    fm.file_size = WAPP_CSS_MAP_FILE_SIZE;
+    encoding = WAPP_CSS_MAP_FILE_ENCODING;
 #endif
   } else {
     for (int i = 0; i < sizeof(uri_file_map) / sizeof(uri_file_map[0]); ++i) {

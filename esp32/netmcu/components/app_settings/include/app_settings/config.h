@@ -10,6 +10,7 @@
 
 #include "app_config/proj_app_cfg.h"
 #include "config_kvs/config.h"
+#include "config_kvs/comp_settings.hh"
 
 #include "app_settings.hh"
 

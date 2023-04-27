@@ -4,6 +4,16 @@ menu "RV Project Configuration"
         bool "Activate HTTP"
         default y
 
+     config APP_USE_HTTP_SERVE_JS_MAP
+        depends on APP_USE_HTTP
+        bool "Serve wapp.js.map file"
+        default y
+
+    config APP_USE_HTTP_SERVE_CSS_MAP
+        depends on APP_USE_HTTP
+        bool "Serve wapp.css.map file"
+        default n
+ 
     config APP_USE_JSON
         bool "Activate JSON"
         default y

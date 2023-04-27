@@ -1,4 +1,4 @@
-set(srcs config.cc config_kvs.cc config_comps.cc)
+set(srcs config.cc config_kvs.cc config_comps.cc app_settings.cc all_settings.cc)
 
 idf_component_register(SRCS ${srcs} 
     INCLUDE_DIRS . "./include" 

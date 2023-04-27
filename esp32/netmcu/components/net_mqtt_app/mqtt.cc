@@ -20,6 +20,7 @@
 #include <uout/uo_callbacks.h>
 #include <net_mqtt/mqtt.hh>
 #include <array>
+#include <stdlib.h>
 
 static char *io_mqtt_topic_root;
 
@@ -91,11 +92,18 @@ static class AppNetMqtt final : public Net_Mqtt {
   }
 
   virtual void connected() override {
-    std::array<char,80> buf;
+    char topic[64];
 
-     subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CLI), 0);
-     subscribe(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), 0);
-     publish(strcat(strcpy(buf.data(), io_mqtt_topic_root), TOPIC_CMD), "connected"); // for autocreate (ok???)
+    // subscribe topics on MQTT server
+    snprintf(topic, sizeof topic, "%scli", TOPIC_ROOT);
+    subscribe(topic, 0);
+
+    snprintf(topic, sizeof topic, "%s+/duration", TOPIC_ROOT);
+    subscribe(topic, 0);
+
+    // publish status change to MQTT server
+    snprintf(topic, sizeof topic, "%sstatus", TOPIC_ROOT);
+    publish(topic, "connected"); // for autocreate (ok???)
 
      uo_flagsT flags {};
      flags.tgt.mqtt = true;
@@ -103,6 +111,7 @@ static class AppNetMqtt final : public Net_Mqtt {
      flags.fmt.raw = true;
      uoCb_subscribe(io_mqttApp_uoutPublish_cb, flags);
   }
+
 
   virtual void disconnected() override {
     uoCb_unsubscribe(io_mqttApp_uoutPublish_cb);
