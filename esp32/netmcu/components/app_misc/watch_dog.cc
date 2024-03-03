@@ -8,7 +8,6 @@
 #include <time.h>
 #include "app_config/proj_app_cfg.h"
 #include <string.h>
-#include "driver/gpio.h"
 #include "app_net/gw_ping.h"
 #include "debug/dbg.h"
 

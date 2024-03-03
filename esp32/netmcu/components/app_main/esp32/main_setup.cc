@@ -57,7 +57,6 @@ void mcu_init() {
 
   kvs_setup();
   config_ext_setup_txtio();
-  config_setup_global();
 
   if constexpr (use_SERIAL) {
     struct cfg_stm32 cfgStm32 = { .uart_tx_gpio = STM32_UART_TX_PIN, .uart_rx_gpio = STM32_UART_RX_PIN, .boot_gpio_is_inverse = STM32_BOOT_PIN_INV, .boot_gpio =

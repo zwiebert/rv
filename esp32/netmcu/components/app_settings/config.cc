@@ -27,18 +27,18 @@ config C = {
 
 #ifdef CONFIG_APP_USE_NETWORK
 enum nwConnection config_read_network_connection() {
-  return static_cast<enum nwConnection>(config_read_item((CB_NETWORK_CONNECTION), MY_NETWORK_CONNECTION));
+  return static_cast<enum nwConnection>(config_read_item((CB_NETWORK_CONNECTION), nwWlanAp));
 }
 #endif
 
 #ifdef USE_POSIX_TIME
 const char* config_read_tz(char *d, unsigned d_size) {
-  return config_read_item((CB_TZ), d, d_size, MY_GEO_TZ);
+  return config_read_item((CB_TZ), d, d_size, CONFIG_APP_GEO_TZ);
 }
 #endif
 
 bool config_read_stm32_inv_bootpin() {
-  return !!config_read_item((CB_STM32_INV_BOOTPIN), MY_STM32_INV_BOOTPIN);
+  return !!config_read_item((CB_STM32_INV_BOOTPIN), 1);
 }
 
 #ifdef CONFIG_APP_USE_LPH
@@ -50,7 +50,7 @@ bool config_save_lph(uint16_t lph[14]) {
 }
 #endif
 
-
+#ifdef CONFIG_APP_USE_PROTOBUF
 bool config_save_pb64(enum configItem item, const char *pb64) {
   return config_save_item_s(settings_get_kvsKey(item), pb64);
 }
@@ -80,3 +80,4 @@ bool config_read_pb(enum configItem item, uint8_t *pb_buf, size_t *pb_size) {
 
   return true;
 }
+#endif

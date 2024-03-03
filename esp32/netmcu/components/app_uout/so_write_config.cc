@@ -30,12 +30,6 @@
 
 #define D(x)
 
-void soCfg_BAUD(const class UoutWriter &td) {
-#ifndef MCU_ESP32
-  td.so().print(settings_get_optKeyStr(CB_BAUD), config_read_baud());
-#endif
-}
-
 void soCfg_RTC(const class UoutWriter &td) {
   char buf[64];
   if (rtc_get_by_string(buf)) {
