@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
+project(irrigation_control)
+
 option(BUILD_ONLY_TESTS "build host test" OFF)
 set(TARGET_ARCH "STM32F1" CACHE STRING "Set the intended target. One of: HOST, STM32F1")
 
