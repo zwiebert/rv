@@ -34,7 +34,12 @@ inline void lfPer_setBits(unsigned bit_mask) {
 }
 #endif
 
-inline void lf_setBit(enum loop_flagbits v) {
+
+#define lf_setBit(v) \
+  (loop_flags_once = (loop_flags_once | (1 << v)))
+
+
+inline void lf_setBitXXX(enum loop_flagbits v) {
   loop_flags_once = (loop_flags_once | (1 << v));
 }
 

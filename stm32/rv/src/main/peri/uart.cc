@@ -12,16 +12,19 @@
 #include <cstring>
 #include "loop/loop.hh"
 
-
 template<int nvic_uart>
-  struct Disable_IRQ {
-    Disable_IRQ() {
-      nvic_disable_irq(nvic_uart);
-    }
-    ~Disable_IRQ() {
-      nvic_enable_irq(nvic_uart);
-    }
-  };
+struct Disable_IRQ {
+  Disable_IRQ() {
+    /* Disable USART1 Receive interrupt.  */
+    USART_CR1(USART1) = USART_CR1(USART1) & ~USART_CR1_RXNEIE;
+    //nvic_disable_irq(nvic_uart);
+  }
+  ~Disable_IRQ() {
+    /* Enable USART1 Receive interrupt. */
+    USART_CR1(USART1) = USART_CR1(USART1) | USART_CR1_RXNEIE;
+    //nvic_enable_irq(nvic_uart);
+  }
+};
 
 template<typename DisableIRQ, unsigned BUF_SIZE_BITS = 8, typename T = volatile uint8_t>
 class UART_Buffer {
@@ -38,7 +41,7 @@ private:
 
 public:
   bool isFull() const {
-    return ((m_head + 1) & (RX_BUFSIZE - 1)) == m_tail;
+    return ((m_tail + 1) & (RX_BUFSIZE - 1)) == m_head;
   }
   bool isEmpty() const {
     return m_head == m_tail;
