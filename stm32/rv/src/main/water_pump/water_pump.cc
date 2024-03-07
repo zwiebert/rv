@@ -69,7 +69,7 @@ static void wp_switchPcOutRelay(bool on) {
 volatile static int Wp_is_press_control_unchanged;
 volatile static bool Wp_is_press_control;
 
-void EXTI0_IRQHandler(void)
+void exti0_isr(void)
 {
   Wp_is_press_control_unchanged = 0;
     uint16_t exti_line_state = GPIOB_IDR;

@@ -38,7 +38,7 @@ static void nvic_setup(void)
 	nvic_set_priority(NVIC_RTC_IRQ, 1);
 }
 
-void RTC_IRQHandler(void)
+void rtc_isr(void)
 {
 	/* The interrupt flag isn't cleared by hardware, we have to do it. */
 	rtc_clear_flag(RTC_SEC);

@@ -31,7 +31,7 @@ SOFTWARE.
 #include "user_config.h"
 #include <stddef.h>
 #include <stdio.h>
-#include "stm32f10x.h"
+//#include "stm32f10x.h"
 
 
 /* Private typedef */
@@ -41,7 +41,7 @@ SOFTWARE.
 /* Private macro */
 /* Private variables */
 #ifdef USE_STDPERIPH_DRIVER
- USART_InitTypeDef USART_InitStructure;
+ //ocm3: USART_InitTypeDef USART_InitStructure;
 #endif
 
 /* Private function prototypes */
@@ -109,7 +109,7 @@ void assert_failed(uint8_t* file, uint32_t line)
  * */
 extern "C" void __assert_func(const char */*file*/, int /*line*/, const char */*func*/, const char */*failedexpr*/)
 {
-  NVIC_SystemReset(); // XXX
+  //ocm3: NVIC_SystemReset(); // XXX
   while(1)
   {}
 }

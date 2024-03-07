@@ -108,7 +108,7 @@ int esp32_puts(const char *s) {
   return esp32_write(s, std::strlen(s));
 }
 
-extern "C" void USART1_IRQHandler(void) {
+extern "C" void usart1_isr(void) {
   /* Check if we were called because of RXNE. */
   if (((USART_CR1(USART1) & USART_CR1_RXNEIE) != 0) && ((USART_SR(USART1) & USART_SR_RXNE) != 0)) {
 
