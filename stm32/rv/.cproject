@@ -303,7 +303,6 @@
 									<listOptionValue builtIn="false" value="../Libraries/STM32F10x_StdPeriph_Driver/inc"/>
 									<listOptionValue builtIn="false" value="../Libraries/CMSIS/Include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/rv/test/host/unity/src}&quot;"/>
-									<listOptionValue builtIn="false" value="../Libraries/CMSIS/CM3/DeviceSupport/ST/STM32F10x"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input.1726898712" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.assembler.input"/>
 							</tool>
@@ -325,8 +324,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Libraries/mcp23017/include}&quot;"/>
 									<listOptionValue builtIn="false" value="../Libraries/STM32F10x_StdPeriph_Driver/inc"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/rv/test/host/unity/src}&quot;"/>
-									<listOptionValue builtIn="false" value=".././Libraries/CMSIS/CM3/CoreSupport"/>
-									<listOptionValue builtIn="false" value=".././Libraries/CMSIS/CM3/DeviceSupport/ST/STM32F10x"/>
 									<listOptionValue builtIn="false" value="../Utilities/STM32_EVAL"/>
 									<listOptionValue builtIn="false" value="../Utilities/STM32_EVAL/STM3210B_EVAL"/>
 									<listOptionValue builtIn="false" value="../Utilities/STM32_EVAL/Common"/>
@@ -354,9 +351,7 @@
 									<listOptionValue builtIn="false" value="../Libraries/CMSIS/Include"/>
 									<listOptionValue builtIn="false" value="../test/host/unity/src"/>
 									<listOptionValue builtIn="false" value="../external/catch2/single_include"/>
-									<listOptionValue builtIn="false" value="../Libraries/CMSIS/CM3/DeviceSupport/ST/STM32F10x"/>
 									<listOptionValue builtIn="false" value="../Libraries/STM32F10x_StdPeriph_Driver/inc"/>
-									<listOptionValue builtIn="false" value="../Libraries/CMSIS/CM3/CoreSupport"/>
 									<listOptionValue builtIn="false" value="../Libraries/CMSIS/Device/ST/STM32F10x/Include"/>
 								</option>
 								<option id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.ffunction.544186159" name="Place functions in their own sections (-ffunction-sections)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.cpp.compiler.option.ffunction" useByScannerDiscovery="false" value="true" valueType="boolean"/>

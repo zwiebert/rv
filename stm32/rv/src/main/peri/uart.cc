@@ -12,43 +12,119 @@
 #include <cstring>
 #include "loop/loop.hh"
 
-#define RX_BUFSIZE 128
-static volatile uint8_t buf[RX_BUFSIZE];
-static volatile uint8_t head = 0, tail = 0;
 
-static void rx_put(uint8_t c) {
-  buf[tail++] = c;
-  tail &= (RX_BUFSIZE - 1);
-}
+template<int nvic_uart>
+  struct Disable_IRQ {
+    Disable_IRQ() {
+      nvic_disable_irq(nvic_uart);
+    }
+    ~Disable_IRQ() {
+      nvic_enable_irq(nvic_uart);
+    }
+  };
 
-int esp32_getc(void) {
-  int result = -1;
+template<typename DisableIRQ, unsigned BUF_SIZE_BITS = 8, typename T = volatile uint8_t>
+class UART_Buffer {
+  static_assert(sizeof(T)*8 >= BUF_SIZE_BITS);
 
-  if (head != tail) {
-    result = buf[head++] & 0xFF;
-    head &= (RX_BUFSIZE - 1);
+  static constexpr unsigned RX_BUFSIZE = (1 << BUF_SIZE_BITS);
+  T m_head = 0, m_tail = 0;
+  uint8_t m_buf[RX_BUFSIZE];
+
+private:
+  inline void advance(T &ct) {
+    ct = (ct + 1) & (RX_BUFSIZE - 1);
   }
 
-  return result;
+public:
+  bool isFull() const {
+    return ((m_head + 1) & (RX_BUFSIZE - 1)) == m_tail;
+  }
+  bool isEmpty() const {
+    return m_head == m_tail;
+  }
+
+  bool putc_unguarded(uint8_t c) {
+    if (isFull())
+      return false;
+
+    m_buf[m_tail] = c;
+    advance(m_tail);
+    return true;
+  }
+  int getc_unguarded(void) {
+    if (isEmpty())
+      return -1;
+
+    int result = m_buf[m_head] & 0xFF;
+    advance(m_head);
+    return result;
+  }
+
+public:
+
+  bool putc(uint8_t c) {
+    DisableIRQ dont_interrupt_me;
+    return putc_unguarded(c);
+  }
+
+  int getc() {
+    DisableIRQ dont_interrupt_me;
+    return getc_unguarded();
+  }
+
+  unsigned read(char *buf, const unsigned buf_size) {
+    DisableIRQ dont_interrupt_me;
+
+    for (unsigned int i = 0; i < buf_size; ++i) {
+      int c = getc_unguarded();
+      if (c == -1)
+        return i;
+      buf[i] = c;
+    }
+
+    return buf_size;
+  }
+};
+
+static UART_Buffer<Disable_IRQ<NVIC_USART1_IRQ>, 7, volatile uint8_t> uart1_rx_buf;
+
+int esp32_getc(void) {
+  return uart1_rx_buf.getc();
+}
+
+int esp32_read(char *buf, size_t buf_size) {
+  return uart1_rx_buf.read(buf, buf_size);
+}
+
+int esp32_write(const char *data, size_t data_len) {
+  size_t i;
+  for (i = 0; i < data_len; ++i)
+    usart_send_blocking(USART1, data[i]);
+  return i;
+}
+
+int esp32_puts(const char *s) {
+  return esp32_write(s, std::strlen(s));
 }
 
 extern "C" void USART1_IRQHandler(void) {
-  uint16_t data;
   /* Check if we were called because of RXNE. */
   if (((USART_CR1(USART1) & USART_CR1_RXNEIE) != 0) && ((USART_SR(USART1) & USART_SR_RXNE) != 0)) {
 
     /* Retrieve the data from the peripheral. */
-    data = usart_recv(USART1);
+    uint16_t data = usart_recv(USART1);
 
-    rx_put(data & 0xff);
+    if (!uart1_rx_buf.putc_unguarded(data & 0xff))
+      lf_setBit(lf_rx_buffer_full);
+
     lf_setBit(lf_cli);
-
   }
 }
 
 void uart_setup(void) {
   /* Enable the USART2 interrupt. */
-  nvic_enable_irq (NVIC_USART1_IRQ);
+  nvic_enable_irq(NVIC_USART1_IRQ);
   rcc_periph_clock_enable(RCC_GPIOA);
   rcc_periph_clock_enable(RCC_USART1);
   gpio_set_mode(GPIO_BANK_USART1_TX, GPIO_MODE_OUTPUT_50_MHZ, GPIO_CNF_OUTPUT_ALTFN_PUSHPULL, GPIO_USART1_TX);
@@ -63,35 +139,8 @@ void uart_setup(void) {
   usart_set_flow_control(USART1, USART_FLOWCONTROL_NONE);
 
   /* Enable USART2 Receive interrupt. */
-  USART_CR1(USART1) |= USART_CR1_RXNEIE;
+  USART_CR1(USART1) = USART_CR1(USART1) | USART_CR1_RXNEIE;
 
   /* Finally enable the USART. */
   usart_enable(USART1);
 }
-
-int esp32_write(const char *data, size_t data_len) {
-  size_t i;
-  for (i = 0; i < data_len; i++)
-    usart_send_blocking(USART1, data[i]);
-  return i;
-
-  return -1;
-}
-
-int esp32_puts(const char *s) {
-  return esp32_write(s, std::strlen(s));
-}
-
-int esp32_read(char *buf, size_t buf_size) {
-  size_t i;
-
-  for (i = 0; i < buf_size; ++i) {
-    int c = esp32_getc();
-    if (c == -1)
-      break;
-    buf[i] = c;
-
-  }
-  return i;
-}
-

@@ -199,6 +199,7 @@ void timers_was_modified(int vn, int tn, bool removed) {
     return;
   }
 
+  *buf = '\0';
   for (const RvTimer &vt : *rvt.getTimerList()) {
     if (!vt.match(vn, tn))
       continue;

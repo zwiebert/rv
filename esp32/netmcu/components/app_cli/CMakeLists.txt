@@ -10,7 +10,7 @@ set(srcs cli.cc
 
 
 if(CONFIG_APP_USE_PROTOBUF)
-set(protobuf nanopb protobuf)
+set(protobuf protobuf)
 set(protobuf_srcs parm_proto_buf.cc)
 endif()
 
@@ -19,7 +19,7 @@ idf_component_register(
     INCLUDE_DIRS . "./include" 
     REQUIRES cli app_uout
     PRIV_REQUIRES stm32 main_loop app_config  app_misc cli app_settings config_kvs utils_debug utils_misc
-                  net net_http_server net_mqtt_app net_mqtt  txtio uout  ${protobuf}
+                  net net_http_server net_mqtt_app net_mqtt  txtio uout  protobuf ${protobuf}
                   mbedtls
 )
 
