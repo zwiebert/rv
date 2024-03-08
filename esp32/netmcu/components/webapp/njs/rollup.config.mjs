@@ -6,13 +6,13 @@ import commonjs from '@rollup/plugin-commonjs';
 import alias from "@rollup/plugin-alias";
 import svelte from "rollup-plugin-svelte";
 import sveltePreprocess from "svelte-preprocess";
-import { terser } from "rollup-plugin-terser";
+import { terser } from "@wwa/rollup-plugin-terser";
 import css from 'rollup-plugin-css-only';
 
 export const isProduction = process.env.NODE_ENV === "production";
 export const isDistro = process.env.DISTRO === "yes";
 
-let wdir = __dirname + "/";
+let wdir = "/home/bertw/proj/mcu/rv/esp32/netmcu/components/webapp/njs/";
 
 const aliases = alias({
   resolve: [".svelte", ".js"], //optional, by default this will just look for .js files or folders
@@ -121,10 +121,7 @@ export default {
     // some cases you'll need additional configuration -
     // consult the documentation for details:
     // https://github.com/rollup/plugins/tree/master/packages/commonjs
-    resolve({
-      browser: true,
-      dedupe: ['svelte'],
-    }),
+    resolve({ browser: true, dedupe: ['svelte'], }),
     commonjs()
   ]
 };

@@ -20,8 +20,7 @@
 #include <stm32/stm32.h>
 
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/semphr.h"
+
 
 #ifndef DISTRIBUTION
 #define D(x) x

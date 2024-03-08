@@ -25,11 +25,12 @@
 void loop(void);
 void app_setup();
 
-extern "C" void atFault() {
+extern "C" void hard_fault_handler() {
   relay16_atFault();
+  while(1);
 }
 
-void app() {
+int main() {
   app_setup();
   report_event("mcu:started");
   wp_clearPcFailure(); //

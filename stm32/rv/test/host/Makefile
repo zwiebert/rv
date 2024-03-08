@@ -37,7 +37,7 @@ tests: $(tests)
 
 SRC_BASE=../..
 COMP_DIR=src/components
-COMPSHARE_DIR=components-mcu/components
+COMPSHARE_DIR=components-mcu
 COMPSHARE_PATH := $(SRC_BASE)/$(COMPSHARE_DIR)
 COMP_PATH := $(SRC_BASE)/$(COMP_DIR)
 EXTRA_INCDIR = test_runner $(SRC_BASE)/src/main ./unity/src

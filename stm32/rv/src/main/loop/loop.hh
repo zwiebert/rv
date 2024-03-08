@@ -5,12 +5,8 @@
 
 #pragma once
 
-#define loop_flags_periodic 0 // not used
+#define loop_flags_periodic 0 // disable periodic intervals
 
-#define lf_setBits(v) (loop_flags_once |= (v))
-#define lf_setBit(v)  lf_setBits(1<<(v))
-#define lfPer_setBits(v) (loop_flags_periodic |= (v))
-#define lfPer_setBit(v)  lfPer_setBits(1<<(v))
 
 enum loop_flagbits {
   lf_interval_1s,
@@ -19,14 +15,37 @@ enum loop_flagbits {
   lf_cli,
   lf_wpl,
   lf_fetchData,
+  lf_rx_buffer_full,
   /////////////
   lf_Len
 };
 
+
 extern volatile int loop_flags_once;
 #ifndef loop_flags_periodic
 extern volatile int loop_flags_periodic;
+
+inline void lfPer_setBit(enum loop_flagbits v) {
+  loop_flags_periodic = (loop_flags_once | (1 << v));
+}
+
+inline void lfPer_setBits(unsigned bit_mask) {
+  loop_flags_periodic = (loop_flags_once | bit_mask);
+}
 #endif
+
+
+#define lf_setBit(v) \
+  (loop_flags_once = (loop_flags_once | (1 << v)))
+
+
+inline void lf_setBitXXX(enum loop_flagbits v) {
+  loop_flags_once = (loop_flags_once | (1 << v));
+}
+
+inline void lf_setBits(unsigned bit_mask) {
+  loop_flags_once = (loop_flags_once | bit_mask);
+}
 
 #ifdef __cplusplus
 extern "C" {

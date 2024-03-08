@@ -32,7 +32,7 @@ bool ms_timeElapsed(uint64_t *last, int diff) {
   return true;
 }
 
-void SysTick_Handler(void) {
+void sys_tick_handler(void) {
   uint64_t ms = ++run_time_ms;
   static int countSec;
   if (--countSec <= 0) {

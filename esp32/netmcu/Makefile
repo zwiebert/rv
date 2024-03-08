@@ -14,9 +14,10 @@ default: print-help
 clean: esp32-clean http_clean
 
 
+# Add the python binary of python-venv to the path to make idf.py work in Eclipse
+# XXX: maybe its better to do this from the shell script which starts Eclipse (which runs export.sh anyway)
+export PATH := $(IDF_PYTHON_ENV_PATH)/bin:$(PATH) 
 
-
-IDF_PY = $(IDF_PYTHON_ENV_PATH)/bin/python $(IDF_PATH)/tools/idf.py
 
 ifdef V
 esp32_build_opt_verbose = -v
@@ -26,7 +27,7 @@ THIS_ROOT := $(realpath .)
 BUILD_BASE ?= $(THIS_ROOT)/build/$(flavor)
 esp32_src_dir := $(THIS_ROOT)/src/$(flavor)
 esp32_build_dir := $(BUILD_BASE)
-esp32_build_cmd := $(IDF_PY) -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)  $(esp32_build_opts)
+esp32_build_cmd := idf.py -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)  $(esp32_build_opts)
 esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
 
 
@@ -99,28 +100,31 @@ win_copy_release:
 	$(MAKE) win_copy DISTRIBUTION=1
 	
 	
-	############## On Host ########################
-HOST_TEST_BUILD_PATH=$(BUILD_BASE)/host/test
+############## On Host ########################
+HOST_TEST_BUILD_PATH=$(BUILD_BASE)/../host/test
+HOST_TEST_SRC_PATH=$(THIS_ROOT)/src/host_test
 
 .PHONY: test.cm.configure test.cm.build
 
 test.cm.configure:
 	rm -fr $(HOST_TEST_BUILD_PATH)
-	mkdir -p $(HOST_TEST_BUILD_PATH)
-	cmake -B $(HOST_TEST_BUILD_PATH) -D BUILD_HOST_TESTS=ON -S $(realpath .) #-G Ninja
+	mkdir -p $(HOST_TEST_BUILD_PATH)/config
+	cp $(THIS_ROOT)/src/host_test/sdkconfig.h $(THIS_ROOT)/src/host_test/sdkconfig.cmake $(HOST_TEST_BUILD_PATH)/config/
+	cmake -B $(HOST_TEST_BUILD_PATH) -D BUILD_HOST_TESTS=ON -S  $(HOST_TEST_SRC_PATH) #-G Ninja)
 
-cm_build := make -C $(HOST_TEST_BUILD_PATH) -k  $(make_verbose_opts)
-#cm_build := (cd $(HOST_TEST_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
+cm_build := make -C $(HOST_TEST_BUILD_PATH) -k -j  -s --no-print-dir $(make_verbose_opts)
+#cm_build := (cd $(HOST_TEST_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --verbose $(ninja_verbose_opts))
 
 	
 test.cm.build:
 	$(cm_build)
 
 test.cm.ctest: test.cm.build
-	$(cm_build) test
+	cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure
 	
-test.cm.ctest.current: test.cm.build
-	(cd  $(HOST_TEST_BUILD_PATH) && ctest --verbose -R "fernotron_trx.test_send")
+TEST ?= test.weather.test_
+test.cm.ctest.regex: test.cm.build
+	(cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure -R "$(TEST)")
 
 
 host-test-all:

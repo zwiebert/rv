@@ -59,12 +59,13 @@ void read_config_all();
 void read_config_item(enum configItem item);
 void read_config(uint32_t mask);
 
-void config_setup_global();
 void config_setup_mqttAppClient();
 bool config_item_modified(enum configItem item);
 
 const char *config_read_tz(char *d, unsigned d_size);
+#ifdef CONFIG_APP_USE_NETWORK
 enum nwConnection  config_read_network_connection();
+#endif
 bool config_read_stm32_inv_bootpin();
 
 bool config_read_lph(uint16_t lph[14]);

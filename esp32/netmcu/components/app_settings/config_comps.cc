@@ -16,23 +16,6 @@
 
 
 
-
-#if 1
-void config_setup_global() {
-  kvshT h;
-  C = config {
-    .network = MY_NETWORK_CONNECTION,
-  };
-if ((h = kvs_open(CFG_NAMESPACE, kvs_READ))) {
-  C.network = static_cast<nwConnection>(kvs_get_i8(h, settings_get_kvsKey(CB_NETWORK_CONNECTION), C.network, 0));
-  kvs_close(h);
-}
-
-}
-#endif
-
-
-
 #ifdef CONFIG_APP_USE_MQTT
 #include "app_mqtt/mqtt.h"
 void config_setup_mqttAppClient() {

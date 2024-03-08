@@ -24,7 +24,7 @@ public:
   constexpr AllocatorMalloc() noexcept {
   }
 
-  constexpr AllocatorMalloc(const AllocatorMalloc &other) noexcept {
+  constexpr AllocatorMalloc(const AllocatorMalloc &/*other*/) noexcept {
   }
 
   constexpr T* allocate(size_type n) {
@@ -47,7 +47,7 @@ public:
   }
 
   template<class U>
-  constexpr AllocatorMalloc(const AllocatorMalloc<U> &other) noexcept {
+  constexpr AllocatorMalloc(const AllocatorMalloc<U> &/*other*/) noexcept {
   }
 
   template<class U>
