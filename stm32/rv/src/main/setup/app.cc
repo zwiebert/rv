@@ -25,8 +25,9 @@
 void loop(void);
 void app_setup();
 
-extern "C" void atFault() {
+extern "C" void hard_fault_handler() {
   relay16_atFault();
+  while(1);
 }
 
 int main() {
