@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 option(CMAKE_EXPORT_COMPILE_COMMANDS "generate compilation database for clang-tidy" ON)
+option(USE_CATCH "use catch2 framework" OFF)
 
 project(rv-test)
 include(CTest)
@@ -11,7 +12,7 @@ add_compile_options( "$<$<COMPILE_LANGUAGE:CXX>:-Wno-narrowing>" -Wno-missing-fi
 )
 include_directories(src/main)
 
-
+if(USE_CATCH)
 ################# Catch2 Test Framework ##################
 add_library(catch2_tr test/host/src/catch2.cc)
 add_subdirectory(external/catch2)
@@ -24,7 +25,7 @@ function(catch_test)
   target_link_libraries(${test_name} PUBLIC catch2_tr)                                      
   add_test(NAME ${test_name} COMMAND ${test_name}  WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
 endfunction()
-
+endif()
 
 
 ################# Unity Test Framework  ##################
@@ -56,6 +57,6 @@ unity_test(test_cli_json  test/host/src/test_cli_json.c
                           src/main/cli/cli_json.c src/main/jsmn/jsmn.c)
 
 
-
+if(USE_CATCH)
 catch_test(test_catch2 test/host/src/test_catch2.cc)                                       
-
+endif()

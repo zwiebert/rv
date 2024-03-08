@@ -14,11 +14,11 @@ static bool rain;
 
 static void sw_valve(int vn, bool isOpen) {
   PUT_BIT(valves, vn, isOpen);
-  std::cout << "switch_valve: " << vn << ":" << isOpen << '\n';
+  std::cout << (isOpen ? "open" : "close") <<  " valve " << vn << '\n';
 }
 
 static void timer_mod(int vn, int tn, bool remove) {
-  std::cout << "modified timer: vn=" << vn << " tn=" << tn << " remove=" << remove << '\n';
+  std::cout << "modify timer: vn=" << vn << " tn=" << tn << " remove=" << remove << '\n';
 }
 
 RvTimers rvt = RvTimers(sw_valve);
@@ -47,16 +47,20 @@ static void test_rain2() {
      sleep(1);
      std::cout << '\r' << i << "s :" << std::flush;
 
-     if (i == 5)
+     const bool v0 = GET_BIT(valves, 0);
+     const bool v1 = GET_BIT(valves, 1);
+     const int  tmr_count = rvt.get_used_count();
+
+     if (i == 5)  // Activate rain sensor
        rain = true;
 
      if (IS_IN_RANGE(2, i, 5)) {
-       TEST_ASSERT_TRUE(GET_BIT(valves, 0));
-       TEST_ASSERT_FALSE(GET_BIT(valves, 1));
+       TEST_ASSERT_TRUE_MESSAGE(v0, "Open valve 0 by timer because rain sensor off");
+       TEST_ASSERT_FALSE_MESSAGE(v1, "Open valve 0 by timer because rain sensor off");
      } else if (IS_IN_RANGE(8, i, 10)) {
-       TEST_ASSERT_FALSE(GET_BIT(valves, 0));
-       TEST_ASSERT_FALSE(GET_BIT(valves, 1));
-       TEST_ASSERT_EQUAL(0, rvt.get_used_count());
+       TEST_ASSERT_FALSE_MESSAGE(v0, "Close valve 0 because rain sensor off");
+       TEST_ASSERT_FALSE_MESSAGE(v1, "Close valve 1 because rain sensor off");
+       TEST_ASSERT_EQUAL_MESSAGE(0, tmr_count, "Remove all active timers because rain off");
      }
 
      rvt.loop();
@@ -68,7 +72,7 @@ static void test_rain2() {
 
 static void test_rain() {
   rvt.register_callback(timer_mod);
-  rain = true;
+  rain = true; // rain sensor on
 
   RvTimer::SetArgs args;
 
@@ -88,10 +92,14 @@ static void test_rain() {
      sleep(1);
      std::cout << '\r' << i << "s :" << std::flush;
 
+     const bool v0 = GET_BIT(valves, 0);
+     const bool v1 = GET_BIT(valves, 1);
+     const int  tmr_count = rvt.get_used_count();
+
      if (IS_IN_RANGE(1, i, 30)) {
-       TEST_ASSERT_FALSE(GET_BIT(valves, 0));
-       TEST_ASSERT_FALSE(GET_BIT(valves, 1));
-       TEST_ASSERT_EQUAL(0, rvt.get_used_count());
+       TEST_ASSERT_FALSE_MESSAGE(v0, "Prevent valve 0 open because rain sensor on");
+       TEST_ASSERT_FALSE_MESSAGE(v1, "Prevent valve 1 open because rain sensor on");
+       TEST_ASSERT_EQUAL_MESSAGE(0, tmr_count, "Prevent timer activating because rain sensor on");
      }
 
      rvt.loop();
@@ -121,22 +129,26 @@ static void test_timer() {
 
    for(int i=0; i < 30; ++i) {
      sleep(1);
-     std::cout << '\r' << i << "s :" << std::flush;
+     std::cout << '\r' << i << "s: " << std::flush;
+
+     const bool v0 = GET_BIT(valves, 0);
+     const bool v1 = GET_BIT(valves, 1);
+     const int  tmr_count = rvt.get_used_count();
 
      if (IS_IN_RANGE(2, i, 10)) {
-       TEST_ASSERT_TRUE(GET_BIT(valves, 0));
-       TEST_ASSERT_FALSE(GET_BIT(valves, 1));
-     } else if (IS_IN_RANGE(12, i, 20)) {
-       TEST_ASSERT_FALSE(GET_BIT(valves, 0));
-       TEST_ASSERT_TRUE(GET_BIT(valves, 1));
+       TEST_ASSERT_TRUE_MESSAGE(v0, "Open valve 0 by timer");
+       TEST_ASSERT_FALSE_MESSAGE(v1, "Don't open valve 1 until valve 0 closes");
+     } else if (IS_IN_RANGE(13, i, 20)) {
+       TEST_ASSERT_FALSE_MESSAGE(v0, "Close valve 0 by timer");
+       TEST_ASSERT_TRUE_MESSAGE(v1, "Open valve 1 after valve 0 has closed");
      }
 
      if (IS_IN_RANGE(0, i, 10)) {
-       TEST_ASSERT_EQUAL(2, rvt.get_used_count());
+       TEST_ASSERT_EQUAL_MESSAGE(2, tmr_count, "Keep timers active until done");
      } else if (IS_IN_RANGE(14, i, 20)) {
-       TEST_ASSERT_EQUAL(1, rvt.get_used_count());
-     } else if (IS_IN_RANGE(24, i, 25)) {
-       TEST_ASSERT_EQUAL(0, rvt.get_used_count());
+       TEST_ASSERT_EQUAL_MESSAGE(1, tmr_count, "End first timer because its done");
+     } else if (IS_IN_RANGE(25, i, 26)) {
+       TEST_ASSERT_EQUAL_MESSAGE(0, tmr_count, "End second timer because its done");
      }
 
 
@@ -146,9 +158,10 @@ static void test_timer() {
 
 
 TEST_CASE("timer", "[rv_timers]") {
+  test_timer();
   test_rain2();
   test_rain();
-  test_timer();
+
 }
 
 

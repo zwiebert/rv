@@ -47,7 +47,7 @@ void report_pc_status(bool state) {
 
 void report_state_change(int valve, int run_state) {
   char buf[80] = "";
-  std::sprintf(buf, "{\"status\":{\"valve\"=%d,\"run_state\"=%d}}\n", valve, run_state);
+  std::sprintf(buf, "{\"status\":{\"valve\":%d,\"run_state\":%d}}\n", valve, run_state);
   MyPuts(buf);
 }
 
