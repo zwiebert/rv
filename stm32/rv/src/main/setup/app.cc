@@ -29,7 +29,7 @@ extern "C" void atFault() {
   relay16_atFault();
 }
 
-void app() {
+int main() {
   app_setup();
   report_event("mcu:started");
   wp_clearPcFailure(); //
