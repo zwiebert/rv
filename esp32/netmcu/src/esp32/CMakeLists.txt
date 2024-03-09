@@ -8,7 +8,7 @@ set(EXTRA_COMPONENT_DIRS components components-mcu)
 list(TRANSFORM EXTRA_COMPONENT_DIRS PREPEND   ${CMAKE_SOURCE_DIR}/../../)
 
 
-set(COMPONENTS app_main
+set(COMPONENTS rv_netmcu
     bootloader esptool_py partition_table soc log spi_flash micro-ecc main efuse driver esp_rom  
 )
 
