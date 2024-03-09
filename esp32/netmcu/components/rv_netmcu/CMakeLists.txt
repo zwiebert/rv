@@ -27,7 +27,9 @@ set(srcs
 
 # Add experimental host sources, which are not yet part of the firmware
 if (TEST_HOST)
-  set(srcs ${srcs}  full_auto/scratch/configure_structs.cc)
+  set(srcs ${srcs}  full_auto/scratch/configure_structs.cc
+                    full_auto/scratch/fhemutils.cc  
+)
 endif()
 
 if(CONFIG_APP_USE_PROTOBUF)

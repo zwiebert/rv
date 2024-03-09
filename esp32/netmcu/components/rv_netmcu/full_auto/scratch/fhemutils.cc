@@ -82,9 +82,11 @@ float rv_getWeather();
 
 
 bool rv_fetchWeather(weather_data &w) {
-  const char *url = "http://api.openweathermap.org/data/2.5/weather?q=Berlin&APPID=";
-
-  return weather_fetch_weather_data(w, url);
+#ifdef CONFIG_APP_OPENWEATHER_URL
+  return weather_fetch_weather_data(w, CONFIG_APP_OPENWEATHER_URL);
+#else
+  return false;
+#endif
  }
 
 unsigned rv_getInterval(unsigned group) {

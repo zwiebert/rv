@@ -2,7 +2,7 @@ menu "rv-netmcu Project Configuration"
 
    config APP_OPENWEATHER_URL
         string "URL for openweather.org"
-        default ""
+        default "http://api.openweathermap.org/data/2.5/weather?..."
         
     config APP_USE_NETWORK
         bool "Compile NETWORK support"

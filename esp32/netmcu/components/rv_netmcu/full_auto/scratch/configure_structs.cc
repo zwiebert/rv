@@ -28,21 +28,21 @@ static AdaptionH h_adapters[] = {
 
 
 static EinzelKreis all_valves[] = {
-    {.name = "lawn_west", .not_run_since = 4, .eke = {.normal_dauer = 7,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
-    {.name = "flow_hortens", .not_run_since = 4,  .eke = {.normal_dauer = 7,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
+    {.name = "lawn_west", .not_run_since = 4, .eke = {.normal_dauer = 20,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
+    {.name = "flow_hortens", .not_run_since = 4,  .eke = {.normal_dauer = 9,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
     {.name = "flow_south", .not_run_since = 4,  .eke = {.normal_dauer = 7,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
-    {.name = "lawn_east", .not_run_since = 4,  .eke = {.normal_dauer = 7,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
-    {.name = "rv4", .not_run_since = 4,  .eke = {.normal_dauer = 7,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
-    {.name = "flow_east", .not_run_since = 4,  .eke = {.normal_dauer = 7,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
-    {.name = "lawn_north", .not_run_since = 4,  .eke = {.normal_dauer = 7,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
-    {.name = "hedge_east", .not_run_since = 4,  .eke = {.normal_dauer = 7,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
-    {.name = "flow_northeast", .not_run_since = 4,  .eke = {.normal_dauer = 7,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
-    {.name = "flow_west", .not_run_since = 4,  .eke = {.normal_dauer = 7,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
-    {.name = "flow_north", .not_run_since = 4,  .eke = {.normal_dauer = 7, .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
-    {.name = "pot_north",  .not_run_since = 4, .eke = {.normal_dauer = 7, .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
-    {.name = "rv12", .not_run_since = 4,  .eke = {.normal_dauer = 7, .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
-    {.name = "rv13", .not_run_since = 4,  .eke = {.normal_dauer = 7, .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
-    {.name = "rv14",  .not_run_since = 4, .eke = {.normal_dauer = 7, .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
+    {.name = "lawn_east", .not_run_since = 4,  .eke = {.normal_dauer = 20,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
+    {.name = "rv4", .not_run_since = 4,  .eke = {.normal_dauer = 0,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
+    {.name = "flow_east", .not_run_since = 4,  .eke = {.normal_dauer = 9,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
+    {.name = "lawn_north", .not_run_since = 4,  .eke = {.normal_dauer = 20,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
+    {.name = "hedge_east", .not_run_since = 4,  .eke = {.normal_dauer = 12,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
+    {.name = "flow_northeast", .not_run_since = 4,  .eke = {.normal_dauer = 5,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
+    {.name = "flow_west", .not_run_since = 4,  .eke = {.normal_dauer = 20,  .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
+    {.name = "flow_north", .not_run_since = 4,  .eke = {.normal_dauer = 11, .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
+    {.name = "pot_north",  .not_run_since = 4, .eke = {.normal_dauer = 1, .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
+    {.name = "rv12", .not_run_since = 4,  .eke = {.normal_dauer = 0, .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
+    {.name = "rv13", .not_run_since = 4,  .eke = {.normal_dauer = 0, .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
+    {.name = "rv14",  .not_run_since = 4, .eke = {.normal_dauer = 0, .wasserdurchfluss_lph = 200, .adaption_d = nullptr}},
 };
 
 static auto &av = all_valves;
