@@ -1,0 +1,6 @@
+Targets:
+
+configure.esp   -- configure firmware using esp-idf menuconfig
+build.esp       -- build firmware
+
+pre_build.stm   -- build libraries

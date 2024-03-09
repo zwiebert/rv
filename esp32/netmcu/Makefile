@@ -38,20 +38,29 @@ http_clean:
 	cd components/webapp && make clean
 
 
+.PHONY: pre_build generate_protobuf
 
-esp32_tgts_auto := menuconfig clean fullclean app flash monitor gdb gdbgui
+../../mcu_com/build/mcu_com.pb.h ../../mcu_com/build/mcu_com.pb.c:
+	make -C ../../mcu_com pbgen=$(THIS_ROOT)/components-mcu/nanopb/nanopb/generator/nanopb_generator.py
+	
+generate_protobuf: ../../mcu_com/build/mcu_com.pb.h ../../mcu_com/build/mcu_com.pb.c
+
+pre_build: generate_protobuf
+
+
+esp32_tgts_auto := menuconfig clean fullclean app monitor gdb gdbgui
 define GEN_RULE
 .PHONY: esp32-$(1)
-esp32-$(1):
+esp32-$(1): pre_build
 	$(esp32_build_cmd) $(1)
 endef
 $(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
-esp32-all:
+esp32-all: pre_build
 	$(esp32_build_cmd) reconfigure all
-esp32-cellar:
+esp32-cellar: pre_build
 	make esp32-all CELLAR=1
-esp32-flash: 
+esp32-flash: pre_build
 	$(esp32_build_cmd) -p $(PORT) flash
 
 ############# graphviz #################################
@@ -116,7 +125,7 @@ cm_build := make -C $(HOST_TEST_BUILD_PATH) -k -j  -s --no-print-dir $(make_verb
 #cm_build := (cd $(HOST_TEST_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --verbose $(ninja_verbose_opts))
 
 	
-test.cm.build:
+test.cm.build: pre_build
 	$(cm_build)
 
 test.cm.ctest: test.cm.build
@@ -124,7 +133,7 @@ test.cm.ctest: test.cm.build
 	
 TEST ?= test.weather.test_
 test.cm.ctest.regex: test.cm.build
-	(cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure -R "$(TEST)")
+	(cd  $(HOST_TEST_BUILD_PATH) && ctest --verbose  --output-on-failure -R "$(TEST)")
 
 
 host-test-all:

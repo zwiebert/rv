@@ -1,1 +1,1 @@
-../../../../../../mcu_com/build/mcu_com.pb.h
+#include <build/mcu_com.pb.h>
