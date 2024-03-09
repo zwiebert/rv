@@ -1,25 +1,30 @@
-/*
- * uart.h
- *
- *  Created on: 15.05.2019
- *      Author: bertw
+/**
+ * \file   peri/uart.h
+ * \brief  Serial port setup and I/O functions.
  */
 
-#ifndef UART_H_
-#define UART_H_
-
+#pragma once
+#include <stddef.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int esp32_write(const char *data, unsigned data_len);
+/// \brief  write DATA with length DATA_LEN to USART
+int esp32_write(const char *data, size_t data_len);
+
+/// \brief write null terminated string S to USART
 int esp32_puts(const char *s);
-int esp32_read(char *buf, unsigned buf_size);
+
+/// \brief read from USART into BUF with maximal length BUF_SIZE (non-blocking)
+int esp32_read(char *buf, size_t buf_size);
+
+/// \brief read character from USART (non-blocking)
 int esp32_getc(void);
-void uart_setup(void);
+
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* UART_H_ */
+/// \brief  Set up the USART at startup
+void uart_setup(void);

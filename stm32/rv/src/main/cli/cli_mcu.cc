@@ -1,13 +1,12 @@
 #include "user_config.h"
-#include <real_time_clock.h>
+#include <time/real_time_clock.h>
 #include <string.h>
 #include "cli_imp.h"
 #include <stdio.h>
 #include "peri/uart.h"
-#include "water_pump.h"
-#include "rv_timer.hh"
-#include "app_cxx.hh"
-#include "rain_sensor.hh"
+#include "water_pump/water_pump.h"
+#include "rv/rv_timer.hh"
+#include "rv/rain_sensor.hh"
 
 #define warning_unknown_option(x)
 
@@ -23,8 +22,8 @@ process_parmMcu(clpar p[], int len) {
 
     if (key == NULL) {
       return -1;
-    } else if (strcmp(key, KEY_VERSION) == 0 && *val == '?') {
-      snprintf(buf, sizeof buf, "{ \"from\":\"rv\", \"mcu\":{ \"version\"=\"%s\"}}", VERSION);
+    } else if (std::strcmp(key, KEY_VERSION) == 0 && *val == '?') {
+      std::snprintf(buf, sizeof buf, "{ \"from\":\"rv\", \"mcu\":{ \"version\"=\"%s\"}}", VERSION);
       esp32_puts(buf);
     } else {
       warning_unknown_option(key);

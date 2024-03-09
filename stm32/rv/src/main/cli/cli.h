@@ -1,8 +1,6 @@
-/*
- * cli.h
- *
- *  Created on: 15.05.2019
- *      Author: bertw
+/**
+ * \file   cli/cli.h
+ * \brief  Public CLI header.
  */
 
 #ifndef CLI_H_
@@ -12,7 +10,7 @@
 extern "C" {
 #endif
 
-#define CMD_BUF_SIZE 128
+
 char *get_commandline(void);
 void cli_loop(void);
 

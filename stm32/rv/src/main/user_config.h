@@ -1,26 +1,23 @@
-/*
- * user_config.h
- *
- *  Created on: 16.05.2019
- *      Author: bertw
+/**
+ * \file user_config.h
+ * \brief  Configure the application here.
  */
 
-#ifndef MAIN_USER_CONFIG_H_
-#define MAIN_USER_CONFIG_H_
+#pragma once
 
 #ifndef STM32F1
 #define STM32F1
 #endif
 
-#include <stdbool.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-
 #define USE_TEST
 #define USE_JSON
 #define USE_WDG
 #define USE_PC_POLLING
+#define USE_ZONE_NAME
+
+#define USE_MALLOC_IN_NEW_GLOBAL
+//#define USE_MALLOC_IN_NEW_NODE
+#define USE_ALLOCATOR_MALLOC
 
 #ifdef BUILD_DEBUG
 #undef USE_TEST
@@ -36,13 +33,10 @@
 //#error "cellar"
 #undef USE_TEST
 #define VERSION "rv(cellar)-" __DATE__ " " __TIME__
+#elif defined TEST_HOST
+#define VERSION "rv(host_test)-" __DATE__ " " __TIME__
 #else
-#error "build version missing"
+#define VERSION "rv(xxx)-" __DATE__ " " __TIME__
 #endif
 
 
-
-
-#define ICACHE_FLASH_ATTR
-
-#endif /* MAIN_USER_CONFIG_H_ */

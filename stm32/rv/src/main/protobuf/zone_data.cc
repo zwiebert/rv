@@ -1,0 +1,1 @@
+../../../../../esp32/netmcu/components/protobuf/zone_data.cc

@@ -23,13 +23,13 @@ gpio_pin_T Tm1638_clk_pin, Tm1638_dio_pin;
 #define D(x)
 
 static void pin_change_delay() {
-	for (unsigned long i = 0; i < 3; ++i) {
+	for(int i = 0; i < 3; ++i) {
 		__asm__("nop");
 	}
 }
 
 static void twait() {
-	for (unsigned long i = 0; i < 5; ++i) {
+	for(int i = 0; i < 5; ++i) {
 		__asm__("nop");
 	}
 }

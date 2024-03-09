@@ -1,3 +1,15 @@
 [submodule "esp32/netmcu/components-mcu"]
 	path = esp32/netmcu/components-mcu
 	url = https://github.com/zwiebert/components-mcu.git
+[submodule "stm32/rv/src/main/json/jsmn"]
+	path = stm32/rv/misc/jsmn
+	url = https://github.com/zserge/jsmn.git
+[submodule "stm32/rv/test/host/unity"]
+	path = stm32/rv/external/unity
+	url = https://github.com/ThrowTheSwitch/Unity.git
+[submodule "stm32/rv/external/libopencm3"]
+	path = stm32/rv/external/libopencm3
+	url = https://github.com/libopencm3/libopencm3.git
+[submodule "stm32/rv/external/catch2"]
+	path = stm32/rv/external/catch2
+	url = https://github.com/catchorg/Catch2.git

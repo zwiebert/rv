@@ -1,0 +1,69 @@
+Input-Daten und Quellen: 
+   Wetterdaten von openweather  (components-mcu/weather)
+   Sonnenaufgang (aus formel und breiten/längengrad)
+   Regensensor-Statusänderungen (Vorhandene Push-Nachricht stm32 => esp32 mit nutzen)
+   Hinzufügen von Gruppen.  (User-Konfiguration über Web-App, im esp32 gespeichert).
+   Konfig: Winter/Sommer Automatik deaktivieren
+Daten die bereits vom stm32 genutzt werden zur Adaption
+   Konfig: maximale Brunnen-Wasserentnahme pro Zeit 
+   Konfig: Wasserdurchfluss eines Kreises
+   
+   
+   EinzelKreis {
+     string name;
+     struct EinzelKreisEigenschafte eke;
+   };
+   
+   Gruppe {
+     string name;
+     list<EinzelKreis> kreise; // die einzelnen Kreise (MagnetVentile rv0..rv14)
+     struct GruppenEigenschaften  ge;  // Blumen/Rasen/Töpfe/Hecke mit ihren Eigenschaften
+   }
+   
+   GartenPumpe {
+      string name;
+      int max_wasserdurchfluss_lph; // begrenzt anzahl der gleichzeitig offenen kreise
+      int max_wasserentnahme_lph;   // bei überschreiten einfühgen von Pausen 
+      list<Einzekreis> kreise;  // alle Kreise
+      list<Gruppen> gruppen;  // alle Gruppen
+   }
+   
+   
+   
+Datenaufbereitung:
+   Einfach: Berechnung eines Gesamt-Faktors aus Wetterdaten letzten Tage zur Adaption
+   besser: Berechnung von Einzelfaktoren aus einzelnen Wetterdaten um diese unterschiedlich je
+     nach Art der Gruppe (Blumen, Rasen, Hecke) zur Adaption zu nutzen
+   
+
+struct WetterDaten {
+  int regensensor_trocken_dauer; //Zeitdauer seitdem der Regensensor trocken wurdde
+  float wetter_faktor_einfach; 
+  struct {
+    wind_faktor;
+    sonnen_faktor;
+    temp_faktor;
+    wolken_faktor;
+  } wetter_faktor_besser;
+
+
+Einteilung in Gruppen mit gleichen Eigenschaften.
+
+struct GruppenEigenschaften {
+   string name;  // Rasen/Blumen/Töpfe/Hecke
+   int prio = 1; // Priorität für Zeitnähe zur Morgendämmerung (Rasen=niedrig, BLumen=hoch)
+   int haeufigkeit;  // wie oft pro Woche bewässert werden soll
+   int (*adaption_h)(int haeufigkeit, class &wetterdaten);  //modifziert häufigkeit
+
+   };
+   
+struct EinzelKreisEigenschaften {
+   int normal_dauer;  // Länge einer normalen Bewässerungseinheit (100%)
+   int wasserdurchfluss_lph; // Liter pro Stunde. der stm32 nutzt das um Kreise zeitgleich zu öffnen)
+  int (*adaption_d)(int normal_dauer, class &wetterdaten);
+}
+
+Daten-Ausgabe:
+   Steuern der Ventile  (polling loop das dann Timer-Kommandos an stm32 erzeugt)
+   Anzeigen von Info (Vorhersage, Aktuell) on Demand im Browser
+   

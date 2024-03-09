@@ -1,8 +1,10 @@
 
 #include "../peri/uart.h"
-#include "cli.h"
+#include "cli_imp.h"
 #include <stdbool.h>
 #include <stddef.h>
+#include <ctype.h>
+
 
 #define D(x)
 
@@ -20,12 +22,13 @@ get_commandline(void) {
   while ((c = esp32_getc()) != -1) {
 	  D(printf("get: %d, (%c)\n", c, (char)c));
 
-    // line ended before ';' terminator received. throw it away
-    if (c == '\r' || c == '\n') {
-      quoteCount = 0;
-      cmd_buf_idx = 0;
-      continue;
-    }
+	  if (cmd_buf_idx == 0) {
+	    if (c == '\n' || c == '\r' || c == ';') {
+	      error = false;
+	      continue; // skip leading whitespaces
+	    }
+	  }
+
 
     // backspace: remove last character from buffer
     if (c == '\b') {
@@ -54,8 +57,8 @@ get_commandline(void) {
 
     // handle special characters, if outside a quoted word
     if ((quoteCount & 1) == 0) {
-      // ';' is used to terminate a command line
-      if (c == ';' && (quoteCount & 1) == 0) {
+      // ';' or '\n' is used to terminate a command line //TODO: '\n' not possible because of line 24 above
+      if (c == '\n' || (c == ';' && (quoteCount & 1) == 0)) {
         if (cmd_buf_idx == 0)
           goto succ;
         cmd_buf[cmd_buf_idx] = '\0';
@@ -65,6 +68,9 @@ get_commandline(void) {
     }
 
     // store char to buffer
+    if (iscntrl(c))
+      continue;
+
     cmd_buf[cmd_buf_idx++] = (char) c;
   }
 
