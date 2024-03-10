@@ -46,7 +46,7 @@ void soMsg_MCU_RUN_TIME(const class UoutWriter &td) {
 #include "esp_ota_ops.h"
 void soMsg_MCU_VERSION(const class UoutWriter &td) {
   char buf[64];
-  const esp_app_desc_t *ad = esp_ota_get_app_description();
+  const esp_app_desc_t *ad = esp_app_get_description();
 
   td.so().print("chip", MCU_TYPE);
   td.so().print("firmware", (csu_copy_cat(buf, ad->project_name, "-", ad->version), buf));

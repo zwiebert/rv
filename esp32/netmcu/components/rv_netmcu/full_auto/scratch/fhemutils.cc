@@ -5,10 +5,8 @@
 
 #include <time.h>
 
-
 float rvPoints[24]; // TODO
 unsigned rain_sensor_last_yday = 0; //TODO
-
 
 bool get_rainSensorCurrentState() {
   return false; // TODO
@@ -16,22 +14,20 @@ bool get_rainSensorCurrentState() {
 
 unsigned rvd[16] = { //
     20, // rv0 lawn_west
-    9,  // rv1 flow_hortens
-    7, // rv2 flow_south
-    20, //rv3 lawn_east
-    10, //rv4 kaktus
-    9, //rv5 flow_east
-    20, //rv6 lawn_north
-    12, //rv7 hedge_east
-    5, //rv8 flow_northeast
-    20, //rv9 flow_west
-    11, //rv10 flow_north
-    1, // rv11 pot_north
- };
-
+        9,  // rv1 flow_hortens
+        7, // rv2 flow_south
+        20, //rv3 lawn_east
+        10, //rv4 kaktus
+        9, //rv5 flow_east
+        20, //rv6 lawn_north
+        12, //rv7 hedge_east
+        5, //rv8 flow_northeast
+        20, //rv9 flow_west
+        11, //rv10 flow_north
+        1, // rv11 pot_north
+    };
 
 typedef unsigned (*getInterval_fun_T)(float wpt);
-
 
 struct rv_group {
   const char name[32];
@@ -67,27 +63,26 @@ rv_group rv_groups[NMB_GROUPS] = {  //
         { .name = "pots", .val = { .vb = { .rv11 = 1 } } }, //
     };
 
-
-getInterval_fun_T getInterval_funs[NMB_GROUPS] = {
-    [](float wpt) -> unsigned { return wpt > 17 ? 3 : (wpt > 15) ? 4 : (wpt > 10) ? 5 : 7;},
-    [](float wpt) -> unsigned { return wpt > 14 ? 1 : (wpt > 12.5) ? 2 : (wpt > 11) ? 3 : 5;},
-    [](float wpt) -> unsigned { return wpt > 15 ? 2 : (wpt > 13) ? 3 : (wpt > 11) ? 4 : 7;},
-    [](float wpt) -> unsigned { return wpt > 10 ? 2 : 10;},
+getInterval_fun_T getInterval_funs[NMB_GROUPS] = { [](float wpt) -> unsigned {
+  return wpt > 17 ? 3 : (wpt > 15) ? 4 : (wpt > 10) ? 5 : 7;
+},
+[](float wpt) -> unsigned {
+  return wpt > 14 ? 1 : (wpt > 12.5) ? 2 : (wpt > 11) ? 3 : 5;
+},
+[](float wpt) -> unsigned {
+  return wpt > 15 ? 2 : (wpt > 13) ? 3 : (wpt > 11) ? 4 : 7;
+},
+[](float wpt) -> unsigned {
+  return wpt > 10 ? 2 : 10;
+},
 
 };
 
-
-
 float rv_getWeather();
 
-
 bool rv_fetchWeather(weather_data &w) {
-#ifdef CONFIG_APP_OPENWEATHER_URL
-  return weather_fetch_weather_data(w, CONFIG_APP_OPENWEATHER_URL);
-#else
-  return false;
-#endif
- }
+  return weather_fetch_weather_data(w);
+}
 
 unsigned rv_getInterval(unsigned group) {
   assert(group < NMB_GROUPS);
@@ -119,19 +114,19 @@ bool rv_sampleWeather() {
   float rvpt = 1.0 * wd.get_temp_celsius() * (wd.get_wind_speed_kph() / 30.0 + 1)
       / (wd.get_cloud_coverage_percent() / 100.0 + wd.get_relative_humidity_percent() / 100.0 + 1);
   set_rvpt(rvpt);
-  rv_sample_rainsensor()
-
+  rv_sample_rainsensor();
+  return true;
 }
 
 float rv_getWeather() {
   int n = 0;
   float sum = 0.0;
-  for (int i=9; i <= 21; ++i) {
+  for (int i = 9; i <= 21; ++i) {
     float pt = get_rvpt(i);
-  if (pt > 0.001) {
-    ++n;
-    sum += pt;
-  }
+    if (pt > 0.001) {
+      ++n;
+      sum += pt;
+    }
   }
   if (!n)
     return 0.0;
