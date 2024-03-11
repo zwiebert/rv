@@ -1,4 +1,4 @@
-#include <weather/weather.hh>
+#include <weather/weather_provider.hh>
 
 #include <string>
 #include <list>

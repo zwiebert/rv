@@ -1,9 +1,11 @@
-#include "weather/weather.hh"
+#include "weather/weather_provider.hh"
 
 #include <assert.h>
 #include <stdint.h>
 
 #include <time.h>
+
+extern Weather_Provider &weather;
 
 float rvPoints[24]; // TODO
 unsigned rain_sensor_last_yday = 0; //TODO
@@ -81,7 +83,7 @@ getInterval_fun_T getInterval_funs[NMB_GROUPS] = { [](float wpt) -> unsigned {
 float rv_getWeather();
 
 bool rv_fetchWeather(weather_data &w) {
-  return weather_fetch_weather_data(w);
+  return weather.fetch_weather_data(w);
 }
 
 unsigned rv_getInterval(unsigned group) {
