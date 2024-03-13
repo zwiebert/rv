@@ -40,7 +40,9 @@ void main_setup_ip_dependent() {
 #endif
 
   }
+#ifdef CONFIG_APP_PING_THE_GATEWAY
   tmr_pingLoop_start();
+#endif
 }
 
 
@@ -59,8 +61,9 @@ void mcu_init() {
   config_ext_setup_txtio();
 
   if constexpr (use_SERIAL) {
-    struct cfg_stm32 cfgStm32 = { .uart_tx_gpio = STM32_UART_TX_PIN, .uart_rx_gpio = STM32_UART_RX_PIN, .boot_gpio_is_inverse = STM32_BOOT_PIN_INV, .boot_gpio =
-    STM32_BOOT_PIN, .reset_gpio = STM32_RESET_PIN, };
+    struct cfg_stm32 cfgStm32 = { .uart_tx_gpio = CONFIG_STM32_UART_TX_PIN, .uart_rx_gpio = CONFIG_STM32_UART_RX_PIN,
+        .boot_gpio_is_inverse = config_read_stm32_inv_bootpin(), .boot_gpio =
+        CONFIG_STM32_BOOT_PIN, .reset_gpio = CONFIG_STM32_RESET_PIN, };
     stm32_setup(&cfgStm32);
 
     struct cfg_stm32com cfg_stm32com = { .enable = true };
@@ -74,8 +77,9 @@ void mcu_init() {
   if constexpr (use_NETWORK) {
 
     ipnet_CONNECTED_cb = main_setup_ip_dependent;
+    enum nwConnection network = config_read_network_connection();
 
-    if (use_AP_FALLBACK || C.network != nwNone)
+    if (use_AP_FALLBACK || network != nwNone)
       esp_netif_init();
 
 #ifdef PING_NOT_BROKEN // pings will timeout with latest ESP-IDF (was working April 2020, broken April 2021 or earlier)
@@ -86,22 +90,22 @@ void mcu_init() {
 #endif
 
     if constexpr (use_WLAN) {
-      if (C.network == nwWlanSta)
+      if (network == nwWlanSta)
         config_setup_wifiStation();
     }
 
     if constexpr (use_WLAN_AP) {
-      if (C.network == nwWlanAp)
+      if (network == nwWlanAp)
         lfa_createWifiAp(); // XXX: Create the fall-back AP. Should we have a regular configured AP also?
     }
 
     if constexpr (use_LAN) {
-      if (C.network == nwLan)
+      if (network == nwLan)
         config_setup_ethernet();
     }
 
     if constexpr (use_AP_FALLBACK) {
-      if (C.network != nwWlanAp)
+      if (network != nwWlanAp)
         tmr_checkNetwork_start();
     }
 

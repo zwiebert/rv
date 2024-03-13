@@ -4,10 +4,9 @@
  */
 #include "app_config/proj_app_cfg.h"
 
-#include "main_loop_periodic.h"
-
 #include "main.h"
 #include <cli/cli.h>
+#include "full_auto/weather.hh"
 
 #include <app_settings/config.h>
 #include "utils_misc/int_macros.h"
@@ -22,7 +21,8 @@
 #include <freertos/projdefs.h>
 #include <freertos/timers.h>
 
-lfPerFlags mainLoop_PeriodicFlags;
+
+//lfPerFlags mainLoop_PeriodicFlags;
 /**
  * \brief Interval for periodic events. Will also restart MCU periodically to avoid memory fragmentation.
  * \param[in] loop_flags_periodic_100ms  global variable with loop_flagbits
@@ -42,14 +42,33 @@ void tmr_loopPeriodic_start() {
 #endif
     // forced daily reboot
     if ((count & (BIT(9) - 1)) == 0) { // 51,2 secs
-      if (run_time_s() > SECS_PER_DAY) {
-        const time_t now = time(0);
-        struct tm tms;
-        if (auto tmp = localtime_r(&now, &tms)) {
-          if (tmp->tm_hour == 23 && tmp->tm_min >= 33)
-            mainLoop_mcuRestart(0);  // XXX: restart every >=24 hours at 23:33
-        }
+      const time_t tnow = time(0);
+      struct tm tms;
+      if (localtime_r(&tnow, &tms)) { // tms is now valid
+
+
+#ifdef CONFIG_APP_USE_WEATHER_AUTO
+    static uint32_t last_poll;
+    if (last_poll + (10 * 60 * 58) < count && tms.tm_min < 5) { // happens each 60 minutes
+      if (fa_poll_weather_full_hour()) {
+        last_poll = count;
       }
+    }
+#endif
+
+        if (run_time_s() > SECS_PER_DAY)  {//
+
+          if (tms.tm_hour == 23 && tms.tm_min >= 33)
+              mainLoop_mcuRestart(0);  // XXX: restart every >=24 hours at 23:33
+
+        }
+
+      }
+
+
+
+
+
     }
   });
   if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {

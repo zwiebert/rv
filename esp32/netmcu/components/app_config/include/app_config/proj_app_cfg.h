@@ -13,9 +13,6 @@ typedef int64_t i64;
 #if defined TEST_HOST
 #include "app_config/host/proj_app_cfg.h"
 
-#elif defined MCU_ESP8266
-#include "app_config/esp8266/proj_app_cfg.h"
-
 #elif defined MCU_ESP32
 #include "app_config/esp32/proj_app_cfg.h"
 
@@ -27,24 +24,13 @@ typedef int64_t i64;
 #include "proj_kconfig.h"
 
 
-
-#define STM32_RESET_PIN  (GPIO_NUM_33)
-#define STM32_BOOT_PIN (GPIO_NUM_32)
-#define STM32_BOOT_PIN_INV config_read_stm32_inv_bootpin()
-#define STM32_UART_TX_PIN  (GPIO_NUM_4)
-#define STM32_UART_RX_PIN  (GPIO_NUM_36)
-
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-//#include "esp32/rom/ets_sys.h"
-//#include "utils_misc/int_types.h"
-//#include "txtio/inout.h"
 
-#define ISO_BUILD_TIME (__DATE__ "T" __TIME__)
 
 #ifndef CONFIG_LOG_DEFAULT_LEVEL
 #define CONFIG_LOG_DEFAULT_LEVEL 3

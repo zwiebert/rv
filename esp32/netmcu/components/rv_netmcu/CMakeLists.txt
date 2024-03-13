@@ -22,7 +22,9 @@ set(srcs
     
     app_http_server/esp32/http_server_content.cc
     
-    stm32_com/esp32/com_task.cc    
+    stm32_com/esp32/com_task.cc
+    
+    
 )
 
 # Add experimental host sources, which are not yet part of the firmware
@@ -36,10 +38,14 @@ if(CONFIG_APP_USE_PROTOBUF)
   set(srcs ${srcs}  app_cli/parm_proto_buf.cc)
 endif()
 
+if(CONFIG_APP_USE_WEATHER_AUTO)
+  set(srcs ${srcs}  full_auto/fa_weather.cc)
+endif()
+
 idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS . app_cli/include app_misc/include app_net/include app_uout/include 
-                   app_mqtt/include stm32_com/include app_http_server/include app_settings/include
+                   app_mqtt/include stm32_com/include app_http_server/include app_settings/include full_auto/include
 		   #full_auto/include
     REQUIRES app_config cli firmware_update uout utils_debug utils_misc utils_time weather webapp
     PRIV_REQUIRES app_update cli config_kvs driver esp_event esp_netif key_value_store lwip

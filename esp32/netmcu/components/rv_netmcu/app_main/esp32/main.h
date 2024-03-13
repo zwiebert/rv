@@ -1,7 +1,6 @@
 #pragma once
 
 #include "app_config/proj_app_cfg.h"
-#include "main_loop_periodic.h"
 
 #include "app_misc/common.h"
 #include "app_misc/rtc.h"
@@ -51,6 +50,7 @@ void lfa_gotIpAddr(void);
 void lfa_lostIpAddr(void);
 void lfa_mcuRestart(void);
 void stm32loop(void);
+void lfPer100ms_mainFun(void);
 void loop(void);
 void tmr_checkNetwork_start();
 void tmr_loopPeriodic_start();

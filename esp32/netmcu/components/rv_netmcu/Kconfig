@@ -1,0 +1,7 @@
+menu "zwiebert: rv_netmcu"
+  config APP_PING_THE_GATEWAY
+        bool "Check network connection by sending a ping to the gateway."
+        default n
+        help
+           This no longer works. Leave it disabled.
+endmenu

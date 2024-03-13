@@ -17,6 +17,7 @@ list(TRANSFORM COMPONENT_DIRECTORIES PREPEND   "${proj_src_dir}/")
 
 set(comp_compile_feats cxx_std_20)
 set(comp_compile_opts -O0 -ggdb  # -fanalyzer
+-Werror=return-type
 )
 
 if(${GPROF})
