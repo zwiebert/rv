@@ -25,7 +25,7 @@ endif
 
 THIS_ROOT := $(realpath .)
 BUILD_BASE ?= $(THIS_ROOT)/build/$(flavor)
-esp32_src_dir := $(THIS_ROOT)/src/$(flavor)
+esp32_src_dir := $(THIS_ROOT)/flavors/$(flavor)
 esp32_build_dir := $(BUILD_BASE)
 esp32_build_cmd := idf.py -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)  $(esp32_build_opts)
 esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
@@ -80,7 +80,7 @@ FORCE:
 
 
 ############ openocd ###################################
-esp32_ocd_sh :=  $(realpath ./src/esp32/esp32_ocd.sh) $(esp32_src_dir) $(esp32_build_dir)
+esp32_ocd_sh :=  $(realpath ./flavors/esp32/esp32_ocd.sh) $(esp32_src_dir) $(esp32_build_dir)
 
 esp32-flash-ocd:
 	$(esp32_ocd_sh) flash
@@ -111,15 +111,15 @@ win_copy_release:
 	
 ############## On Host ########################
 HOST_TEST_BUILD_PATH=$(BUILD_BASE)/../host/test
-HOST_TEST_SRC_PATH=$(THIS_ROOT)/src/host_test
+HOST_TEST_SRC_PATH=$(THIS_ROOT)/flavors/host_test
 
 .PHONY: test.cm.configure test.cm.build
 
 test.cm.configure:
 	rm -fr $(HOST_TEST_BUILD_PATH)
 	mkdir -p $(HOST_TEST_BUILD_PATH)/config
-	cp $(THIS_ROOT)/src/host_test/sdkconfig.h $(THIS_ROOT)/src/host_test/sdkconfig.cmake $(HOST_TEST_BUILD_PATH)/config/
-	-cat $(THIS_ROOT)/src/host_test/.local_sdkconfig.h >>$(HOST_TEST_BUILD_PATH)/config/sdkconfig.h #Openweather-URL
+	cp $(THIS_ROOT)/flavors/host_test/sdkconfig.h $(THIS_ROOT)/flavors/host_test/sdkconfig.cmake $(HOST_TEST_BUILD_PATH)/config/
+	-cat $(THIS_ROOT)/flavors/host_test/.local_sdkconfig.h >>$(HOST_TEST_BUILD_PATH)/config/sdkconfig.h #Openweather-URL
 	cmake -B $(HOST_TEST_BUILD_PATH) -D BUILD_HOST_TESTS=ON -S  $(HOST_TEST_SRC_PATH) #-G Ninja)
 
 cm_build := make -C $(HOST_TEST_BUILD_PATH) -k -j  -s --no-print-dir $(make_verbose_opts)

@@ -50,7 +50,7 @@ esp_err_t pingResults(ping_target_id_t msgType, esp_ping_found * pf){
   return ESP_OK;
 }
 
-extern esp_ip4_addr_t ip4_address, ip4_gateway_address, ip4_netmask;
+extern esp_ip4_addr_t ip4_gateway_address;
 
 static void ping_send() {
   char buf[16];

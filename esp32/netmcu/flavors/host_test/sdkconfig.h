@@ -2,9 +2,11 @@
  * \file   app_config/host/sdkconfig.h
  * \brief  Default configuration values for host (tests)
  */
+#define CONFIG_APP_FA_NAMES_MAX_LEN 32
+#define CONFIG_APP_NUMBER_OF_VALVES 16
+#define CONFIG_APP_FA_MAX_VALVE_GROUPS 16
+#define CONFIG_APP_FA_MAX_WEATHER_ADAPTERS 16
 
-#define CONFIG_APP_FER_CENTRAL_UNIT_ID 0x801234
-#define CONFIG_APP_FER_GM_USE 0x77777777
 #define CONFIG_APP_GEO_TZ "CET-1CEST-2,M3.5.0,M10.5.0"
 #define CONFIG_APP_HTTP_ENABLE 1
 #define CONFIG_APP_HTTP_PASSWORD ""

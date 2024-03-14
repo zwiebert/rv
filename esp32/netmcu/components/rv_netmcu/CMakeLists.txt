@@ -38,8 +38,11 @@ if(CONFIG_APP_USE_PROTOBUF)
   set(srcs ${srcs}  app_cli/parm_proto_buf.cc)
 endif()
 
-if(CONFIG_APP_USE_WEATHER_AUTO)
-  set(srcs ${srcs}  full_auto/fa_weather.cc)
+if(CONFIG_APP_USE_WEATHER_AUTO OR TEST_HOST)
+  set(srcs ${srcs}  full_auto/fa_weather.cc
+     full_auto/automatic_timer.cc
+     full_auto/from_json.cc
+  )
 endif()
 
 idf_component_register(
@@ -47,10 +50,10 @@ idf_component_register(
     INCLUDE_DIRS . app_cli/include app_misc/include app_net/include app_uout/include 
                    app_mqtt/include stm32_com/include app_http_server/include app_settings/include full_auto/include
 		   #full_auto/include
-    REQUIRES app_config cli firmware_update uout utils_debug utils_misc utils_time weather webapp
+    REQUIRES app_config cli firmware_update uout utils_debug utils_misc utils_time weather webapp key_value_store
     PRIV_REQUIRES app_update cli config_kvs driver esp_event esp_netif key_value_store lwip
                   main_loop mbedtls net net_http_server net_mqtt nvs_flash protobuf stm32 storage txtio uout utils_debug
-                  utils_misc utils_time
+                  utils_misc utils_time jsmn
     EMBED_TXTFILES app_misc/ca_cert.pem
 )
  

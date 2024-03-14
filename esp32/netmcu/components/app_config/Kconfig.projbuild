@@ -99,7 +99,7 @@ menu "RV Project Configuration"
         
     config APP_USE_HTTP
         depends on APP_USE_NETWORK
-        bool "Compile HTTP server "
+        bool "Compile HTTP server"
         default y
 
     config APP_USE_WS

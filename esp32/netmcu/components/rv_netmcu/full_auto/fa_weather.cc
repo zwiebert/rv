@@ -1,5 +1,3 @@
-#pragma once
-
 #include "full_auto/weather.hh"
 
 #include "weather/weather_irrigation.hh"

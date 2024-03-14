@@ -130,4 +130,5 @@ void mcu_init() {
 #endif
 
   kvs_get_int32(KEY_BOOT_COUNTER, &boot_counter), kvs_store_int32(KEY_BOOT_COUNTER, ++boot_counter);
+
 }

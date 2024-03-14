@@ -16,7 +16,7 @@
 #include "net/http_client.h"
 #include "debug/dbg.h"
 #include <app_uout/so_msg.h>
-
+#include "key_value_store/kvs_wrapper.h"
 
 #define KEY_BOOT_COUNT "boot-count"
 
@@ -30,6 +30,10 @@ const char cli_help_parmMcu[] = "print=(rtc|cu|reset-info)\n"
 #endif
         "up-time=?\n"
         "version=full\n";
+
+
+
+static void kvs_print_keys(const char *name_space);
 
 
 int
@@ -123,6 +127,11 @@ process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
     } else if (strcmp(key, "flrv") == 0) {
       stm32Ota_firmwareUpdate(STM32_FW_FILE_NAME);
 
+    } else if (strcmp(key, "kvs-pk") == 0) {
+        kvs_print_keys(val);
+        break;
+
+
 #ifdef ACCESS_GPIO
     } else if (strncmp(key, "gpio", 4) == 0) {
       int gpio_number = atoi(key + 4);
@@ -187,4 +196,20 @@ process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
   soMsg_MCU_end(td);
 
   return 0;
+}
+
+
+static void kvs_print_keys(const char *name_space) {
+  kvs_foreach(name_space, KVS_TYPE_ANY,
+
+  /// match any key name
+      [](const char*, int) -> bool {
+        return true;
+      },0,
+
+      /// print each key
+      [](const char *key, kvs_type_t type, void *args) -> kvs_cbrT {
+        io_printf("key: %s, type: %d\n", key, (int )type);
+        return kvsCb_match;
+      }, nullptr);
 }

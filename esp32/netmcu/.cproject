@@ -267,7 +267,7 @@
 			</target>
 			<target name="test.cm.ctest.regex" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>make</buildCommand>
-				<buildArguments>-j6 TEST=test_irrigation</buildArguments>
+				<buildArguments>-j6 TEST=test_full_auto</buildArguments>
 				<buildTarget>test.cm.ctest.regex</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>false</useDefaultCommand>

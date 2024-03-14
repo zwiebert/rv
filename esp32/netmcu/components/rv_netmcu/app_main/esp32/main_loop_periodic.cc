@@ -21,7 +21,6 @@
 #include <freertos/projdefs.h>
 #include <freertos/timers.h>
 
-
 //lfPerFlags mainLoop_PeriodicFlags;
 /**
  * \brief Interval for periodic events. Will also restart MCU periodically to avoid memory fragmentation.
@@ -33,7 +32,6 @@ void tmr_loopPeriodic_start() {
     static uint32_t count;
     ++count;
 
-
     mainLoop_callFun(lfPer100ms_mainFun);
 #if 0
     if ((count & (BIT(7) - 1)) == 0) { // 12,8 secs
@@ -44,33 +42,26 @@ void tmr_loopPeriodic_start() {
     if ((count & (BIT(9) - 1)) == 0) { // 51,2 secs
       const time_t tnow = time(0);
       struct tm tms;
-      if (localtime_r(&tnow, &tms)) { // tms is now valid
 
+      if (localtime_r(&tnow, &tms)) {
 
 #ifdef CONFIG_APP_USE_WEATHER_AUTO
-    static uint32_t last_poll;
-    if (last_poll + (10 * 60 * 58) < count && tms.tm_min < 5) { // happens each 60 minutes
-      if (fa_poll_weather_full_hour()) {
-        last_poll = count;
-      }
+    static uint32_t weather_last_poll;
+    if ((weather_last_poll == 0 || weather_last_poll + (10 * 60 * 58) < count) && tms.tm_min < 5) { // happens each 60 minutes
+      mainLoop_callFun([]() {
+        if (fa_poll_weather_full_hour())
+          weather_last_poll = count;
+      });
     }
 #endif
 
-        if (run_time_s() > SECS_PER_DAY)  {//
-
-          if (tms.tm_hour == 23 && tms.tm_min >= 33)
-              mainLoop_mcuRestart(0);  // XXX: restart every >=24 hours at 23:33
-
-        }
-
-      }
-
-
-
-
-
+    if (run_time_s() > SECS_PER_DAY) { //
+      if (tms.tm_hour == 23 && tms.tm_min >= 33)
+        mainLoop_mcuRestart(0);  // XXX: restart every >=24 hours at 23:33
     }
-  });
+  }
+}
+} );
   if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {
     printf("PerLoopTimer start error");
   }
