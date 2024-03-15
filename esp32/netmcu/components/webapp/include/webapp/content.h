@@ -1,26 +1,24 @@
+/**
+ * \file    webapp/content.h
+ * \brief   Definitions to make embedded files accessible from C code
+ * \note    Mandatory files should be compressed by gzip, because its widely supported.  Brotli may be used for source maps.
+ */
 #pragma once
 
-// wapp.css
-extern const char build_wapp_css_gz[];
-extern const int build_wapp_css_gz_len;
+struct web_content {
+  const char *content, *content_encoding;
+  unsigned content_length;
+};
 
-// wapp.html
-extern const char build_wapp_html_gz[];
-extern const int build_wapp_html_gz_len;
+extern const web_content wapp_html_gz_fm;
+extern const web_content wapp_js_gz_fm;
+extern const web_content wapp_js_map_gz_fm;
+extern const web_content wapp_css_gz_fm;
+extern const web_content wapp_css_map_gz_fm;
 
-// wapp.js
-extern const char build_wapp_js_gz[];
-extern const int build_wapp_js_gz_len;
+extern const web_content wapp_html_br_fm;
+extern const web_content wapp_js_br_fm;
+extern const web_content wapp_js_map_br_fm;
+extern const web_content wapp_css_br_fm;
+extern const web_content wapp_css_map_br_fm;
 
-// Source Maps
-// wapp.js.map
-extern const char build_wapp_js_map_gz[];
-extern const int build_wapp_js_map_gz_len;
-extern const char build_wapp_js_map_br[];
-extern const int build_wapp_js_map_br_len;
-
-// wapp.css.map
-extern const char build_wapp_css_map_gz[];
-extern const int build_wapp_css_map_gz_len;
-extern const char build_wapp_css_map_br[];
-extern const int build_wapp_css_map_br_len;

@@ -20,7 +20,7 @@ set(srcs
     
     app_settings/config.cc app_settings/config_kvs.cc app_settings/config_comps.cc app_settings/app_settings.cc app_settings/all_settings.cc
     
-    app_http_server/esp32/http_server_content.cc
+    app_http_server/esp32/uri_handlers.cc app_http_server/web_content.cc
     
     stm32_com/esp32/com_task.cc
     

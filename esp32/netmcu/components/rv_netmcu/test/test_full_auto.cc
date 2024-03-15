@@ -4,6 +4,7 @@
 #endif
 
 #include <cstdlib>
+#include <unistd.h>
 
   template<typename T>
   T rando(T low_limit, T high_limit) {
@@ -12,6 +13,7 @@
 
 
 #include "../full_auto/automatic_timer.cc"
+#include "full_auto/weather.hh"
 
 #define DEBUG
 
@@ -206,11 +208,16 @@ void test_json()
   }
 }
 
-
+void test_mulitple_fetch() {
+  for (int i=0; i < 4; ++i) {
+    TEST_ASSERT_TRUE_MESSAGE(fa_poll_weather_full_hour(), "Fetch, parse and save JSON data ... what could go wrong?");
+    sleep(10);
+  }
+}
 
 TEST_CASE("full_auto", "[app]")
 {
-
+  test_mulitple_fetch();
     // test_scratch();
      test_json();
 }

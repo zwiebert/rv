@@ -55,12 +55,10 @@ void tmr_loopPeriodic_start() {
 #ifdef CONFIG_APP_USE_WEATHER_AUTO
     // Poll weather data at full hour
     static time_t weather_last_poll;
-    if ((weather_last_poll == 0 || (weather_last_poll + SECS_PER_MINT * 58) < tnow) && tms.tm_min < 4) {
-      D(ESP_LOGI("poll", "last_poll %lu before. tnow=%lu", (unsigned long)weather_last_poll, (unsigned long)tnow));
+    if ((weather_last_poll == 0 || (weather_last_poll + SECS_PER_MINT * 58) < tnow) && tms.tm_min < 5) {
       mainLoop_callFun([]() {
         if (fa_poll_weather_full_hour()) {
             weather_last_poll = time(0);
-            D(ESP_LOGI("poll", "last_poll %lu after. time(0)=%lu", (unsigned long)weather_last_poll, (unsigned long)time(0)));
         }
       });
     }
