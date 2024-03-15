@@ -10,7 +10,11 @@ import { terser } from "@wwa/rollup-plugin-terser";
 import css from 'rollup-plugin-css-only';
 
 export const isProduction = process.env.NODE_ENV === "production";
-export const isDistro = process.env.DISTRO === "yes";
+export const isDistro = process.env.DISTRO === "1";
+const build_directory = process.env.BUILD_DIR || "/tmp/rv/njs/build";
+const sdkconfig_js_dir = process.env.SDKCONFIG_JS_DIR || "./src/config";
+
+console.log("isProduction:", isProduction, "isDistro:", isDistro);
 
 let wdir = "/home/bertw/proj/mcu/rv/esp32/netmcu/components/webapp/njs/";
 
@@ -34,27 +38,32 @@ export default {
     
   },
   input: 'src/main.js',
-  output: [...!isProduction ? [ {
-    file: 'build_dev/wapp.js',
-    sourcemap: true,
-    format: 'iife',
-    name: 'wapp',
-    // sourcemapPathTransform: relativePath => {      return relativePath.substr(2);},
-    plugins: [
-    ]
-  }] : [ {
-    file: 'build/wapp.js',
-    format: 'iife',
-    name: 'wapp',
-    sourcemap: true,
-    sourcemapPathTransform: relativePath => {
-      // will transform e.g. "src/main.js" -> "main.js"
-      return relativePath.substr(2);
-    },
-    plugins: [
-      terser()
-    ]
-  }]],
+	 output: [
+    ...(!isProduction
+      ? [
+          {
+            file: build_directory + "/wapp.js",
+            sourcemap: true,
+            format: "iife",
+            name: "wapp",
+            // sourcemapPathTransform: relativePath => {      return relativePath.substr(2);},
+            plugins: [],
+          },
+        ]
+      : [
+          {
+            file: build_directory + "/wapp.js",
+            format: "iife",
+            name: "wapp",
+            sourcemap: true,
+            sourcemapPathTransform: (relativePath) => {
+              // will transform e.g. "src/main.js" -> "main.js"
+              return relativePath.substr(2);
+            },
+            plugins: [terser()],
+          },
+        ]),
+  ],
 
   moduleContext: (id) => {
     // In order to match native module behaviour, Rollup sets `this`

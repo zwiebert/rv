@@ -19,7 +19,7 @@ struct ValveGroup {
 
   bool to_json(char *dst, size_t dst_size) {
     auto n = snprintf(dst, dst_size, //
-        R"({"name":"%s","flags":{"active":%d,"exists":%d,"has_adapter":%d},"valve_bits":%d,"interval_days":%d,"adapter":%d})", //
+        R"({"name":"%s","flags":{"active":%d,"exists":%d,"has_adapter":%d},"valve_bits":%lu,"interval_days":%d,"adapter":%d})", //
         name, //
         flags.active, flags.exists, flags.has_adapter, //
         valve_bits, interval_days, adapter);

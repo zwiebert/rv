@@ -19,6 +19,7 @@
   }
 </script>
 
+
 <div class="area">
   <McuFirmwareUpd fwbtns={stm32_fwbtns} chip="stm32" updSecs="75" />
   <Stm32McuFirmwareInfo />

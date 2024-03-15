@@ -20,44 +20,57 @@
 #include <freertos/event_groups.h>
 #include <freertos/projdefs.h>
 #include <freertos/timers.h>
+#include <esp_log.h>
 
-//lfPerFlags mainLoop_PeriodicFlags;
+#define D(x) x
 /**
- * \brief Interval for periodic events. Will also restart MCU periodically to avoid memory fragmentation.
- * \param[in] loop_flags_periodic_100ms  global variable with loop_flagbits
+ * \brief Create 100ms timer for periodic actions
+ * Actions should be called with mainLoop_callFun() to execute them in mainLoop context instead of "Tmr Svc" Task.
+ *
  */
 void tmr_loopPeriodic_start() {
   const int interval = pdMS_TO_TICKS(LOOP_PERIODIC_INTERVAL_MS);
   TimerHandle_t tmr = xTimerCreate("PerLoop100ms", interval, pdTRUE, nullptr, [](TimerHandle_t xTimer) {
-    static uint32_t count;
+
+    // Note: This function body runs in FREERTOS_TIMER_TASK (Tmr Svc) Task.
+    // Note: use mainLoop_callFun() to execute actions in main task
+
+
+    static uint32_t count; // counts up every 0.1 seconds.
     ++count;
 
+
+
+    // Every 100ms: run cli_loop, watch_dog, ...
     mainLoop_callFun(lfPer100ms_mainFun);
-#if 0
-    if ((count & (BIT(7) - 1)) == 0) { // 12,8 secs
-      app_safeMode_increment(true);
-    }
-#endif
-    // forced daily reboot
-    if ((count & (BIT(9) - 1)) == 0) { // 51,2 secs
+
+
+
+    // Every 51.2 seconds check if actions based on local time are due
+    if ((count & (BIT(9) - 1)) == 0) {
       const time_t tnow = time(0);
       struct tm tms;
-
       if (localtime_r(&tnow, &tms)) {
 
 #ifdef CONFIG_APP_USE_WEATHER_AUTO
-    static uint32_t weather_last_poll;
-    if ((weather_last_poll == 0 || weather_last_poll + (10 * 60 * 58) < count) && tms.tm_min < 5) { // happens each 60 minutes
+    // Poll weather data at full hour
+    static time_t weather_last_poll;
+    if ((weather_last_poll == 0 || (weather_last_poll + SECS_PER_MINT * 58) < tnow) && tms.tm_min < 4) {
+      D(ESP_LOGI("poll", "last_poll %lu before. tnow=%lu", (unsigned long)weather_last_poll, (unsigned long)tnow));
       mainLoop_callFun([]() {
-        if (fa_poll_weather_full_hour())
-          weather_last_poll = count;
+        if (fa_poll_weather_full_hour()) {
+            weather_last_poll = time(0);
+            D(ESP_LOGI("poll", "last_poll %lu after. time(0)=%lu", (unsigned long)weather_last_poll, (unsigned long)time(0)));
+        }
       });
     }
 #endif
 
+    // forced daily reboot
+    // XXX: restart every >=24 hours at 23:33
     if (run_time_s() > SECS_PER_DAY) { //
       if (tms.tm_hour == 23 && tms.tm_min >= 33)
-        mainLoop_mcuRestart(0);  // XXX: restart every >=24 hours at 23:33
+        mainLoop_mcuRestart(0);
     }
   }
 }
