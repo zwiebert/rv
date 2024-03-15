@@ -2,7 +2,7 @@
   import { _ } from 'services/i18n';
   import * as appDebug from "app/app_debug.js";
   import * as httpFetch from "app/fetch.js";
-  import * as misc from "app/misc.js";
+  import { req_mcuRestart } from "app/misc.js";
   import {
     McuFirmwareUpdProgress,
     McuFirmwareUpdState,
@@ -113,7 +113,7 @@ $: {
       <br />
       <strong>
         Update succeeded
-        <button id="mrtb" type="button" on:click={() => misc.req_mcuRestart()}>
+        <button id="mrtb" type="button" on:click={() => req_mcuRestart()}>
           {$_('app.restartMcu')}
         </button>
         <br />

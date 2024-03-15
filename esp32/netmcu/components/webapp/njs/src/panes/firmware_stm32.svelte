@@ -1,6 +1,6 @@
 <script>
   import { _ } from "services/i18n";
-  import * as misc from "app/misc.js";
+  import { req_stm32McuRestart } from "app/misc.js";
   import McuFirmwareUpd from "app/mcu_firmware_upd.svelte";
   import Stm32McuFirmwareInfo from "app/stm32_mcu_firmware_info.svelte";
 
@@ -23,5 +23,5 @@
 <div class="area">
   <McuFirmwareUpd fwbtns={stm32_fwbtns} chip="stm32" updSecs="75" />
   <Stm32McuFirmwareInfo />
-  <button type="button" on:click={() => misc.req_stm32McuRestart()}>{$_('app.restartMcu')}</button>
+  <button type="button" on:click={() => req_stm32McuRestart()}>{$_('app.restartMcu')}</button>
 </div>

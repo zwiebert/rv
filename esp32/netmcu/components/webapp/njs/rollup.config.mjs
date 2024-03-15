@@ -1,4 +1,5 @@
 // rollup.config.js
+import path from 'path';
 import json from "@rollup/plugin-json";
 import strip from "@rollup/plugin-strip";
 import resolve from "@rollup/plugin-node-resolve";
@@ -16,7 +17,7 @@ const sdkconfig_js_dir = process.env.SDKCONFIG_JS_DIR || "./src/config";
 
 console.log("isProduction:", isProduction, "isDistro:", isDistro);
 
-let wdir = "/home/bertw/proj/mcu/rv/esp32/netmcu/components/webapp/njs/";
+let wdir = path.resolve() + "/";
 
 const aliases = alias({
   resolve: [".svelte", ".js"], //optional, by default this will just look for .js files or folders
@@ -46,7 +47,13 @@ export default {
             sourcemap: true,
             format: "iife",
             name: "wapp",
-            // sourcemapPathTransform: relativePath => {      return relativePath.substr(2);},
+            sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
+              // will replace relative paths with absolute paths
+              return path.resolve(
+                path.dirname(sourcemapPath),
+                relativeSourcePath
+              );
+            },
             plugins: [],
           },
         ]
@@ -56,9 +63,12 @@ export default {
             format: "iife",
             name: "wapp",
             sourcemap: true,
-            sourcemapPathTransform: (relativePath) => {
-              // will transform e.g. "src/main.js" -> "main.js"
-              return relativePath.substr(2);
+            sourcemapPathTransform: (relativeSourcePath, sourcemapPath) => {
+              // will replace relative paths with absolute paths
+              return path.resolve(
+                path.dirname(sourcemapPath),
+                relativeSourcePath
+              );
             },
             plugins: [terser()],
           },

@@ -1,7 +1,7 @@
 <script>
   "use strict";
   import { _ } from "services/i18n";
-  import * as misc from "app/misc.js";
+  import { req_mcuRestart, DISTRO } from "app/misc.js";
   import McuFirmwareUpd from "app/mcu_firmware_upd.svelte";
   import McuFirmwareInfo from "app/mcu_firmware_info.svelte";
 
@@ -10,7 +10,7 @@
     { name: "latest beta", ota_name: "github-beta" },
   ];
 
-  if (!misc.DISTRO) {
+  if (!DISTRO) {
     fwbtns.push({
       name: "from URL",
       ota_name: "netotaFromURL",
@@ -23,5 +23,5 @@
 <div class="area">
   <McuFirmwareUpd {fwbtns} chip="" updSecs="14" />
   <McuFirmwareInfo />
-  <button type="button" on:click={() => misc.req_mcuRestart()}>{$_('app.restartMcu')}</button>
+  <button type="button" on:click={() => req_mcuRestart()}>{$_('app.restartMcu')}</button>
 </div>
