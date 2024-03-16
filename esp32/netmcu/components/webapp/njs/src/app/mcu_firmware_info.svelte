@@ -5,8 +5,8 @@
     McuFirmwareBuildDate,
     McuChipId,
     McuFirmwareVersion,
-  } from "stores/mcu_firmware.js";
-  import * as httpFetch from "app/fetch.js";
+  } from "../store/mcu_firmware.js";
+  import * as httpFetch from "../app/fetch.js";
   import { onMount } from "svelte";
 
   onMount(() => {

@@ -1,9 +1,9 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import { ZoneCount, ZoneNames } from "stores/zones";
-  import Zone from "app/rv_config_zone.svelte";
-  import * as httpFetch from "app/fetch.js";
+  import { _ } from "../services/i18n";
+  import { ZoneCount, ZoneNames } from "../store/zones";
+  import Zone from "../app/rv_config_zone.svelte";
+  import * as httpFetch from "../app/fetch.js";
   import { onMount } from "svelte";
 
   onMount(() => {

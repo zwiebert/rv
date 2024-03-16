@@ -1,7 +1,7 @@
 'use strict';
 
-import App from 'app/main.svelte';
-import * as connWs from 'main/net/conn_ws.js';
+import App from './app/main.svelte';
+import * as connWs from './net/conn_ws.js';
 
 export default function () {
   generate_html();

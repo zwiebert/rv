@@ -22,12 +22,12 @@ let wdir = path.resolve() + "/";
 const aliases = alias({
   resolve: [".svelte", ".js"], //optional, by default this will just look for .js files or folders
   entries: [
-    { find: "components", replacement: wdir + "src/components" },
-    { find: "services", replacement: wdir + "src/services" },
-    { find: "stores", replacement: wdir + "src/store" },
-    { find: "panes", replacement: wdir + "src/panes" },
-    { find: "app", replacement: wdir + "src/app" },
-    { find: "main", replacement: wdir + "src" },
+   // { find: "components", replacement: wdir + "src/components" },
+    //{ find: "services", replacement: wdir + "src/services" },
+   // { find: "stores", replacement: wdir + "src/store" },
+    //{ find: "panes", replacement: wdir + "src/panes" },
+    //{ find: "app", replacement: wdir + "src/app" },
+    //{ find: "main", replacement: wdir + "src" },
   ],
 });
 

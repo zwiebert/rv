@@ -1,16 +1,16 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import NavTabs from "app/nav_tabs.svelte";
+  import { _ } from "../services/i18n";
+  import NavTabs from "../app/nav_tabs.svelte";
 
-  import PaneRvControl from "panes/rv_control.svelte";
-  import PaneRvSettings from "panes/rv_settings.svelte";
-  import PaneMcuSettings from "panes/mcu_settings.svelte";
-  import PaneFirmwareEsp32 from "panes/firmware_esp32.svelte";
-  import PaneFirmwareStm32 from "panes/firmware_stm32.svelte";
-  import PaneZoneMaintenance from "panes/zone_maintenance.svelte";
-  import PaneZoneTimers from "panes/zone_timers.svelte";
-  import { TabIdx } from "stores/app_state.js";
+  import PaneRvControl from "../panes/rv_control.svelte";
+  import PaneRvSettings from "../panes/rv_settings.svelte";
+  import PaneMcuSettings from "../panes/mcu_settings.svelte";
+  import PaneFirmwareEsp32 from "../panes/firmware_esp32.svelte";
+  import PaneFirmwareStm32 from "../panes/firmware_stm32.svelte";
+  import PaneZoneMaintenance from "../panes/zone_maintenance.svelte";
+  import PaneZoneTimers from "../panes/zone_timers.svelte";
+  import { TabIdx } from "../store/app_state.js";
 
   $: tabIdxMain = $TabIdx["main"] || 0;
   $: tabIdxCfg = $TabIdx["cfg"] || 0;

@@ -1,11 +1,11 @@
 <script>
-  import { _ } from "services/i18n";
+  import { _ } from "../services/i18n";
   import {
     PressControlStatus,
     WaterPumpStatus,
     RainSensorStatus,
-  } from "stores/zones";
-  import * as httpFetch from "app/fetch.js";
+  } from "../store/zones";
+  import * as httpFetch from "../app/fetch.js";
   import { onMount } from "svelte";
 
   import WiRain from 'svelte-icons/wi/WiRain.svelte';

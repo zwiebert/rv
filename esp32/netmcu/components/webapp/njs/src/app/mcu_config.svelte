@@ -1,18 +1,18 @@
 <script>
   "use strict";
-  import { _ } from "services/i18n";
-  import { McuConfig, McuConfigKeys } from "stores/mcu_config.js";
-  import * as appDebug from "app/app_debug.js";
-  import * as httpFetch from "app/fetch.js";
-  import { req_mcuRestart } from "app/misc.js";
+  import { _ } from "../services/i18n";
+  import { McuConfig, McuConfigKeys } from "../store/mcu_config.js";
+  import * as appDebug from "../app/app_debug.js";
+  import * as httpFetch from "../app/fetch.js";
+  import { req_mcuRestart } from "../app/misc.js";
   import { onMount, onDestroy } from "svelte";
-  import { ReloadProgress } from "stores/app_state.js";
+  import { ReloadProgress } from "../store/app_state.js";
 
-  import McuConfigGpio from "components/mcu_config/gpio.svelte";
-  import McuConfigNetwork from "components/mcu_config/network.svelte";
-  import McuConfigLanPhy from "components/mcu_config/lan_phy.svelte";
-  import McuConfigNumber from "components/mcu_config/number.svelte";
-  import McuConfigEnable from "components/mcu_config/enable.svelte";
+  import McuConfigGpio from "../components/mcu_config/gpio.svelte";
+  import McuConfigNetwork from "../components/mcu_config/network.svelte";
+  import McuConfigLanPhy from "../components/mcu_config/lan_phy.svelte";
+  import McuConfigNumber from "../components/mcu_config/number.svelte";
+  import McuConfigEnable from "../components/mcu_config/enable.svelte";
 
   let on_destroy = [];
   onMount(() => {

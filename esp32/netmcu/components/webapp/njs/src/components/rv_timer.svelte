@@ -1,9 +1,9 @@
 <script>
-  import { _ } from "services/i18n";
-  import { Z } from "stores/curr_zone";
-  import { ZoneTimers } from "stores/zones";
-  import { ZoneActiveTimerMask } from "stores/curr_zone";
-  import * as httpFetch from "app/fetch.js";
+  import { _ } from "../services/i18n";
+  import { Z } from "../store/curr_zone";
+  import { ZoneTimers } from "../store/zones";
+  import { ZoneActiveTimerMask } from "../store/curr_zone";
+  import * as httpFetch from "../app/fetch.js";
   import { onMount } from "svelte";
 
   onMount(() => {

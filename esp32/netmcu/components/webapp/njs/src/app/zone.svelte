@@ -1,9 +1,9 @@
 <script>
   "use strict";
 
-  import { ZoneDurations, ZoneRemainingSeconds } from "stores/zones";
-  import * as httpFetch from "app/fetch.js";
-  import { formatSecondsToMMSS } from "app/misc.js";
+  import { ZoneDurations, ZoneRemainingSeconds } from "../store/zones";
+  import * as httpFetch from "../app/fetch.js";
+  import { formatSecondsToMMSS } from "../app/misc.js";
 
   export let zoneIdx;
   export let zoneNames;

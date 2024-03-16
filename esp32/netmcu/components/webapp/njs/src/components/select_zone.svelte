@@ -1,8 +1,8 @@
 <script>
-  import { _ } from "services/i18n";
-  import { Z, ZoneName } from "stores/curr_zone";
-  import { ZoneCount, ZoneNames, ZoneDisabled } from "stores/zones";
-  import * as httpFetch from "app/fetch.js";
+  import { _ } from "../services/i18n";
+  import { Z, ZoneName } from "../store/curr_zone";
+  import { ZoneCount, ZoneNames, ZoneDisabled } from "../store/zones";
+  import * as httpFetch from "../app/fetch.js";
   import { onMount } from "svelte";
 
   onMount(() => {

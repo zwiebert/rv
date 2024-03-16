@@ -1,6 +1,6 @@
 "use strict";
 
-import { McuConfig } from "stores/mcu_config.js";
+import { McuConfig } from "../store/mcu_config.js";
 import {
   McuBootCount,
   McuGitTagNames,
@@ -10,8 +10,8 @@ import {
   Stm32McuFirmwareVersion,
   McuFirmwareUpdProgress,
   McuFirmwareUpdState,
-} from "stores/mcu_firmware.js";
-import { McuDocs } from "stores/mcu_docs.js";
+} from "../store/mcu_firmware.js";
+import { McuDocs } from "../store/mcu_docs.js";
 import {
   ZoneLPHs,
   ZoneDataMsg,
@@ -24,7 +24,7 @@ import {
   WaterPumpStatus,
   RainSensorStatus,
   Stm32Time,
-} from "stores/zones.js";
+} from "../store/zones.js";
 
 export function http_handleResponses(obj) {
   console.log("reply-json: " + JSON.stringify(obj));

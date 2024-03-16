@@ -1,12 +1,12 @@
 <script>
-  import { _ } from "services/i18n";
+  import { _ } from "../services/i18n";
   import {
     ZoneLPHs, ZoneDataMsg
-  } from "stores/zones";
+  } from "../store/zones";
   import {
     Z, ZoneLPH,
-  } from "stores/curr_zone";
-  import * as httpFetch from "app/fetch.js";
+  } from "../store/curr_zone";
+  import * as httpFetch from "../app/fetch.js";
   import { onMount } from "svelte";
 
   onMount(() => {
