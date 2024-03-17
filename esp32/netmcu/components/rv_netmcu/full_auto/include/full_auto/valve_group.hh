@@ -22,7 +22,7 @@ struct ValveGroup {
         R"({"name":"%s","flags":{"active":%d,"exists":%d,"has_adapter":%d},"valve_bits":%lu,"interval_days":%d,"adapter":%d})", //
         name, //
         flags.active, flags.exists, flags.has_adapter, //
-        valve_bits, interval_days, adapter);
+        (long unsigned)valve_bits, interval_days, adapter);
 
     return n < dst_size ? n : 0;
   }

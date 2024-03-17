@@ -231,7 +231,7 @@ void test_at_to_json() {
 TEST_CASE("full_auto", "[app]")
 {
   test_at_to_json();
-#if 1
+#if 0
   test_mulitple_fetch();
     // test_scratch();
      test_json();

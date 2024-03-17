@@ -1,6 +1,8 @@
 #include <full_auto/automatic_timer.hh>
 #include <key_value_store/kvs_wrapper.h>
 
+#include <cstdio>
+
 static constexpr char kvs_name[] = "full_auto";
 
 bool AutoTimer::save_this(const char *key) {
@@ -28,18 +30,30 @@ bool AutoTimer::restore_this(const char *key) {
 }
 
 template<typename T>
-int to_json_tmpl(char *buf, size_t buf_size, int &obj_ct, T *arr, size_t arr_size) {
-  int bi = 0;
+int to_json_tmpl(char *buf, size_t buf_size, int &obj_ct, int &rel_obj_idx, T *arr, size_t arr_size, const char *key) {
   const int leave_space = 150;
-  for (int &i = obj_ct; leave_space < (buf_size - bi) && i < arr_size; ++i) {
+  if (!(0 <= rel_obj_idx && rel_obj_idx < arr_size && leave_space < buf_size))
+    return 0;
+
+  int bi = 0;
+  int key_len = 0;
+  const int old_rel_obj_idx = rel_obj_idx;
+
+  if (rel_obj_idx == 0) {
+    bi += key_len = snprintf(buf + bi, buf_size - bi, R"("%s":)", key);
+  }
+
+  for (int &i = rel_obj_idx; leave_space < (buf_size - bi) && i < arr_size; ++i) {
     buf[bi++] = i == 0 ? '[' : ',';
     const auto &v = arr[i];
 
     if (v.flags.exists) {
       if (int br = v.to_json(buf + bi, buf_size - bi); br)
         bi += br;
-      else
-        return br - 1; // remove last comma (or bracket)
+      else {
+        --bi;  // remove last comma (or bracket)
+        goto done;
+      }
     } else {
       memcpy(&buf[bi], "null", 4), (bi += 4);
     }
@@ -50,60 +64,32 @@ int to_json_tmpl(char *buf, size_t buf_size, int &obj_ct, T *arr, size_t arr_siz
     }
   }
 
+  done: obj_ct += rel_obj_idx - old_rel_obj_idx;
   return bi;
 }
 
 int AutoTimer::to_json(char *buf, size_t buf_size, int &obj_ct) {
   int bi = 0;
-  const int leave_space = 150;
   const int TOTAL_OBJS = CONFIG_APP_NUMBER_OF_VALVES + CONFIG_APP_FA_MAX_VALVE_GROUPS + CONFIG_APP_FA_MAX_WEATHER_ADAPTERS;
-  if (obj_ct < 0)
-    return 0;  // EOF already reached
+  int obj_rel_idx = obj_ct;
+
+  if (obj_ct < 0) // Check EOF
+    return 0;
 
   if (obj_ct == 0)
     buf[bi++] = '{';
 
-  // 1st object: m_valves
-  int obj_rel_idx = obj_ct;
-
-  if (0 <= obj_rel_idx && obj_rel_idx < CONFIG_APP_NUMBER_OF_VALVES) {
-    int ct = obj_rel_idx;
-    if (ct == 0)
-      memcpy(buf + bi, R"("valves":)", 9), bi += 9;
-    bi += to_json_tmpl(buf + bi, buf_size - bi, ct, &m_valves[0], CONFIG_APP_NUMBER_OF_VALVES);
-    obj_ct += ct - obj_rel_idx;
-    if (leave_space < buf_size - bi)
-      return bi;
-  }
-
-
+  bi += to_json_tmpl(buf + bi, buf_size - bi, obj_ct, obj_rel_idx, &m_valves[0], CONFIG_APP_NUMBER_OF_VALVES, "valves");
   obj_rel_idx -= CONFIG_APP_NUMBER_OF_VALVES;
 
-  if (0 <= obj_rel_idx && obj_rel_idx < CONFIG_APP_FA_MAX_VALVE_GROUPS) {
-    int ct = obj_rel_idx;
-    if (ct == 0)
-      memcpy(buf + bi, R"("valve_groups":)", 15), bi += 15;
-    bi += to_json_tmpl(buf + bi, buf_size - bi, ct, &m_valveGroups[0], CONFIG_APP_FA_MAX_VALVE_GROUPS);
-    obj_ct += ct - obj_rel_idx;
-    if (leave_space < buf_size - bi)
-      return bi;
-  }
-
+  bi += to_json_tmpl(buf + bi, buf_size - bi, obj_ct, obj_rel_idx, &m_valveGroups[0], CONFIG_APP_FA_MAX_VALVE_GROUPS, "valve_groups");
   obj_rel_idx -= CONFIG_APP_FA_MAX_VALVE_GROUPS;
 
-  if (0 <= obj_rel_idx && obj_rel_idx < CONFIG_APP_FA_MAX_WEATHER_ADAPTERS) {
-    int ct = obj_rel_idx;
-    if (ct == 0)
-      memcpy(buf + bi, R"("adapters":)", 11), bi += 11;
-    bi += to_json_tmpl(buf + bi, buf_size - bi, ct, &m_adapters[0], CONFIG_APP_FA_MAX_WEATHER_ADAPTERS);
-    obj_ct += ct - obj_rel_idx;
-    if (ct == 0)
-      bi -= 11; // remove key again
-  }
+  bi += to_json_tmpl(buf + bi, buf_size - bi, obj_ct, obj_rel_idx, &m_adapters[0], CONFIG_APP_FA_MAX_WEATHER_ADAPTERS, "adapters");
 
   if (obj_ct >= TOTAL_OBJS) {
-    obj_ct = -1; // signal we are done
     buf[bi - 1] = '}';
+    obj_ct = -1; // Set EOF
   }
 
   return bi;
