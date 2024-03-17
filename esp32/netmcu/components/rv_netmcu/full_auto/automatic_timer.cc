@@ -64,7 +64,11 @@ int to_json_tmpl(char *buf, size_t buf_size, int &obj_ct, int &rel_obj_idx, T *a
     }
   }
 
-  done: obj_ct += rel_obj_idx - old_rel_obj_idx;
+  done: auto objs_done = rel_obj_idx - old_rel_obj_idx;
+  if (!objs_done && key_len)
+    bi -= key_len;
+
+  obj_ct += objs_done;
   return bi;
 }
 
