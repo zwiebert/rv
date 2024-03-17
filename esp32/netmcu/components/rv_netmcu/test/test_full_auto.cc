@@ -215,9 +215,25 @@ void test_mulitple_fetch() {
   }
 }
 
+void test_at_to_json() {
+  static AutoTimer at;
+  static char buf[256];
+  const auto buf_size = sizeof buf;
+  static int obj_ct;
+  static int br;
+  for (int i=0; i < 10 && 0 <= obj_ct; ++i) {
+    br = at.to_json(buf, buf_size, obj_ct);
+    buf[br] = '\0';
+    D(cout << "br: " << br << "json: " << buf << "\n");
+  }
+}
+
 TEST_CASE("full_auto", "[app]")
 {
+  test_at_to_json();
+#if 1
   test_mulitple_fetch();
     // test_scratch();
      test_json();
+#endif
 }

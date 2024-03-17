@@ -11,5 +11,5 @@ endif()
 idf_component_register(SRC_DIRS "."
                        INCLUDE_DIRS "." ../include 
                        PRIV_INCLUDE_DIRS ../ ../include/app
-                       REQUIRES rv_netmcu unity txtio)
+                       REQUIRES rv_netmcu unity txtio net_http_server)
 

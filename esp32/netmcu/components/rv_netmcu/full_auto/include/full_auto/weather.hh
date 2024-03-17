@@ -1,6 +1,6 @@
 #pragma once
 
-#include <webapp/content.h>
+#include <net_http_server/content.hh>
 /**
  * \brief  call this once at each full hour (+-5min).
  *
@@ -15,7 +15,7 @@ public:
 private:
   static constexpr unsigned OUR_NMB_FILES = 1;
   struct FileData {
-  int bytes_read = 0;
+  int objects_read = 0;
   bool is_open = false; // FIXME: only one open file allowed for now
   } m_file_data[OUR_NMB_FILES];
 };

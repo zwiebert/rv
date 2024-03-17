@@ -38,19 +38,19 @@ struct WeatherAdapter {
 
   char name[CONFIG_APP_FA_NAMES_MAX_LEN] = "";
   struct {
-    bool exists;   ///< to mark as non existent flat value in array
+    bool exists = false;   ///< to mark as non existent flat value in array
   } flags;
   float d_temp, d_wind, d_humi, d_clouds;
 
 public:
-  bool to_json(char *dst, size_t dst_size) {
+  int to_json(char *dst, size_t dst_size) const {
     auto n = snprintf(dst, dst_size, //
         R"({"name":"%s","flags":{"exists":%d},"temp":%g,"wind":%g,"humi":%g,"clouds":%g})", //
         name, //
         flags.exists,
         d_temp, d_wind, d_humi, d_clouds);
 
-    return n < dst_size;
+    return n < dst_size ? n : 0;
   }
   bool from_json(const char *json);
 };

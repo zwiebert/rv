@@ -31,6 +31,9 @@ public:
   auto adapters_end() {
     return std::end(m_adapters);
   }
+
+public:
+  int to_json(char *buf, size_t buf_size, int &obj_ct);
 private:
   SingleValve m_valves[CONFIG_APP_NUMBER_OF_VALVES];
   ValveGroup m_valveGroups[CONFIG_APP_FA_MAX_VALVE_GROUPS];

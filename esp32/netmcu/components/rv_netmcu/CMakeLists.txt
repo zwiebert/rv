@@ -51,8 +51,8 @@ idf_component_register(
                    app_mqtt/include stm32_com/include app_http_server/include app_settings/include full_auto/include
 		   #full_auto/include
     REQUIRES app_config cli firmware_update uout utils_debug utils_misc utils_time weather webapp key_value_store
-    PRIV_REQUIRES app_update cli config_kvs driver esp_event esp_netif key_value_store lwip
-                  main_loop mbedtls net net_http_server net_mqtt nvs_flash protobuf stm32 storage txtio uout utils_debug
+    PRIV_REQUIRES app_update cli config_kvs driver esp_event esp_netif key_value_store lwip net_http_server
+                  main_loop mbedtls net  net_mqtt nvs_flash protobuf stm32 storage txtio uout utils_debug
                   utils_misc utils_time jsmn
     EMBED_TXTFILES app_misc/ca_cert.pem
 )

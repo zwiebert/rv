@@ -14,6 +14,10 @@ bool fa_poll_weather_full_hour() {
 }
 
 #include <full_auto/single_valve.hh>
+#include <full_auto/automatic_timer.hh>
+
+
+static AutoTimer at;
 
 int FaContentReader::open(const char *name, const char *query) {
   int fd = 0;
@@ -33,16 +37,7 @@ int FaContentReader::read(int fd, char *buf, unsigned buf_size) {
   if (!fda.is_open)
     return -1;
 
-  if (fda.bytes_read)
-    return 0; // EOF
-
-  SingleValve sv;
-  if (sv.to_json(buf, buf_size)) {
-    fda.bytes_read = strlen(buf);
-    return fda.bytes_read;
-  }
-
-  return -1;
+  return at.to_json(buf, buf_size, fda.objects_read);
 }
 int FaContentReader::close(int fd) {
   if (fd != 0)
