@@ -33,7 +33,24 @@ public:
   }
 
 public:
+
+  /**
+   * \brief  reads member objects in JSON format
+   *
+   * This is called from a read function which will call it multiple times until all data was read
+   *
+   * \param buf       buffer.
+   * \param buf_size  should at least 250 bytes
+   * \param obj_ct    holds the state (where we were at return). Needs to passed unchanged to next call.
+   *                  obj_ct holds the number of objects
+   *                  if obj_ct is -1 (EOF), the function does nothing
+   *
+   * \return          returns the number of bytes written to buf
+   *                  returns 0 for EOF or if buffer was not large enough
+   * .
+   */
   int to_json(char *buf, size_t buf_size, int &obj_ct);
+
 private:
   SingleValve m_valves[CONFIG_APP_NUMBER_OF_VALVES];
   ValveGroup m_valveGroups[CONFIG_APP_FA_MAX_VALVE_GROUPS];
