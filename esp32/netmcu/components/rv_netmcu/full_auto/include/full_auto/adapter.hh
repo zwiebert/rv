@@ -53,6 +53,6 @@ public:
     return n < dst_size ? n : 0;
   }
   bool from_json(const char *json);
-  bool from_json(JsmnBase::Iterator it);
+  bool from_json(JsmnBase::Iterator &it);
 };
 

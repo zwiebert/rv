@@ -9,31 +9,31 @@
 #include <cstdlib>
 #include <cassert>
 
-using jp = Jsmn<100>;
-using jpit = jp::Iterator;
+
 
 bool WeatherAdapter::from_json(const char *json) {
-  auto jsmn = jp(json);
+  auto jsmn = Jsmn<32>(json);
 
   if (!jsmn)
     return false;
 
-  return from_json(jsmn.begin());
+  auto it = jsmn.begin();
+  return from_json(it);
 }
 
-bool WeatherAdapter::from_json(JsmnBase::Iterator it) {
+bool WeatherAdapter::from_json(JsmnBase::Iterator &it) {
 
-  using tok_processObj_funT = bool (*)(WeatherAdapter &adapter, jpit &it);
+  using tok_processObj_funT = bool (*)(WeatherAdapter &adapter, JsmnBase::Iterator &it);
   static const tok_processObj_funT tok_processRootChilds_funs[] = { //
 
-      [](WeatherAdapter &adapter, jpit &it) -> bool { // Process object: main
+      [](WeatherAdapter &adapter, JsmnBase::Iterator &it) -> bool { // Process object: flags
         if (it.keyIsEqual("flags", JSMN_OBJECT)) {
           auto count = it[1].size;
           for (it += 2; count > 0 && it; --count) {
             if (it.getValue(adapter.flags.exists, "exists")) {
               it += 2;
             } else {
-              jp::skip_key_and_value(it);
+              JsmnBase::skip_key_and_value(it);
             }
           }
           return true;
@@ -42,8 +42,8 @@ bool WeatherAdapter::from_json(JsmnBase::Iterator it) {
 
       },
 
-      [](WeatherAdapter &adapter, jpit &it) -> bool { // Throw away unwanted objects
-        return jp::skip_key_and_value(it);
+      [](WeatherAdapter &adapter, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
+        return JsmnBase::skip_key_and_value(it);
       } };
 
   if (it->type == JSMN_OBJECT) { // root object
@@ -67,27 +67,28 @@ bool WeatherAdapter::from_json(JsmnBase::Iterator it) {
 }
 
 bool SingleValve::from_json(const char *json) {
-  auto jsmn = jp(json);
+  auto jsmn = Jsmn<32>(json);
 
   if (!jsmn)
     return false;
 
-  return from_json(jsmn.begin());
+  auto it = jsmn.begin();
+  return from_json(it);
 }
 
-bool SingleValve::from_json(JsmnBase::Iterator it) {
+bool SingleValve::from_json(JsmnBase::Iterator &it) {
 
-  using tok_processObj_funT = bool (*)(SingleValve &valve, jpit &it);
+  using tok_processObj_funT = bool (*)(SingleValve &valve, JsmnBase::Iterator &it);
   static const tok_processObj_funT tok_processRootChilds_funs[] = { //
 
-      [](SingleValve &valve, jpit &it) -> bool { // Process object: main
+      [](SingleValve &valve, JsmnBase::Iterator &it) -> bool { // Process object: flags
         if (it.keyIsEqual("flags", JSMN_OBJECT)) {
           auto count = it[1].size;
           for (it += 2; count > 0 && it; --count) {
             if (it.getValue(valve.flags.active, "active") || it.getValue(valve.flags.exists, "exists") || it.getValue(valve.flags.has_adapter, "has_adapter")) {
               it += 2;
             } else {
-              jp::skip_key_and_value(it);
+              JsmnBase::skip_key_and_value(it);
             }
           }
           return true;
@@ -96,10 +97,9 @@ bool SingleValve::from_json(JsmnBase::Iterator it) {
 
       },
 
-      [](SingleValve &valve, jpit &it) -> bool { // Throw away unwanted objects
-        return jp::skip_key_and_value(it);
+      [](SingleValve &valve, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
+        return JsmnBase::skip_key_and_value(it);
       } };
-
 
   if (it->type == JSMN_OBJECT) { // root object
     auto count = it->size;
@@ -122,27 +122,28 @@ bool SingleValve::from_json(JsmnBase::Iterator it) {
 }
 
 bool ValveGroup::from_json(const char *json) {
-  auto jsmn = jp(json);
+  auto jsmn = Jsmn<32>(json);
 
   if (!jsmn)
     return false;
 
-  return from_json(jsmn.begin());
+  auto it = jsmn.begin();
+  return from_json(it);
 }
 
-bool ValveGroup::from_json(JsmnBase::Iterator it) {
+bool ValveGroup::from_json(JsmnBase::Iterator &it) {
 
-  using tok_processObj_funT = bool (*)(ValveGroup &group, jpit &it);
+  using tok_processObj_funT = bool (*)(ValveGroup &group, JsmnBase::Iterator &it);
   static const tok_processObj_funT tok_processRootChilds_funs[] = { //
 
-      [](ValveGroup &group, jpit &it) -> bool { // Process object: main
+      [](ValveGroup &group, JsmnBase::Iterator &it) -> bool { // Process object: flags
         if (it.keyIsEqual("flags", JSMN_OBJECT)) {
           auto count = it[1].size;
           for (it += 2; count > 0 && it; --count) {
             if (it.getValue(group.flags.active, "active") || it.getValue(group.flags.exists, "exists") || it.getValue(group.flags.has_adapter, "has_adapter")) {
               it += 2;
             } else {
-              jp::skip_key_and_value(it);
+              JsmnBase::skip_key_and_value(it);
             }
           }
           return true;
@@ -151,8 +152,8 @@ bool ValveGroup::from_json(JsmnBase::Iterator it) {
 
       },
 
-      [](ValveGroup &group, jpit &it) -> bool { // Throw away unwanted objects
-        return jp::skip_key_and_value(it);
+      [](ValveGroup &group, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
+        return JsmnBase::skip_key_and_value(it);
       } };
 
   if (it->type == JSMN_OBJECT) { // root object
