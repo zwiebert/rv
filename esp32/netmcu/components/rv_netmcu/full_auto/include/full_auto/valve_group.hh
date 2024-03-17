@@ -1,6 +1,7 @@
 #pragma once
 
 #include "adapter.hh"
+#include "jsmn/jsmn_iterate.hh"
 #include <string>
 #include <list>
 
@@ -27,4 +28,5 @@ struct ValveGroup {
     return n < dst_size ? n : 0;
   }
   bool from_json(const char *json);
+  bool from_json(JsmnBase::Iterator it);
 };

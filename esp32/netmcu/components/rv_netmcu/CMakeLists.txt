@@ -43,17 +43,18 @@ if(CONFIG_APP_USE_WEATHER_AUTO OR TEST_HOST)
      full_auto/automatic_timer.cc
      full_auto/from_json.cc
   )
+set(incdirs ${incdirs} full_auto/include)
 endif()
 
 idf_component_register(
     SRCS ${srcs}
-    INCLUDE_DIRS . app_cli/include app_misc/include app_net/include app_uout/include 
-                   app_mqtt/include stm32_com/include app_http_server/include app_settings/include full_auto/include
+    INCLUDE_DIRS . ${incdirs} app_cli/include app_misc/include app_net/include app_uout/include 
+                   app_mqtt/include stm32_com/include app_http_server/include app_settings/include 
 		   #full_auto/include
-    REQUIRES app_config cli firmware_update uout utils_debug utils_misc utils_time weather webapp key_value_store
+    REQUIRES app_config cli firmware_update uout utils_debug utils_misc utils_time weather jsmn webapp key_value_store
     PRIV_REQUIRES app_update cli config_kvs driver esp_event esp_netif key_value_store lwip net_http_server
                   main_loop mbedtls net  net_mqtt nvs_flash protobuf stm32 storage txtio uout utils_debug
-                  utils_misc utils_time jsmn
+                  utils_misc utils_time 
     EMBED_TXTFILES app_misc/ca_cert.pem
 )
  

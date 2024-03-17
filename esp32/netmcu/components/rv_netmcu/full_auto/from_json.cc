@@ -18,6 +18,11 @@ bool WeatherAdapter::from_json(const char *json) {
   if (!jsmn)
     return false;
 
+  return from_json(jsmn.begin());
+}
+
+bool WeatherAdapter::from_json(JsmnBase::Iterator it) {
+
   using tok_processObj_funT = bool (*)(WeatherAdapter &adapter, jpit &it);
   static const tok_processObj_funT tok_processRootChilds_funs[] = { //
 
@@ -41,7 +46,6 @@ bool WeatherAdapter::from_json(const char *json) {
         return jp::skip_key_and_value(it);
       } };
 
-  auto it = jsmn.begin();
   if (it->type == JSMN_OBJECT) { // root object
     auto count = it->size;
     for (++it; count > 0 && it; --count) {
@@ -68,6 +72,11 @@ bool SingleValve::from_json(const char *json) {
   if (!jsmn)
     return false;
 
+  return from_json(jsmn.begin());
+}
+
+bool SingleValve::from_json(JsmnBase::Iterator it) {
+
   using tok_processObj_funT = bool (*)(SingleValve &valve, jpit &it);
   static const tok_processObj_funT tok_processRootChilds_funs[] = { //
 
@@ -91,7 +100,7 @@ bool SingleValve::from_json(const char *json) {
         return jp::skip_key_and_value(it);
       } };
 
-  auto it = jsmn.begin();
+
   if (it->type == JSMN_OBJECT) { // root object
     auto count = it->size;
     for (++it; count > 0 && it; --count) {
@@ -118,6 +127,11 @@ bool ValveGroup::from_json(const char *json) {
   if (!jsmn)
     return false;
 
+  return from_json(jsmn.begin());
+}
+
+bool ValveGroup::from_json(JsmnBase::Iterator it) {
+
   using tok_processObj_funT = bool (*)(ValveGroup &group, jpit &it);
   static const tok_processObj_funT tok_processRootChilds_funs[] = { //
 
@@ -141,7 +155,6 @@ bool ValveGroup::from_json(const char *json) {
         return jp::skip_key_and_value(it);
       } };
 
-  auto it = jsmn.begin();
   if (it->type == JSMN_OBJECT) { // root object
     auto count = it->size;
     for (++it; count > 0 && it; --count) {

@@ -1,12 +1,16 @@
 #include "web_content.hh"
 #include "app_cli/cli_app.h"
-#include <full_auto/weather.hh>
+#ifdef CONFIG_APP_USE_WEATHER_AUTO
+#include "full_auto/weather.hh"
+#endif
 
 
 #include <iterator>
 #include <cstring>
 
+#ifdef CONFIG_APP_USE_WEATHER_AUTO
 static FaContentReader fa_content_reader;
+#endif
 static FileContentReader file_content_reader;
 
 static const struct file_map uri_file_map[] = { //
@@ -19,9 +23,9 @@ static const struct file_map uri_file_map[] = { //
 #ifdef CONFIG_APP_USE_HTTP_SERVE_CSS_MAP
         { .uri = "/f/css/wapp.css.map", .type = "application/json", .wc =  wapp_css_map_gz_fm  }, //
 #endif
-
+#ifdef CONFIG_APP_USE_WEATHER_AUTO
         { .uri = "/f/data/auto", .type = "application/json", .wc =  {  }, .content_reader = &fa_content_reader }, //
-
+#endif
         { .uri = "/f/cli/help/config", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmConfig } }, //
         { .uri = "/f/cli/help/mcu", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmMcu } }, //
         { .uri = "/f/cli/help/help", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmHelp } }, //

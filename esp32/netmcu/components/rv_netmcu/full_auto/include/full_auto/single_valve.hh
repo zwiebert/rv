@@ -3,6 +3,7 @@
 #include "adapter.hh"
 #include <cstring>
 #include <cstdio>
+#include "jsmn/jsmn_iterate.hh"
 
 const int MAX_DRY_DAYS = 30;
 
@@ -31,4 +32,5 @@ struct SingleValve {
     return n < dst_size ? n : 0;
   }
   bool from_json(const char *json);
+  bool from_json(JsmnBase::Iterator it);
 };

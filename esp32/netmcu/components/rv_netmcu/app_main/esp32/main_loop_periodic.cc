@@ -6,8 +6,9 @@
 
 #include "main.h"
 #include <cli/cli.h>
+#ifdef CONFIG_APP_USE_WEATHER_AUTO
 #include "full_auto/weather.hh"
-
+#endif
 #include <app_settings/config.h>
 #include "utils_misc/int_macros.h"
 #include "utils_misc/int_types.h"

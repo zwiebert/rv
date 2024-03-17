@@ -1,7 +1,7 @@
 #pragma once
 
 #include <weather/weather_data.hh>
-
+#include "jsmn/jsmn_iterate.hh"
 #include <string>
 
 struct location_data {
@@ -53,5 +53,6 @@ public:
     return n < dst_size ? n : 0;
   }
   bool from_json(const char *json);
+  bool from_json(JsmnBase::Iterator it);
 };
 
