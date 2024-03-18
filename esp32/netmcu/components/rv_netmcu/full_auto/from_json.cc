@@ -22,10 +22,10 @@ bool WeatherAdapter::from_json(const char *json) {
 
 bool WeatherAdapter::from_json(JsmnBase::Iterator &it) {
 
-  using tok_processObj_funT = bool (*)(WeatherAdapter &self, JsmnBase::Iterator &it);
+  using tok_processObj_funT = bool (*)(self_type &self, JsmnBase::Iterator &it);
   static const tok_processObj_funT tok_processRootChilds_funs[] = { //
 
-      [](WeatherAdapter &self, JsmnBase::Iterator &it) -> bool { // Process object: flags
+      [](self_type &self, JsmnBase::Iterator &it) -> bool { // Process object: flags
         if (it.keyIsEqual("flags", JSMN_OBJECT)) {
           auto count = it[1].size;
           for (it += 2; count > 0 && it; --count) {
@@ -41,7 +41,16 @@ bool WeatherAdapter::from_json(JsmnBase::Iterator &it) {
 
       },
 
-      [](WeatherAdapter &self, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
+      [](self_type &self, JsmnBase::Iterator &it) -> bool {
+        if (it.getValue(self.name, "name") || it.getValue(self.d_temp, "temp") || it.getValue(self.d_wind, "wind") || it.getValue(self.d_humi, "humi")
+            || it.getValue(self.d_clouds, "clouds")) {
+          it += 2;
+          return true;
+        }
+        return false;
+      },
+
+      [](self_type &self, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
         return JsmnBase::skip_key_and_value(it);
       } };
 
@@ -49,14 +58,10 @@ bool WeatherAdapter::from_json(JsmnBase::Iterator &it) {
     auto count = it->size;
     for (++it; count > 0 && it; --count) {
       assert(it->type == JSMN_STRING);
-      if (it.getValue(name, "name") || it.getValue(d_temp, "temp") || it.getValue(d_wind, "wind") || it.getValue(d_humi, "humi")
-          || it.getValue(d_clouds, "clouds")) {
-        it += 2;
-      } else {
-        for (auto fun : tok_processRootChilds_funs) {
-          if (fun(*this, it))
-            break;
-        }
+      for (auto fun : tok_processRootChilds_funs) {
+        if (fun(*this, it))
+          break;
+
       }
     }
     return true;
@@ -96,6 +101,15 @@ bool SingleValve::from_json(JsmnBase::Iterator &it) {
 
       },
 
+      [](self_type &self, JsmnBase::Iterator &it) -> bool {
+        if (it.getValue(self.name, "name") || it.getValue(self.dry_days, "dry_days") || it.getValue(self.duration_s, "duration_s")
+            || it.getValue(self.flow_lph, "flow_lph") || it.getValue(self.adapter, "adapter")) {
+          it += 2;
+          return true;
+        }
+        return false;
+      },
+
       [](SingleValve &self, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
         return JsmnBase::skip_key_and_value(it);
       } };
@@ -104,15 +118,11 @@ bool SingleValve::from_json(JsmnBase::Iterator &it) {
     auto count = it->size;
     for (++it; count > 0 && it; --count) {
       assert(it->type == JSMN_STRING);
-      if (it.getValue(name, "name") || it.getValue(dry_days, "dry_days") || it.getValue(duration_s, "duration_s") || it.getValue(flow_lph, "flow_lph")
-          || it.getValue(adapter, "adapter")) {
-        it += 2;
-      } else {
-        for (auto fun : tok_processRootChilds_funs) {
-          if (fun(*this, it))
-            break;
-        }
+      for (auto fun : tok_processRootChilds_funs) {
+        if (fun(*this, it))
+          break;
       }
+
     }
     return true;
   }
@@ -132,10 +142,10 @@ bool ValveGroup::from_json(const char *json) {
 
 bool ValveGroup::from_json(JsmnBase::Iterator &it) {
 
-  using tok_processObj_funT = bool (*)(ValveGroup &self, JsmnBase::Iterator &it);
+  using tok_processObj_funT = bool (*)(self_type &self, JsmnBase::Iterator &it);
   static const tok_processObj_funT tok_processRootChilds_funs[] = { //
 
-      [](ValveGroup &self, JsmnBase::Iterator &it) -> bool { // Process object: flags
+      [](self_type &self, JsmnBase::Iterator &it) -> bool { // Process object: flags
         if (it.keyIsEqual("flags", JSMN_OBJECT)) {
           auto count = it[1].size;
           for (it += 2; count > 0 && it; --count) {
@@ -151,7 +161,16 @@ bool ValveGroup::from_json(JsmnBase::Iterator &it) {
 
       },
 
-      [](ValveGroup &self, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
+      [](self_type &self, JsmnBase::Iterator &it) -> bool {
+        if (it.getValue(self.name, "name") || it.getValue(self.valve_bits, "valve_bits") || it.getValue(self.interval_days, "interval_days")
+            || it.getValue(self.adapter, "adapter")) {
+          it += 2;
+          return true;
+        }
+        return false;
+      },
+
+      [](self_type &self, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
         return JsmnBase::skip_key_and_value(it);
       } };
 
@@ -159,14 +178,11 @@ bool ValveGroup::from_json(JsmnBase::Iterator &it) {
     auto count = it->size;
     for (++it; count > 0 && it; --count) {
       assert(it->type == JSMN_STRING);
-      if (it.getValue(name, "name") || it.getValue(valve_bits, "valve_bits") || it.getValue(interval_days, "interval_days")
-          || it.getValue(adapter, "adapter")) {
-        it += 2;
-      } else {
-        for (auto fun : tok_processRootChilds_funs) {
-          if (fun(*this, it))
-            break;
-        }
+
+      for (auto fun : tok_processRootChilds_funs) {
+        if (fun(*this, it))
+          break;
+
       }
     }
     return true;
@@ -186,11 +202,10 @@ bool AutoTimer::from_json(const char *json) {
 }
 
 bool AutoTimer::from_json(JsmnBase::Iterator &it) {
-
-  using tok_processObj_funT = bool (*)(AutoTimer &self, JsmnBase::Iterator &it);
+  using tok_processObj_funT = bool (*)(self_type &self, JsmnBase::Iterator &it);
   static const tok_processObj_funT tok_processRootChilds_funs[] = { //
 
-      [](AutoTimer &self, JsmnBase::Iterator &it) -> bool {
+      [](self_type &self, JsmnBase::Iterator &it) -> bool {
         if (it.keyIsEqual("valves", JSMN_ARRAY)) {
           ++it; // skip key token
           auto count = it->size; // get array size
@@ -198,7 +213,7 @@ bool AutoTimer::from_json(JsmnBase::Iterator &it) {
           for (int i = 0; i < count; ++i) {
             if (it->type == JSMN_OBJECT) {
               self.m_valves[i].from_json(it);
-            } else  if (it->type == JSMN_PRIMITIVE) {
+            } else if (it->type == JSMN_PRIMITIVE) {
               self.m_valves[i] = SingleValve();
               ++it;
             } else {
@@ -211,7 +226,7 @@ bool AutoTimer::from_json(JsmnBase::Iterator &it) {
         return false;
       },
 
-      [](AutoTimer &self, JsmnBase::Iterator &it) -> bool {
+      [](self_type &self, JsmnBase::Iterator &it) -> bool {
         if (it.keyIsEqual("valve_groups", JSMN_ARRAY)) {
           ++it; // skip key token
           auto count = it->size; // get array size
@@ -219,7 +234,7 @@ bool AutoTimer::from_json(JsmnBase::Iterator &it) {
           for (int i = 0; i < count; ++i) {
             if (it->type == JSMN_OBJECT) {
               self.m_valveGroups[i].from_json(it);
-            } else  if (it->type == JSMN_PRIMITIVE) {
+            } else if (it->type == JSMN_PRIMITIVE) {
               self.m_valveGroups[i] = ValveGroup();
               ++it;
             } else {
@@ -232,7 +247,7 @@ bool AutoTimer::from_json(JsmnBase::Iterator &it) {
         return false;
       },
 
-      [](AutoTimer &self, JsmnBase::Iterator &it) -> bool {
+      [](self_type &self, JsmnBase::Iterator &it) -> bool {
         if (it.keyIsEqual("adapters", JSMN_ARRAY)) {
           ++it; // skip key token
           auto count = it->size; // get array size
@@ -240,7 +255,7 @@ bool AutoTimer::from_json(JsmnBase::Iterator &it) {
           for (int i = 0; i < count; ++i) {
             if (it->type == JSMN_OBJECT) {
               self.m_adapters[i].from_json(it);
-            } else  if (it->type == JSMN_PRIMITIVE) {
+            } else if (it->type == JSMN_PRIMITIVE) {
               self.m_adapters[i] = WeatherAdapter();
               ++it;
             } else {
@@ -253,7 +268,15 @@ bool AutoTimer::from_json(JsmnBase::Iterator &it) {
         return false;
       },
 
-      [](AutoTimer &self, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
+      [](self_type &self, JsmnBase::Iterator &it) -> bool {
+        if (it.getValue(self.name, "name")) {
+          it += 2;
+          return true;
+        }
+        return false;
+      },
+
+      [](self_type &self, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
         return JsmnBase::skip_key_and_value(it);
       } };
 
@@ -261,13 +284,9 @@ bool AutoTimer::from_json(JsmnBase::Iterator &it) {
     auto count = it->size;
     for (++it; count > 0 && it; --count) {
       assert(it->type == JSMN_STRING);
-      if (it.getValue(name, "name")) {
-        it += 2;
-      } else {
-        for (auto fun : tok_processRootChilds_funs) {
-          if (fun(*this, it))
-            break;
-        }
+      for (auto fun : tok_processRootChilds_funs) {
+        if (fun(*this, it))
+          break;
       }
     }
     return true;

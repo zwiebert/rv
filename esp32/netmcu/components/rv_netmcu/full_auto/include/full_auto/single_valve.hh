@@ -8,6 +8,8 @@
 const int MAX_DRY_DAYS = 30;
 
 struct SingleValve {
+  using self_type = SingleValve;
+
   char name[CONFIG_APP_FA_NAMES_MAX_LEN] = "";
 
   struct {

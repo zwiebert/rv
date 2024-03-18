@@ -6,6 +6,8 @@
 #include <list>
 
 struct ValveGroup {
+  using self_type = ValveGroup;
+
   char name[CONFIG_APP_FA_NAMES_MAX_LEN] = "";  // Rasen/Blumen/Töpfe/Hecke/etc
 
   struct {

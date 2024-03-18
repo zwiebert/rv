@@ -10,6 +10,7 @@
 #include <iterator>
 
 class AutoTimer {
+  using self_type = AutoTimer;
 public:
   bool save_this(const char *key);
   bool restore_this(const char *key);

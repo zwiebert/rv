@@ -11,6 +11,8 @@ struct location_data {
  * \brief Adapt Irrigation according to weather data
  */
 struct WeatherAdapter {
+  using self_type = WeatherAdapter;
+
   WeatherAdapter() :
       d_temp(0.06), d_wind(0.001), d_humi(0.01), d_clouds(0.01) {
   }
