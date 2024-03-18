@@ -3,13 +3,7 @@
 #include <test_runner.h>
 #endif
 
-#include <cstdlib>
-#include <unistd.h>
-
-  template<typename T>
-  T rando(T low_limit, T high_limit) {
-    return low_limit + static_cast<T>(rand()) / (static_cast<T>(RAND_MAX / (high_limit - low_limit)));
-  }
+#include <debug/dbg.h>
 
 
 #include "../full_auto/automatic_timer.cc"
@@ -228,10 +222,36 @@ void test_at_to_json() {
   }
 }
 
+const int TOTAL_OBJS = CONFIG_APP_NUMBER_OF_VALVES + CONFIG_APP_FA_MAX_VALVE_GROUPS + CONFIG_APP_FA_MAX_WEATHER_ADAPTERS;
+
+void test_at_from_json() {
+  static AutoTimer at1, at2;
+  static const auto buf_size = 10000;
+  static char buf1[buf_size], buf2[buf_size];
+  int obj_ct1 = 0, obj_ct2 = 0;
+
+
+  at1.dev_random_fill_data();
+  TEST_ASSERT_LESS_THAN_INT_MESSAGE(buf_size, at1.to_json(buf1, buf_size, obj_ct1), "Read JSON into large buffer in one go");
+  TEST_ASSERT_LESS_THAN_INT_MESSAGE(0, obj_ct1, "Reach EOF because of large enough buffer");
+  TEST_ASSERT_EQUAL_INT_MESSAGE( -TOTAL_OBJS, obj_ct1,  "Make TOTAL_OBJS in JSON by at.to_json()");
+  D(cout << "json in buf1: <" << buf1 << ">\n");
+
+  TEST_ASSERT_TRUE_MESSAGE(at2.from_json(buf1), "Read back JSON we produced above");
+  TEST_ASSERT_LESS_THAN_INT_MESSAGE(buf_size, at2.to_json(buf2, buf_size, obj_ct2), "Read JSON into large buffer in one go");
+  TEST_ASSERT_LESS_THAN_INT_MESSAGE(0, obj_ct2, "Reach EOF because of large enough buffer");
+  TEST_ASSERT_EQUAL_INT_MESSAGE( -TOTAL_OBJS, obj_ct2,  "Make TOTAL_OBJS in JSON by at.to_json()");
+  D(cout << "json in buf2: <" << buf2 << ">\n");
+
+  TEST_ASSERT_EQUAL_STRING_MESSAGE(buf1, buf2, "Write at1 to buf1, Read buf1 into at2. Write at2 to buf2");
+
+}
+
 TEST_CASE("full_auto", "[app]")
 {
-  test_at_to_json();
+  test_at_from_json();
 #if 0
+  test_at_to_json();
   test_mulitple_fetch();
     // test_scratch();
      test_json();

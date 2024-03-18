@@ -93,8 +93,29 @@ int AutoTimer::to_json(char *buf, size_t buf_size, int &obj_ct) {
 
   if (obj_ct >= TOTAL_OBJS) {
     buf[bi - 1] = '}';
-    obj_ct = -1; // Set EOF
+    obj_ct *= -1; // Set EOF (minus sign on obj_ct)
   }
 
   return bi;
+}
+
+#include <debug/dbg.h>
+
+void AutoTimer::dev_random_fill_data() {
+  for (auto &o : m_valves) {
+    snprintf(o.name, sizeof o.name, "ObjectName-%d", rando(100, 1000));
+    o.flags.exists = rando(0, 2);
+    o.flags.active = rando(0, 2);
+    o.flags.has_adapter = rando(0, 2);
+  }
+  for (auto &o : m_valveGroups) {
+    snprintf(o.name, sizeof o.name, "ObjectName-%d", rando(100, 1000));
+    o.flags.exists = rando(0, 2);
+    o.flags.active = rando(0, 2);
+    o.flags.has_adapter = rando(0, 2);
+  }
+  for (auto &o : m_adapters) {
+    snprintf(o.name, sizeof o.name, "ObjectName-%d", rando(100, 1000));
+    o.flags.exists = rando(0, 2);
+  }
 }

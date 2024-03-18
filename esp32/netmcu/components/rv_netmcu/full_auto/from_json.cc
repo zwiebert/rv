@@ -22,14 +22,14 @@ bool WeatherAdapter::from_json(const char *json) {
 
 bool WeatherAdapter::from_json(JsmnBase::Iterator &it) {
 
-  using tok_processObj_funT = bool (*)(WeatherAdapter &adapter, JsmnBase::Iterator &it);
+  using tok_processObj_funT = bool (*)(WeatherAdapter &self, JsmnBase::Iterator &it);
   static const tok_processObj_funT tok_processRootChilds_funs[] = { //
 
-      [](WeatherAdapter &adapter, JsmnBase::Iterator &it) -> bool { // Process object: flags
+      [](WeatherAdapter &self, JsmnBase::Iterator &it) -> bool { // Process object: flags
         if (it.keyIsEqual("flags", JSMN_OBJECT)) {
           auto count = it[1].size;
           for (it += 2; count > 0 && it; --count) {
-            if (it.getValue(adapter.flags.exists, "exists")) {
+            if (it.getValue(self.flags.exists, "exists")) {
               it += 2;
             } else {
               JsmnBase::skip_key_and_value(it);
@@ -41,7 +41,7 @@ bool WeatherAdapter::from_json(JsmnBase::Iterator &it) {
 
       },
 
-      [](WeatherAdapter &adapter, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
+      [](WeatherAdapter &self, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
         return JsmnBase::skip_key_and_value(it);
       } };
 
@@ -77,14 +77,14 @@ bool SingleValve::from_json(const char *json) {
 
 bool SingleValve::from_json(JsmnBase::Iterator &it) {
 
-  using tok_processObj_funT = bool (*)(SingleValve &valve, JsmnBase::Iterator &it);
+  using tok_processObj_funT = bool (*)(SingleValve &self, JsmnBase::Iterator &it);
   static const tok_processObj_funT tok_processRootChilds_funs[] = { //
 
-      [](SingleValve &valve, JsmnBase::Iterator &it) -> bool { // Process object: flags
+      [](SingleValve &self, JsmnBase::Iterator &it) -> bool { // Process object: flags
         if (it.keyIsEqual("flags", JSMN_OBJECT)) {
           auto count = it[1].size;
           for (it += 2; count > 0 && it; --count) {
-            if (it.getValue(valve.flags.active, "active") || it.getValue(valve.flags.exists, "exists") || it.getValue(valve.flags.has_adapter, "has_adapter")) {
+            if (it.getValue(self.flags.active, "active") || it.getValue(self.flags.exists, "exists") || it.getValue(self.flags.has_adapter, "has_adapter")) {
               it += 2;
             } else {
               JsmnBase::skip_key_and_value(it);
@@ -96,7 +96,7 @@ bool SingleValve::from_json(JsmnBase::Iterator &it) {
 
       },
 
-      [](SingleValve &valve, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
+      [](SingleValve &self, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
         return JsmnBase::skip_key_and_value(it);
       } };
 
@@ -132,14 +132,14 @@ bool ValveGroup::from_json(const char *json) {
 
 bool ValveGroup::from_json(JsmnBase::Iterator &it) {
 
-  using tok_processObj_funT = bool (*)(ValveGroup &group, JsmnBase::Iterator &it);
+  using tok_processObj_funT = bool (*)(ValveGroup &self, JsmnBase::Iterator &it);
   static const tok_processObj_funT tok_processRootChilds_funs[] = { //
 
-      [](ValveGroup &group, JsmnBase::Iterator &it) -> bool { // Process object: flags
+      [](ValveGroup &self, JsmnBase::Iterator &it) -> bool { // Process object: flags
         if (it.keyIsEqual("flags", JSMN_OBJECT)) {
           auto count = it[1].size;
           for (it += 2; count > 0 && it; --count) {
-            if (it.getValue(group.flags.active, "active") || it.getValue(group.flags.exists, "exists") || it.getValue(group.flags.has_adapter, "has_adapter")) {
+            if (it.getValue(self.flags.active, "active") || it.getValue(self.flags.exists, "exists") || it.getValue(self.flags.has_adapter, "has_adapter")) {
               it += 2;
             } else {
               JsmnBase::skip_key_and_value(it);
@@ -151,7 +151,7 @@ bool ValveGroup::from_json(JsmnBase::Iterator &it) {
 
       },
 
-      [](ValveGroup &group, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
+      [](ValveGroup &self, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
         return JsmnBase::skip_key_and_value(it);
       } };
 
@@ -176,7 +176,7 @@ bool ValveGroup::from_json(JsmnBase::Iterator &it) {
 }
 
 bool AutoTimer::from_json(const char *json) {
-  auto jsmn = Jsmn<32>(json);
+  auto jsmn = JsmnBase(json, 1024);
 
   if (!jsmn)
     return false;
@@ -190,15 +190,63 @@ bool AutoTimer::from_json(JsmnBase::Iterator &it) {
   using tok_processObj_funT = bool (*)(AutoTimer &self, JsmnBase::Iterator &it);
   static const tok_processObj_funT tok_processRootChilds_funs[] = { //
 
-      [](AutoTimer &self, JsmnBase::Iterator &it) -> bool { // Process object: flags
+      [](AutoTimer &self, JsmnBase::Iterator &it) -> bool {
         if (it.keyIsEqual("valves", JSMN_ARRAY)) {
-          auto count = it[1].size;
+          ++it; // skip key token
+          auto count = it->size; // get array size
+          ++it; // skip array token
           for (int i = 0; i < count; ++i) {
             if (it->type == JSMN_OBJECT) {
               self.m_valves[i].from_json(it);
-            } else {
+            } else  if (it->type == JSMN_PRIMITIVE) {
               self.m_valves[i] = SingleValve();
+              ++it;
+            } else {
+              JsmnBase::skip_key_and_value(it);
             }
+
+          }
+          return true;
+        }
+        return false;
+      },
+
+      [](AutoTimer &self, JsmnBase::Iterator &it) -> bool {
+        if (it.keyIsEqual("valve_groups", JSMN_ARRAY)) {
+          ++it; // skip key token
+          auto count = it->size; // get array size
+          ++it; // skip array token
+          for (int i = 0; i < count; ++i) {
+            if (it->type == JSMN_OBJECT) {
+              self.m_valveGroups[i].from_json(it);
+            } else  if (it->type == JSMN_PRIMITIVE) {
+              self.m_valveGroups[i] = ValveGroup();
+              ++it;
+            } else {
+              JsmnBase::skip_key_and_value(it);
+            }
+
+          }
+          return true;
+        }
+        return false;
+      },
+
+      [](AutoTimer &self, JsmnBase::Iterator &it) -> bool {
+        if (it.keyIsEqual("adapters", JSMN_ARRAY)) {
+          ++it; // skip key token
+          auto count = it->size; // get array size
+          ++it; // skip array token
+          for (int i = 0; i < count; ++i) {
+            if (it->type == JSMN_OBJECT) {
+              self.m_adapters[i].from_json(it);
+            } else  if (it->type == JSMN_PRIMITIVE) {
+              self.m_adapters[i] = WeatherAdapter();
+              ++it;
+            } else {
+              JsmnBase::skip_key_and_value(it);
+            }
+
           }
           return true;
         }

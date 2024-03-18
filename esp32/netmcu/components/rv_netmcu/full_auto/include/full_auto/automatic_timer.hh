@@ -60,4 +60,6 @@ private:
   SingleValve m_valves[CONFIG_APP_NUMBER_OF_VALVES];
   ValveGroup m_valveGroups[CONFIG_APP_FA_MAX_VALVE_GROUPS];
   WeatherAdapter m_adapters[CONFIG_APP_FA_MAX_WEATHER_ADAPTERS];
+public:
+  void dev_random_fill_data();
 };
