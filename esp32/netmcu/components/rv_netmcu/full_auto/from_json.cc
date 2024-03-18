@@ -1,6 +1,7 @@
 #include <full_auto/adapter.hh>
 #include <full_auto/single_valve.hh>
 #include <full_auto/valve_group.hh>
+#include <full_auto/automatic_timer.hh>
 
 #include "jsmn/jsmn_iterate.hh"
 #include <utils_misc/allocate_buffer.hh>
@@ -8,8 +9,6 @@
 #include <cstring>
 #include <cstdlib>
 #include <cassert>
-
-
 
 bool WeatherAdapter::from_json(const char *json) {
   auto jsmn = Jsmn<32>(json);
@@ -176,3 +175,55 @@ bool ValveGroup::from_json(JsmnBase::Iterator &it) {
   return false;
 }
 
+bool AutoTimer::from_json(const char *json) {
+  auto jsmn = Jsmn<32>(json);
+
+  if (!jsmn)
+    return false;
+
+  auto it = jsmn.begin();
+  return from_json(it);
+}
+
+bool AutoTimer::from_json(JsmnBase::Iterator &it) {
+
+  using tok_processObj_funT = bool (*)(AutoTimer &self, JsmnBase::Iterator &it);
+  static const tok_processObj_funT tok_processRootChilds_funs[] = { //
+
+      [](AutoTimer &self, JsmnBase::Iterator &it) -> bool { // Process object: flags
+        if (it.keyIsEqual("valves", JSMN_ARRAY)) {
+          auto count = it[1].size;
+          for (int i = 0; i < count; ++i) {
+            if (it->type == JSMN_OBJECT) {
+              self.m_valves[i].from_json(it);
+            } else {
+              self.m_valves[i] = SingleValve();
+            }
+          }
+          return true;
+        }
+        return false;
+      },
+
+      [](AutoTimer &self, JsmnBase::Iterator &it) -> bool { // Throw away unwanted objects
+        return JsmnBase::skip_key_and_value(it);
+      } };
+
+  if (it->type == JSMN_OBJECT) { // root object
+    auto count = it->size;
+    for (++it; count > 0 && it; --count) {
+      assert(it->type == JSMN_STRING);
+      if (it.getValue(name, "name")) {
+        it += 2;
+      } else {
+        for (auto fun : tok_processRootChilds_funs) {
+          if (fun(*this, it))
+            break;
+        }
+      }
+    }
+    return true;
+  }
+
+  return false;
+}

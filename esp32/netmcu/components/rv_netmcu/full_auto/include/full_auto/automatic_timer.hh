@@ -3,6 +3,7 @@
 #include "adapter.hh"
 #include "single_valve.hh"
 #include "valve_group.hh"
+#include "jsmn/jsmn_iterate.hh"
 
 #include <string>
 #include <list>
@@ -51,7 +52,11 @@ public:
    */
   int to_json(char *buf, size_t buf_size, int &obj_ct);
 
+  bool from_json(const char *json);
+  bool from_json(JsmnBase::Iterator &it);
+
 private:
+  char name[CONFIG_APP_FA_NAMES_MAX_LEN] = "";
   SingleValve m_valves[CONFIG_APP_NUMBER_OF_VALVES];
   ValveGroup m_valveGroups[CONFIG_APP_FA_MAX_VALVE_GROUPS];
   WeatherAdapter m_adapters[CONFIG_APP_FA_MAX_WEATHER_ADAPTERS];
