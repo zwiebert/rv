@@ -31,6 +31,11 @@ esp32_build_cmd := idf.py -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p
 esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
 
 
+SHELL := /bin/bash
+esp32_export_script ?= $(HOME)/esp/esp-idf/export.sh
+idf_target:
+	(source $(esp32_export_script) && make $(my_target))
+
 .PHONY: http_proxy http_clean
 http_proxy:
 	cd components/webapp && make proxy

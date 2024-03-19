@@ -4,9 +4,8 @@
 #include <cstring>
 #include <cstdio>
 #include <ctime>
-#include "jsmn/jsmn_iterate.hh"
-
-const int MAX_DRY_DAYS = 30;
+#include <jsmn/jsmn_iterate.hh>
+#include <utils_time/ut_constants.hh>
 
 struct MagValve {
   using self_type = MagValve;
@@ -16,14 +15,15 @@ struct MagValve {
   struct {
     bool active = false;  ///< to mark as active (or not disabled temporarily)
     bool exists = false;   ///< to mark as non existent flat value in array
-    bool has_adapter = false; ///< to mark the usage of an adapter
+    bool is_due = false;
   } flags;
 
   struct {
     unsigned duration_s = 0;
-    int8_t adapter = -1; ///< adapt duration
+    int8_t adapter = 0; ///< adapt duration (0 should always be a neutral adapter)
     unsigned flow_lph = 0;
     int priority = 0;
+    unsigned interval_s = SECS_PER_DAY;
   } attr;
 
   struct {
@@ -33,16 +33,15 @@ struct MagValve {
 
 
   int to_json(char *dst, size_t dst_size) const {
-#if 0
     auto n = snprintf(dst, dst_size, //
-        R"({"name":"%s","flags":{"active":%d,"exists":%d,"has_adapter":%d},"dry_days":%d,"duration_s":%d,"flow_lph":%d,"adapter":%d})", //
+        R"({"name":"%s","flags":{"active":%d,"exists":%d,"is_due":%d},"attr":{"duration_s":%d,"adapter":%d,"flow_lph":%d,"priority":%d,"interval_s":%d},"state":{"last_time_wet":%llu,"next_time_scheduled":%llu}})", //
         name, //
-        flags.active, flags.exists, flags.has_adapter, //
-        dry_days, duration_s, flow_lph, adapter);
+        flags.active, flags.exists, flags.is_due, //
+        attr.duration_s, attr.adapter, attr.flow_lph, attr.priority, attr.interval_s, //
+        (long long unsigned)state.last_time_wet, (long long unsigned)state.next_time_scheduled //
+    );
 
     return n < dst_size ? n : 0;
-#else
-    return 0;
   }
 
 

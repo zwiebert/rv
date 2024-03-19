@@ -10,7 +10,7 @@
 #define DT(x) x
 
 static Weather_Provider_Owm weather_provider;
-Weather_Irrigation weather_irrigation(&weather_provider);
+static Weather_Irrigation weather_irrigation(&weather_provider);
 static AutoTimer at(&weather_irrigation);
 
 static auto &wi = weather_irrigation;
