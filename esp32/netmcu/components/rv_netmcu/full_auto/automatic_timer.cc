@@ -119,3 +119,9 @@ void AutoTimer::dev_random_fill_data() {
     o.flags.exists = rando(0, 2);
   }
 }
+
+
+void AutoTimer::todo_loop() {
+  // TODO: the factor should be valve dependent (dry_time as parameter)
+  m_f = m_wi ? m_wi->get_simple_irrigation_factor(36) : 1.0;
+}

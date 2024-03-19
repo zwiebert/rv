@@ -3,6 +3,7 @@
 #include "adapter.hh"
 #include "single_valve.hh"
 #include "valve_group.hh"
+#include "weather/weather_irrigation.hh"
 #include "jsmn/jsmn_iterate.hh"
 
 #include <string>
@@ -11,10 +12,19 @@
 
 class AutoTimer {
   using self_type = AutoTimer;
+
+public:
+  AutoTimer(Weather_Irrigation *wi = nullptr): m_wi(wi) {
+  }
+
 public:
   bool save_this(const char *key);
   bool restore_this(const char *key);
 
+public:
+  void todo_loop();
+
+public:
   auto valves_begin() {
     return std::begin(m_valves);
   }
@@ -61,6 +71,9 @@ private:
   SingleValve m_valves[CONFIG_APP_NUMBER_OF_VALVES];
   ValveGroup m_valveGroups[CONFIG_APP_FA_MAX_VALVE_GROUPS];
   WeatherAdapter m_adapters[CONFIG_APP_FA_MAX_WEATHER_ADAPTERS];
+private:
+  Weather_Irrigation *m_wi = nullptr;
+  float m_f = 1.0;
 public:
   void dev_random_fill_data();
 };

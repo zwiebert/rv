@@ -181,30 +181,44 @@ export function fetchWithTimeout(url, data, timeout) {
   });
 }
 
-function gitTags_fetch() {
-  const tag_url = "https://api.github.com/repos/zwiebert/tronferno-mcu-bin/tags";
+
+export function getFile(url) {
   const fetch_data = {
     method: "GET",
     cache: "no-cache",
     headers: {},
     referrer: "no-referrer",
-    //body: JSON.stringify(data),
   };
-  return fetch(tag_url, fetch_data)
-    .then((response) => {
-      if (!response.ok) {
-        console.log("error");
-        throw new Error("network repsonse failed");
-      }
-      return response.json();
-    })
 
-    .then((json) => httpResp.gitTags_handleResponse(json))
-
-    .catch((error) => {
-      console.log("error: httpFetch.http_postRequest(): ", error);
-    });
+  return fetch(url, fetch_data).then((response) => {
+    if (response.ok) {
+      response.text().then((text) => {
+        httpResp.http_handleDocResponses(url, text);
+      });
+    }
+  });
 }
+
+
+export function getJson(url) {
+  const fetch_data = {
+    method: "GET",
+    cache: "no-cache",
+    headers: {},
+    referrer: "no-referrer",
+  };
+
+  return fetch(url, fetch_data).then((response) => {
+    if (response.ok) {
+      response.json()
+      .then((json) => httpResp.http_handleResponses(json))
+      .catch((error) => {
+        console.log("error: http_postRequest(): ", error);
+      });
+    }
+  });
+}
+
 
 function add_kv(root, cmd, key, val) {
   if (!(cmd in root)) root[cmd] = {};

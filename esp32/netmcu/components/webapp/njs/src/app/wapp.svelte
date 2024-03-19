@@ -10,6 +10,7 @@
   import PaneFirmwareStm32 from "../panes/firmware_stm32.svelte";
   import PaneZoneMaintenance from "../panes/zone_maintenance.svelte";
   import PaneZoneTimers from "../panes/zone_timers.svelte";
+  import PaneFullAuto from "../panes/full_auto.svelte";
   import { TabIdx } from "../store/app_state.js";
 
   $: tabIdxMain = $TabIdx["main"] || 0;
@@ -24,7 +25,7 @@
 
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
   <div class="navtab-main">
-    <NavTabs nav_tabs={[$_('app.nav_main_rv'), $_('app.nav_main_config'), 'Maintenance', 'Timers']} name="main" />
+    <NavTabs nav_tabs={[$_('app.nav_main_rv'), $_('app.nav_main_config'), 'Maintenance', 'Timers', 'Auto']} name="main" />
   </div>
   {#if !tabIdxMain}
     <PaneRvControl />
@@ -50,5 +51,7 @@
     <PaneZoneMaintenance />
   {:else if tabIdxMain === 3}
      <PaneZoneTimers />
+  {:else if tabIdxMain === 4}
+     <PaneFullAuto />
   {/if}
 </div>

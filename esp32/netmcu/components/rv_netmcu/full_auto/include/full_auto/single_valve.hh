@@ -34,6 +34,16 @@ struct SingleValve {
     return n < dst_size ? n : 0;
   }
 
+
+  /*
+   * \brief parse JSON and then calls this->from_json(JsmnBase::Iterator &it)
+   */
   bool from_json(const char *json);
+
+  /*
+   * \brief     initialize *this by default ctor and then get any values from parsed JSON object
+   * \param it  Iterator pointing to the object token (JSMN_OBJECT)
+   * \return
+   */
   bool from_json(JsmnBase::Iterator &it);
 };

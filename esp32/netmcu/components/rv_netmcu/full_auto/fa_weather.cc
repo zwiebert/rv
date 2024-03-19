@@ -2,10 +2,16 @@
 
 #include "weather/weather_irrigation.hh"
 #include "weather/weather_provider_owm.hh"
+#include <full_auto/single_valve.hh>
+#include <full_auto/automatic_timer.hh>
+
 #include <cstring>
+
+#define DT(x) x
 
 static Weather_Provider_Owm weather_provider;
 Weather_Irrigation weather_irrigation(&weather_provider);
+static AutoTimer at(&weather_irrigation);
 
 static auto &wi = weather_irrigation;
 
@@ -13,11 +19,11 @@ bool fa_poll_weather_full_hour() {
   return wi.fetch_and_store_weather_data();
 }
 
-#include <full_auto/single_valve.hh>
-#include <full_auto/automatic_timer.hh>
 
 
-static AutoTimer at;
+void fa_loop() {
+  at.todo_loop();
+}
 
 int FaContentReader::open(const char *name, const char *query) {
   int fd = 0;
@@ -26,6 +32,8 @@ int FaContentReader::open(const char *name, const char *query) {
     return -1;
 
   fda.is_open = true;
+
+  DT(at.dev_random_fill_data()); // XXX
 
   return fd;
 }

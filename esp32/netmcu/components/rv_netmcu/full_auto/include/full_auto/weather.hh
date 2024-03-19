@@ -1,6 +1,10 @@
 #pragma once
 
 #include <net_http_server/content.hh>
+
+
+void fa_loop();
+
 /**
  * \brief  call this once at each full hour (+-5min).
  *

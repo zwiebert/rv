@@ -24,7 +24,7 @@ static const struct file_map uri_file_map[] = { //
         { .uri = "/f/css/wapp.css.map", .type = "application/json", .wc =  wapp_css_map_gz_fm  }, //
 #endif
 #ifdef CONFIG_APP_USE_WEATHER_AUTO
-        { .uri = "/f/data/auto", .type = "application/json", .wc =  {  }, .content_reader = &fa_content_reader }, //
+        { .uri = "/f/data/auto.json", .type = "application/json", .wc =  {  }, .content_reader = &fa_content_reader }, //
 #endif
         { .uri = "/f/cli/help/config", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmConfig } }, //
         { .uri = "/f/cli/help/mcu", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmMcu } }, //

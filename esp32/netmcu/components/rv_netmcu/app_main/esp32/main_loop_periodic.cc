@@ -63,6 +63,8 @@ void tmr_loopPeriodic_start() {
         }
       });
     }
+
+    mainLoop_callFun(fa_loop);
 #endif
 
     // forced daily reboot
