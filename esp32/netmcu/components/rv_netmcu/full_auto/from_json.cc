@@ -1,6 +1,4 @@
 #include <full_auto/adapter.hh>
-#include <full_auto/single_valve.hh>
-#include <full_auto/valve_group.hh>
 #include <full_auto/automatic_timer.hh>
 
 #include "jsmn/jsmn_iterate.hh"

@@ -12,7 +12,6 @@
 
 #include "weather/weather_irrigation.hh"
 #include "weather/weather_provider_owm.hh"
-#include <full_auto/single_valve.hh>
 #include <full_auto/automatic_timer.hh>
 
 #define DEBUG
