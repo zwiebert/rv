@@ -24,9 +24,6 @@
 #include <string.h>
 #include <sys/select.h>
 
-#define printf(...) io_printf_v(vrb3, __VA_ARGS__)
-#define perror(s)   io_printf_v(vrb3, "%s: %s\n", s, strerror(errno))
-
 #ifdef DISTRIBUTION
 #define D(x)
 #define DD(x)
@@ -40,6 +37,8 @@
 
 #define BUF_SIZE 512
 static char line[BUF_SIZE];
+
+#define logtag "com_task"
 
 
 class UoutWriterStm32 final: public UoutWriter {
@@ -62,7 +61,7 @@ static bool stmTrace_checkCommandLine(const char *line) {
   if (strncmp(TRACE_MARKER, line, TRACE_MARKER_LEN) != 0)
     return false;
 
-  printf("stm32:%s\n", line);
+  D(ESP_LOGI(logtag, "trace command line: <%s>", line));
   return true;
 }
 
@@ -86,7 +85,7 @@ static void do_work() {
   if (stmTrace_checkCommandLine(line))
     return;
 
-  D(printf("stm32com:recv: <%s>\n", line));
+  D(ESP_LOGI(logtag, "from_rv: received: <%s>", line));
 
 
 
@@ -102,11 +101,11 @@ static void do_work() {
     LockGuard lock(cli_mutex);
 
     UoutWriterStm32 td { static_cast<so_target_bits>(SO_TGT_FLAG_JSON)};
-    DD(printf("stm32com:from_rv:request: <%s>\n", json));
+    DD(ESP_LOGI(logtag, "from_rv:request: <%s>", json));
     cli_process_json(json, td);
 
     if (td.sj().get_json()) {
-      DD(printf("stm32com:from_netmcu:response: <%s>\n", td.sj().get_json()));
+      DD(ESP_LOGI(logtag, "from_netmcu:response: <%s>", td.sj().get_json()));
       LockGuard lock(stm32_mutex);
 
       stm32_write(td.sj().get_json(), strlen(td.sj().get_json()));
@@ -121,7 +120,7 @@ static void do_work() {
     reply = strstr(line, "{\"update\":");
   if (reply) {
     uoCb_publish_wsJson(reply);
-    DD(printf("stm32com:recv:####REPLY####: <%s>\n", reply));
+    D(ESP_LOGI(logtag, "to_webstream:reply: <%s>", reply));
   }
 }
 

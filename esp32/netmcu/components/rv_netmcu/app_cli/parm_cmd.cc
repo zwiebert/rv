@@ -14,13 +14,14 @@
 #include <uout/cli_out.h>
 #include "app_misc/opt_map.hh"
 #include "debug/dbg.h"
+#include <debug/log.h>
 #include "utils_misc/int_macros.h"
 #include <stdio.h>
 
 #include <stm32/stm32.h>
 
 
-
+#define logtag "parm_cmd"
 
 #ifndef DISTRIBUTION
 #define D(x) x
@@ -60,7 +61,7 @@ process_parmCmd(clpar p[], int len, const class UoutWriter &td) {
 
   for (arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;
-    db_printf("key=%s, val=%s\n", key, val);
+    D(db_logi(logtag, "key=%s, val=%s", key, val));
 
     if (!key)
       return -1;
@@ -117,7 +118,7 @@ process_parmCmd(clpar p[], int len, const class UoutWriter &td) {
   if (hasCmdLine) {
     buf[strlen(buf) - 1] = '\0';
     strcat(buf, "}}\n");
-    dbg_vpf(db_printf("cmd2stm32: <%s>\n", buf));
+    D(db_logi(logtag, "to_stm32: <%s>", buf));
     LockGuard lock(stm32_mutex);
     stm32_write(buf, strlen(buf));
   }

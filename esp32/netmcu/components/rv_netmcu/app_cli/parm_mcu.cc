@@ -14,9 +14,13 @@
 #include "stm32/stm32_ota.h"
 #include "app_misc/ota.h"
 #include "net/http_client.h"
-#include "debug/dbg.h"
+#include "debug/log.h"
 #include <app_uout/so_msg.h>
 #include "key_value_store/kvs_wrapper.h"
+
+
+//FIXME: It makes no sense to use debug print or log functions for CLI feedback (not even visible in telnet)
+#define logtag "parm_mcu"
 
 #define KEY_BOOT_COUNT "boot-count"
 
@@ -52,7 +56,7 @@ process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
     } else if (strcmp(key, KEY_BOOT_COUNT) == 0 && *val == '?') {
       soMsg_MCU_BOOT_COUNT(td);
     } else if (strcmp(key, "rbl") == 0) {
-       db_printf("run bootloader\n");
+       db_logi(logtag, "run bootloader");
        stm32_runBootLoader();
     } else if (strcmp(key, "blstart") == 0) {
       stm32Bl_doStart();
@@ -61,14 +65,14 @@ process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
     } else if (strcmp(key, "blget") == 0) {
       stm32Bl_get();
     } else if (strcmp(key, "rfw") == 0) {
-       db_printf("run firmware\n");
+       db_logi(logtag, "run firmware");
        stm32_runFirmware();
     } else if (strcmp(key, "dlrvbin") == 0) {
-      db_printf("download rv.bin\n");
+      db_logi(logtag, "download rv.bin");
       stm32Ota_firmwareDownload(val, STM32_FW_FILE_NAME);
       // mcu dlrvbin=http://192.168.1.70:8000/rv.bin;
     } else if (strcmp(key, "rvota") == 0) {
-      db_printf("download rv.bin\n");
+      db_logi(logtag, "download rv.bin");
       if (stm32Ota_firmwareDownload(val, STM32_FW_FILE_NAME)) {
         if (stm32Ota_firmwareUpdate(STM32_FW_FILE_NAME)) {
         } else {
@@ -95,9 +99,9 @@ process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
 #endif
       } else {
 #ifdef DISTRIBUTION
-        db_printf("forbidden: ota update from given URL\n");
+        db_logi(logtag, "forbidden: ota update from given URL");
 #else
-        db_printf("doing ota update from given URL\n");
+        db_logi(logtag, "doing ota update from given URL");
         stm32ota_doUpdate(val);
 #endif
       }
@@ -114,15 +118,15 @@ process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
         app_doFirmwareUpdate(OTA_FWURL_BETA);
       } else {
 #ifdef DISTRIBUTION
-        db_printf("forbidden: ota update from given URL\n");
+        db_logi(logtag, "forbidden: ota update from given URL");
 #else
-        db_printf("doing ota update from given URL\n");
+        db_logi(logtag, "doing ota update from given URL");
         app_doFirmwareUpdate(val);
 #endif
       }
 #endif
     } else if (strcmp(key, "flrvbin") == 0) {
-       db_printf("flash rv.bin\n");
+       db_logi(logtag, "flash rv.bin");
        stm32Bl_writeMemoryFromBinFile("/spiffs/rv.bin", 0x8000000);
     } else if (strcmp(key, "flrv") == 0) {
       stm32Ota_firmwareUpdate(STM32_FW_FILE_NAME);

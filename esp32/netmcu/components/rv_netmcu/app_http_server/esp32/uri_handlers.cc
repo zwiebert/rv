@@ -97,10 +97,12 @@ static esp_err_t handle_uri_ws(httpd_req_t *req) {
 }
 #endif
 ////////////////////////// URI definitions ////////////////////////////////
-static const httpd_uri_t httpd_uris[] = { { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json }, { .uri = "/f/*", .method = HTTP_GET,
-    .handler = handle_uri_get_file }, { .uri = "/", .method = HTTP_GET, .handler = handle_uri_get_file },
+static const httpd_uri_t httpd_uris[] = { //
+    { .uri = "/cmd.json", .method = HTTP_POST, .handler = handle_uri_cmd_json }, //
+        { .uri = "/f/*", .method = HTTP_GET, .handler = handle_uri_get_file }, //
+        { .uri = "/", .method = HTTP_GET, .handler = handle_uri_get_file },
 #ifdef CONFIG_APP_USE_WS
-    { .uri = "/ws", .method = HTTP_GET, .handler = handle_uri_ws, .user_ctx = NULL, .is_websocket = true },
+        { .uri = "/ws", .method = HTTP_GET, .handler = handle_uri_ws, .user_ctx = NULL, .is_websocket = true },
 #endif
     };
 

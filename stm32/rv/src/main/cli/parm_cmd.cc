@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <stdlib.h>
 #include <cstring>
+#include <errno.h>
 
 #define warning_unknown_option(x)
 extern "C" void timer_set(int8_t channel);

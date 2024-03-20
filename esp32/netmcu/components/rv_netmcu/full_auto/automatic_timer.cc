@@ -1,7 +1,10 @@
 #include <full_auto/automatic_timer.hh>
 #include <key_value_store/kvs_wrapper.h>
-
 #include <cstdio>
+
+#include <debug/log.h>
+#define dbtag "full_auto"
+#define D(x) x
 
 static constexpr char kvs_name[] = "full_auto";
 
@@ -74,13 +77,14 @@ int to_json_tmpl(char *buf, size_t buf_size, int &obj_ct, int &rel_obj_idx, T *a
 
 int AutoTimer::to_json(char *buf, size_t buf_size, int &obj_ct) {
   int bi = 0;
-  int obj_rel_idx = obj_ct;
-
   if (obj_ct < 0) // Check EOF
     return 0;
-
   if (obj_ct == 0)
     buf[bi++] = '{';
+
+
+  int obj_rel_idx = obj_ct;
+
 
   bi += to_json_tmpl(buf + bi, buf_size - bi, obj_ct, obj_rel_idx, &m_magval[0], CONFIG_APP_NUMBER_OF_VALVES, "valves");
   obj_rel_idx -= CONFIG_APP_NUMBER_OF_VALVES;
@@ -105,7 +109,7 @@ void AutoTimer::dev_random_fill_data() {
     o.flags.exists = rando(0, 2);
     o.flags.active = rando(0, 2);
     o.state.last_time_wet = rando(tnow - SECS_PER_DAY * 7, tnow - SECS_PER_DAY);
-    o.state.next_time_scheduled = rando(tnow + SECS_PER_HOUR, tnow + SECS_PER_HOUR * 2);
+    //o.state.next_time_scheduled = rando(tnow + SECS_PER_HOUR, tnow + SECS_PER_HOUR * 2);
   }
   for (auto &o : m_adapters) {
     if (o.flags.read_only)
@@ -125,4 +129,12 @@ void AutoTimer::todo_loop() {
      mv.flags.is_due = should_valve_be_due(mv, time(0));
   }
   sort_magval_idxs();
+  D(db_logi(dbtag, "used_valves_count=%d, due_valves_count=%u", m_used_valves_count, m_due_valves_count));
+
+  for (auto ip : m_magval_due_idxs) {
+     auto &v = m_magval[ip.idx];
+     if (!v.flags.exists || !v.flags.is_due)
+       break;
+     D(db_logi(dbtag, "Schedule valve number %d (%s). prio=%d", ip.idx, v.name, ip.prio));
+  }
 }

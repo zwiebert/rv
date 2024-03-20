@@ -14,9 +14,12 @@
 #include "app_cli/cli_app.h"
 #include "app_mqtt/mqtt.h"
 #include "app_misc/kvstore.h"
-#include "debug/dbg.h"
+#include "debug/log.h"
 #include <ctype.h>
 #include <string.h>
+
+#define logtag "parm_kvs"
+#define D(x) x
 
 #define ENABLE_RESTART 1 // allow software reset
 
@@ -42,7 +45,7 @@ int process_parmKvs(clpar p[], int len, const class UoutWriter &td) {
   int arg_idx;
   int errors = 0;
 
-  dbg_vpf(db_printf("process_parmKvs()\n"));
+  D(db_logi(logtag, "process_parmKvs()"));
 
   soMsg_KVS_begin(td);
 

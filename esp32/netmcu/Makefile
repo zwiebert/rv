@@ -19,6 +19,10 @@ clean: esp32-clean http_clean
 export PATH := $(IDF_PYTHON_ENV_PATH)/bin:$(PATH) 
 
 
+
+env:
+	env | grep IDF
+
 ifdef V
 esp32_build_opt_verbose = -v
 endif
@@ -31,10 +35,19 @@ esp32_build_cmd := idf.py -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p
 esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
 
 
+#need bash for "source" command
 SHELL := /bin/bash
-esp32_export_script ?= $(HOME)/esp/esp-idf/export.sh
-idf_target:
-	(source $(esp32_export_script) && make $(my_target))
+#provide IDF_PATH if not in env
+export IDF_PATH ?= "$(HOME)/esp/esp-idf"
+.PHONY: idf_make
+#Rule for use in vscode, which does not inherit the idf exports
+#so we source $IDF_PAtH/export.sh for each run of make
+#
+#usage: make idf_target my_target=<target>
+#example: make idf_target my_target=esp32-all  (instead of make esp32-all)
+#
+idf_make:
+	(source "$(IDF_PATH)/export.sh" && make $(my_target))
 
 .PHONY: http_proxy http_clean
 http_proxy:
