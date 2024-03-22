@@ -30,27 +30,27 @@
 
 #define D(x)
 
-void soCfg_RTC(const class UoutWriter &td) {
+void soCfg_RTC(class UoutWriter &td) {
   char buf[64];
   if (rtc_get_by_string(buf)) {
     td.so().print(otok_strings[(int)otok::k_rtc], buf);
   }
 }
 
-void soCfg_NETWORK(const class UoutWriter &td) {
+void soCfg_NETWORK(class UoutWriter &td) {
 #ifdef CONFIG_APP_USE_NETWORK
   td.so().print(settings_get_optKeyStr(CB_NETWORK_CONNECTION),cfg_args_network[config_read_network_connection()]);
 #endif
 }
 
-void soCfg_TZ(const class UoutWriter &td) {
+void soCfg_TZ(class UoutWriter &td) {
 #ifdef USE_POSIX_TIME
   char buf[64];
   td.so().print(settings_get_optKeyStr(CB_TZ),config_read_tz(buf, sizeof buf));
 #endif
 }
 
-void soCfg_GPIO_PIN(const class UoutWriter &td, const int gpio_number) {
+void soCfg_GPIO_PIN(class UoutWriter &td, const int gpio_number) {
 #ifdef ACCESS_GPIO
   {
     char buf[64];
@@ -66,7 +66,7 @@ void soCfg_GPIO_PIN(const class UoutWriter &td, const int gpio_number) {
 #endif
 }
 
-void soCfg_GPIO_MODES(const class UoutWriter &td) {
+void soCfg_GPIO_MODES(class UoutWriter &td) {
 #ifdef ACCESS_GPIO
   {
     char buf[64];
@@ -91,7 +91,7 @@ void soCfg_GPIO_MODES(const class UoutWriter &td) {
 #endif
 }
 
-void soCfg_GPIO_MODES_AS_STRING(const class UoutWriter &td) {
+void soCfg_GPIO_MODES_AS_STRING(class UoutWriter &td) {
 #ifdef ACCESS_GPIO
   {
     int gpio_number;
@@ -111,7 +111,7 @@ void soCfg_GPIO_MODES_AS_STRING(const class UoutWriter &td) {
 }
 
 
-void soCfg_STM32_BOOTGPIO_INV(const class UoutWriter &td) {
+void soCfg_STM32_BOOTGPIO_INV(class UoutWriter &td) {
   td.so().print(settings_get_optKeyStr(CB_STM32_INV_BOOTPIN), config_read_stm32_inv_bootpin());
 }
 
@@ -148,15 +148,15 @@ void soCfg_STM32_BOOTGPIO_INV(const class UoutWriter &td) {
 
 #define D(x)
 
-void soCfg_begin(const class UoutWriter &td) {
+void soCfg_begin(class UoutWriter &td) {
   td.so().x_open("config");
 }
 
-void soCfg_end(const class UoutWriter &td) {
+void soCfg_end(class UoutWriter &td) {
   td.so().x_close();
 }
 
-void soCfg_all_net(const class UoutWriter &td) {
+void soCfg_all_net(class UoutWriter &td) {
   soCfg_NETWORK(td);
 #ifdef CONFIG_APP_USE_WLAN
   soCfg_WLAN_SSID(td);
@@ -184,11 +184,11 @@ void soCfg_all_net(const class UoutWriter &td) {
 #endif
 }
 
-void soCfg_all_rv(const class UoutWriter &td) {
+void soCfg_all_rv(class UoutWriter &td) {
   soCfg_STM32_BOOTGPIO_INV(td);
 }
 
-void soCfg_all_time(const class UoutWriter &td) {
+void soCfg_all_time(class UoutWriter &td) {
   soCfg_RTC(td);
 #ifdef USE_POSIX_TIME
   soCfg_TZ(td);
@@ -197,7 +197,7 @@ void soCfg_all_time(const class UoutWriter &td) {
   soCfg_DST(td);
 #endif
 }
-void soCfg_all(const class UoutWriter &td) {
+void soCfg_all(class UoutWriter &td) {
   soCfg_VERBOSE(td);
 
   soCfg_all_time(td);

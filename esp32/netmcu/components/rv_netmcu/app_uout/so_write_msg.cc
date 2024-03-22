@@ -23,28 +23,28 @@
 #include <string.h>
 #include <stdio.h>
 
-void soMsg_FW_START_MSG_PRINT(const class UoutWriter &td) {
+void soMsg_FW_START_MSG_PRINT(class UoutWriter &td) {
   so_print_startup_info();
 }
 
-void soMsg_STATUS_OK(const class UoutWriter &td) {
+void soMsg_STATUS_OK(class UoutWriter &td) {
   td.so().print("status", "ok");
 }
 
-void soMsg_STATUS_ERROR(const class UoutWriter &td) {
+void soMsg_STATUS_ERROR(class UoutWriter &td) {
   td.so().print("status", "error");
 }
 
-void soMsg_MCU_begin(const class UoutWriter &td) {
+void soMsg_MCU_begin(class UoutWriter &td) {
   td.so().x_open("mcu");
 }
 
-void soMsg_MCU_RUN_TIME(const class UoutWriter &td) {
+void soMsg_MCU_RUN_TIME(class UoutWriter &td) {
   td.so().print("run-time", run_time_s());
 }
 #ifdef MCU_ESP32
 #include "esp_ota_ops.h"
-void soMsg_MCU_VERSION(const class UoutWriter &td) {
+void soMsg_MCU_VERSION(class UoutWriter &td) {
   char buf[64];
   const esp_app_desc_t *ad = esp_app_get_description();
 
@@ -61,51 +61,51 @@ void soMsg_MCU_VERSION(const class UoutWriter &td) {
 }
 #endif
 
-void soMsg_MCU_OTA(const class UoutWriter &td, const char *url) {
+void soMsg_MCU_OTA(class UoutWriter &td, const char *url) {
 #ifdef USE_OTA
   td.so().print("ota-url", url);
 #endif
 }
-void soMsg_MCU_OTA_STATE(const class UoutWriter &td) {
+void soMsg_MCU_OTA_STATE(class UoutWriter &td) {
 #ifdef USE_OTA
     td.so().print("ota-state", ota_getState());
 #endif
 }
 
-void soMsg_MCU_STM32OTA(const class UoutWriter &td, const char *url) {
+void soMsg_MCU_STM32OTA(class UoutWriter &td, const char *url) {
 #ifdef USE_OTA
     td.so().print("stm32ota-url", url);
 #endif
 }
-void soMsg_MCU_STM32OTA_STATE(const class UoutWriter &td) {
+void soMsg_MCU_STM32OTA_STATE(class UoutWriter &td) {
 #ifdef USE_OTA
     td.so().print("stm32ota-state", stm32ota_getState());
 #endif
 }
 
-void soMsg_MCU_BOOT_COUNT(const class UoutWriter &td) {
+void soMsg_MCU_BOOT_COUNT(class UoutWriter &td) {
   extern i32 boot_counter;
   td.so().print("boot-count", boot_counter);
 }
 
-void soMsg_MCU_end(const class UoutWriter &td) {
+void soMsg_MCU_end(class UoutWriter &td) {
   td.so().x_close();
 }
 
 /////////////////////////////////////////////////////////////////////////////////
 
-void soMsg_KVS_begin(const class UoutWriter &td) {
+void soMsg_KVS_begin(class UoutWriter &td) {
   td.so().x_open("kvs");
 }
 
-void soMsg_KVS_ZN_SINGLE(const class UoutWriter &td, const char *key) {
+void soMsg_KVS_ZN_SINGLE(class UoutWriter &td, const char *key) {
   char buf[64];
   if (kvs_get_string(key, buf, sizeof buf)) {
     td.so().print(key, buf);
   }
 }
 
-void soMsg_KVS_ZN_ALL(const class UoutWriter &td, const char *keyBase) {
+void soMsg_KVS_ZN_ALL(class UoutWriter &td, const char *keyBase) {
   char buf[64];
   for (int i = 0; i < 14; ++i) {
     char key[16];
@@ -116,7 +116,7 @@ void soMsg_KVS_ZN_ALL(const class UoutWriter &td, const char *keyBase) {
   }
 }
 
-void soMsg_KVS_end(const class UoutWriter &td) {
+void soMsg_KVS_end(class UoutWriter &td) {
   td.so().x_close();
 }
 
@@ -125,25 +125,25 @@ void soMsg_KVS_end(const class UoutWriter &td) {
 
 
 /////////////////////////////////////////////////////////////////////////////////
-void soMsg_RVE_begin(const class UoutWriter &td) {
+void soMsg_RVE_begin(class UoutWriter &td) {
   td.so().x_open("rve");
 }
 
-void soMsg_RVE_PUMP(const class UoutWriter &td, const so_arg_on_t *state) {
+void soMsg_RVE_PUMP(class UoutWriter &td, const so_arg_on_t *state) {
   io_mqtt_publish_pump_status(state->on);
   td.so().print("pump", state->on);
 }
 
-void soMsg_RVE_RAIN(const class UoutWriter &td, const so_arg_on_t *state) {
+void soMsg_RVE_RAIN(class UoutWriter &td, const so_arg_on_t *state) {
   io_mqtt_publish_rain_sensor_status(state->on);
   td.so().print("rain", state->on);
 }
 
-void soMsg_RVE_PRESS_CTL(const class UoutWriter &td, const so_arg_on_t *state) {
+void soMsg_RVE_PRESS_CTL(class UoutWriter &td, const so_arg_on_t *state) {
   td.so().print("pc", state->on);
 }
 
-void soMsg_RVE_VALVES(const class UoutWriter &td, const so_arg_valves_t *valves) {
+void soMsg_RVE_VALVES(class UoutWriter &td, const so_arg_valves_t *valves) {
   td.so().print("valve_state", valves->state_bits);
   td.so().print("uo_evt_flag_valveChange", valves->changed_bits);
 
@@ -155,37 +155,37 @@ void soMsg_RVE_VALVES(const class UoutWriter &td, const so_arg_valves_t *valves)
   }
 }
 
-void soMsg_RVE_end(const class UoutWriter &td) {
+void soMsg_RVE_end(class UoutWriter &td) {
   td.so().x_close();
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-void soMsg_CFGPASSWD_OK(const class UoutWriter &td) {
+void soMsg_CFGPASSWD_OK(class UoutWriter &td) {
 // io_puts("password ok\n");
 }
-void soMsg_CFGPASSWD_WRONG(const class UoutWriter &td) {
+void soMsg_CFGPASSWD_WRONG(class UoutWriter &td) {
   io_puts("wrong config password\n");
 }
-void soMsg_CFGPASSWD_MISSING(const class UoutWriter &td) {
+void soMsg_CFGPASSWD_MISSING(class UoutWriter &td) {
   io_puts("missing config password\n");
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-void soMsg_cfgpasswd_ok(const class UoutWriter &td) {
+void soMsg_cfgpasswd_ok(class UoutWriter &td) {
   // td.write("password ok\n");
 }
-void soMsg_cfgpasswd_wrong(const class UoutWriter &td) {
+void soMsg_cfgpasswd_wrong(class UoutWriter &td) {
   td.write("wrong config password\n");
 }
 
-void soMsg_cfgpasswd_missing(const class UoutWriter &td) {
+void soMsg_cfgpasswd_missing(class UoutWriter &td) {
   td.write("missing config password\n");
 }
 
 
 /////////////////////////////////////////////////////////////////////////////////
 
-void soMsg_INET_PRINT_ADDRESS(const class UoutWriter &td) {
+void soMsg_INET_PRINT_ADDRESS(class UoutWriter &td) {
 #if defined CONFIG_APP_USE_LAN || defined CONFIG_APP_USE_WLAN
   char buf[20];
   ipnet_addr_as_string(buf, 20);
@@ -193,11 +193,11 @@ void soMsg_INET_PRINT_ADDRESS(const class UoutWriter &td) {
 #endif
 }
 
-void soMsg_PBUF_begin(const class UoutWriter &td) {
+void soMsg_PBUF_begin(class UoutWriter &td) {
   td.so().x_open("pbuf");
 }
 
-void soMsg_PBUF_KV64(const class UoutWriter &td, const so_arg_pbuf_t *pba) {
+void soMsg_PBUF_KV64(class UoutWriter &td, const so_arg_pbuf_t *pba) {
   char buf[64];
   size_t b64Len = 0;
   int err = mbedtls_base64_encode((uint8_t*) buf, sizeof buf, &b64Len, pba->buf, pba->buf_len);
@@ -207,7 +207,7 @@ void soMsg_PBUF_KV64(const class UoutWriter &td, const so_arg_pbuf_t *pba) {
   }
 }
 
-void soMsg_PBUF_end(const class UoutWriter &td) {
+void soMsg_PBUF_end(class UoutWriter &td) {
   td.so().x_close();
 }
 

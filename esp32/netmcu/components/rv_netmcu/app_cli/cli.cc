@@ -22,7 +22,7 @@
 
 bool cli_isJson;
 
-int process_parmHelp(clpar p[], int len, const class UoutWriter &td);
+int process_parmHelp(clpar p[], int len, class UoutWriter &td);
 
 const char cli_help_parmHelp[]  =
 "type 'help command;'  or 'help all;'\ncommands are: ";
@@ -65,8 +65,9 @@ bool cli_checkStm32CommandLine(char *line) {
     return false;
   }
   *terminator = '\0';
-  { LockGuard lock(cli_mutex); 
-    cli_process_cmdline(line, SO_TGT_ANY); //XXX: which target?
+  { LockGuard lock(cli_mutex);
+    auto td = UoutWriter(SO_TGT_ANY);
+    cli_process_cmdline(line, td); //XXX: which target?
   }
   return true;
 }
@@ -85,7 +86,7 @@ static bool cliApp_redirect_to_rv(char *json) {
   return false;
 }
 
-static bool cliApp_checkPassword(clpar p[], int len, const class UoutWriter &td) {
+static bool cliApp_checkPassword(clpar p[], int len, class UoutWriter &td) {
   if (len < 2)
     return true;
 

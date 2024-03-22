@@ -2,24 +2,24 @@
 
 class UoutWriter;
 
-void soCfg_all(const class UoutWriter &td);
-void soCfg_all_net(const class UoutWriter &td);
-void soCfg_all_rv(const class UoutWriter &td);
-void soCfg_all_time(const class UoutWriter &td);
+void soCfg_all(class UoutWriter &td);
+void soCfg_all_net(class UoutWriter &td);
+void soCfg_all_rv(class UoutWriter &td);
+void soCfg_all_time(class UoutWriter &td);
 
 
-void soCfg_BAUD(const class UoutWriter &td);
-void soCfg_RTC(const class UoutWriter &td);
-void soCfg_CU(const class UoutWriter &td);
-void soCfg_NETWORK(const class UoutWriter &td);
-void soCfg_TZ(const class UoutWriter &td);
-void soCfg_TIMEZONE(const class UoutWriter &td);
-void soCfg_DST(const class UoutWriter &td);
-void soCfg_GPIO_PIN(const class UoutWriter &td, int gpio_number);
-void soCfg_GPIO_MODES(const class UoutWriter &td);
-void soCfg_GPIO_MODES_AS_STRING(const class UoutWriter &td);
+void soCfg_BAUD(class UoutWriter &td);
+void soCfg_RTC(class UoutWriter &td);
+void soCfg_CU(class UoutWriter &td);
+void soCfg_NETWORK(class UoutWriter &td);
+void soCfg_TZ(class UoutWriter &td);
+void soCfg_TIMEZONE(class UoutWriter &td);
+void soCfg_DST(class UoutWriter &td);
+void soCfg_GPIO_PIN(class UoutWriter &td, int gpio_number);
+void soCfg_GPIO_MODES(class UoutWriter &td);
+void soCfg_GPIO_MODES_AS_STRING(class UoutWriter &td);
 
-void soCfg_begin(const class UoutWriter &td);
-void soCfg_end(const class UoutWriter &td);
+void soCfg_begin(class UoutWriter &td);
+void soCfg_end(class UoutWriter &td);
 
-void soCfg_STM32_BOOTGPIO_INV(const class UoutWriter &td);
+void soCfg_STM32_BOOTGPIO_INV(class UoutWriter &td);

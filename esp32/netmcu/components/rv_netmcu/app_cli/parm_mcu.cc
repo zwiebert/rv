@@ -41,7 +41,7 @@ static void kvs_print_keys(const char *name_space);
 
 
 int
-process_parmMcu(clpar p[], int len, const class UoutWriter &td) {
+process_parmMcu(clpar p[], int len, class UoutWriter &td) {
   int arg_idx;
   int error_count = 0;
 

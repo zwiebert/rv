@@ -31,7 +31,7 @@
 #include <iterator>
 #include <algorithm>
 
-bool process_parmConfig_get_comp(otok kt, const char *val, const class UoutWriter &td) {
+bool process_parmConfig_get_comp(otok kt, const char *val, class UoutWriter &td) {
   switch (kt) {
 
   case otok::k_all: {
@@ -98,7 +98,7 @@ int process_parmConfig_assign(KvsType kvsType, const char *kvsKey, StoreFun stor
   return 0;
 }
 
-bool process_parmConfig_comp(otok kt, const char *key, const char *val, const class UoutWriter &td, int &errors, u32 &changed_mask) {
+bool process_parmConfig_comp(otok kt, const char *key, const char *val, class UoutWriter &td, int &errors, u32 &changed_mask) {
   switch (kt) {
 #if ENABLE_RESTART
   case otok::k_restart:

@@ -37,7 +37,7 @@
 #include <algorithm>
 
 
-bool process_parmConfig_get_app(otok kt, const char *val, const class UoutWriter &td) {
+bool process_parmConfig_get_app(otok kt, const char *val, class UoutWriter &td) {
   switch (kt) {
 
   case otok::k_stm32_bootgpio_inv:
@@ -49,7 +49,7 @@ bool process_parmConfig_get_app(otok kt, const char *val, const class UoutWriter
   }
 }
 
-bool process_parmConfig_app(otok kt, const char *key, const char *val, const class UoutWriter &td, int &errors, u32 &changed_mask) {
+bool process_parmConfig_app(otok kt, const char *key, const char *val, class UoutWriter &td, int &errors, u32 &changed_mask) {
   switch (kt) {
 
   case otok::NONE:

@@ -51,7 +51,7 @@ public:
   virtual ~UoutWriterStm32() = default;
 
 private:
-  virtual int priv_write(const char *s, ssize_t len, bool final) const {
+  virtual int priv_write(const char *s, ssize_t len, bool final) override {
     return stm32_write(s, len);
   }
 };
