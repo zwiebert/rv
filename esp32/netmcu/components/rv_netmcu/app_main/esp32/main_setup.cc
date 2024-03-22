@@ -11,10 +11,20 @@
 #include "../app_private.h"
 #include "main_loop/main_queue.hh"
 #include <esp_netif.h>
+#include <esp_log.h>
+
+#define logtag "main"
 
 void ntpApp_setup(void) {
   sntp_set_time_sync_notification_cb([](struct timeval *tv) {
-    ets_printf("ntp synced: %ld\n", time(0));
+    ESP_LOGI(logtag, "ntp synced: %lld", (long long int)time(0));
+
+    static bool once;
+    for (int i=0; !once && i < SNTP_MAX_SERVERS; ++i, once = true) {
+      if (auto name = esp_sntp_getservername(i); name) {
+        ESP_LOGE(logtag, "ntp server #%d is <%s>", i, name);
+      }
+    }
     mainLoop_callFun(lfa_syncStm32Time);
   });
 

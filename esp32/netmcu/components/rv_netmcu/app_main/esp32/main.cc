@@ -6,6 +6,9 @@
 #include <lwip/apps/sntp_opts.h>
 #include <net/tcp_cli_server_setup.hh>
 #include "../app_private.h"
+#include <esp_log.h>
+
+#define logtag "main"
 
 i32 boot_counter;
 #define WIFI_AP_SSID "rv"
@@ -30,7 +33,7 @@ void lfa_createWifiAp() {
 void lfa_syncStm32Time(void) {
   char buf[80];
   sprintf(buf, "{\"config\":{\"time\":%lld}};", time(0));
-  dbg_vpf(ets_printf("to-strm32: <%s>\n", buf));
+  ESP_LOGI(logtag, "to-strm32: <%s>", buf);
   LockGuard lock(stm32_mutex);
 
   stm32_write(buf, strlen(buf));
@@ -80,7 +83,7 @@ void stm32_checkForInput() {
 
     ptr[length] = '\0';
     stm32_processInputLine(ptr);
-    dbg_vpf(db_printf("from-stm32: <%s>\n", buf));
+    ESP_LOGI(logtag, "from-stm32: <%s>", buf);
     break; // done
   }
 
