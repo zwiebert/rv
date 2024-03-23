@@ -23,7 +23,14 @@
 #include <freertos/timers.h>
 #include <esp_log.h>
 
+#ifdef CONFIG_RV_NETMCU_DEBUG
+#define DEBUG
 #define D(x) x
+#else
+#define D(x)
+#endif
+#define logtag "rv.main.periodic";
+
 /**
  * \brief Create 100ms timer for periodic actions
  * Actions should be called with mainLoop_callFun() to execute them in mainLoop context instead of "Tmr Svc" Task.

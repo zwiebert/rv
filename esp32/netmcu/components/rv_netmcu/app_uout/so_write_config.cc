@@ -28,7 +28,13 @@
 #include <time.h>
 #include <unistd.h>
 
+#ifdef CONFIG_RV_NETMCU_DEBUG
+#define DEBUG
+#define D(x) x
+#else
 #define D(x)
+#endif
+#define logtag "rv.uout"
 
 void soCfg_RTC(class UoutWriter &td) {
   char buf[64];
@@ -146,7 +152,13 @@ void soCfg_STM32_BOOTGPIO_INV(class UoutWriter &td) {
 #include <time.h>
 #include <unistd.h>
 
+#ifdef CONFIG_RV_NETMCU_DEBUG
+#define DEBUG
+#define D(x) x
+#else
 #define D(x)
+#endif
+#define logtag "rv.uout"
 
 void soCfg_begin(class UoutWriter &td) {
   td.so().x_open("config");

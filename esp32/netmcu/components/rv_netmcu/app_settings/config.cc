@@ -19,8 +19,12 @@
 #include "utils_misc/base64.h"
 #include <config_kvs/config.h>
 
-#define D(x) 
-
+#ifdef CONFIG_RV_NETMCU_DEBUG
+#define D(x) x
+#else
+#define D(x)
+#endif
+#define logtag "rv.settings.config"
 config C = {
 
 };

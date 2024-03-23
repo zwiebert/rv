@@ -11,7 +11,13 @@
 #include "app_net/gw_ping.h"
 #include "debug/dbg.h"
 
+#ifdef CONFIG_RV_NETMCU_DEBUG
+#define DEBUG
+#define D(x) x
+#else
 #define D(x)
+#endif
+#define logtag "rv.misc.watch_dog"
 
 int missing_call_count;
 time_t last_call_time;

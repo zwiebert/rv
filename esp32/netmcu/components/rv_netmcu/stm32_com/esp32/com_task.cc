@@ -24,13 +24,15 @@
 #include <string.h>
 #include <sys/select.h>
 
-#ifdef DISTRIBUTION
-#define D(x)
-#define DD(x)
-#else
+#ifdef CONFIG_RV_NETMCU_DEBUG
+#define DEBUG
 #define D(x) x
 #define DD(x) x
+#else
+#define D(x)
+#define DD(x)
 #endif
+#define logtag "rv.stm32_com"
 
 #define TRACE_MARKER "trace:"
 #define TRACE_MARKER_LEN (sizeof TRACE_MARKER - 1)
@@ -38,7 +40,6 @@
 #define BUF_SIZE 512
 static char line[BUF_SIZE];
 
-#define logtag "com_task"
 
 
 class UoutWriterStm32 final: public UoutWriter {

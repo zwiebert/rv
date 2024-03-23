@@ -3,8 +3,13 @@
 #include <cstdio>
 
 #include <debug/log.h>
-#define dbtag "full_auto"
+#ifdef CONFIG_RV_NETMCU_DEBUG
+#define DEBUG
 #define D(x) x
+#else
+#define D(x)
+#endif
+#define logtag "rv.full_auto"
 
 static constexpr char kvs_name[] = "full_auto";
 

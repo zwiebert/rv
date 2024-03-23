@@ -18,8 +18,14 @@
 #include <ctype.h>
 #include <string.h>
 
-#define logtag "parm_kvs"
+#ifdef CONFIG_RV_NETMCU_DEBUG
+#define DEBUG
 #define D(x) x
+#else
+#define D(x)
+#endif
+#define logtag "rv.cli.parm_kvs"
+
 
 #define ENABLE_RESTART 1 // allow software reset
 

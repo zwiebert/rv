@@ -2,8 +2,6 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
-#include <lwip/apps/sntp.h>
-#include <lwip/apps/sntp_opts.h>
 #include <net/tcp_cli_server_setup.hh>
 #include "../app_private.h"
 #include <esp_log.h>

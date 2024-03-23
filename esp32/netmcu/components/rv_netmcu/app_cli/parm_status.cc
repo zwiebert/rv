@@ -26,7 +26,13 @@
 
 #include <stm32/stm32.h>
 
+#ifdef CONFIG_RV_NETMCU_DEBUG
+#define DEBUG
 #define D(x) x
+#else
+#define D(x)
+#endif
+#define logtag "rv.cli.parm_status";
 
 #define STM32_STATUS "status "
 #define STM32_STATUS_LEN (sizeof (STM32_STATUS) - 1)
@@ -70,7 +76,7 @@ process_parmStatus(clpar p[], int len, class UoutWriter &td) {
     } else if (strcmp(key, KEY_EVENT) == 0) {
       io_mqtt_publish_stm32_event(val);
     } else if (strcmp(key, KEY_PB) == 0) {
-       const char *b64 = val; // TODO: implement protobuf handler
+      // const char *b64 = val; // TODO: implement protobuf handler
     } else if (strcmp(key, KEY_PUMP) == 0) {
       so_arg_on_t state = { .on = *val != '0' };
       soMsg_RVE_PUMP(td, &state);

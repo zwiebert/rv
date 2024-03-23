@@ -13,7 +13,13 @@
 #include "key_value_store/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
 
-#define D(x) 
+#ifdef CONFIG_RV_NETMCU_DEBUG
+#define DEBUG
+#define D(x) x
+#else
+#define D(x)
+#endif
+#define logtag "rv.settings.config.kvs"
 
 
 #define CFG_KEY "global.C"

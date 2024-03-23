@@ -14,15 +14,16 @@
 #include "weather/weather_provider_owm.hh"
 #include <full_auto/automatic_timer.hh>
 
-#define DEBUG
-
-#ifdef DEBUG
+#ifdef CONFIG_RV_NETMCU_TEST_DEBUG
 #include <iostream>
 using namespace std;
+#define DEBUG
 #define D(x) x
 #else
 #define D(x)
 #endif
+#define logtag "rv.test.full_auto"
+
 
 static AutoTimer at;
 char buf[1024], buf2[1024];

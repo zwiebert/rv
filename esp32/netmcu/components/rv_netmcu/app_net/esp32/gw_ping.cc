@@ -24,7 +24,14 @@
 
 #include "utils_misc/int_types.h"
 
+#ifdef CONFIG_RV_NETMCU_DEBUG
+#define DEBUG
+#define D(x) x
+#else
 #define D(x)
+#endif
+#define logtag "rv.net.gw_ping"
+
 
 void (*ping_restart_cb)();
 

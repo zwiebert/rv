@@ -21,13 +21,15 @@
 #include <stm32/stm32.h>
 
 
-#define logtag "parm_cmd"
-
-#ifndef DISTRIBUTION
+#ifdef CONFIG_RV_NETMCU_DEBUG
+#define DEBUG
 #define D(x) x
 #else
 #define D(x)
 #endif
+#define logtag "rv.cli.parm_cmd"
+
+
 
 volatile bool cli_cmd_wait_for_response;
 
