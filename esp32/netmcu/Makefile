@@ -160,41 +160,21 @@ host-test-all:
 
 
 ############# Doxygen ###################
+doxy_flavors=usr dev api
 DOXY_BUILD_PATH=$(THIS_ROOT)/build/doxy
+DOXYFILE_PATH=$(THIS_ROOT)
+include doxygen_rules.mk
 
-.PHONY: doxy-usr-view  doxy-dev-view  doxy-api-view
-.PHONY: doxy-usr-build doxy-dev-build doxy-api-build 
-
-$(DOXY_BUILD_PATH)/%/html/index.html: /tmp/doxy_%_file 
-	mkdir -p $(dir $@)
-	doxygen $^
-	
-
-doxy-%-view: doxy-%-build
-	xdg-open $(DOXY_BUILD_PATH)/$*/html/index.html
-	
-doxy-usr-build: $(DOXY_BUILD_PATH)/usr/html/index.html FORCE
-doxy-usr-view: doxy-usr-build
-	xdg-open $(DOXY_BUILD_PATH)/usr/html/index.html
-
-doxy-dev-build: $(DOXY_BUILD_PATH)/dev/html/index.html FORCE
-doxy-dev-view: doxy-dev-build
-	xdg-open $(DOXY_BUILD_PATH)/dev/html/index.html
-	
-doxy-api-build: $(DOXY_BUILD_PATH)/api/html/index.html FORCE
-doxy-api-view: doxy-api-build
-	xdg-open $(DOXY_BUILD_PATH)/api/html/index.html
-
-/tmp/doxy_%_file: ./Doxyfile_% /tmp/doxy_input_%
-	cat $^ > $@
-
-/tmp/doxy_input_dev: FORCE
-	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
-	cd components-mcu && git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/components-mcu/~" >> $@
-/tmp/doxy_input_api: FORCE
-	git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
-	cd components-mcu && git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~INPUT += $(THIS_ROOT)/components-mcu/~" >> $@
-
-/tmp/doxy_input_usr: FORCE
+$(DOXY_BUILD_PATH)/usr/input_files: $(DOXY_BUILD_PATH)/usr FORCE
 	echo "" > $@
 	
+$(DOXY_BUILD_PATH)/api/input_files: $(DOXY_BUILD_PATH)/api FORCE
+	git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~$(THIS_ROOT)/~" > $@
+	cd components-mcu && git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~$(THIS_ROOT)/components-mcu/~" >> $@
+	
+$(DOXY_BUILD_PATH)/dev/input_files: $(DOXY_BUILD_PATH)/dev FORCE
+	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
+	cd components-mcu && git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~$(THIS_ROOT)/components-mcu/~" >> $@
+
+
+
