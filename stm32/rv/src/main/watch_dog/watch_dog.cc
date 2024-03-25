@@ -1,8 +1,7 @@
-/*
- * watch_dog.cc
- *
- *  Created on: 04.06.2019
- *      Author: bertw
+/**
+ * \file    watch_dog/watch_dog.cc
+ * \brief   A watch-dog exchanging "alive" messages over USART with our companion MCU (NetMCU).
+ * \author  bertw
  */
 #include "user_config.h"
 
@@ -21,8 +20,8 @@
 static unsigned call_time, response_time;
 static unsigned missed_responses;
 
-#define ESP32_RESET_PIN_PORT GPIOB
-#define ESP32_RESET_PIN GPIO9
+#define ESP32_RESET_PIN_PORT GPIOB ///< GPIO port for \ref ESP32_RESET_PIN
+#define ESP32_RESET_PIN GPIO9      ///< GPIO connected to companion MCU's reset pin
 
 static void watchDog_gotResponse() {
 	response_time = runTime();

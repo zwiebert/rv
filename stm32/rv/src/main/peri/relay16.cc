@@ -1,3 +1,9 @@
+/**
+ * \file   peri/relay16.cc
+ * \brief  Control the 16 relay-board (connected via IIC-Expander MCP23017)
+ *
+ */
+
 #include "user_config.h"
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
@@ -9,8 +15,8 @@
 
 Mcp23017 relay_16;
 
-#define DISABLE_ALL_PIN GPIO5
-#define DISABLE_ALL_PIN_PORT GPIOB
+#define DISABLE_ALL_PIN GPIO5       ///< GPIO to enforce switching off all relay in case of a atFault
+#define DISABLE_ALL_PIN_PORT GPIOB  ///< GPIO-port for \ref DISABLE_ALL_PIN
 
 void relay16_atFault() {
   gpio_set(DISABLE_ALL_PIN_PORT, DISABLE_ALL_PIN);

@@ -1,8 +1,6 @@
-/*
- * cli_config.c
- *
- *  Created on: 21.05.2019
- *      Author: bertw
+/**
+ * \file cli/parm_kvs.cc
+ * \brief handle cli command
  */
 extern "C" {
 #include <time/real_time_clock.h>

@@ -14,18 +14,18 @@
  * \brief Rain sensor cork contact
  */
 class RainSensor {
-	time_t mOffTime = 0;
+	time_t mOffTime = 0;  ///< the last time the rain sensor turned from on to off
 public:
 	RainSensor();
 
 	void loop(); ///< Do work
 
-	/// \brief Get state of the contact.
+	/// \brief Get current state of the contact.
 	/// \return true if rain sensor is wet
 	bool getState(time_t delay=0);
 
-	/// \brief Get off duration
-	/// \return How long the rain sensor was now dry, which is the time since last beging we.)
+	/// \brief Get the last time the rain sensor turned from on to off
+	/// \return POSIX time stamp
 	time_t getOffTime();
 
 };

@@ -1,6 +1,6 @@
 /**
  * \file   peri/relay16.h
- * \brief  Control the 16 Relais Board (connected via IIC-Expander MCP23017)
+ * \brief  Control the 16 relay-board (connected via IIC-Expander MCP23017)
  *
  */
 

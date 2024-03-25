@@ -1,8 +1,6 @@
-/*
- * water_pump.c
- *
- *  Created on: 12.05.2019
- *      Author: bertw
+/**
+ * \file    water_pump/water_pump.cc
+ * \brief   basic water pump functions
  */
 
 
@@ -19,20 +17,18 @@
 #include "assert.h"
 #include "valves/valve_relays.h"
 
-#define WP_RELAY_PIN 15  // on IO expander
-#define WP_PCOUT_PIN 14  // on IO expander
+#define WP_RELAY_PIN 15  ///< relay number to switch water pump contactor (for turning on pump)
+#define WP_PCOUT_PIN 14  ///< relay number to switch pressure-control contactor (for turning off PC)
 #define ON true
 #define OFF false
 
-#define WP_PCIN_PORT GPIO_PORT_B_BASE
-#define WP_PCIN_PIN  GPIO0
-#define WP_UB_PORT GPIO_PORT_B_BASE
-#define WP_UB_PIN  GPIO1
+#define WP_PCIN_PORT GPIO_PORT_B_BASE  ///< GPIO port for pressure-control on/off detector
+#define WP_PCIN_PIN  GPIO0             ///< GPIO number for pressure-conntrol on/off detector
+#define WP_UB_PORT GPIO_PORT_B_BASE    ///< GPIO port for user button
+#define WP_UB_PIN  GPIO1               ///< GPIO number for user button
 
-#define WP_BUTTON_IGNORE_TIME 10
-#define WP_PC_HOLD_TIME 2
-#define WP_RUST_PROTECTION_RUN_TIME 2
-#define WP_PC_CLEAR_FAILURE_TIME 5
+#define WP_RUST_PROTECTION_RUN_TIME 2  ///< seconds to run pump for rust protecion
+#define WP_PC_CLEAR_FAILURE_TIME 5     ///< seconds to switch of mains voltage of pressure-control for error reset
 
 static run_time_T last_on_time, last_off_time;
 static wp_err_T wp_error;
@@ -158,20 +154,6 @@ bool wp_isPressControlOn(bool *has_changed) {
 
 // test if user has pressed the button to increase max-on-time or clear failure state
 bool wp_isUserButtonPressed(bool *has_changed) {
-#if 0
-	static run_time_T last_pressed;
-	run_time_T now = runTime();
-
-	if (last_pressed + WP_BUTTON_IGNORE_TIME > now)
-		return false;
-
-	bool result = gpio_get(WP_UB_PORT, WP_UB_PIN) == 0;
-
-	if (result)
-		last_pressed = now;
-
-	return result;
-#else
 	  static uint64_t last_change;
 	  static bool is_on, want_change;
 	  bool hasChanged = false;
@@ -192,7 +174,6 @@ bool wp_isUserButtonPressed(bool *has_changed) {
 	    *has_changed = hasChanged;
 	  }
 	  return is_on;
-#endif
 }
 
 // test if pump is currently running

@@ -57,7 +57,7 @@ static void io_mqttApp_uoutPublish_cb(const uoCb_msgT msg);
 static class AppNetMqtt final : public Net_Mqtt {
 
   virtual void received(const char *topic, int topic_len, const char *data, int data_len) override {
-    UoutWriter td { SO_TGT_MQTT };
+    UoutWriterBuilder td { SO_TGT_MQTT };
     if (!topic_startsWith(topic, topic_len, io_mqtt_topic_root)) {
       return; // all topics start with this
     }

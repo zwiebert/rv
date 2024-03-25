@@ -1,4 +1,7 @@
-
+/**
+ * \file cli/cli_getcmdline.c
+ * \brief  get command-line from from companion MCU
+ */
 #include "../peri/uart.h"
 #include "cli_imp.h"
 #include <stdbool.h>

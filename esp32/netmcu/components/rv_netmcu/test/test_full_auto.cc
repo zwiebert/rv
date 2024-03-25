@@ -22,6 +22,7 @@ using namespace std;
 #else
 #define D(x)
 #endif
+#undef logtag
 #define logtag "rv.test.full_auto"
 
 

@@ -1,3 +1,7 @@
+/**
+ * \file cli/parm_cmd.cc
+ * \brief handle cli command
+ */
 #include "user_config.h"
 #include <time/real_time_clock.h>
 #include "cli_imp.h"

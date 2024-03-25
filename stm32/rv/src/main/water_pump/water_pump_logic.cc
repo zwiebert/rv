@@ -1,8 +1,6 @@
-/*
- * water_pump_logic.c
- *
- *  Created on: 12.05.2019
- *      Author: bertw
+/**
+ * \file   water_pump/water_pump_logic.cc
+ * \brief  programming the water pump
  */
 
 #include <valves/valve_relays.h>

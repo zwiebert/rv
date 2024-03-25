@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 
-clpar par[MAX_PAR];
+clpar par[MAX_PAR]; ///< holds key/value pairs from written by \ref parse_commandline
 
 static char *
 skip_leading_whitespace(char *s) {

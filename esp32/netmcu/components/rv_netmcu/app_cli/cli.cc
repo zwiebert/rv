@@ -66,7 +66,7 @@ bool cli_checkStm32CommandLine(char *line) {
   }
   *terminator = '\0';
   { LockGuard lock(cli_mutex);
-    auto td = UoutWriter(SO_TGT_ANY);
+    auto td = UoutWriterBuilder(SO_TGT_ANY);
     cli_process_cmdline(line, td); //XXX: which target?
   }
   return true;
