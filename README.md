@@ -1,15 +1,21 @@
 # rv
 
-## Project for automatic garden irrigation using an STM32/ESP32 pair of microcontrollers.
+## Automatic garden irrigation controlled by STM32/ESP32 pair of microcontrollers.
 
- It uses a pair of companion micro-controller-units, which watch and reset each other if something is wrong.
- I used this setup for a few years now, and no accidents happend. I would not trust a single ESP32 with that task, for fear of flooding the garden.
+ It uses a pair of companion micro-controller-units, which watch and reset each other to prevent bad things from happening.
+ 
+ I build the hardware in 2019 and used it since then in our garden. Nothing bad happend. I could not trust a single ESP32 with that task, for fear of flooding the garden.
  
  The critical work is done by an STM32F1 (blue-pill board) microcontroller:
-    * Turning garden pump on or off on demand. If no demand turn on every 2 days for rust protection.
     * Read state of rain sensor
-    * Limit the pump on time for water taps to a few minutes. The time limit can be extended by a button which can be pressed by the user
- 
+    * The at_fault() handler will close all magnet valves.
+    * Provides a timer which schedules the irrigation zones.
+    * Limits for water flow (fore each zone, and for a well pump) and water volume in a given time (for a well pump) can be set.
+    * The timer will allow more than one zone to run at the same time, if the sum of the water flow does not exceed the pump limit.
+    * If the garden pump did not need to run for a given time (2 days), it will turned on for a few seconds for rust protection.
+    * Limits for manual water draw (hose bibs, water taps) duration will be enforced to prevent flooding
+    * A user button allows extending the time limit temporarily, which will then reset to the normal limit after some hours.
+        
  The higher level functions are provided by an ESP32 microcontroller. These are
     * MQTT client to connect to home server (For my garden, I use FHEM with alexa module for voice control)
     * HTTP server and Web-App as user-interface like networking (MQTT-client, HTTP-server), saving settings
@@ -25,12 +31,13 @@
 * MCP23017 I2C IO-expander board running at 5V to control the relays
 * STM32F1 (blue pill) microcontroller board (making its 3.3V from 5V and having lots of 5V tolerant pins (including I2C).
 
-### Required Software
-* Atollic TrueStudio IDE used for programming and debugging. Makefiles will be added later. 
+### How to compile
+*  The STM32 firmware is compiled using CubeMX IDE on Linux. libopencm3 is used. No HAL.
+*  The ESP32 firmware is compiled with ESP-IDF (v5.2)
 
 ### Reusable libraries written for this project
 * MCP23017 driver C-library for STM32F1-libopencm3
-* esp-idf component to flash the STM32 over the air
+* esp-idf component to flash the STM32 over the air with help from the ESP32
 
 ### Author
 Bert Winkelmann

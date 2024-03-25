@@ -169,11 +169,11 @@ $(DOXY_BUILD_PATH)/usr/input_files: $(DOXY_BUILD_PATH)/usr FORCE
 	echo "" > $@
 	
 $(DOXY_BUILD_PATH)/api/input_files: $(DOXY_BUILD_PATH)/api FORCE
-	git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~$(THIS_ROOT)/~" > $@
-	cd components-mcu && git ls-files '*.h' '*.hh' | fgrep include | sed "s~^~$(THIS_ROOT)/components-mcu/~" >> $@
+	git ls-files '*.h' '*.hh' README.md | fgrep -e include -e README.md | sed "s~^~$(THIS_ROOT)/~" > $@
+	cd components-mcu && git ls-files '*.h' '*.hh' | fgrep -e include  | sed "s~^~$(THIS_ROOT)/components-mcu/~" >> $@
 	
 $(DOXY_BUILD_PATH)/dev/input_files: $(DOXY_BUILD_PATH)/dev FORCE
-	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~INPUT += $(THIS_ROOT)/~" > $@
+	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' README.md | sed "s~^~$(THIS_ROOT)/~" > $@
 	cd components-mcu && git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~$(THIS_ROOT)/components-mcu/~" >> $@
 
 

@@ -85,10 +85,10 @@ $(DOXY_BUILD_PATH)/usr/input_files: $(DOXY_BUILD_PATH)/usr FORCE
 	echo "" > $@
 	
 $(DOXY_BUILD_PATH)/api/input_files: $(DOXY_BUILD_PATH)/api FORCE
-	git ls-files '*.h' '*.hh' | fgrep -v -e CMSIS -e STM32F10x | sed "s~^~$(THIS_ROOT)/~" > $@
+	git ls-files '*.h' '*.hh' README.md | sed "s~^~$(THIS_ROOT)/~" > $@
 	
 $(DOXY_BUILD_PATH)/dev/input_files: $(DOXY_BUILD_PATH)/dev FORCE
-	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | fgrep -v -e CMSIS -e STM32F10x | sed "s~^~$(THIS_ROOT)/~" > $@
+	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' README.md | sed "s~^~$(THIS_ROOT)/~" > $@
 
 
 
