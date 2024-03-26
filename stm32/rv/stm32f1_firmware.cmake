@@ -24,6 +24,8 @@ add_compile_options(  $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>
                       -Wall -Wextra -Wno-missing-field-initializers -Wno-psabi
 )
 
+add_compile_options(-include ${PROJECT_BINARY_DIR}/rv_config.h)
+
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_compile_options(${comp_compile_opts} -Og -g3)
   add_compile_definitions(BUILD_DEBUG)
@@ -40,11 +42,8 @@ endif()
 include_directories(test/host/unity/src test/host/test_runner src/main  src src/nanopb)
 
 add_compile_options(${comp_compile_opts})
-add_link_options(-mcpu=cortex-m3  librv_system.a  -T ${CMAKE_SOURCE_DIR}/Debug_STM32F103CB_FLASH.ld --specs=nosys.specs -Wl,-Map=${PROJECT_NAME}.map
-                 -Wl,--gc-sections -static -L/home/bertw/arm/libopencm3/lib  -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group)
-
-########## CMSIS ########################
-include_directories(Libraries/CMSIS/Device/ST/STM32F10x/Include Libraries/CMSIS/Include)
+add_link_options(-mcpu=cortex-m3  -nostartfiles -T ${CMAKE_SOURCE_DIR}/stm32f103cb.ld --specs=nosys.specs -Wl,-Map=${PROJECT_NAME}.map
+                 -Wl,--gc-sections -static -L${CMAKE_SOURCE_DIR}/external/libopencm3/lib  -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group -lopencm3_stm32f1)
 
 ######### External OpenCM3 lib ##########
 include_directories(external/libopencm3/include)
@@ -59,7 +58,7 @@ add_subdirectory(Libraries/mcp23017)
 add_subdirectory(Libraries/tm1638)
 
 ##### Startup, Interrupt Handlers, etc ##
-add_library(rv_system src/stm32f1xx_it.c  src/startup_stm32f10x_md.s src/system_stm32f10x.c  src/tiny_printf.c)
+add_library(rv_system  src/tiny_printf.c)
 add_subdirectory(src/main)
 target_compile_features(rv_system PUBLIC c_std_11)
 

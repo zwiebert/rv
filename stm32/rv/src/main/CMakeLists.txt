@@ -23,10 +23,10 @@ cli/cli_getcmdline.c
 cli/parm_config.cc
 cli/cli_parsecmdline.c
 cli/parm_cmd.cc
-cli/cli_mcu.cc
+cli/parm_mcu.cc
 cli/cli_json.c
 cli/parm_timer.cc
-cli/cli_proto_buf.cc
+cli/parm_protobuf.cc
 cli/parm_kvs.cc
 cli/cli.c
 debug/dbg.c

@@ -32,8 +32,10 @@
 * STM32F1 (blue pill) microcontroller board (making its 3.3V from 5V and having lots of 5V tolerant pins (including I2C).
 
 ### How to compile
-*  The STM32 firmware is compiled using CubeMX IDE on Linux. libopencm3 is used. No HAL.
-*  The ESP32 firmware is compiled with ESP-IDF (v5.2)
+*  Building the ESP32 firmware requires ESP-IDF (v5.2) installed
+*  Building the STM32 firmware requires one of the following:
+   *  CubeMX IDE on Linux. libopencm3 is used. No HAL.
+   *  make, cmake, gcc-arm-none-eabi, binutils-arm-none-eabi, python -m pip install esp-idf-kconfig
 
 ### Reusable libraries written for this project
 * MCP23017 driver C-library for STM32F1-libopencm3

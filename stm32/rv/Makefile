@@ -4,25 +4,40 @@ SRC_DIRS = src/main
 
 
 help:
-	@$(info targets: stm32f1.fw.configure, .build, .flash  (Set BUILD_TYPE to Debug,Release,Cellar on commandline))
+	@$(info targets: stm32f1.fw.menuconfig, .configure, .build, .flash  (Set BUILD_TYPE to Debug,Release,Cellar on commandline))
 	@$(info targets: host.fw.configure, .build)
-	@$(info targets: doxy-usr-build, doxy-usr-view)
-	@$(info targets: doxy-dev-build, doxy-dev-view)
-	@$(info targets: doxy-api-build, doxy-api-view)
+	@$(info targets: doxy-usr-build, doxy-usr-view, doxy-usr-auto)
+	@$(info targets: doxy-dev-build, doxy-dev-view, doxy-dev-auto)
+	@$(info targets: doxy-api-build, doxy-api-view, doxy-dev-auto)
 
-
-main.menuconfig:
-	cd src/main && menuconfig && python -m kconfgen  --kconfig Kconfig --config .config --output header rv_config.h
+## create default configuration for use with STCubeMx IDE
+.PHONY: config_ide
+src/main/rv_config.h config_ide:
+	python -m kconfgen  --kconfig $(THIS_ROOT)/src/main/Kconfig --output header src/main/rv_config.h
 
 ############# STM32F1/FIRMWARE ####################
-BUILD_TYPE ?= Debug # Debug,Release,Cellar
+# configurations: Debug,Release,Cellar,...
+# create a directory in ./configs/$(BUILD_TYPE)
+BUILD_TYPE ?=Debug
 
 STM32F1_FW_BUILD_DIR = $(BUILD_BASE)/stm32f1/$(BUILD_TYPE)
+
+rv_config_h:=$(STM32F1_FW_BUILD_DIR)/rv_config.h
+config_dir:=$(THIS_ROOT)/configs/$(BUILD_TYPE)
+_config:=$(config_dir)/.config
+
+stm32f1.fw.menuconfig $(_config):
+	mkdir -p $(config_dir) && cd $(config_dir) && menuconfig $(THIS_ROOT)/src/main/Kconfig
+
+$(rv_config_h): $(_config)
+	python -m kconfgen  --kconfig $(THIS_ROOT)/src/main/Kconfig --config $(_config) --output header $(rv_config_h)
 
 stm32f1.fw.configure:
 	rm -fr $(STM32F1_FW_BUILD_DIR)
 	mkdir -p $(STM32F1_FW_BUILD_DIR)
-	env PATH=.:/usr/bin:$$PATH cmake -S $(realpath .) -B $(STM32F1_FW_BUILD_DIR) -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)  -DTARGET_ARCH=STM32F1  #-G Ninja
+	make  $(rv_config_h)
+	env PATH=.:/usr/bin:$$PATH cmake -S $(realpath .) -B $(STM32F1_FW_BUILD_DIR) -DCMAKE_TOOLCHAIN_FILE=arm-gcc-toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)  -DTARGET_ARCH=STM32F1  #-G Ninja
+
 	
 stm32f1.fw.build.make := make -C $(STM32F1_FW_BUILD_DIR) -k  $(make_verbose_opts)
 stm32f1.fw.build.ninja := (cd $(STM32F1_FW_BUILD_DIR) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
