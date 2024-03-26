@@ -4,7 +4,7 @@
 
  It uses a pair of companion micro-controller-units, which watch and reset each other to prevent bad things from happening.
 
- I've built the hardware in 2019 and used it since then in our garden. Nothing bad happened. I could not trust a single ESP32 with that task, for fear of flooding the garden.
+ I've built the final hardware in 2020 and used it since then in our garden. Nothing bad happened. I could not trust a single ESP32 with that task, for fear of flooding the garden.
 
 ### The critical work is done by an STM32F1 (blue-pill board) micro-controller:
  * Read state of rain sensor

@@ -1,6 +1,23 @@
 Targets:
+all                  -- re-build both firmwares
 
-configure.esp   -- configure firmware using esp-idf menuconfig
-build.esp       -- build firmware
+stm32-menuconfig
+stm32-configure
+stm32-build
+stm32-all
 
-pre_build.stm   -- build libraries
+BUILT_TYPE         --  Debug|Release|...
+
+pre_build.stm        -- build libraries when using CubeMX-IDE (makefile build handles it by itself)
+
+stm32-doxy-xxx-yyyy  --  xxx=usr|api|dev, yyyy=build|view|auto
+
+esp32-menuconfig
+esp32-reconfigure
+esp32-all
+
+flavor=              -- esp32|esp32dbg|test_host|...
+esp32-doxy-xxx-yyyy  --  xxx=usr|api|dev, yyyy=build|view|auto
+
+
+

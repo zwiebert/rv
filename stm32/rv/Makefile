@@ -10,6 +10,7 @@ help:
 	@$(info targets: doxy-dev-build, doxy-dev-view, doxy-dev-auto)
 	@$(info targets: doxy-api-build, doxy-api-view, doxy-dev-auto)
 
+
 ## create default configuration for use with STCubeMx IDE
 .PHONY: config_ide
 src/main/rv_config.h config_ide:
@@ -18,19 +19,23 @@ src/main/rv_config.h config_ide:
 ############# STM32F1/FIRMWARE ####################
 # configurations: Debug,Release,Cellar,...
 # create a directory in ./configs/$(BUILD_TYPE)
+#
 BUILD_TYPE ?=Debug
-
 STM32F1_FW_BUILD_DIR = $(BUILD_BASE)/stm32f1/$(BUILD_TYPE)
-
 rv_config_h:=$(STM32F1_FW_BUILD_DIR)/rv_config.h
 config_dir:=$(THIS_ROOT)/configs/$(BUILD_TYPE)
 _config:=$(config_dir)/.config
+
+stm32f1.fw.all: stm32f1.fw.configure stm32f1.fw.build
 
 stm32f1.fw.menuconfig $(_config):
 	mkdir -p $(config_dir) && cd $(config_dir) && menuconfig $(THIS_ROOT)/src/main/Kconfig
 
 $(rv_config_h): $(_config)
-	python -m kconfgen  --kconfig $(THIS_ROOT)/src/main/Kconfig --config $(_config) --output header $(rv_config_h)
+	 python -m kconfgen  --kconfig $(THIS_ROOT)/src/main/Kconfig --config $(_config) --output header $(rv_config_h)
+external/libopencm3/lib/libopencm3_stm32f1.a:
+	make -C stm32/rv/external/libopencm3
+
 
 stm32f1.fw.configure:
 	rm -fr $(STM32F1_FW_BUILD_DIR)
@@ -42,7 +47,7 @@ stm32f1.fw.configure:
 stm32f1.fw.build.make := make -C $(STM32F1_FW_BUILD_DIR) -k  $(make_verbose_opts)
 stm32f1.fw.build.ninja := (cd $(STM32F1_FW_BUILD_DIR) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
 	
-stm32f1.fw.build:
+stm32f1.fw.build: external/libopencm3/lib/libopencm3_stm32f1.a
 	$(stm32f1.fw.build.make) -- bin
 	
 stm32f1.fw.flash:
