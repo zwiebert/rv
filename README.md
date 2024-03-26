@@ -26,15 +26,16 @@
 
 ### Required Hardware
 * 24V AC transformer
-* 12V CD power supply
+* 12V DC power supply
 * 12V 16-relay module board to control the 24V~ valves and to provide 5V for other hardware
 * MCP23017 I2C IO-expander board running at 5V to control the relays
 * STM32F1 (blue pill) micro-controller board (making its 3.3V from 5V and having lots of 5V tolerant pins (including I2C).
+* ESP32 board (WLAN/LAN)
 
 ### How to compile
 *  Building the ESP32 firmware requires ESP-IDF (v5.2) installed
 *  Building the STM32 firmware requires one of the following:
-   *  CubeMX IDE on Linux. libopencm3 is used. No HAL.
+   *  STM32CubeIDE (1.15.0) on Linux. libopencm3 is used. No HAL.
    *  make, cmake, gcc-arm-none-eabi, binutils-arm-none-eabi, python -m pip install esp-idf-kconfig
 
 ### Reusable libraries written for this project
