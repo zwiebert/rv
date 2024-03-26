@@ -1,0 +1,25 @@
+menu "RV: Water Pump"
+
+    config RV_WATER_PUMP_RELAY
+        int  "relay number to switch water pump contactor (for turning on pump)"
+        range 0 15
+        default 15
+
+    config RV_PRESS_CONTROL_RELAY
+        int  "relay number to switch pressure-control contactor (for turning off PC)"
+        range 0 15
+        default 14
+
+
+
+	config WP_RUST_PROTECTION_RUN_TIME
+		int "seconds to run pump for rust protecion"
+		default 2
+		
+	config WP_PC_CLEAR_FAILURE_TIME
+		int "seconds to switch of mains voltage of pressure-control for error reset"
+		default 5
+
+
+endmenu
+

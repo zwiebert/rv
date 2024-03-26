@@ -3,7 +3,7 @@
  * \brief   basic water pump functions
  */
 
-
+#include "user_config.h"
 #include "water_pump.h"
 #include "mcp23017.h"
 #include <libopencm3/stm32/rcc.h>
@@ -17,8 +17,8 @@
 #include "assert.h"
 #include "valves/valve_relays.h"
 
-#define WP_RELAY_PIN 15  ///< relay number to switch water pump contactor (for turning on pump)
-#define WP_PCOUT_PIN 14  ///< relay number to switch pressure-control contactor (for turning off PC)
+#define WP_RELAY_PIN CONFIG_RV_WATER_PUMP_RELAY  ///< relay number to switch water pump contactor (for turning on pump)
+#define WP_PCOUT_PIN CONFIG_RV_PRESS_CONTROL_RELAY  ///< relay number to switch pressure-control contactor (for turning off PC)
 #define ON true
 #define OFF false
 
@@ -27,8 +27,9 @@
 #define WP_UB_PORT GPIO_PORT_B_BASE    ///< GPIO port for user button
 #define WP_UB_PIN  GPIO1               ///< GPIO number for user button
 
-#define WP_RUST_PROTECTION_RUN_TIME 2  ///< seconds to run pump for rust protecion
-#define WP_PC_CLEAR_FAILURE_TIME 5     ///< seconds to switch of mains voltage of pressure-control for error reset
+#define WP_RUST_PROTECTION_RUN_TIME CONFIG_WP_RUST_PROTECTION_RUN_TIME ///< seconds to run pump for rust protecion
+#define WP_PC_CLEAR_FAILURE_TIME CONFIG_WP_PC_CLEAR_FAILURE_TIME     ///< seconds to switch of mains voltage of pressure-control for error reset
+
 
 static run_time_T last_on_time, last_off_time;
 static wp_err_T wp_error;

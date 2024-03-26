@@ -4,6 +4,7 @@
  */
 
 #pragma once
+#include "rv_config.h"
 
 #ifndef STM32F1
 #define STM32F1

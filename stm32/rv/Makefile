@@ -9,7 +9,11 @@ help:
 	@$(info targets: doxy-usr-build, doxy-usr-view)
 	@$(info targets: doxy-dev-build, doxy-dev-view)
 	@$(info targets: doxy-api-build, doxy-api-view)
-	
+
+
+main.menuconfig:
+	cd src/main && menuconfig && python -m kconfgen  --kconfig Kconfig --config .config --output header rv_config.h
+
 ############# STM32F1/FIRMWARE ####################
 BUILD_TYPE ?= Debug # Debug,Release,Cellar
 
