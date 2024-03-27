@@ -40,12 +40,10 @@
 #define BUF_SIZE 512
 static char line[BUF_SIZE];
 
-
-
 class UoutWriterStm32 final: public UoutWriter {
 public:
   UoutWriterStm32(so_target_bits tgt) :
-      UoutWriter(static_cast<so_target_bits>(tgt | SO_TGT_STM32 )) {
+      UoutWriter(static_cast<so_target_bits>(tgt | SO_TGT_STM32)) {
   }
 
   UoutWriterStm32(const UoutWriterStm32&) = delete;
@@ -57,7 +55,6 @@ private:
   }
 };
 
-
 static bool stmTrace_checkCommandLine(const char *line) {
   if (strncmp(TRACE_MARKER, line, TRACE_MARKER_LEN) != 0)
     return false;
@@ -66,29 +63,32 @@ static bool stmTrace_checkCommandLine(const char *line) {
   return true;
 }
 
+static bool stm32com_get_commandline(char *buf, size_t buf_size) {
+  auto n = stm32_read_line(buf, buf_size, 1000);
+  if (n <= 0)
+    return false;
 
-static void do_work() {
-  int c;
-
-  int i = 0;
-
-  for (i = 0; ((c = stm32_getc(true)) != '\n'); ++i) {
-    if (c == -1)
-      return; // looks like a timeout. throw away received data
-    if (i + 2 >= BUF_SIZE)
-      return;
-    line[i] = c;
+  if (buf[n - 1] == '\n') {
+    buf[n - 1] = '\0';
+    return true;
+  } else {
+    ESP_LOGE(logtag, "%s: buffer full before line end. %d characters received", __func__, n);
+    return false;
   }
-  line[i] = '\0';
+  return false;
 
+}
+
+static bool do_work() {
+  if (!stm32com_get_commandline(line, sizeof line)) {
+    return false;
+  }
   if (watchDog_checkCommandLine(line))
-    return;
+    return true;
   if (stmTrace_checkCommandLine(line))
-    return;
+    return true;
 
   D(ESP_LOGI(logtag, "from_rv: received: <%s>", line));
-
-
 
   char *json = strstr(line, "{\"status\":");
   if (!json)
@@ -101,7 +101,7 @@ static void do_work() {
   if (json) {
     LockGuard lock(cli_mutex);
 
-    UoutWriterStm32 td { static_cast<so_target_bits>(SO_TGT_FLAG_JSON)};
+    UoutWriterStm32 td { static_cast<so_target_bits>(SO_TGT_FLAG_JSON) };
     DD(ESP_LOGI(logtag, "from_rv:request: <%s>", json));
     cli_process_json(json, td);
 
@@ -123,12 +123,17 @@ static void do_work() {
     uoCb_publish_wsJson(reply);
     D(ESP_LOGI(logtag, "to_webstream:reply: <%s>", reply));
   }
-}
 
+  return true;
+}
 
 static void stm32com_task(void *pvParameters) {
   for (;;) {
-    do_work();
+    if (!do_work()) {
+      // it seems the UART might not work right not (could be in BOOTLOADER mode with no event queue)
+      // just wait before trying again to avoid busy-loop
+      vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
   }
 }
 
@@ -147,8 +152,7 @@ void stm32com_setup_task(const struct cfg_stm32com *cfg_stm32com) {
   }
 
   xTaskCreate(stm32com_task, "stm32com", STACK_SIZE, &ucParameterToPass, tskIDLE_PRIORITY, &xHandle);
-  configASSERT( xHandle );
+  configASSERT(xHandle);
 
 }
-
 
