@@ -15,7 +15,7 @@
       name: "from URL",
       ota_name: "netotaFromURL",
       input: "input",
-      input_value: "http://192.168.1.76:8000/netmcu.bin",
+      input_value: "http://192.168.1.82:8000/netmcu.bin",
     });
   }
 </script>

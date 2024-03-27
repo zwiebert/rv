@@ -14,7 +14,7 @@
       name: "from URL",
       ota_name: "stm32_netotaFromURL",
       input: "input",
-      input_value: "http://192.168.1.76:8000/rv.bin",
+      input_value: "http://192.168.1.82:8000/rv.bin",
     });
   }
 </script>

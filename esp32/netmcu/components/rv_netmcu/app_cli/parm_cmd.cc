@@ -121,7 +121,6 @@ process_parmCmd(clpar p[], int len, class UoutWriter &td) {
     buf[strlen(buf) - 1] = '\0';
     strcat(buf, "}}\n");
     D(db_logi(logtag, "to_stm32: <%s>", buf));
-    LockGuard lock(stm32_mutex);
     stm32_write(buf, strlen(buf));
   }
 

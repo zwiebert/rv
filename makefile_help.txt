@@ -1,23 +1,30 @@
-Targets:
+############# Makefile Help ################
+
+## make targets for all:
 all                  -- re-build both firmwares
 
+## make targets for stm32/rv:
 stm32-menuconfig
 stm32-configure
 stm32-build
 stm32-all
-
-BUILT_TYPE         --  Debug|Release|...
-
 pre_build.stm        -- build libraries when using CubeMX-IDE (makefile build handles it by itself)
-
 stm32-doxy-xxx-yyyy  --  xxx=usr|api|dev, yyyy=build|view|auto
 
+## make variables for stm32/rv:
+BUILT_TYPE         --  Debug|Release|...
+	
+
+## make targets for esp32/netmcu:
 esp32-menuconfig
 esp32-reconfigure
 esp32-all
-
-flavor=              -- esp32|esp32dbg|test_host|...
 esp32-doxy-xxx-yyyy  --  xxx=usr|api|dev, yyyy=build|view|auto
+
+## make variables for esp32/netmcu:
+flavor=              -- esp32|esp32dbg|test_host|...
+PORT=                -- serial port for flashing
+
 
 
 

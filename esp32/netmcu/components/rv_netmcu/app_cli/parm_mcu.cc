@@ -18,9 +18,14 @@
 #include <app_uout/so_msg.h>
 #include "key_value_store/kvs_wrapper.h"
 
+#ifdef CONFIG_RV_NETMCU_DEBUG
+#define DEBUG
+#define D(x) x
+#else
+#define D(x)
+#endif
+#define logtag "rv.cli.mcu"
 
-//FIXME: It makes no sense to use debug print or log functions for CLI feedback (not even visible in telnet)
-#define logtag "parm_mcu"
 
 #define KEY_BOOT_COUNT "boot-count"
 

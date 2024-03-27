@@ -51,8 +51,8 @@ esp_err_t pingResults(ping_target_id_t msgType, esp_ping_found * pf){
 
   recv_count = pf->recv_count;
 
-  D(printf("AvgTime:%.1fmS Sent:%d Rec:%d Err:%d min(mS):%d max(mS):%d ", (float)pf->total_time/pf->recv_count, pf->send_count, pf->recv_count, pf->err_count, pf->min_time, pf->max_time ));
-  D(printf("Resp(mS):%d Timeouts:%d Total Time:%d\n",pf->resp_time, pf->timeout_count, pf->total_time));
+  D(printf("AvgTime:%.1fmS Sent:%lu Rec:%lu Err:%lu min(mS):%lu max(mS):%lu ", (float)pf->total_time/pf->recv_count, pf->send_count, pf->recv_count, pf->err_count, pf->min_time, pf->max_time ));
+  D(printf("Resp(mS):%lu Timeouts:%lu Total Time:%lu\n",pf->resp_time, pf->timeout_count, pf->total_time));
   waiting_results = 0;
   return ESP_OK;
 }

@@ -134,12 +134,12 @@ void AutoTimer::todo_loop() {
      mv.flags.is_due = should_valve_be_due(mv, time(0));
   }
   sort_magval_idxs();
-  D(db_logi(dbtag, "used_valves_count=%d, due_valves_count=%u", m_used_valves_count, m_due_valves_count));
+  D(db_logi(logtag, "used_valves_count=%d, due_valves_count=%u", m_used_valves_count, m_due_valves_count));
 
   for (auto ip : m_magval_due_idxs) {
      auto &v = m_magval[ip.idx];
      if (!v.flags.exists || !v.flags.is_due)
        break;
-     D(db_logi(dbtag, "Schedule valve number %d (%s). prio=%d", ip.idx, v.name, ip.prio));
+     D(db_logi(logtag, "Schedule valve number %d (%s). prio=%d", ip.idx, v.name, ip.prio));
   }
 }
