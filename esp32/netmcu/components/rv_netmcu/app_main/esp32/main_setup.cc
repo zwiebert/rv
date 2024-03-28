@@ -70,15 +70,12 @@ void mcu_init() {
   kvs_setup();
   config_ext_setup_txtio();
 
-  if constexpr (use_SERIAL) {
-    struct cfg_stm32 cfgStm32 = { .uart_tx_gpio = CONFIG_STM32_UART_TX_PIN, .uart_rx_gpio = CONFIG_STM32_UART_RX_PIN,
-        .boot_gpio_is_inverse = config_read_stm32_inv_bootpin(), .boot_gpio =
-        CONFIG_STM32_BOOT_PIN, .reset_gpio = CONFIG_STM32_RESET_PIN, };
-    stm32_setup(&cfgStm32);
+#ifdef CONFIG_STM32_USE_COMPONENT
+  config_setup_stm32();
 
-    struct cfg_stm32com cfg_stm32com = { .enable = true };
-    stm32com_setup_task(&cfg_stm32com);
-  }
+  struct cfg_stm32com cfg_stm32com = { .enable = true };
+  stm32com_setup_task(&cfg_stm32com);
+#endif
 
   io_puts("\r\n\r\n");
 

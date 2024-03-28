@@ -22,4 +22,4 @@ void soCfg_GPIO_MODES_AS_STRING(class UoutWriter &td);
 void soCfg_begin(class UoutWriter &td);
 void soCfg_end(class UoutWriter &td);
 
-void soCfg_STM32_BOOTGPIO_INV(class UoutWriter &td);
+

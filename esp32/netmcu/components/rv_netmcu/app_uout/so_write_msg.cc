@@ -112,6 +112,11 @@ void soMsg_KVS_ZN_ALL(class UoutWriter &td, const char *keyBase) {
     snprintf(key, sizeof key, "%s%d", keyBase, i);
     if (kvs_get_string(key, buf, sizeof buf)) {
       td.so().print(key, buf);
+    } else {
+      if (strcmp(keyBase, "zn") == 0)
+        td.so().print(key, "");
+      else
+        td.so().print(key, "0");
     }
   }
 }

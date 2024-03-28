@@ -21,7 +21,6 @@ enum configAppItem : i8 {
 #ifdef CONFIG_APP_USE_NETWORK
   CB_NETWORK_CONNECTION,
 #endif
-  CB_STM32_INV_BOOTPIN,
 #ifdef CONFIG_APP_USE_LPH
   CB_LPH,
 #endif

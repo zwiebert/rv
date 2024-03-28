@@ -117,9 +117,7 @@ void soCfg_GPIO_MODES_AS_STRING(class UoutWriter &td) {
 }
 
 
-void soCfg_STM32_BOOTGPIO_INV(class UoutWriter &td) {
-  td.so().print(settings_get_optKeyStr(CB_STM32_INV_BOOTPIN), config_read_stm32_inv_bootpin());
-}
+
 
 
 /*

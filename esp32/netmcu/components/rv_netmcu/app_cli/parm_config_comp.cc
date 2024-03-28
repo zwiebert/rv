@@ -182,6 +182,12 @@ void parmConfig_reconfig_comp(uint32_t changed_mask) {
     rtc_setup();
   }
 
+#ifdef CONFIG_STM32_USE_COMPONENT
+  if (changed_mask & CB_STM32_INV_BOOTPIN) {
+    mainLoop_callFun(config_setup_stm32);
+ }
+#endif
+
 #ifdef CONFIG_APP_USE_LAN
   if (changed_mask & CMB_lan) {
     mainLoop_callFun(config_setup_ethernet);

@@ -24,7 +24,6 @@ public:
 #ifdef CONFIG_APP_USE_NETWORK
     initField(CB_NETWORK_CONNECTION, "C_NW_CONN", otok::k_network, CBT_i8, soCfg_NETWORK);
 #endif
-    initField(CB_STM32_INV_BOOTPIN, "C_STM_INV_BP", otok::k_stm32_bootgpio_inv, CBT_i8, soCfg_STM32_BOOTGPIO_INV, STF_direct);
 #ifdef CONFIG_APP_USE_LPH
     initField(CB_LPH, "C_LPH", otok::NONE, CBT_blob, nullptr);
 #endif

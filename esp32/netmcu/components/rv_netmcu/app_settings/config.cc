@@ -41,9 +41,7 @@ const char* config_read_tz(char *d, unsigned d_size) {
 }
 #endif
 
-bool config_read_stm32_inv_bootpin() {
-  return !!config_read_item((CB_STM32_INV_BOOTPIN), 1);
-}
+
 
 #ifdef CONFIG_APP_USE_LPH
 bool config_read_lph(uint16_t lph[14]) {
