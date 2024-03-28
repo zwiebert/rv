@@ -40,9 +40,6 @@
 bool process_parmConfig_get_app(otok kt, const char *val, class UoutWriter &td) {
   switch (kt) {
 
-  case otok::k_stm32_bootgpio_inv:
-    soCfg_STM32_BOOTGPIO_INV(td);
-    return true;
 
   default:
     return false;

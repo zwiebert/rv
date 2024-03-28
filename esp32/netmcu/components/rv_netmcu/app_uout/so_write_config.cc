@@ -194,9 +194,6 @@ void soCfg_all_net(class UoutWriter &td) {
 #endif
 }
 
-void soCfg_all_rv(class UoutWriter &td) {
-  soCfg_STM32_BOOTGPIO_INV(td);
-}
 
 void soCfg_all_time(class UoutWriter &td) {
   soCfg_RTC(td);
@@ -207,6 +204,14 @@ void soCfg_all_time(class UoutWriter &td) {
   soCfg_DST(td);
 #endif
 }
+
+void soCfg_all_rv(class UoutWriter &td) {
+#ifdef CONFIG_STM32_USE_COMPONENT
+  soCfg_STM32_BOOTGPIO_INV(td);
+#endif
+}
+
+
 void soCfg_all(class UoutWriter &td) {
   soCfg_VERBOSE(td);
 

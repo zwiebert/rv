@@ -49,6 +49,12 @@ bool process_parmConfig_get_comp(otok kt, const char *val, class UoutWriter &td)
     soCfg_RTC(td);
     return true;
 
+#ifdef CONFIG_STM32_USE_COMPONENT
+  case otok::k_stm32_bootgpio_inv:
+    soCfg_STM32_BOOTGPIO_INV(td);
+    return true;
+#endif
+
   default: {
     if (auto sd = all_settings.get_SettingsData(kt); sd && sd->so_cfg_fun) {
       sd->so_cfg_fun(td);
