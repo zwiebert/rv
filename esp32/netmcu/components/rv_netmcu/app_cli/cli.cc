@@ -12,7 +12,7 @@
 #include "cli/mutex.hh"
 #include "cli/cli.h"
 #include "uout/status_json.hh"
-#include "stm32/stm32.h"
+#include "stm32/stm32.hh"
 #include "app_uout/status_output.h"
 #include "app_settings/config.h"
 #include <app_uout/so_config.h>
@@ -75,7 +75,7 @@ bool cli_checkStm32CommandLine(char *line) {
 /////////////// setup //////////////////
 
 static bool cliApp_redirect_to_rv(char *json) {
-constexpr char *TO_RV = "\"to\":\"rv\"";
+constexpr const char *TO_RV = "\"to\":\"rv\"";
   if (strstr(json, TO_RV)) {
     LockGuard lock(stm32_mutex);
     stm32_write(json, strlen(json));

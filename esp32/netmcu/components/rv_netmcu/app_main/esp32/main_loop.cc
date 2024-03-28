@@ -1,4 +1,5 @@
 #include "main.h"
+#include <stm32/stm32.hh>
 #include <cli/cli.h>
 #include <config_kvs/config.h>
 #include "main_loop/main_queue.hh"

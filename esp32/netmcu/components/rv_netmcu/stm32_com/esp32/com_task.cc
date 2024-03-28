@@ -1,7 +1,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "stm32_com/com_task.h"
 
-#include "stm32/stm32.h"
+#include "stm32/stm32.hh"
 #include "app_misc/common.h"
 #include "cli/cli.h"
 #include "cli/mutex.hh"

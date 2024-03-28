@@ -22,7 +22,7 @@
 #include "net/wifi_ap_setup.h"
 #include "net/wifi_station_setup.hh"
 #include "nvs_flash.h"
-#include "stm32/stm32.h"
+#include "stm32/stm32.hh"
 #include "storage/storage.h"
 #include "txtio/inout.h"
 #include "app_misc/watch_dog.h"
