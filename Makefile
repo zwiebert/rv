@@ -13,6 +13,7 @@ include rules_stm32.mk
 # add prefix esp32- at command line to make them using esp32/netmcu/Makefile without the esp32-prefix
 all_tgts_auto = all configure build
 
+host-test-all: esp32-host-test-all
 
 
 define GEN_RULE

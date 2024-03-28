@@ -5,7 +5,7 @@
 #
 # remove prefix esp32- on these targets
 esp32_tgts_auto = doxy-dev-build doxy-usr-build doxy-api-build doxy-dev-view doxy-usr-view doxy-api-view doxy-dev-auto doxy-usr-auto doxy-api-auto \
-		  test.cm.configure test.cm.build test.cm.ctest  test.cm.ctest.regex
+		  host-test-all test.cm.configure test.cm.build test.cm.ctest  test.cm.ctest.regex
 #
 # keep prefix esp32- on these targets
 esp32_tgts_auto2 = menuconfig flash configure all
