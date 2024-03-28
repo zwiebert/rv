@@ -9,7 +9,7 @@ export function websocket() {
   let ws = new WebSocket("ws://" + window.location.host + "/ws");
   // eslint-disable-next-line no-unused-vars
   ws.onopen = (evt) => {
-    ws.send(JSON.stringify({ to: "tfmcu", cmd: { p: "?" } }));
+    ws.send(JSON.stringify({ from:"wapp",to:"netmcu", cmd: { p: "?" } }));
     isOpen = true;
   };
   ws.onmessage = (evt) => {

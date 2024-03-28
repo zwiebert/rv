@@ -33,15 +33,14 @@ export function sendCmd(cmd) {
 
 export function sendKvs(cmd) {
   let url = "/cmd.json";
-  let obj = { from: "wapp" };
+  let obj = { from: "wapp", to: "netmcu" };
   obj.kvs = cmd;
   http_postRequest(url, obj);
 }
 
-export function sendRv(cmd) {
+export function sendRv(cmdobj) {
   let url = "/cmd.json";
-  let obj = { to: "rv" };
-  Object.assign(obj, cmd);
+  let obj = { from: "wapp", to: "rv", ...cmdobj };
   http_postRequest(url, obj);
 }
 
@@ -129,42 +128,42 @@ export function http_fetchByMask(mask, synchron) {
 }
 
 function fetchByMask2(mask, target) {
-  let tfmcu = { to: target };
+  let cmdobj = { from: "wapp", to: target };
 
-  if (mask & FETCH_CONFIG) add_kv(tfmcu, "config", "all", "?");
+  if (mask & FETCH_CONFIG) add_kv(cmdobj, "config", "all", "?");
 
-  if (mask & FETCH_BOOT_COUNT) add_kv(tfmcu, "mcu", "boot-count", "?");
+  if (mask & FETCH_BOOT_COUNT) add_kv(cmdobj, "mcu", "boot-count", "?");
 
   if (mask & FETCH_VERSION) {
-    add_kv(tfmcu, "mcu", "version", "?");
+    add_kv(cmdobj, "mcu", "version", "?");
   }
 
   if (mask & FETCH_RV_VERSION) {
-    add_kv(tfmcu, "cmd", "version", "?");
+    add_kv(cmdobj, "cmd", "version", "?");
   }
 
-  if (mask & FETCH_ZONE_NAMES) add_kv(tfmcu, "kvs", "zn", "?");
+  if (mask & FETCH_ZONE_NAMES) add_kv(cmdobj, "kvs", "zn", "?");
 
-  if (mask & FETCH_ZONE_LPHS) add_kv(tfmcu, "kvs", "lph", "?");
+  if (mask & FETCH_ZONE_LPHS) add_kv(cmdobj, "kvs", "lph", "?");
 
   if (mask & FETCH_ZONE_REMAINING_DURATIONS) {
-    add_kv(tfmcu, "cmd", "rem", "?");
+    add_kv(cmdobj, "cmd", "rem", "?");
   }
   if (mask & FETCH_ZONE_DURATIONS) {
-    add_kv(tfmcu, "cmd", "dur", "?");
+    add_kv(cmdobj, "cmd", "dur", "?");
   }
 
   if (mask & FETCH_ZONE_TIMERS) {
     ZoneTimers.set({});
-    add_kv(tfmcu, "cmd", "timer", "?");
+    add_kv(cmdobj, "cmd", "timer", "?");
   }
 
   if (mask & FETCH_RV_STATUS) {
-    add_kv(tfmcu, "cmd", "status", "?");
+    add_kv(cmdobj, "cmd", "status", "?");
   }
 
   let url = "/cmd.json";
-  http_postRequest(url, tfmcu);
+  http_postRequest(url, cmdobj);
 }
 
 export function fetchWithTimeout(url, data, timeout) {

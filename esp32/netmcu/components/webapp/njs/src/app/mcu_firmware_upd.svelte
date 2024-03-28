@@ -32,7 +32,7 @@
   let netota_isInProgress = false;
 
   function netota_FetchFeedback() {
-    let netmcu = { to: "tfmcu" };
+    let netmcu = { from:"wapp",to:"netmcu" };
     netmcu.mcu = {};
     netmcu.mcu[$McuFirmwareUpdChip + "ota"] = "?";
     let url = "/cmd.json";
@@ -44,7 +44,7 @@
     if (netota_isInProgress) return;
     McuFirmwareUpdState.set(0);
     McuFirmwareUpdChip.set(chip);
-    let netmcu = { to: "tfmcu" };
+    let netmcu = { from:"wapp",to:"netmcu" };
     netmcu.mcu = {};
     netmcu.mcu[$McuFirmwareUpdChip + "ota"] = ota_name;
     let url = "/cmd.json";

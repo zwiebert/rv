@@ -75,9 +75,8 @@ bool cli_checkStm32CommandLine(char *line) {
 /////////////// setup //////////////////
 
 static bool cliApp_redirect_to_rv(char *json) {
-#define TO_RV "{\"to\":\"rv\""
-#define TO_RV_LEN ( sizeof TO_RV - 1)
-  if (strncmp(json, TO_RV, TO_RV_LEN) == 0) {
+constexpr char *TO_RV = "\"to\":\"rv\"";
+  if (strstr(json, TO_RV)) {
     LockGuard lock(stm32_mutex);
     stm32_write(json, strlen(json));
     stm32_write(";\r\n", 3);

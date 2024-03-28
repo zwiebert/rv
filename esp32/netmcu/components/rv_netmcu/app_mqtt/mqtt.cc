@@ -150,7 +150,7 @@ static void io_mqtt_publish_topic_end_get_json(const UoutWriter &td, const char 
 
 
 void io_mqtt_publish_config(const char *s)  {
-    MyMqtt.publish("tfmcu/config_out", s);
+    MyMqtt.publish("rv/config_out", s);
 }
 
 void io_mqtt_publish_valve_status(int valve_number, bool state) {

@@ -13,26 +13,28 @@
     httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_LPHS);
   });
 
-  function postZoneData() {
-    let key = "lph"+$Z;
-    let val = document.getElementById("lph").value;
+  function postZoneData2() {
     let msg = {config:{}};
-    msg.config[key] = val;
+    msg.config["lph"+$Z] = lph;
     console.log(msg);
     httpFetch.sendRv(msg);
     
     msg = {};
     msg["lph"+$Z] = "?";
-    setTimeout(() => httpFetch.sendKvs(msg), 500);
+    setTimeout(() => httpFetch.sendKvs(msg), 1000);
   }
 
-  $: lph = $ZoneLPHs[$Z];
-  
+  $: lphx = $ZoneLPHs[$Z];
+  $: lph = lphx;
+
 </script>
 
+
 <table>
-  <tr><th>LPH</th><td><input type="number" id="lph" step="1" value={$ZoneLPHs[$Z]}></td></tr>
+  <tr><th>LPH</th><td><input type="number" step="1" bind:value={lph}></td></tr>
 </table>
 
-<button on:click={postZoneData}>{$_('app.save')}</button>
+<button on:click={postZoneData2}>{$_('app.save')}</button>
+
+
 
