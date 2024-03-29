@@ -8,7 +8,7 @@
 #include "app_config/proj_app_cfg.h"
 #include <string.h>
 #include "cli_imp.h"
-#include "app_cli/cli_app.h"
+#include "app_cli/cli_app.hh"
 #include "cli/mutex.hh"
 #include "cli/cli.h"
 #include "uout/status_json.hh"
@@ -111,9 +111,9 @@ static bool cliApp_checkPassword(clpar p[], int len, class UoutWriter &td) {
 
 
 
-
 void cliApp_setup() {
   cli_hook_process_json = cliApp_redirect_to_rv;
+  cli_hook_process_json_obj = process_objJson;
   cli_hook_checkPassword = cliApp_checkPassword;
 
   cli_parmHandler_find_cb = cli_parmHandler_find;

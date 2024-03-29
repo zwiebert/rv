@@ -6,6 +6,7 @@ set(srcs
     app_cli/parm_kvs.cc
     app_cli/parm_mcu.cc
     app_cli/parm_status.cc
+    app_cli/obj_json.cc
     
     app_main/esp32/main.cc app_main/esp32/main_setup.cc app_main/esp32/main_loop.cc
     app_main/esp32/unity_setup.cc app_main/esp32/main_loop_periodic.cc
@@ -41,7 +42,6 @@ endif()
 if(CONFIG_APP_USE_WEATHER_AUTO OR TEST_HOST)
   set(srcs ${srcs}  full_auto/fa_weather.cc
      full_auto/automatic_timer.cc
-     full_auto/from_json.cc
   )
 set(incdirs ${incdirs} full_auto/include)
 endif()

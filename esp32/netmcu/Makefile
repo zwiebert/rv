@@ -66,7 +66,7 @@ generate_protobuf: ../../mcu_com/build/mcu_com.pb.h ../../mcu_com/build/mcu_com.
 pre_build: generate_protobuf
 
 
-esp32_tgts_auto := menuconfig clean fullclean app monitor gdb gdbgui
+esp32_tgts_auto := menuconfig clean fullclean app monitor gdb gdbgui gdbtui
 define GEN_RULE
 .PHONY: esp32-$(1)
 esp32-$(1): pre_build

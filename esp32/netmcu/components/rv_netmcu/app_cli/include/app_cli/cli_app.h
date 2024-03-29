@@ -26,8 +26,6 @@ int process_parmKvs(clpar p[], int len, class UoutWriter &td);
 int process_parmStatus(clpar p[], int len, class UoutWriter &td);
 int process_parmProtoBuf(clpar p[], int len, class UoutWriter &td);
 }
-
-
 bool cli_checkStm32CommandLine(char *line);
 
 void cliApp_setup();

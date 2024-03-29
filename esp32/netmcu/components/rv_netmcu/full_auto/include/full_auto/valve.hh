@@ -31,29 +31,125 @@ struct MagValve {
     time_t next_time_scheduled = 0;
   } state;
 
-
   int to_json(char *dst, size_t dst_size) const {
-    auto n = snprintf(dst, dst_size, //
-        R"({"name":"%s","flags":{"active":%d,"exists":%d,"is_due":%d},"attr":{"duration_s":%d,"adapter":%d,"flow_lph":%d,"priority":%d,"interval_s":%d},"state":{"last_time_wet":%llu,"next_time_scheduled":%llu}})", //
-        name, //
-        flags.active, flags.exists, flags.is_due, //
-        attr.duration_s, attr.adapter, attr.flow_lph, attr.priority, attr.interval_s, //
-        (long long unsigned)state.last_time_wet, (long long unsigned)state.next_time_scheduled //
-    );
+    auto n =
+        snprintf(dst,
+            dst_size, //
+            R"({"name":"%s","flags":{"active":%d,"exists":%d,"is_due":%d},"attr":{"duration_s":%d,"adapter":%d,"flow_lph":%d,"priority":%d,"interval_s":%d},"state":{"last_time_wet":%llu,"next_time_scheduled":%llu}})", //
+            name, //
+            flags.active, flags.exists, flags.is_due, //
+            attr.duration_s, attr.adapter, attr.flow_lph, attr.priority, attr.interval_s, //
+            (long long unsigned) state.last_time_wet, (long long unsigned) state.next_time_scheduled //
+            );
 
     return n < dst_size ? n : 0;
   }
 
-
   /*
    * \brief parse JSON and then calls this->from_json(JsmnBase::Iterator &it)
    */
-  bool from_json(const char *json);
+  template<typename T, typename std::enable_if<!std::is_class<T>{},bool>::type = true>
+  bool from_json(T json) {
+    auto jsmn = Jsmn<32, T>(json);
+
+    if (!jsmn)
+      return false;
+
+    auto it = jsmn.begin();
+    return from_json(it);
+  }
 
   /*
    * \brief     initialize *this by default ctor and then get any values from parsed JSON object
    * \param it  Iterator pointing to the object token (JSMN_OBJECT)
    * \return
    */
-  bool from_json(JsmnBase::Iterator &it);
+  template<typename jsmn_iterator = Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator>{},bool>::type = true>
+  bool from_json(jsmn_iterator &it) {
+    assert(it->type == JSMN_OBJECT);
+
+    using token_handler_fun_type = bool (*)(MagValve &self, jsmn_iterator &it, int &err);
+    static const token_handler_fun_type tok_processRootChilds_funs[] = { //
+
+        [](MagValve &self, jsmn_iterator &it, int &err) -> bool {
+          if (it.keyIsEqual("flags", JSMN_OBJECT)) {
+            auto count = it[1].size;
+            for (it += 2; count > 0 && it; --count) {
+              if (it.getValue(self.flags.active, "active") //
+              || it.getValue(self.flags.exists, "exists") //
+                  || it.getValue(self.flags.is_due, "is_due")) {
+                it += 2;
+              } else {
+                ++err;
+                it.skip_key_and_value();
+              }
+            }
+            return true;
+          }
+          return false;
+        },
+
+        [](MagValve &self, jsmn_iterator &it, int &err) -> bool {
+          if (it.keyIsEqual("attr", JSMN_OBJECT)) {
+            auto count = it[1].size;
+            for (it += 2; count > 0 && it; --count) {
+              if (it.getValue(self.attr.duration_s, "duration_s") //
+              || it.getValue(self.attr.adapter, "adapter") //
+                  || it.getValue(self.attr.flow_lph, "flow_lph") //
+                  || it.getValue(self.attr.priority, "priority") //
+                  || it.getValue(self.attr.interval_s, "interval_s") //
+                      ) {
+                it += 2;
+              } else {
+                ++err;
+                it.skip_key_and_value();
+              }
+            }
+            return true;
+          }
+          return false;
+        },
+
+        [](MagValve &self, jsmn_iterator &it, int &err) -> bool {
+          if (it.keyIsEqual("state", JSMN_OBJECT)) {
+            auto count = it[1].size;
+            for (it += 2; count > 0 && it; --count) {
+              if (it.getValue(self.state.last_time_wet, "last_time_wet") //
+              || it.getValue(self.state.next_time_scheduled, "next_time_scheduled") //
+                  ) {
+                it += 2;
+              } else {
+                ++err;
+                it.skip_key_and_value();
+              }
+            }
+            return true;
+          }
+          return false;
+        },
+
+        [](self_type &self, jsmn_iterator &it, int &err) -> bool {
+          if (it.getValue(self.name, "name")) {
+            it += 2;
+            return true;
+          }
+          return false;
+        },
+
+        [](self_type &self, jsmn_iterator &it, int &err) -> bool {
+          return it.skip_key_and_value();
+        } };
+
+    int err = 0;
+    auto count = it->size;
+    for (++it; count > 0 && it; --count) {
+      for (auto fun : tok_processRootChilds_funs) {
+        if (fun(*this, it, err))
+          break;
+      }
+    }
+    return !err;
+
+  }
+
 };

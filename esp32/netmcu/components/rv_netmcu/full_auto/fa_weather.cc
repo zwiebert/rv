@@ -10,7 +10,7 @@
 
 static Weather_Provider_Owm weather_provider;
 static Weather_Irrigation weather_irrigation(&weather_provider);
-static AutoTimer at(&weather_irrigation);
+AutoTimer at(&weather_irrigation);
 
 static auto &wi = weather_irrigation;
 
@@ -32,7 +32,7 @@ int FaContentReader::open(const char *name, const char *query) {
 
   fda.is_open = true;
 
-  DT(at.dev_random_fill_data()); // XXX
+//  DT(at.dev_random_fill_data()); // XXX
 
   return fd;
 }

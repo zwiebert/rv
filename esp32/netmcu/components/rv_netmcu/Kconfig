@@ -11,7 +11,7 @@ menu "zwiebert: rv_netmcu"
 
   config APP_NUMBER_OF_VALVES
         int "Number of possible valves this system can control"
-        default 16
+        default 14
 
   config APP_FA_MAX_VALVE_GROUPS
         int "Max possible number of valve groups for full automatiion"
