@@ -39,7 +39,7 @@ if(CONFIG_APP_USE_PROTOBUF)
 endif()
 
 if(CONFIG_APP_USE_WEATHER_AUTO OR TEST_HOST)
-  set(srcs ${srcs}  full_auto/fa_weather.cc
+  set(srcs ${srcs}  full_auto/fa_weather.cc full_auto/setup.cc
      full_auto/automatic_timer.cc
   )
 set(incdirs ${incdirs} full_auto/include)

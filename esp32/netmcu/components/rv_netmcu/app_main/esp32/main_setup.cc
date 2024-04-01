@@ -13,6 +13,7 @@
 #include <esp_netif.h>
 #include <esp_log.h>
 #include <config_kvs/register_settings.hh>
+#include <full_auto/setup.hh>
 
 #define logtag "main"
 
@@ -135,7 +136,6 @@ void mcu_init() {
 
   if constexpr (use_FS)
     stor_setup();
-
   rtc_setup();
   cliApp_setup();
 #ifdef CONFIG_APP_USE_CLI_TASK
@@ -144,6 +144,9 @@ void mcu_init() {
 #error "currently unsupported" // FIXME: support CLI without its own task, or remove that APP_USE_CLI_TASK kconfig option
 #endif
 
+#ifdef CONFIG_APP_USE_WEATHER_AUTO
+  fa_setup(nullptr);
+#endif
   kvs_get_int32(KEY_BOOT_COUNTER, &boot_counter), kvs_store_int32(KEY_BOOT_COUNTER, ++boot_counter);
 
 }

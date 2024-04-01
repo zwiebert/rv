@@ -23,7 +23,10 @@
   $: auto_data_json = JSON.stringify(auto_data);
   $: sel_adapter_idx = 0;
   $: sel_zone_idx = -1;
-
+  let zones_exists = [];
+  function set_zone_exists(idx, val) {
+    zones_exists[idx] = val;
+  }
   $: {
     zones;
     console.log("new zones");
@@ -32,12 +35,24 @@
         sel_zone_idx = i;
       }
     }
+    for (let i = 0; i < zones.length; ++i) {
+      set_zone_exists(i, zones[i] !== null && zones[i].flags.exists);
+    }
   }
   $: {
-    if (zones[sel_zone_idx] && ("attr" in zones[sel_zone_idx]) )
-    sel_adapter_idx = zones[sel_zone_idx].attr.adapter;
+    if (zones[sel_zone_idx] && "attr" in zones[sel_zone_idx]) sel_adapter_idx = zones[sel_zone_idx].attr.adapter;
   }
 
+  function get_modified_existences() {
+    let result = [];
+    for (let i = 0; i < zones.length; ++i) {
+      if ((zones_exists[i] && (zones[i] === null || !zones[i].flags.exists)) || (!zones_exists[i] && zones[i] !== null && zones[i].flags.exists)) {
+        result.push(i);
+      }
+    }
+    console.log("modified flags.exists", result);
+    return result;
+  }
   function resp_data(obj) {
     auto_data = { ...obj };
   }
@@ -124,14 +139,39 @@
 </script>
 
 <div class="main-area">
-  <div class="area">
-    <button type="button" on:click={() => enable_zone([1, 2, 3, 4])}>Add Zone 4</button>
-    <br />
 
+    <table>
+      <tr>
+        {#each zones as v, i}
+          <th>{i}</th>
+        {/each}
+      </tr>
+      {#if zones_exists.length > 0}
+        <tr>
+          {#each zones as v, i}
+            <td><input type="checkbox" bind:checked={zones_exists[i]} /></td>
+          {/each}
+        </tr>
+      {/if}
+    </table>
+    <button
+      type="button"
+      on:click={() => {
+        const mel = get_modified_existences();
+        let obj = { json: { auto: {} } };
+        for (let i of mel){
+          const key = "zone."+i; 
+          obj.json.auto[key] = {flags:{exists:zones_exists[i]}} ;
+        }
+        httpFetch.http_postRequest("/cmd.json", obj);
+      }}>Apply</button
+    >
+
+  <div class="area">
     <select bind:value={sel_zone_idx}>
       {#each zones as v, i}
         {#if v !== null && v.flags.exists}
-          <option value={i}>{v.name} </option>
+          <option value={i}>{i}:{v.name} </option>
         {/if}
       {/each}
     </select>
@@ -208,38 +248,62 @@
       </tr>
       <tr>
         <th>Temp</th><td>{adapters[sel_adapter_idx].temp}</td>
-        <td><input type="range" 
-          disabled={adapters[sel_adapter_idx].flags.read_only}
-          bind:value={adapters[sel_adapter_idx].temp}
-          min="0.006" max="0.6" step="0.01"
-          /></td>
+        <td
+          ><input
+            type="range"
+            disabled={adapters[sel_adapter_idx].flags.read_only}
+            bind:value={adapters[sel_adapter_idx].temp}
+            min="0.006"
+            max="0.6"
+            step="0.01"
+          /></td
+        >
       </tr>
       <tr>
         <th>Humi</th><td>{adapters[sel_adapter_idx].humi}</td>
-        <td><input type="range" disabled={adapters[sel_adapter_idx].flags.read_only}
-          bind:value={adapters[sel_adapter_idx].humi}
-          min="0.001" max="0.1" step="0.001"
-           /></td>
+        <td
+          ><input
+            type="range"
+            disabled={adapters[sel_adapter_idx].flags.read_only}
+            bind:value={adapters[sel_adapter_idx].humi}
+            min="0.001"
+            max="0.1"
+            step="0.001"
+          /></td
+        >
       </tr>
       <tr>
         <th>Wind</th><td>{adapters[sel_adapter_idx].wind}</td>
-        <td><input type="range" disabled={adapters[sel_adapter_idx].flags.read_only}
-          bind:value={adapters[sel_adapter_idx].wind}
-          min="0.0001" max="0.01" step="0.001"
-           /></td>
+        <td
+          ><input
+            type="range"
+            disabled={adapters[sel_adapter_idx].flags.read_only}
+            bind:value={adapters[sel_adapter_idx].wind}
+            min="0.0001"
+            max="0.01"
+            step="0.001"
+          /></td
+        >
       </tr>
       <tr> </tr><tr>
         <th>Clouds</th><td>{adapters[sel_adapter_idx].clouds}</td>
-        <td><input type="range" disabled={adapters[sel_adapter_idx].flags.read_only} 
-          bind:value={adapters[sel_adapter_idx].clouds}
-          min="0.001" max="0.1" step="0.001"
-          /></td>
+        <td
+          ><input
+            type="range"
+            disabled={adapters[sel_adapter_idx].flags.read_only}
+            bind:value={adapters[sel_adapter_idx].clouds}
+            min="0.001"
+            max="0.1"
+            step="0.001"
+          /></td
+        >
       </tr>
     </table>
     <button type="button" on:click={get_data}>Reload</button>
     <button
       type="button"
       on:click={() => {
+        get_modified_existences();
         const key = "adapter." + sel_adapter_idx;
         let obj = { json: { auto: {} } };
         obj.json.auto[key] = adapters[sel_adapter_idx];
@@ -247,21 +311,20 @@
       }}>Apply</button
     >
   {/if}
-<hr>
-    <button
-      type="button"
-      on:click={() => {
-        let obj = { json: { auto: { command: {save:""}} } };
-        httpFetch.http_postRequest("/cmd.json", obj);
-      }}>Save</button
-    >
+  <hr />
+  <button
+    type="button"
+    on:click={() => {
+      let obj = { json: { auto: { command: { save: "" } } } };
+      httpFetch.http_postRequest("/cmd.json", obj);
+    }}>Save</button
+  >
 
-    <button
-      type="button"
-      on:click={() => {
-        let obj = { json: { auto: { command: {restore:""}} } };
-        httpFetch.http_postRequest("/cmd.json", obj);
-      }}>Restore</button
-    >
-
+  <button
+    type="button"
+    on:click={() => {
+      let obj = { json: { auto: { command: { restore: "" } } } };
+      httpFetch.http_postRequest("/cmd.json", obj);
+    }}>Restore</button
+  >
 </div>

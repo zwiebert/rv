@@ -47,9 +47,9 @@ void test_json()
     }
   }
 
-  at.save_this("at");
+  at.save_settings("at");
   AutoTimer at2;
-  at2.restore_this("at");
+  at2.restore_settings("at");
 
   WeatherAdapter ad;
   count = 0;

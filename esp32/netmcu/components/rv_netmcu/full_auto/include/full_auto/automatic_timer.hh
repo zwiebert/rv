@@ -19,40 +19,40 @@ class AutoTimer {
 public:
   AutoTimer(Weather_Irrigation *wi = nullptr) :
       m_wi(wi) {
-    m_adapters[0].flags.neutral = true;
-    m_adapters[0].flags.exists = true;
-    m_adapters[0].flags.read_only = true;
-    strcpy(m_adapters[0].name, "Neutral");
+    m_s.m_adapters[0].flags.neutral = true;
+    m_s.m_adapters[0].flags.exists = true;
+    m_s.m_adapters[0].flags.read_only = true;
+    strcpy(m_s.m_adapters[0].name, "Neutral");
   }
 
 public:
   /**
-   * \brief Save whole object as binary.
+   * \brief Save whole settings object as binary.
    * \param key  optional file name, must begin with "at."
    */
-  bool save_this(const char *key = default_save_key);
+  bool save_settings(const char *key = default_save_key);
   /**
-   * \brief Restore whole object from binary.
+   * \brief Restore whole settings object from binary.
    * \param key  optional file name, must begin with "at."
    */
-  bool restore_this(const char *key = default_save_key);
+  bool restore_settings(const char *key = default_save_key);
 
 public:
   void todo_loop();
 
 public:
   auto adapters_begin() {
-    return std::begin(m_adapters);
+    return std::begin(m_s.m_adapters);
   }
   auto adapters_end() {
-    return std::end(m_adapters);
+    return std::end(m_s.m_adapters);
   }
 
   auto valves_all_begin() {
-    return std::begin(m_magval);
+    return std::begin(m_s.m_magval);
   }
   auto valves_all_end() {
-    return std::end(m_magval);
+    return std::end(m_s.m_magval);
   }
 
 public:
@@ -90,22 +90,22 @@ public:
       return false;
     if (adapter.flags.read_only)
       return false;
-    m_adapters[idx] = adapter;
+    m_s.m_adapters[idx] = adapter;
     return true;
   }
   template<typename jsmn_iterator = Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
   bool update_adapter(int idx, jsmn_iterator &it) {
     if (!(0 <= idx && idx < CONFIG_APP_FA_MAX_WEATHER_ADAPTERS))
       return false;
-    if (m_adapters[idx].flags.read_only)
+    if (m_s.m_adapters[idx].flags.read_only)
       return false;
-    return m_adapters[idx].from_json(it);
+    return m_s.m_adapters[idx].from_json(it);
   }
 
   bool update(int idx, const MagValve &zone) {
     if (!(0 <= idx && idx < CONFIG_APP_NUMBER_OF_VALVES))
       return false;
-    m_magval[idx] = zone;
+    m_s.m_magval[idx] = zone;
     return true;
   }
 
@@ -113,7 +113,7 @@ public:
   bool update_zone(int idx, jsmn_iterator &it) {
     if (!(0 <= idx && idx < CONFIG_APP_NUMBER_OF_VALVES))
       return false;
-    return m_magval[idx].from_json(it);
+    return m_s.m_magval[idx].from_json(it);
   }
 
   template<typename jsmn_iterator = Jsmn_String::Iterator>
@@ -127,13 +127,13 @@ public:
 
       if (it.takeValue(cmds, "save")) {
         auto key = *cmds ? cmds : default_save_key;
-        if (save_this(key))
+        if (save_settings(key))
         continue;
         db_loge(our_logtag, "save with key <%s> failed", key);
       }
       if (it.takeValue(cmds, "restore")) {
         auto key = *cmds ? cmds : default_save_key;
-        if (restore_this(key))
+        if (restore_settings(key))
         continue;
         db_loge(our_logtag, "restore from key <%s> failed", key);
       }
@@ -215,10 +215,10 @@ public:
             ++it; // skip array token
             for (int i = 0; i < count; ++i) {
               if (it->type == JSMN_OBJECT) {
-                self.m_magval[i].from_json(it);
+                self.m_s.m_magval[i].from_json(it);
               } else if (it.value_equals_null()) {
                 // use {} for unchanged
-                self.m_magval[i] = MagValve();
+                self.m_s.m_magval[i] = MagValve();
                 ++it;
               } else {
                 ++err;
@@ -238,9 +238,9 @@ public:
             ++it;
             for (int i = 0; i < count; ++i) {
               if (it->type == JSMN_OBJECT) {
-                self.m_adapters[i].from_json(it);
+                self.m_s.m_adapters[i].from_json(it);
               } else if (it.value_equals_null()) {
-                self.m_adapters[i] = WeatherAdapter();
+                self.m_s.m_adapters[i] = WeatherAdapter();
                 ++it;
               } else {
                 ++err;
@@ -288,7 +288,7 @@ public:
       return true;
 
     auto interval_s = v.attr.interval_s;
-    const auto &adapter = m_adapters[v.attr.adapter];
+    const auto &adapter = m_s.m_adapters[v.attr.adapter];
     int dry_hours = 24 * 7;
     float f = 1.0;
 
@@ -311,7 +311,7 @@ private:
     for (int i = 0; i < CONFIG_APP_NUMBER_OF_VALVES; ++i) {
       auto &dst_due = m_magval_due_idxs[i];
       auto &dst_exists = m_magval_prio_idxs[i];
-      auto &src = m_magval[i];
+      auto &src = m_s.m_magval[i];
 
       dst_exists.idx = dst_due.idx = i;
 
@@ -342,8 +342,10 @@ private:
 
 private:
   char name[CONFIG_APP_FA_NAMES_MAX_LEN] = "";
+  struct {
   MagValve m_magval[CONFIG_APP_NUMBER_OF_VALVES];
   WeatherAdapter m_adapters[CONFIG_APP_FA_MAX_WEATHER_ADAPTERS];
+  } m_s;
   sorted_index m_magval_prio_idxs[CONFIG_APP_NUMBER_OF_VALVES];
   sorted_index m_magval_due_idxs[CONFIG_APP_NUMBER_OF_VALVES];
   uint8_t m_used_valves_count = 0, m_due_valves_count = 0;
