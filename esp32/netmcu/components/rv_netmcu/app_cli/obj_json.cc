@@ -7,9 +7,6 @@
 
 #define logtag  "rv.cli"
 
-#define adapter_prefix  "adapter."
-#define zone_prefix  "zone."
-
 extern AutoTimer at;
 
 bool process_objJson(class UoutWriter &td, Jsmn_String::Iterator &it) {
@@ -22,45 +19,7 @@ bool process_objJson(class UoutWriter &td, Jsmn_String::Iterator &it) {
 
       [](class UoutWriter &td, Jsmn_String::Iterator &it, int &err) -> bool {
         if (it.keyIsEqual("auto", JSMN_OBJECT)) {
-          auto count = it[1].size;
-          for (it += 2; count > 0 && it; --count) {
-
-            if (it.keyStartsWith(zone_prefix, JSMN_OBJECT)) {
-              MagValve zone;
-              int zone_idx = -1;
-              char key[16];
-              if (it.getValue(key)) {
-                zone_idx = atoi(key + strlen(zone_prefix));
-                if (at.update_zone(zone_idx, ++it)) {
-                  continue; // update succeeded
-                }
-              }
-              db_loge(logtag, "Could not update zone %d", zone_idx);
-              ++err;
-              continue;
-            }
-
-            if (it.keyStartsWith(adapter_prefix, JSMN_OBJECT)) {
-              WeatherAdapter adapter;
-              int adapter_idx = -1;
-              char key[16];
-              if (it.getValue(key)) {
-                adapter_idx = atoi(key + strlen(adapter_prefix));
-                if (at.update_adapter(adapter_idx, ++it)) {
-                  continue; // update succeeded
-                }
-              }
-              db_loge(logtag, "Could not update adapter %d", adapter_idx);
-              ++err;
-              continue;
-            }
-
-            db_loge(logtag, "unknown key found in json.auto");
-            ++err;
-            Jsmn_String::skip_key_and_value(it);
-
-          }
-          return true;
+          return at.handle_json(++it);
         }
         return false;
 

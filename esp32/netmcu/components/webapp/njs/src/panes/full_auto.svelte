@@ -17,21 +17,29 @@
     get_data();
   });
 
-  $: auto_data = { valves:[], adapters:[] };
+  $: auto_data = { valves: [], adapters: [] };
   $: zones = [...auto_data.valves];
   $: adapters = [...auto_data.adapters];
   $: auto_data_json = JSON.stringify(auto_data);
   $: sel_adapter_idx = 0;
-  $: sel_zone_idx = 0;
+  $: sel_zone_idx = -1;
 
   $: {
     zones;
     console.log("new zones");
+    for (let i = 0; sel_zone_idx < 0 && i < zones.length; ++i) {
+      if (zones[i] !== null) {
+        sel_zone_idx = i;
+      }
+    }
+  }
+  $: {
+    if (zones[sel_zone_idx] && ("attr" in zones[sel_zone_idx]) )
+    sel_adapter_idx = zones[sel_zone_idx].attr.adapter;
   }
 
-
   function resp_data(obj) {
-            auto_data = {... obj};
+    auto_data = { ...obj };
   }
   function get_data() {
     const fetch_data = {
@@ -94,24 +102,31 @@
 
   function enable_zone(idxs) {
     let obj = { json: { auto: {} } };
-    for(let idx of idxs) {
-      let zobj = {flags:{exists:1}};
+    for (let idx of idxs) {
+      let zobj = { flags: { exists: 1 } };
       zobj.name = "New zone " + idx;
-    const key = "zone." + idx;
-    obj.json.auto[key] = zobj; 
+      const key = "zone." + idx;
+      obj.json.auto[key] = zobj;
     }
     httpFetch.http_postRequest("/cmd.json", obj);
   }
 
+  function adapter_add(idxs) {
+    let obj = { json: { auto: {} } };
+    for (let idx of idxs) {
+      let aobj = { flags: { exists: 1 } };
+      aobj.name = "New adapter " + idx;
+      const key = "adapter." + idx;
+      obj.json.auto[key] = aobj;
+    }
+    httpFetch.http_postRequest("/cmd.json", obj);
+  }
 </script>
 
 <div class="main-area">
   <div class="area">
-
-      <button
-        type="button"
-          on:click={()=> enable_zone([1,2,3,4])}>Add Zone 4</button>
-          <br>
+    <button type="button" on:click={() => enable_zone([1, 2, 3, 4])}>Add Zone 4</button>
+    <br />
 
     <select bind:value={sel_zone_idx}>
       {#each zones as v, i}
@@ -126,9 +141,9 @@
         <tr>
           <th>Kvs-Name</th><td>{$ZoneNames[sel_zone_idx]}</td>
         </tr>
-          <th>Name</th><td>
-            <input type="text" bind:value={zones[sel_zone_idx].name} style="width:20ch;" />
-          </td>
+        <th>Name</th><td>
+          <input type="text" bind:value={zones[sel_zone_idx].name} style="width:20ch;" />
+        </td>
         <tr>
           <th>Priority</th><td>
             <input type="number" bind:value={zones[sel_zone_idx].attr.priority} style="width:8ch;" />
@@ -136,7 +151,8 @@
         </tr>
         <tr class="">
           <th>Adapter</th>
-          <td> <select bind:value={zones[sel_zone_idx].attr.adapter}>
+          <td>
+            <select bind:value={zones[sel_zone_idx].attr.adapter}>
               {#each adapters as v, i}
                 {#if v !== null && v.flags.exists}
                   <option value={i}>{v.name} </option>
@@ -157,14 +173,8 @@
           </td>
         </tr>
       </table>
-      <button
-        type="button"
-        on:click={get_data}>Reload</button
-      >
-      <button
-        type="button"
-        on:click={save_zone}>Save</button
-      >
+      <button type="button" on:click={get_data}>Reload</button>
+      <button type="button" on:click={save_zone}>Apply</button>
     {/if}
   </div>
 
@@ -177,29 +187,56 @@
     {/each}
   </select>
 
+  <button
+    type="button"
+    on:click={() => {
+      for (let i = 0; i < adapters.length; ++i) {
+        if (adapters[i] === null) {
+          adapter_add([i]);
+          break;
+        }
+      }
+    }}>+</button
+  >
+
   {#if sel_adapter_idx < adapters.length && adapters[sel_adapter_idx]}
     <table class="border-solid w-full">
       <tr>
+        <th>Name</th><td>
+          <input type="text" disabled={adapters[sel_adapter_idx].flags.read_only} bind:value={adapters[sel_adapter_idx].name} style="width:20ch;" />
+        </td>
+      </tr>
+      <tr>
         <th>Temp</th><td>{adapters[sel_adapter_idx].temp}</td>
-        <td><input type="range"></td>
+        <td><input type="range" 
+          disabled={adapters[sel_adapter_idx].flags.read_only}
+          bind:value={adapters[sel_adapter_idx].temp}
+          min="0.006" max="0.6" step="0.01"
+          /></td>
       </tr>
       <tr>
         <th>Humi</th><td>{adapters[sel_adapter_idx].humi}</td>
-        <td><input type="range"></td>
+        <td><input type="range" disabled={adapters[sel_adapter_idx].flags.read_only}
+          bind:value={adapters[sel_adapter_idx].humi}
+          min="0.001" max="0.1" step="0.001"
+           /></td>
       </tr>
       <tr>
         <th>Wind</th><td>{adapters[sel_adapter_idx].wind}</td>
-        <td><input type="range"></td>
+        <td><input type="range" disabled={adapters[sel_adapter_idx].flags.read_only}
+          bind:value={adapters[sel_adapter_idx].wind}
+          min="0.0001" max="0.01" step="0.001"
+           /></td>
       </tr>
       <tr> </tr><tr>
         <th>Clouds</th><td>{adapters[sel_adapter_idx].clouds}</td>
-        <td><input type="range"></td>
+        <td><input type="range" disabled={adapters[sel_adapter_idx].flags.read_only} 
+          bind:value={adapters[sel_adapter_idx].clouds}
+          min="0.001" max="0.1" step="0.001"
+          /></td>
       </tr>
     </table>
-      <button
-        type="button"
-        on:click={get_data}>Reload</button
-      >
+    <button type="button" on:click={get_data}>Reload</button>
     <button
       type="button"
       on:click={() => {
@@ -207,7 +244,24 @@
         let obj = { json: { auto: {} } };
         obj.json.auto[key] = adapters[sel_adapter_idx];
         httpFetch.http_postRequest("/cmd.json", obj);
-      }}>Save</button
+      }}>Apply</button
     >
   {/if}
+<hr>
+    <button
+      type="button"
+      on:click={() => {
+        let obj = { json: { auto: { command: {save:""}} } };
+        httpFetch.http_postRequest("/cmd.json", obj);
+      }}>Save</button
+    >
+
+    <button
+      type="button"
+      on:click={() => {
+        let obj = { json: { auto: { command: {restore:""}} } };
+        httpFetch.http_postRequest("/cmd.json", obj);
+      }}>Restore</button
+    >
+
 </div>

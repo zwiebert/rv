@@ -4,6 +4,7 @@
 #include "valve.hh"
 #include "weather/weather_irrigation.hh"
 #include "jsmn/jsmn_iterate.hh"
+#include <debug/log.h>
 #include <cstdint>
 #include <string>
 #include <list>
@@ -11,6 +12,8 @@
 #include <algorithm>
 
 class AutoTimer {
+  constexpr static const char *our_logtag = "auto_timer";
+  constexpr static const char *default_save_key = "at.default";
   using self_type = AutoTimer;
 
 public:
@@ -23,8 +26,16 @@ public:
   }
 
 public:
-  bool save_this(const char *key);
-  bool restore_this(const char *key);
+  /**
+   * \brief Save whole object as binary.
+   * \param key  optional file name, must begin with "at."
+   */
+  bool save_this(const char *key = default_save_key);
+  /**
+   * \brief Restore whole object from binary.
+   * \param key  optional file name, must begin with "at."
+   */
+  bool restore_this(const char *key = default_save_key);
 
 public:
   void todo_loop();
@@ -63,7 +74,7 @@ public:
    */
   int to_json(char *buf, size_t buf_size, int &obj_ct);
 
-  template<typename T, typename std::enable_if<!std::is_class<T>{},bool>::type = true>
+  template<typename T, typename std::enable_if<!std::is_class<T> { }, bool>::type = true>
   bool from_json(T json) {
     auto jsmn = Jsmn<1024, T>(json);
 
@@ -74,7 +85,6 @@ public:
     return from_json(it);
   }
 
-
   bool update(int idx, const WeatherAdapter &adapter) {
     if (!(0 <= idx && idx < CONFIG_APP_FA_MAX_WEATHER_ADAPTERS))
       return false;
@@ -83,13 +93,13 @@ public:
     m_adapters[idx] = adapter;
     return true;
   }
-  template<typename jsmn_iterator = Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator>{},bool>::type = true>
+  template<typename jsmn_iterator = Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
   bool update_adapter(int idx, jsmn_iterator &it) {
     if (!(0 <= idx && idx < CONFIG_APP_FA_MAX_WEATHER_ADAPTERS))
       return false;
     if (m_adapters[idx].flags.read_only)
       return false;
-     return  m_adapters[idx].from_json(it);
+    return m_adapters[idx].from_json(it);
   }
 
   bool update(int idx, const MagValve &zone) {
@@ -99,15 +109,98 @@ public:
     return true;
   }
 
-  template<typename jsmn_iterator = Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator>{},bool>::type = true>
+  template<typename jsmn_iterator = Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
   bool update_zone(int idx, jsmn_iterator &it) {
     if (!(0 <= idx && idx < CONFIG_APP_NUMBER_OF_VALVES))
       return false;
-     return  m_magval[idx].from_json(it);
+    return m_magval[idx].from_json(it);
   }
 
+  template<typename jsmn_iterator = Jsmn_String::Iterator>
+  bool cmd_obj_json(jsmn_iterator &it) {
+    int err = 0;
+    assert(it->type == JSMN_OBJECT);
+    auto count = it->size;
+    for (it += 1; count > 0 && it; --count) {
+      int cmdn = -1;
+      char cmds[32] = "";
 
-  template<typename jsmn_iterator = Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator>{},bool>::type = true>
+      if (it.takeValue(cmds, "save")) {
+        auto key = *cmds ? cmds : default_save_key;
+        if (save_this(key))
+        continue;
+        db_loge(our_logtag, "save with key <%s> failed", key);
+      }
+      if (it.takeValue(cmds, "restore")) {
+        auto key = *cmds ? cmds : default_save_key;
+        if (restore_this(key))
+        continue;
+        db_loge(our_logtag, "restore from key <%s> failed", key);
+      }
+
+      ++err;
+      it.skip_key_and_value();
+      continue;
+    }
+    return !err;
+  }
+  template<typename jsmn_iterator = Jsmn_String::Iterator>
+  bool handle_json(jsmn_iterator &it) {
+    int err = 0;
+    assert(it->type == JSMN_OBJECT);
+    auto count = it->size;
+    for (it += 1; count > 0 && it; --count) {
+
+      if (it.keyIsEqual("command", JSMN_OBJECT)) {
+        if (cmd_obj_json(++it))
+          continue;
+
+        db_loge(our_logtag, "Command failed");
+        ++err;
+        continue;
+      }
+
+      const auto zone_prefix = "zone.";
+
+      if (it.keyStartsWith(zone_prefix, JSMN_OBJECT)) {
+        MagValve zone;
+        int zone_idx = -1;
+        char key[16];
+        if (it.getValue(key)) {
+          zone_idx = atoi(key + strlen(zone_prefix));
+          if (update_zone(zone_idx, ++it)) {
+            continue; // update succeeded
+          }
+        }
+        db_loge(our_logtag, "Could not update zone %d", zone_idx);
+        ++err;
+        continue;
+      }
+
+      const auto adapter_prefix = "adapter.";
+      if (it.keyStartsWith(adapter_prefix, JSMN_OBJECT)) {
+        WeatherAdapter adapter;
+        int adapter_idx = -1;
+        char key[16];
+        if (it.getValue(key)) {
+          adapter_idx = atoi(key + strlen(adapter_prefix));
+          if (update_adapter(adapter_idx, ++it)) {
+            continue; // update succeeded
+          }
+        }
+        db_loge(our_logtag, "Could not update adapter %d", adapter_idx);
+        ++err;
+        continue;
+      }
+
+      db_loge(our_logtag, "unknown key found in json.auto");
+      ++err;
+      Jsmn_String::skip_key_and_value(it);
+
+    }
+    return !err;
+  }
+  template<typename jsmn_iterator = Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
   bool from_json(jsmn_iterator &it) {
     assert(it->type == JSMN_OBJECT);
 

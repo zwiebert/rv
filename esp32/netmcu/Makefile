@@ -98,7 +98,7 @@ FORCE:
 
 
 ############ openocd ###################################
-esp32_ocd_sh :=  $(realpath ./flavors/esp32/esp32_ocd.sh) $(esp32_src_dir) $(esp32_build_dir)
+esp32_ocd_sh :=  "$(esp32_src_dir)/esp32_ocd.sh" $(esp32_src_dir) $(esp32_build_dir)
 
 esp32-flash-ocd:
 	$(esp32_ocd_sh) flash

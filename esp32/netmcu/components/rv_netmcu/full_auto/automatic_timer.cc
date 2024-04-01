@@ -1,6 +1,7 @@
 #include <full_auto/automatic_timer.hh>
 #include <key_value_store/kvs_wrapper.h>
 #include <cstdio>
+#include <cstring>
 
 #include <debug/log.h>
 #ifdef CONFIG_RV_NETMCU_DEBUG
@@ -15,6 +16,8 @@ static constexpr char kvs_name[] = "full_auto";
 
 bool AutoTimer::save_this(const char *key) {
   bool result = false;
+  if (strstr(key, "at.") != key)
+    return false;
   if (auto h = kvs_open(kvs_name, kvs_WRITE)) {
     if (kvs_set_blob(h, key, this, sizeof *this)) {
       result = true;
@@ -28,6 +31,8 @@ bool AutoTimer::save_this(const char *key) {
 }
 bool AutoTimer::restore_this(const char *key) {
   bool result = false;
+  if (strstr(key, "at.") != key)
+    return false;
   if (auto h = kvs_open(kvs_name, kvs_READ)) {
     if (kvs_get_blob(h, key, this, sizeof *this)) {
       result = true;

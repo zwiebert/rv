@@ -16,6 +16,7 @@ part_otadata=$(grep otadata $SRCDIR/partitions.csv | sed -E 's/(.+),(.+),(.+),(.
 
 flash_all() {
 $ocd_cmd \
+	-c "program_esp  $BINDIR/bootloader/bootloader.bin 0x1000 verify" \
         -c "program_esp  $BINDIR/bootloader/bootloader.bin 0x1000 verify" \
         -c "program_esp  $BINDIR/partition_table/partition-table.bin 0x8000 verify" \
         -c "program_esp  $BINDIR/ota_data_initial.bin $part_otadata  verify" \
@@ -25,6 +26,7 @@ $ocd_cmd \
 
 flash_app() {
 $ocd_cmd \
+        -c "program_esp  $BINDIR/ota_data_initial.bin $part_otadata" \
         -c "program_esp  $BINDIR/netmcu.bin  $part_ota_0 reset exit"
 }
 
