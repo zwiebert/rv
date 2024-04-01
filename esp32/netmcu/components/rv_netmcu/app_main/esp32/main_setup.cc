@@ -12,6 +12,7 @@
 #include "main_loop/main_queue.hh"
 #include <esp_netif.h>
 #include <esp_log.h>
+#include <config_kvs/register_settings.hh>
 
 #define logtag "main"
 
@@ -68,9 +69,11 @@ void mcu_init() {
   mainLoop_setup(32);
 
   kvs_setup();
+
   config_ext_setup_txtio();
 
-#ifdef CONFIG_STM32_USE_COMPONENT
+
+#ifdef CONFIG_STM32_HAVE_COMPONENT
   config_setup_stm32();
 
   struct cfg_stm32com cfg_stm32com = { .enable = true };
@@ -86,8 +89,12 @@ void mcu_init() {
     ipnet_CONNECTED_cb = main_setup_ip_dependent;
     enum nwConnection network = config_read_network_connection();
 
-    if (use_AP_FALLBACK || network != nwNone)
+#ifdef CONFIG_APP_USE_AP_FALLBACK
       esp_netif_init();
+#else
+    if (network != nwNone)
+      esp_netif_init();
+#endif
 
 #ifdef PING_NOT_BROKEN // pings will timeout with latest ESP-IDF (was working April 2020, broken April 2021 or earlier)
     //XXX reset tcp/ip adapter here instead of reboot?
@@ -96,29 +103,30 @@ void mcu_init() {
     };
 #endif
 
-    if constexpr (use_WLAN) {
+#ifdef CONFIG_APP_USE_WLAN
       if (network == nwWlanSta)
         config_setup_wifiStation();
-    }
+#endif
 
-    if constexpr (use_WLAN_AP) {
+#ifdef CONFIG_APP_USE_WLAN_AP
       if (network == nwWlanAp)
         lfa_createWifiAp(); // XXX: Create the fall-back AP. Should we have a regular configured AP also?
-    }
+#endif
 
-    if constexpr (use_LAN) {
+
+#ifdef CONFIG_APP_USE_LAN
       if (network == nwLan)
         config_setup_ethernet();
-    }
+#endif
 
-    if constexpr (use_AP_FALLBACK) {
+#ifdef CONFIG_APP_USE_AP_FALLBACK
       if (network != nwWlanAp)
         tmr_checkNetwork_start();
-    }
+#endif
 
-    if constexpr (use_HTTP) {
+#ifdef CONFIG_APP_USE_HTTP
       hts_setup_content();
-    }
+#endif
 
   }
   ////Orig

@@ -2,6 +2,7 @@
  * \file   app_config/host/sdkconfig.h
  * \brief  Default configuration values for host (tests)
  */
+#define CONFIG_NET_MQTT_CLIENT_HAVE_COMPONENT 1
 #define CONFIG_APP_FA_NAMES_MAX_LEN 32
 #define CONFIG_APP_NUMBER_OF_VALVES 16
 #define CONFIG_APP_FA_MAX_VALVE_GROUPS 16

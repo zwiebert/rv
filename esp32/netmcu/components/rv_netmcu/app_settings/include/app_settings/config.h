@@ -66,7 +66,6 @@ const char *config_read_tz(char *d, unsigned d_size);
 #ifdef CONFIG_APP_USE_NETWORK
 enum nwConnection  config_read_network_connection();
 #endif
-bool config_read_stm32_inv_bootpin();
 
 bool config_read_lph(uint16_t lph[14]);
 bool config_save_lph(uint16_t lph[14]);

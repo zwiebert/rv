@@ -2,7 +2,7 @@
 #include <app_config/proj_app_cfg.h>
 
 #include <app_settings/config.h>
-#include <app_settings/all_settings.hh>
+
 #include <app_misc/rtc.h>
 #include "cli_imp.h"
 #include <app_uout/so_config.h>
@@ -16,8 +16,15 @@
 #ifdef CONFIG_APP_USE_HTTP
 #include <net_http_server/http_server_setup.h>
 #endif
+#ifdef CONFIG_NET_HTTP_SERVER_HAVE_COMPONENT
+#include <net_http_server/comp_glue.hh>
+#endif
 #ifdef CONFIG_APP_USE_NTP
 #include <net/ntp_client_setup.hh>
+#endif
+
+#ifdef CONFIG_STM32_HAVE_COMPONENT
+#include <stm32/comp_glue.hh>
 #endif
 
 #include "main_loop/main_queue.hh"
@@ -49,14 +56,14 @@ bool process_parmConfig_get_comp(otok kt, const char *val, class UoutWriter &td)
     soCfg_RTC(td);
     return true;
 
-#ifdef CONFIG_STM32_USE_COMPONENT
+#ifdef CONFIG_STM32_HAVE_COMPONENT
   case otok::k_stm32_bootgpio_inv:
     soCfg_STM32_BOOTGPIO_INV(td);
     return true;
 #endif
 
   default: {
-    if (auto sd = all_settings.get_SettingsData(kt); sd && sd->so_cfg_fun) {
+    if (auto sd = comp_sett.get_SettingsData(kt); sd && sd->so_cfg_fun) {
       sd->so_cfg_fun(td);
       return true;
     }

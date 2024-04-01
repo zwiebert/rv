@@ -45,20 +45,20 @@ const char* config_read_tz(char *d, unsigned d_size) {
 
 #ifdef CONFIG_APP_USE_LPH
 bool config_read_lph(uint16_t lph[14]) {
-  return config_read_item_b(settings_get_kvsKey(CB_LPH), (void*)lph, sizeof(uint16_t) * 14, (void*)0) != 0;
+  return config_read_item_b(comp_sett.get_kvsKey(CB_LPH), (void*)lph, sizeof(uint16_t) * 14, (void*)0) != 0;
 }
 bool config_save_lph(uint16_t lph[14]) {
-  return config_save_item_b(settings_get_kvsKey(CB_LPH), (void*)lph, sizeof(uint16_t) * 14);
+  return config_save_item_b(comp_sett.get_kvsKey(CB_LPH), (void*)lph, sizeof(uint16_t) * 14);
 }
 #endif
 
 #ifdef CONFIG_APP_USE_PROTOBUF
 bool config_save_pb64(enum configItem item, const char *pb64) {
-  return config_save_item_s(settings_get_kvsKey(item), pb64);
+  return config_save_item_s(comp_sett.get_kvsKey(item), pb64);
 }
 
 bool config_read_pb64(enum configItem item, char *pb64_buf, size_t buf_size) {
-  return config_read_item_s(settings_get_kvsKey(item), pb64_buf, buf_size, "");
+  return config_read_item_s(comp_sett.get_kvsKey(item), pb64_buf, buf_size, "");
 }
 
 bool config_save_pb(enum configItem item, const uint8_t *pb, size_t pb_len) {

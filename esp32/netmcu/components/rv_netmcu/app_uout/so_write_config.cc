@@ -45,14 +45,14 @@ void soCfg_RTC(class UoutWriter &td) {
 
 void soCfg_NETWORK(class UoutWriter &td) {
 #ifdef CONFIG_APP_USE_NETWORK
-  td.so().print(settings_get_optKeyStr(CB_NETWORK_CONNECTION),cfg_args_network[config_read_network_connection()]);
+  td.so().print(comp_sett.get_optKeyStr(CB_NETWORK_CONNECTION),cfg_args_network[config_read_network_connection()]);
 #endif
 }
 
 void soCfg_TZ(class UoutWriter &td) {
 #ifdef USE_POSIX_TIME
   char buf[64];
-  td.so().print(settings_get_optKeyStr(CB_TZ),config_read_tz(buf, sizeof buf));
+  td.so().print(comp_sett.get_optKeyStr(CB_TZ),config_read_tz(buf, sizeof buf));
 #endif
 }
 
@@ -138,12 +138,24 @@ void soCfg_GPIO_MODES_AS_STRING(class UoutWriter &td) {
 #include "app_settings/app_settings.hh"
 #include "net/ipnet.h"
 #include "txtio/inout.h"
+#include "txtio/comp_glue.hh"
 #include "uout/status_json.hh"
 #include "app_uout/status_output.h"
 
 #include <app_uout/so_config.h>
 
-//#include "utils_misc/int_macros.h"
+#ifdef CONFIG_NET_HTTP_SERVER_HAVE_COMPONENT
+#include <net_http_server/comp_glue.hh>
+#endif
+#ifdef CONFIG_NET_HAVE_COMPONENT
+#include <net/comp_glue.hh>
+#endif
+#ifdef CONFIG_NET_MQTT_CLIENT_HAVE_COMPONENT
+#include <net_mqtt/comp_glue.hh>
+#endif
+#ifdef CONFIG_STM32_USE_COMPONENT
+#include <stm32/comp_glue.hh>
+#endif
 
 #include <string.h>
 #include <stdio.h>

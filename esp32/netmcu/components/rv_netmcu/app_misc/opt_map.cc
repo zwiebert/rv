@@ -41,3 +41,6 @@ const OptMap opt_map;
 otok optMap_findToken(const char *key) {
   return opt_map.get(key);
 }
+const char *optMap_getString(otok tok) {
+  return otok_strings[(int)tok];
+}

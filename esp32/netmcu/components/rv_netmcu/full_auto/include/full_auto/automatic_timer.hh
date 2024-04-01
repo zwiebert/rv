@@ -4,7 +4,7 @@
 #include "valve.hh"
 #include "weather/weather_irrigation.hh"
 #include "jsmn/jsmn_iterate.hh"
-
+#include <cstdint>
 #include <string>
 #include <list>
 #include <iterator>
