@@ -14,7 +14,7 @@
 #include "weather/weather_provider_owm.hh"
 #include <full_auto/automatic_timer.hh>
 
-#ifdef CONFIG_RV_NETMCU_TEST_DEBUG
+#if 1 //def   CONFIG_RV_NETMCU_TEST_DEBUG
 #include <iostream>
 using namespace std;
 #define DEBUG
@@ -77,19 +77,26 @@ void test_at_from_json() {
   static AutoTimer at1, at2;
   static const auto buf_size = 10000;
   static char buf1[buf_size], buf2[buf_size];
-  int obj_ct1 = 0, obj_ct2 = 0;
+  int obj_ct1 = 0, obj_ct2 = 0, state;
+
 
 
   at1.dev_random_fill_data();
-  TEST_ASSERT_LESS_THAN_INT_MESSAGE(buf_size, at1.to_json(buf1, buf_size, obj_ct1), "Read JSON into large buffer in one go");
-  TEST_ASSERT_LESS_THAN_INT_MESSAGE(0, obj_ct1, "Reach EOF because of large enough buffer");
-  TEST_ASSERT_EQUAL_INT_MESSAGE( -at.TOTAL_OBJS, obj_ct1,  "Make TOTAL_OBJS in JSON by at.to_json()");
+  int n = 0;
+  buf1[n++] = '{';
+  TEST_ASSERT_LESS_THAN_INT_MESSAGE(buf_size, at1.to_json(buf1+n, buf_size-n, obj_ct1, state), "Read JSON into large buffer in one go");
+  strcat(buf1, "}");
+  TEST_ASSERT_EQUAL_INT_MESSAGE(1, state, "Reach EOF because of large enough buffer");
+  TEST_ASSERT_EQUAL_INT_MESSAGE(at.TOTAL_OBJS, obj_ct1,  "Make TOTAL_OBJS in JSON by at.to_json()");
   D(cout << "json in buf1: <" << buf1 << ">\n");
 
   TEST_ASSERT_TRUE_MESSAGE(at2.from_json(buf1), "Read back JSON we produced above");
-  TEST_ASSERT_LESS_THAN_INT_MESSAGE(buf_size, at2.to_json(buf2, buf_size, obj_ct2), "Read JSON into large buffer in one go");
-  TEST_ASSERT_LESS_THAN_INT_MESSAGE(0, obj_ct2, "Reach EOF because of large enough buffer");
-  TEST_ASSERT_EQUAL_INT_MESSAGE( -at.TOTAL_OBJS, obj_ct2,  "Make TOTAL_OBJS in JSON by at.to_json()");
+  n = 0;
+  buf2[n++] = '{';
+  TEST_ASSERT_LESS_THAN_INT_MESSAGE(buf_size, at2.to_json(buf2+n, buf_size-n, obj_ct2, state), "Read JSON into large buffer in one go");
+  strcat(buf2, "}");
+  TEST_ASSERT_EQUAL_INT_MESSAGE(1, state, "Reach EOF because of large enough buffer");
+  TEST_ASSERT_EQUAL_INT_MESSAGE(at.TOTAL_OBJS, obj_ct2,  "Make TOTAL_OBJS in JSON by at.to_json()");
   D(cout << "json in buf2: <" << buf2 << ">\n");
 
   TEST_ASSERT_EQUAL_STRING_MESSAGE(buf1, buf2, "Write at1 to buf1, Read buf1 into at2. Write at2 to buf2");
