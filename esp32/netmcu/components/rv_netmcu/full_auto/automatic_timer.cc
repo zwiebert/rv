@@ -43,71 +43,28 @@ bool AutoTimer::restore_settings(const char *key) {
   return result;
 }
 
-template<typename T>
-int to_json_tmpl(char *buf, size_t buf_size, int &obj_ct, int &rel_obj_idx, T *arr, size_t arr_size, const char *key) {
-  const int leave_space = 150;
-  if (!(0 <= rel_obj_idx && rel_obj_idx < arr_size && leave_space < buf_size))
-    return 0;
-
+#define TO_JSON_FLAG_EXISTS v.flags.exists
+#include <weather/to_json.hh>
+int AutoTimer::to_json(char *buf, size_t buf_size, int &obj_ct, int &state, int start_ct) {
   int bi = 0;
-  int key_len = 0;
-  const int old_rel_obj_idx = rel_obj_idx;
+  int arr_idx = obj_ct - start_ct;
+  const auto total_objs = TOTAL_OBJS + (m_wi ? m_wi->TOTAL_OBJS:0);
+  if (!(0 <= arr_idx && arr_idx < total_objs))
+    return 0; // out of our range, maybe interpreted as EOF by caller
 
-  if (rel_obj_idx == 0) {
-    bi += key_len = snprintf(buf + bi, buf_size - bi, R"("%s":)", key);
+  bi += array_to_json_tmpl(buf + bi, buf_size - bi, obj_ct, &m_s.m_magval[0], CONFIG_APP_NUMBER_OF_VALVES, "valves", start_ct);
+  start_ct += CONFIG_APP_NUMBER_OF_VALVES;
+
+  bi += array_to_json_tmpl(buf + bi, buf_size - bi, obj_ct, &m_s.m_adapters[0], CONFIG_APP_FA_MAX_WEATHER_ADAPTERS, "adapters", start_ct);
+  start_ct += CONFIG_APP_FA_MAX_WEATHER_ADAPTERS;
+
+  if (m_wi) {
+    int state;
+    bi += m_wi->to_json(buf + bi, buf_size - bi, obj_ct, state, start_ct);
   }
 
-  for (int &i = rel_obj_idx; leave_space < (buf_size - bi) && i < arr_size; ++i) {
-    buf[bi++] = i == 0 ? '[' : ',';
-    const auto &v = arr[i];
 
-    if (v.flags.exists) {
-      if (int br = v.to_json(buf + bi, buf_size - bi); br)
-        bi += br;
-      else {
-        --bi;  // remove last comma (or bracket)
-        goto done;
-      }
-    } else {
-      memcpy(&buf[bi], "null", 4), (bi += 4);
-    }
-
-    if (i + 1 == arr_size) {
-      buf[bi++] = ']';
-      buf[bi++] = ',';
-    }
-  }
-
-  done: auto objs_done = rel_obj_idx - old_rel_obj_idx;
-  if (!objs_done && key_len)
-    bi -= key_len;
-
-  obj_ct += objs_done;
-  return bi;
-}
-
-int AutoTimer::to_json(char *buf, size_t buf_size, int &obj_ct) {
-  int bi = 0;
-  if (obj_ct < 0) // Check EOF
-    return 0;
-  if (obj_ct == 0)
-    buf[bi++] = '{';
-
-
-  int obj_rel_idx = obj_ct;
-
-
-  bi += to_json_tmpl(buf + bi, buf_size - bi, obj_ct, obj_rel_idx, &m_s.m_magval[0], CONFIG_APP_NUMBER_OF_VALVES, "valves");
-  obj_rel_idx -= CONFIG_APP_NUMBER_OF_VALVES;
-
-
-  bi += to_json_tmpl(buf + bi, buf_size - bi, obj_ct, obj_rel_idx, &m_s.m_adapters[0], CONFIG_APP_FA_MAX_WEATHER_ADAPTERS, "adapters");
-
-  if (obj_ct >= TOTAL_OBJS) {
-    buf[bi - 1] = '}';
-    obj_ct *= -1; // Set EOF (minus sign on obj_ct)
-  }
-
+  state = arr_idx+1 == total_objs;
   return bi;
 }
 
@@ -130,22 +87,21 @@ void AutoTimer::dev_random_fill_data() {
   }
 }
 
-
 void AutoTimer::todo_loop() {
   // TODO: the factor should be valve dependent (dry_time as parameter)
   m_f = m_wi ? m_wi->get_simple_irrigation_factor(36) : 1.0;
 
   // first pass: mark all due valves with flag.is_due
   for (MagValve &mv : m_s.m_magval) {
-     mv.flags.is_due = should_valve_be_due(mv, time(0));
+    mv.flags.is_due = should_valve_be_due(mv, time(0));
   }
   sort_magval_idxs();
   D(db_logi(logtag, "used_valves_count=%d, due_valves_count=%u", m_used_valves_count, m_due_valves_count));
 
   for (auto ip : m_magval_due_idxs) {
-     auto &v = m_s.m_magval[ip.idx];
-     if (!v.flags.exists || !v.flags.is_due)
-       break;
-     D(db_logi(logtag, "Schedule valve number %d (%s). prio=%d", ip.idx, v.name, ip.prio));
+    auto &v = m_s.m_magval[ip.idx];
+    if (!v.flags.exists || !v.flags.is_due)
+      break;
+    D(db_logi(logtag, "Schedule valve number %d (%s). prio=%d", ip.idx, v.name, ip.prio));
   }
 }

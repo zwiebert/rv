@@ -5,6 +5,7 @@
 #include "weather/weather_irrigation.hh"
 #include "jsmn/jsmn_iterate.hh"
 #include <debug/log.h>
+#include <uout/so_target_desc.hh>
 #include <cstdint>
 #include <string>
 #include <list>
@@ -58,7 +59,7 @@ public:
 public:
 
   /**
-   * \brief  reads member objects in JSON format
+   * \brief  read out member objects in JSON format in chunks
    *
    * This is called from a read function which will call it multiple times until all data was read
    *
@@ -67,12 +68,12 @@ public:
    * \param obj_ct    holds the state (where we were at return). Needs to passed unchanged to next call.
    *                  obj_ct holds the number of objects
    *                  if obj_ct is -1 (EOF), the function does nothing
-   *
+   * \param start_ct  as long as obj_ct is less than this parameter, do nothing
    * \return          returns the number of bytes written to buf
    *                  returns 0 for EOF or if buffer was not large enough
    * .
    */
-  int to_json(char *buf, size_t buf_size, int &obj_ct);
+  int to_json(char *buf, size_t buf_size, int &obj_ct, int &state, int start_ct = 0);
 
   template<typename T, typename std::enable_if<!std::is_class<T> { }, bool>::type = true>
   bool from_json(T json) {
@@ -145,7 +146,7 @@ public:
     return !err;
   }
   template<typename jsmn_iterator = Jsmn_String::Iterator>
-  bool handle_json(jsmn_iterator &it) {
+  bool handle_json(UoutWriter &td, jsmn_iterator &it) {
     int err = 0;
     assert(it->type == JSMN_OBJECT);
     auto count = it->size;

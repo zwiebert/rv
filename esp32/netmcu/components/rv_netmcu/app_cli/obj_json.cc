@@ -1,7 +1,7 @@
 #include <app_cli/cli_app.hh>
 #include <jsmn/jsmn_iterate.hh>
 #include <debug/log.h>
-
+#include <uout/so_target_desc.hh>
 #include <full_auto/adapter.hh>
 #include <full_auto/automatic_timer.hh>
 
@@ -9,7 +9,7 @@
 
 extern AutoTimer at;
 
-bool process_objJson(class UoutWriter &td, Jsmn_String::Iterator &it) {
+bool process_objJson(UoutWriter &td, Jsmn_String::Iterator &it) {
   db_loge("test.json_obj", "all_json: <%s>", it.get_json());
 
   assert(it->type == JSMN_OBJECT);
