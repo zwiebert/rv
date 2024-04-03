@@ -16,7 +16,7 @@
 #include "app_settings/app_settings.hh"
 #include "net/ipnet.h"
 #include "txtio/inout.h"
-#include "uout/status_json.hh"
+#include "uout/uout_builder_json.hh"
 #include "app_uout/status_output.h"
 #include <app_uout/so_config.h>
 #include <utils_time/run_time.h>
@@ -139,7 +139,7 @@ void soCfg_GPIO_MODES_AS_STRING(class UoutWriter &td) {
 #include "net/ipnet.h"
 #include "txtio/inout.h"
 #include "txtio/comp_glue.hh"
-#include "uout/status_json.hh"
+#include "uout/uout_builder_json.hh"
 #include "app_uout/status_output.h"
 
 #include <app_uout/so_config.h>

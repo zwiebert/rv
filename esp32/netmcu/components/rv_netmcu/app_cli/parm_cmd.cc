@@ -10,7 +10,7 @@
 #include "cli/cli.h"
 #include "app_cli/cli_app.h"
 #include "app_uout/status_output.h"
-#include "uout/status_json.hh"
+#include "uout/uout_builder_json.hh"
 #include <uout/cli_out.h>
 #include "app_misc/opt_map.hh"
 #include "debug/dbg.h"

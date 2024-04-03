@@ -6,7 +6,7 @@
 #include "weather/to_json.hh"
 #include "jsmn/jsmn_iterate.hh"
 #include <debug/log.h>
-#include <uout/so_target_desc.hh>
+#include <uout/uout_writer.hh>
 #include <cstdint>
 #include <string>
 #include <list>

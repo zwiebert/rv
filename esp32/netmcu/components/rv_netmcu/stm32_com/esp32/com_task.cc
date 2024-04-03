@@ -19,7 +19,7 @@
 #include <uout/uo_callbacks.h>
 #include "time.h"
 #include "txtio/inout.h"
-#include "uout/status_json.hh"
+#include "uout/uout_builder_json.hh"
 #include <errno.h>
 #include <string.h>
 #include <sys/select.h>

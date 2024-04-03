@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include "cli/cli.h"
 #include "cli/mutex.hh"
-#include "uout/status_json.hh"
+#include "uout/uout_builder_json.hh"
 #include "app_uout/status_output.h"
 #include <app_uout/callbacks.h>
 #include <uout/uo_callbacks.h>

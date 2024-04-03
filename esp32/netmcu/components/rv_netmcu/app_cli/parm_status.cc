@@ -17,7 +17,7 @@
 #include "cli/cli.h"
 #include "app_cli/cli_app.h"
 #include "app_uout/status_output.h"
-#include "uout/status_json.hh"
+#include "uout/uout_builder_json.hh"
 #include <uout/cli_out.h>
 #include "debug/dbg.h"
 #include "utils_misc/int_macros.h"

@@ -1,7 +1,7 @@
 #include <app_cli/cli_app.hh>
 #include <jsmn/jsmn_iterate.hh>
 #include <debug/log.h>
-#include <uout/so_target_desc.hh>
+#include <uout/uout_writer.hh>
 #include <full_auto/adapter.hh>
 #include <full_auto/automatic_timer.hh>
 

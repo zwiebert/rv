@@ -4,7 +4,7 @@
 #include <txtio/txtio_mutex.hh>
 #include <app_uout/so_msg.h>
 #include <app_uout/so_types.h>
-#include <uout/status_json.hh>
+#include <uout/uout_builder_json.hh>
 #include <stdio.h>
 #include <string.h>
 #include <debug/dbg.h>

@@ -11,7 +11,7 @@
 #include "app_cli/cli_app.hh"
 #include "cli/mutex.hh"
 #include "cli/cli.h"
-#include "uout/status_json.hh"
+#include "uout/uout_builder_json.hh"
 #include "stm32/stm32.hh"
 #include "app_uout/status_output.h"
 #include "app_settings/config.h"
