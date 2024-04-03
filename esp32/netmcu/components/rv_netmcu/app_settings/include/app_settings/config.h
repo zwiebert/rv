@@ -19,7 +19,7 @@
 #include "net/ethernet_setup.hh"
 #endif
 #ifdef CONFIG_APP_USE_MQTT
-#include "net_mqtt/mqtt.hh"
+#include "net_mqtt_client/mqtt.hh"
 #endif
 #ifdef CONFIG_APP_USE_WLAN
 #include "net/wifi_station_setup.hh"

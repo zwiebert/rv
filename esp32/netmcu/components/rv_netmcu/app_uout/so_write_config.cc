@@ -151,7 +151,7 @@ void soCfg_GPIO_MODES_AS_STRING(class UoutWriter &td) {
 #include <net/comp_glue.hh>
 #endif
 #ifdef CONFIG_NET_MQTT_CLIENT_HAVE_COMPONENT
-#include <net_mqtt/comp_glue.hh>
+#include <net_mqtt_client/comp_glue.hh>
 #endif
 #ifdef CONFIG_STM32_USE_COMPONENT
 #include <stm32/comp_glue.hh>

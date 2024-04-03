@@ -14,7 +14,7 @@
 #include "utils_misc/int_types.h"
 
 #ifdef CONFIG_APP_USE_MQTT
-#include <net_mqtt/comp_glue.hh>
+#include <net_mqtt_client/comp_glue.hh>
 #include "app_mqtt/mqtt.h"
 void config_setup_mqttAppClient() {
   struct cfg_mqtt c;

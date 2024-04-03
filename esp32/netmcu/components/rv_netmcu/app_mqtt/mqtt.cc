@@ -18,7 +18,7 @@
 #include "app_uout/status_output.h"
 #include <app_uout/callbacks.h>
 #include <uout/uo_callbacks.h>
-#include <net_mqtt/mqtt.hh>
+#include <net_mqtt_client/mqtt.hh>
 #include <array>
 #include <stdlib.h>
 
