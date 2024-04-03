@@ -49,8 +49,8 @@ idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS . ${incdirs} app_cli/include app_misc/include app_net/include app_uout/include 
                    app_mqtt/include stm32_com/include app_http_server/include app_settings/include 
-    REQUIRES app_config cli firmware_update uout utils_debug utils_misc utils_time weather jsmn webapp key_value_store
-    PRIV_REQUIRES app_update cli config_kvs driver esp_event esp_netif key_value_store lwip net_http_server
+    REQUIRES app_config cli firmware_update uout utils_debug utils_misc utils_time weather jsmn webapp kvs
+    PRIV_REQUIRES app_update cli config_kvs driver esp_event esp_netif kvs lwip net_http_server
                   main_loop mbedtls net  net_mqtt nvs_flash protobuf stm32 storage txtio uout utils_debug
                   utils_misc utils_time 
     EMBED_TXTFILES app_misc/ca_cert.pem

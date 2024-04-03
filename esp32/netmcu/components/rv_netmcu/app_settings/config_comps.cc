@@ -10,7 +10,7 @@
 #include "app_uout/callbacks.h"
 #include "config_kvs.h"
 #include "utils_misc/int_macros.h"
-#include "key_value_store/kvs_wrapper.h"
+#include "kvs/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
 
 #ifdef CONFIG_APP_USE_MQTT

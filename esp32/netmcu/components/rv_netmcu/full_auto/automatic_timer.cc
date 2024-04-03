@@ -1,6 +1,6 @@
 #define TO_JSON_FLAG_EXISTS v.flags.exists
 #include <full_auto/automatic_timer.hh>
-#include <key_value_store/kvs_wrapper.h>
+#include <kvs/kvs_wrapper.h>
 #include <cstdio>
 #include <cstring>
 

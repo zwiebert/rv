@@ -5,7 +5,7 @@
  *      Author: bertw
  */
 
-#include "key_value_store/kvs_wrapper.h"
+#include "kvs/kvs_wrapper.h"
 #include "storage/storage.h"
 #include "txtio/inout.h"
 #include "app_settings/config.h"

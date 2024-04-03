@@ -10,7 +10,7 @@
 #include "app_cli/cli_app.h"
 #include "app_settings/config.h"
 #include "driver/gpio.h"
-#include "key_value_store/kvs_wrapper.h"
+#include "kvs/kvs_wrapper.h"
 #include "app_misc/kvstore.h"
 #include "utils_misc/int_macros.h"
 #include "utils_misc/int_types.h"

@@ -16,7 +16,7 @@
 #include "net/http_client.h"
 #include "debug/log.h"
 #include <app_uout/so_msg.h>
-#include "key_value_store/kvs_wrapper.h"
+#include "kvs/kvs_wrapper.h"
 
 #ifdef CONFIG_RV_NETMCU_DEBUG
 #define DEBUG

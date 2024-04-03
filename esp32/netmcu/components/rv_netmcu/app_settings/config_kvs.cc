@@ -10,7 +10,7 @@
 
 #include "app_settings/config.h"
 #include "utils_misc/int_macros.h"
-#include "key_value_store/kvs_wrapper.h"
+#include "kvs/kvs_wrapper.h"
 #include "utils_misc/int_types.h"
 
 #ifdef CONFIG_RV_NETMCU_DEBUG
