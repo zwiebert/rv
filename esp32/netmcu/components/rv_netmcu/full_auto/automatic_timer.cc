@@ -1,3 +1,4 @@
+#define TO_JSON_FLAG_EXISTS v.flags.exists
 #include <full_auto/automatic_timer.hh>
 #include <key_value_store/kvs_wrapper.h>
 #include <cstdio>
@@ -43,10 +44,9 @@ bool AutoTimer::restore_settings(const char *key) {
   return result;
 }
 
-#define TO_JSON_FLAG_EXISTS v.flags.exists
-#include <weather/to_json.hh>
-int AutoTimer::to_json(char *buf, size_t buf_size, int &obj_ct, int &state, int start_ct) {
+int AutoTimer::to_json(char *buf, size_t buf_size, int &obj_ct, int &state, const int start_ct_) {
   int bi = 0;
+  int start_ct = start_ct_;
   int arr_idx = obj_ct - start_ct;
   const auto total_objs = TOTAL_OBJS + (m_wi ? m_wi->TOTAL_OBJS:0);
   if (!(0 <= arr_idx && arr_idx < total_objs))
@@ -63,8 +63,9 @@ int AutoTimer::to_json(char *buf, size_t buf_size, int &obj_ct, int &state, int 
     bi += m_wi->to_json(buf + bi, buf_size - bi, obj_ct, state, start_ct);
   }
 
+  arr_idx = obj_ct - start_ct_;
 
-  state = arr_idx+1 == total_objs;
+  state = arr_idx == total_objs;
   return bi;
 }
 

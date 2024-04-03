@@ -31,6 +31,12 @@ struct MagValve {
     time_t next_time_scheduled = 0;
   } state;
 
+   /**
+    * \brief            serialize object into JSON format. with terminating null, if buffer is large enough, or without it, if not.
+    * \param dst        output buffer
+    * \param dst_size   output buffer size
+    * \return           bytes written on success.  on failure: required buffer size as a negative number (size is meant without terminating null)
+    */
   int to_json(char *dst, size_t dst_size) const {
     auto n =
         snprintf(dst,
@@ -42,13 +48,13 @@ struct MagValve {
             (long long unsigned) state.last_time_wet, (long long unsigned) state.next_time_scheduled //
             );
 
-    return n < dst_size ? n : 0;
+    return n <= dst_size ? n : -n; // no need to null terminate
   }
 
   /*
    * \brief parse JSON and then calls this->from_json(JsmnBase::Iterator &it)
    */
-  template<typename T, typename std::enable_if<!std::is_class<T>{},bool>::type = true>
+  template<typename T, typename std::enable_if<!std::is_class<T> { }, bool>::type = true>
   bool from_json(T json) {
     auto jsmn = Jsmn<32, T>(json);
 
@@ -64,7 +70,7 @@ struct MagValve {
    * \param it  Iterator pointing to the object token (JSMN_OBJECT)
    * \return
    */
-  template<typename jsmn_iterator = Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator>{},bool>::type = true>
+  template<typename jsmn_iterator = Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
   bool from_json(jsmn_iterator &it) {
     assert(it->type == JSMN_OBJECT);
 

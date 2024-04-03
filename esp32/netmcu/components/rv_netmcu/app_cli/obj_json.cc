@@ -19,7 +19,7 @@ bool process_objJson(UoutWriter &td, Jsmn_String::Iterator &it) {
 
       [](class UoutWriter &td, Jsmn_String::Iterator &it, int &err) -> bool {
         if (it.keyIsEqual("auto", JSMN_OBJECT)) {
-          return at.handle_json(++it);
+          return at.handle_json(td.sj(), ++it);
         }
         return false;
 

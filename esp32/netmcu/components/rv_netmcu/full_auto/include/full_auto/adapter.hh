@@ -45,13 +45,19 @@ struct WeatherAdapter: public Weather_Adapter_Neutral {
   }
 
 public:
+   /**
+    * \brief            serialize object into JSON format. with terminating null, if buffer is large enough, or without it, if not.
+    * \param dst        output buffer
+    * \param dst_size   output buffer size
+    * \return           bytes written on success.  on failure: required buffer size as a negative number (size is meant without terminating null)
+    */
   int to_json(char *dst, size_t dst_size) const {
     auto n = snprintf(dst, dst_size, //
         R"({"name":"%s","flags":{"exists":%d,"neutral":%d,"read_only":%d},"temp":%g,"wind":%g,"humi":%g,"clouds":%g})", //
         name, //
         flags.exists, flags.neutral, flags.read_only, d_temp, d_wind, d_humi, d_clouds);
 
-    return n < dst_size ? n : 0;
+    return n <= dst_size ? n : -n; // no need to null terminate
   }
 
   template<typename T, typename std::enable_if<!std::is_class<T>{},bool>::type = true>

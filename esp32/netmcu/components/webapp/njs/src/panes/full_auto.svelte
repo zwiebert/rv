@@ -56,6 +56,12 @@
   function resp_data(obj) {
     auto_data = { ...obj };
   }
+  function get_zone(idx) {
+    const key = "zone." + idx;
+    let obj = { json: { auto: {get:{}} } };
+    obj.json.auto.get[key] = {};
+    httpFetch.http_postRequest("/cmd.json", obj);
+  }
   function get_data() {
     const fetch_data = {
       method: "GET",
@@ -110,29 +116,30 @@
 
   function save_zone() {
     const key = "zone." + sel_zone_idx;
-    let obj = { json: { auto: {} } };
-    obj.json.auto[key] = zones[sel_zone_idx];
+    let obj = { json: { auto: {update:{}} } };
+    obj.json.auto.update[key] = zones[sel_zone_idx];
     httpFetch.http_postRequest("/cmd.json", obj);
   }
 
   function enable_zone(idxs) {
-    let obj = { json: { auto: {} } };
+    let obj = { json: { auto: {update:{}} } };
     for (let idx of idxs) {
       let zobj = { flags: { exists: 1 } };
       zobj.name = "New zone " + idx;
       const key = "zone." + idx;
-      obj.json.auto[key] = zobj;
+      obj.json.auto.update[key] = zobj;
     }
     httpFetch.http_postRequest("/cmd.json", obj);
   }
 
   function adapter_add(idxs) {
-    let obj = { json: { auto: {} } };
+    let obj = { json: { auto: {update:{}} } };
     for (let idx of idxs) {
       let aobj = { flags: { exists: 1 } };
       aobj.name = "New adapter " + idx;
       const key = "adapter." + idx;
-      obj.json.auto[key] = aobj;
+      obj.json.auto.update[key] = aobj;
+
     }
     httpFetch.http_postRequest("/cmd.json", obj);
   }
@@ -158,10 +165,10 @@
       type="button"
       on:click={() => {
         const mel = get_modified_existences();
-        let obj = { json: { auto: {} } };
+        let obj = { json: { auto: {update:{}} } };
         for (let i of mel){
           const key = "zone."+i; 
-          obj.json.auto[key] = {flags:{exists:zones_exists[i]}} ;
+          obj.json.auto.update[key] = {flags:{exists:zones_exists[i]}} ;
         }
         httpFetch.http_postRequest("/cmd.json", obj);
       }}>Apply</button
@@ -214,6 +221,7 @@
         </tr>
       </table>
       <button type="button" on:click={get_data}>Reload</button>
+      <button type="button" on:click={()=>{get_zone(sel_zone_idx);}}>Reload</button>
       <button type="button" on:click={save_zone}>Apply</button>
     {/if}
   </div>
@@ -305,8 +313,8 @@
       on:click={() => {
         get_modified_existences();
         const key = "adapter." + sel_adapter_idx;
-        let obj = { json: { auto: {} } };
-        obj.json.auto[key] = adapters[sel_adapter_idx];
+        let obj = { json: { auto: {update:{}} } };
+        obj.json.auto.update[key] = adapters[sel_adapter_idx];
         httpFetch.http_postRequest("/cmd.json", obj);
       }}>Apply</button
     >

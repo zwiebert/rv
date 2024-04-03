@@ -47,21 +47,18 @@ int FaContentReader::read(int fd, char *buf, unsigned buf_size) {
     return 0; //EOF
 
   if (fda.objects_read == 0) {
-    *buf++ = '{';
-    --buf_size;
-    ++n;
+    buf[n++] = '{';
   }
 
-  n += at.to_json(buf, buf_size, fda.objects_read, state);
+  n += at.to_json(buf + n, buf_size - n, fda.objects_read, state);
 
   if (state) {
-    if (*buf == ',')
-      --buf,++buf_size,--n;
-
-    *buf++ = '}';
-    --buf_size, ++n;
+    if (buf[n - 1] == ',')
+      --n;
+    buf[n++] = '}';
     fda.objects_read = -1;
   }
+  assert(n >= 0);
   return n;
 }
 int FaContentReader::close(int fd) {
