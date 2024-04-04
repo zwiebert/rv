@@ -93,14 +93,14 @@ public:
     if (!(0 <= idx && idx < CONFIG_APP_FA_MAX_WEATHER_ADAPTERS))
       return false;
     if (sj.add_key(key)) {
-      bool result = uo_to_json(sj, m_s.m_adapters[idx]);
+      bool result = uo_elem_to_json(sj, m_s.m_adapters[idx]);
       return result;
     }
     return false;
   }
   bool write_adapters_json(UoutBuilderJson &sj, const char *key) {
     if (sj.add_key(key)) {
-      return uo_to_json(sj, &m_s.m_adapters[0], CONFIG_APP_FA_MAX_WEATHER_ADAPTERS);
+      return uo_arr_to_json(sj, &m_s.m_adapters[0], CONFIG_APP_FA_MAX_WEATHER_ADAPTERS);
     }
     return false;
   }
@@ -118,13 +118,13 @@ public:
     if (!(0 <= idx && idx < CONFIG_APP_NUMBER_OF_VALVES))
       return false;
     if (sj.add_key(key)) {
-      return uo_to_json(sj, m_s.m_magval[idx]);
+      return uo_elem_to_json(sj, m_s.m_magval[idx]);
     }
     return false;
   }
   bool write_zones_json(UoutBuilderJson &sj, const char *key) {
     if (sj.add_key(key)) {
-      return uo_to_json(sj, &m_s.m_magval[0], CONFIG_APP_NUMBER_OF_VALVES);
+      return uo_arr_to_json(sj, &m_s.m_magval[0], CONFIG_APP_NUMBER_OF_VALVES);
     }
     return false;
   }
