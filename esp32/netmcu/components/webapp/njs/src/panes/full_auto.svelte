@@ -231,7 +231,7 @@
     type="button"
     on:click={() => {
       for (let i = 0; i < adapters.length; ++i) {
-        if (adapters[i] === null) {
+        if (!adapters[i].flags.exists) {
           adapter_add([i]);
           break;
         }
