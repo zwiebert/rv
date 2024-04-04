@@ -3,7 +3,7 @@
 #include "adapter.hh"
 #include "valve.hh"
 #include "weather/weather_irrigation.hh"
-#include "weather/to_json.hh"
+#include "uout/to_json_adapter.hh"
 #include "jsmn/jsmn_iterate.hh"
 #include <debug/log.h>
 #include <uout/uout_writer.hh>
@@ -59,23 +59,6 @@ public:
 
 public:
 
-  /**
-   * \brief  read out member objects in JSON format in chunks
-   *
-   * This is called from a read function which will call it multiple times until all data was read
-   *
-   * \param buf       buffer.
-   * \param buf_size  should at least 250 bytes
-   * \param obj_ct    holds the state (where we were at return). Needs to passed unchanged to next call.
-   *                  obj_ct holds the number of objects
-   *                  if obj_ct is -1 (EOF), the function does nothing
-   * \param start_ct  as long as obj_ct is less than this parameter, do nothing
-   * \return          returns the number of bytes written to buf
-   *                  returns 0 for EOF or if buffer was not large enough
-   * .
-   */
-  int to_json(char *buf, size_t buf_size, int &obj_ct, int &state, int start_ct = 0);
-
   template<typename T, typename std::enable_if<!std::is_class<T> { }, bool>::type = true>
   bool from_json(T json) {
     auto jsmn = Jsmn<1024, T>(json);
@@ -110,8 +93,14 @@ public:
     if (!(0 <= idx && idx < CONFIG_APP_FA_MAX_WEATHER_ADAPTERS))
       return false;
     if (sj.add_key(key)) {
-      bool result = ::to_json(sj, m_s.m_adapters[idx]);
+      bool result = uo_to_json(sj, m_s.m_adapters[idx]);
       return result;
+    }
+    return false;
+  }
+  bool write_adapters_json(UoutBuilderJson &sj, const char *key) {
+    if (sj.add_key(key)) {
+      return uo_to_json(sj, &m_s.m_adapters[0], CONFIG_APP_FA_MAX_WEATHER_ADAPTERS);
     }
     return false;
   }
@@ -129,8 +118,23 @@ public:
     if (!(0 <= idx && idx < CONFIG_APP_NUMBER_OF_VALVES))
       return false;
     if (sj.add_key(key)) {
-      bool result = ::to_json(sj, m_s.m_magval[idx]);
-      return result;
+      return uo_to_json(sj, m_s.m_magval[idx]);
+    }
+    return false;
+  }
+  bool write_zones_json(UoutBuilderJson &sj, const char *key) {
+    if (sj.add_key(key)) {
+      return uo_to_json(sj, &m_s.m_magval[0], CONFIG_APP_NUMBER_OF_VALVES);
+    }
+    return false;
+  }
+
+  bool write_past_weather_data_json(UoutBuilderJson &sj, const char *key) {
+    if (!m_wi)
+      return false;
+
+    if (sj.add_key(key)) {
+      return m_wi->to_json(sj);
     }
     return false;
   }
@@ -164,7 +168,7 @@ public:
 return !err;
 }
 template<typename jsmn_iterator = Jsmn_String::Iterator>
-bool set_obj_json(jsmn_iterator &it, bool update = false) {
+bool set_obj_json(UoutBuilderJson &sj, jsmn_iterator &it, bool update = false) {
 int err = 0;
 assert(it->type == JSMN_OBJECT);
 auto count = it->size;
@@ -176,7 +180,7 @@ for (it += 1; count > 0 && it; --count) {
     char key[16];
     if (it.getValue(key)) {
       zone_idx = atoi(key + strlen(zone_prefix));
-      if (update_zone(zone_idx, ++it)) {
+      if (update_zone(zone_idx, ++it) && write_zone_json(sj, zone_idx, key)) {
         continue; // update succeeded
       }
     }
@@ -218,6 +222,7 @@ for (it += 1; count > 0 && it; --count) {
     int zone_idx = -1;
     char key[16];
     if (it.getValue(key)) {
+      it.skip_key_and_value();
       zone_idx = atoi(key + strlen(zone_prefix));
       if (write_zone_json(sj, zone_idx, key)) {
         continue; // update succeeded
@@ -233,12 +238,41 @@ for (it += 1; count > 0 && it; --count) {
     int adapter_idx = -1;
     char key[16];
     if (it.getValue(key)) {
+      it.skip_key_and_value();
       adapter_idx = atoi(key + strlen(adapter_prefix));
       if (write_adapter_json(sj, adapter_idx, key)) {
         continue; // update succeeded
       }
     }
     db_loge(our_logtag, "Could not get adapter %d", adapter_idx);
+    ++err;
+    continue;
+  }
+  if (it.keyIsEqual("zones", JSMN_ARRAY)) {
+    it.skip_key_and_value();
+    if (write_zones_json(sj, "zones")) {
+      continue;
+    }
+    db_loge(our_logtag, "Could not get zones");
+    ++err;
+    continue;
+  }
+  if (it.keyIsEqual("adapters", JSMN_ARRAY)) {
+    it.skip_key_and_value();
+    if (write_adapters_json(sj, "adapters")) {
+      continue;
+    }
+    db_loge(our_logtag, "Could not get adapters");
+    ++err;
+    continue;
+  }
+
+  if (it.keyIsEqual("past_wd", JSMN_ARRAY)) {
+    it.skip_key_and_value();
+    if (write_past_weather_data_json(sj, "past_wd")) {
+      continue;
+    }
+    db_loge(our_logtag, "Could not get adapters");
     ++err;
     continue;
   }
@@ -277,7 +311,7 @@ if (sj.add_object("auto")) {
     }
 
     if (it.keyIsEqual("set", JSMN_OBJECT)) {
-      if (set_obj_json(++it))
+      if (set_obj_json(sj, ++it))
         continue;
 
       db_loge(our_logtag, "set failed");
@@ -286,7 +320,7 @@ if (sj.add_object("auto")) {
     }
 
     if (it.keyIsEqual("update", JSMN_OBJECT)) {
-      if (set_obj_json(++it), true)
+      if (set_obj_json(sj, ++it), true)
         continue;
 
       db_loge(our_logtag, "update failed");

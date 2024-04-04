@@ -17,6 +17,10 @@ export const PressControlStatus = writable(false);
 export const WaterPumpStatus = writable(false);
 export const RainSensorStatus = writable(false);
 
-
 export const Stm32Time = writable("");
+
+export const ZonesAuto = ArrayStore([]);
+export const WeatherAdapters = ArrayStore([]);
+export const PastWeatherData = ArrayStore([]);
+
 

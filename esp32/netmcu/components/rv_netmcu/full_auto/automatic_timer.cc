@@ -44,31 +44,6 @@ bool AutoTimer::restore_settings(const char *key) {
   return result;
 }
 
-int AutoTimer::to_json(char *buf, size_t buf_size, int &obj_ct, int &state, const int start_ct_) {
-  int bi = 0;
-  int start_ct = start_ct_;
-  int arr_idx = obj_ct - start_ct;
-  const auto total_objs = TOTAL_OBJS + (m_wi ? m_wi->TOTAL_OBJS:0);
-  if (!(0 <= arr_idx && arr_idx < total_objs))
-    return 0; // out of our range, maybe interpreted as EOF by caller
-
-  bi += array_to_json_tmpl(buf + bi, buf_size - bi, obj_ct, &m_s.m_magval[0], CONFIG_APP_NUMBER_OF_VALVES, "valves", start_ct);
-  start_ct += CONFIG_APP_NUMBER_OF_VALVES;
-
-  bi += array_to_json_tmpl(buf + bi, buf_size - bi, obj_ct, &m_s.m_adapters[0], CONFIG_APP_FA_MAX_WEATHER_ADAPTERS, "adapters", start_ct);
-  start_ct += CONFIG_APP_FA_MAX_WEATHER_ADAPTERS;
-
-  if (m_wi) {
-    int state;
-    bi += m_wi->to_json(buf + bi, buf_size - bi, obj_ct, state, start_ct);
-  }
-
-  arr_idx = obj_ct - start_ct_;
-
-  state = arr_idx == total_objs;
-  return bi;
-}
-
 #include <debug/dbg.h>
 
 void AutoTimer::dev_random_fill_data() {

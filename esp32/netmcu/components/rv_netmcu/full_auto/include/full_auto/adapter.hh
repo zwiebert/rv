@@ -57,7 +57,7 @@ public:
         name, //
         flags.exists, flags.neutral, flags.read_only, d_temp, d_wind, d_humi, d_clouds);
 
-    return n <= dst_size ? n : -n; // no need to null terminate
+    return n <= dst_size ? n : -1 - n; // we need to request for size plus null byte, snprintf will always null terminate and truncates the byte before instead
   }
 
   template<typename T, typename std::enable_if<!std::is_class<T>{},bool>::type = true>
@@ -82,12 +82,10 @@ public:
           if (it.keyIsEqual("flags", JSMN_OBJECT)) {
             auto count = it[1].size;
             for (it += 2; count > 0 && it; --count) {
-              if (it.getValue(self.flags.exists, "exists") //
-              || it.getValue(self.flags.neutral, "neutral") //
-                  || it.getValue(self.flags.read_only, "read_only") //
-                      ) {
-                it += 2;
-              } else {
+              if (!(it.takeValue(self.flags.exists, "exists") //
+              || it.takeValue(self.flags.neutral, "neutral") //
+                  || it.takeValue(self.flags.read_only, "read_only") //
+                      )) {
                 ++err;
                 it.skip_key_and_value();
               }
@@ -99,9 +97,8 @@ public:
         },
 
         [](self_type &self, jsmn_iterator &it, int &err) -> bool {
-          if (it.getValue(self.name, "name") || it.getValue(self.d_temp, "temp") || it.getValue(self.d_wind, "wind") || it.getValue(self.d_humi, "humi")
-              || it.getValue(self.d_clouds, "clouds")) {
-            it += 2;
+          if (it.takeValue(self.name, "name") || it.takeValue(self.d_temp, "temp") || it.takeValue(self.d_wind, "wind") || it.takeValue(self.d_humi, "humi")
+              || it.takeValue(self.d_clouds, "clouds")) {
             return true;
           }
           return false;

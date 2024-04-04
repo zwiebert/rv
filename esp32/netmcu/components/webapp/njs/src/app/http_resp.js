@@ -13,6 +13,9 @@ import {
 } from "../store/mcu_firmware.js";
 import { McuDocs } from "../store/mcu_docs.js";
 import {
+  ZonesAuto,
+  PastWeatherData,
+  WeatherAdapters,
   ZoneLPHs,
   ZoneDataMsg,
   ZoneCountMax,
@@ -98,6 +101,32 @@ export function http_handleResponses(obj) {
       key = "lph" + i.toString();
       if (key in kvs) {
         ZoneLPHs.update(i, kvs[key]);
+      }
+    }
+  }
+
+  if ("auto" in obj) {
+      let auto = obj.auto;
+    if ("zones" in obj.auto) {
+      let zones = obj.auto.zones;
+      ZonesAuto.set(zones);
+    }
+    if ("adapters" in obj.auto) {
+      let adapters = obj.auto.adapters;
+      WeatherAdapters.set(adapters);
+    }
+    if ("past_wd" in obj.auto) {
+      let past_wd = obj.auto.past_wd;
+      PastWeatherData.set(past_wd);
+    }
+    for (let i = 0; i < ZoneCountMax; ++i) {
+      let key = "zone." + i.toString();
+      if (key in auto) {
+        ZonesAuto.update(i, auto[key]);
+      }
+      key = "adapter." + i.toString();
+      if (key in auto) {
+        WeatherAdapters.update(i, auto[key]);
       }
     }
   }

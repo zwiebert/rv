@@ -3,24 +3,22 @@
   import { Z, ZoneDurationMmss, ZoneRemainingMmss } from "../store/curr_zone";
 
   import * as httpFetch from "../app/fetch.js";
+  import * as httpResp from "../app/http_resp.js";
   import { onMount } from "svelte";
   import PollZoneData from "../app/poll_zone_data.svelte";
   import SelectZone from "../components/select_zone.svelte";
   import RvStatus from "../components/rv_status.svelte";
   import ZoneData from "../components/zone_data.svelte";
   import RvTimer from "../components/rv_timer.svelte";
-  import { ZoneCount, ZoneNames } from "../store/zones";
+  import { ZoneCount, ZoneNames, ZonesAuto, PastWeatherData, WeatherAdapters } from "../store/zones";
   import Zone from "../app/rv_config_zone.svelte";
 
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_NAMES);
     get_data();
   });
-
-  $: auto_data = { valves: [], adapters: [] };
-  $: zones = [...auto_data.valves];
-  $: adapters = [...auto_data.adapters];
-  $: auto_data_json = JSON.stringify(auto_data);
+  $: zones = [...$ZonesAuto];
+  $: adapters = [...$WeatherAdapters];
   $: sel_adapter_idx = 0;
   $: sel_zone_idx = -1;
   let zones_exists = [];
@@ -53,35 +51,25 @@
     console.log("modified flags.exists", result);
     return result;
   }
+
   function resp_data(obj) {
-    auto_data = { ...obj };
+    console.log("ZonesAuto:", $ZonesAuto);
+    console.log("PastWeatherData", $PastWeatherData);
+    console.log("WeatherAdapters:", $WeatherAdapters);
   }
   function get_zone(idx) {
     const key = "zone." + idx;
-    let obj = { json: { auto: {get:{}} } };
+    let obj = { json: { auto: { get: {} } } };
     obj.json.auto.get[key] = {};
     httpFetch.http_postRequest("/cmd.json", obj);
   }
+  function get_zones() {
+    let obj = { json: { auto: { get: { zones: [] } } } };
+    httpFetch.http_postRequest("/cmd.json", obj);
+  }
   function get_data() {
-    const fetch_data = {
-      method: "GET",
-      cache: "no-cache",
-      headers: { Accept: "application/json" },
-      referrer: "no-referrer",
-    };
-
-    return fetch("/f/data/auto.json", fetch_data).then((response) => {
-      if (response.ok) {
-        response
-          .json()
-          .then((obj) => {
-            resp_data(obj);
-          })
-          .catch((error) => {
-            console.log("error: http_postRequest(): ", error);
-          });
-      }
-    });
+    let obj = { json: { auto: { get: { zones: [], adapters: [], past_wd:[] } } } };
+    httpFetch.http_postRequest("/cmd.json", obj);
   }
 
   function cmdDuration(args) {
@@ -116,13 +104,13 @@
 
   function save_zone() {
     const key = "zone." + sel_zone_idx;
-    let obj = { json: { auto: {update:{}} } };
+    let obj = { json: { auto: { update: {} } } };
     obj.json.auto.update[key] = zones[sel_zone_idx];
     httpFetch.http_postRequest("/cmd.json", obj);
   }
 
   function enable_zone(idxs) {
-    let obj = { json: { auto: {update:{}} } };
+    let obj = { json: { auto: { update: {} } } };
     for (let idx of idxs) {
       let zobj = { flags: { exists: 1 } };
       zobj.name = "New zone " + idx;
@@ -133,46 +121,44 @@
   }
 
   function adapter_add(idxs) {
-    let obj = { json: { auto: {update:{}} } };
+    let obj = { json: { auto: { update: {} } } };
     for (let idx of idxs) {
       let aobj = { flags: { exists: 1 } };
       aobj.name = "New adapter " + idx;
       const key = "adapter." + idx;
       obj.json.auto.update[key] = aobj;
-
     }
     httpFetch.http_postRequest("/cmd.json", obj);
   }
 </script>
 
 <div class="main-area">
-
-    <table>
+  <table>
+    <tr>
+      {#each zones as v, i}
+        <th>{i}</th>
+      {/each}
+    </tr>
+    {#if zones_exists.length > 0}
       <tr>
         {#each zones as v, i}
-          <th>{i}</th>
+          <td><input type="checkbox" bind:checked={zones_exists[i]} /></td>
         {/each}
       </tr>
-      {#if zones_exists.length > 0}
-        <tr>
-          {#each zones as v, i}
-            <td><input type="checkbox" bind:checked={zones_exists[i]} /></td>
-          {/each}
-        </tr>
-      {/if}
-    </table>
-    <button
-      type="button"
-      on:click={() => {
-        const mel = get_modified_existences();
-        let obj = { json: { auto: {update:{}} } };
-        for (let i of mel){
-          const key = "zone."+i; 
-          obj.json.auto.update[key] = {flags:{exists:zones_exists[i]}} ;
-        }
-        httpFetch.http_postRequest("/cmd.json", obj);
-      }}>Apply</button
-    >
+    {/if}
+  </table>
+  <button
+    type="button"
+    on:click={() => {
+      const mel = get_modified_existences();
+      let obj = { json: { auto: { update: {} } } };
+      for (let i of mel) {
+        const key = "zone." + i;
+        obj.json.auto.update[key] = { flags: { exists: zones_exists[i] } };
+      }
+      httpFetch.http_postRequest("/cmd.json", obj);
+    }}>Apply</button
+  >
 
   <div class="area">
     <select bind:value={sel_zone_idx}>
@@ -221,7 +207,13 @@
         </tr>
       </table>
       <button type="button" on:click={get_data}>Reload</button>
-      <button type="button" on:click={()=>{get_zone(sel_zone_idx);}}>Reload</button>
+      <button type="button" on:click={get_zones}>Reload Zones</button>
+      <button
+        type="button"
+        on:click={() => {
+          get_zone(sel_zone_idx);
+        }}>Reload</button
+      >
       <button type="button" on:click={save_zone}>Apply</button>
     {/if}
   </div>
@@ -313,7 +305,7 @@
       on:click={() => {
         get_modified_existences();
         const key = "adapter." + sel_adapter_idx;
-        let obj = { json: { auto: {update:{}} } };
+        let obj = { json: { auto: { update: {} } } };
         obj.json.auto.update[key] = adapters[sel_adapter_idx];
         httpFetch.http_postRequest("/cmd.json", obj);
       }}>Apply</button

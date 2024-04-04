@@ -15,6 +15,9 @@ endif
 JS_SRC_DIR := $(THIS_ROOT)/njs/src
 NJS_DIR :=$(THIS_ROOT)/njs
 
+
+
 include sources.mk
 include targets.mk
 include rules.mk
+

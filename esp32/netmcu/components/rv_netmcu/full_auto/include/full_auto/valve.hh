@@ -48,7 +48,7 @@ struct MagValve {
             (long long unsigned) state.last_time_wet, (long long unsigned) state.next_time_scheduled //
             );
 
-    return n <= dst_size ? n : -n; // no need to null terminate
+    return n <= dst_size ? n : -1 - n; // we need to request for size plus null byte, snprintf will always null terminate and truncates the byte before instead
   }
 
   /*
@@ -81,11 +81,9 @@ struct MagValve {
           if (it.keyIsEqual("flags", JSMN_OBJECT)) {
             auto count = it[1].size;
             for (it += 2; count > 0 && it; --count) {
-              if (it.getValue(self.flags.active, "active") //
-              || it.getValue(self.flags.exists, "exists") //
-                  || it.getValue(self.flags.is_due, "is_due")) {
-                it += 2;
-              } else {
+              if (!(it.takeValue(self.flags.active, "active") //
+              || it.takeValue(self.flags.exists, "exists") //
+                  || it.takeValue(self.flags.is_due, "is_due"))) {
                 ++err;
                 it.skip_key_and_value();
               }
@@ -99,14 +97,12 @@ struct MagValve {
           if (it.keyIsEqual("attr", JSMN_OBJECT)) {
             auto count = it[1].size;
             for (it += 2; count > 0 && it; --count) {
-              if (it.getValue(self.attr.duration_s, "duration_s") //
-              || it.getValue(self.attr.adapter, "adapter") //
-                  || it.getValue(self.attr.flow_lph, "flow_lph") //
-                  || it.getValue(self.attr.priority, "priority") //
-                  || it.getValue(self.attr.interval_s, "interval_s") //
-                      ) {
-                it += 2;
-              } else {
+              if (!(it.takeValue(self.attr.duration_s, "duration_s") //
+              || it.takeValue(self.attr.adapter, "adapter") //
+                  || it.takeValue(self.attr.flow_lph, "flow_lph") //
+                  || it.takeValue(self.attr.priority, "priority") //
+                  || it.takeValue(self.attr.interval_s, "interval_s") //
+                      )) {
                 ++err;
                 it.skip_key_and_value();
               }
@@ -120,11 +116,9 @@ struct MagValve {
           if (it.keyIsEqual("state", JSMN_OBJECT)) {
             auto count = it[1].size;
             for (it += 2; count > 0 && it; --count) {
-              if (it.getValue(self.state.last_time_wet, "last_time_wet") //
-              || it.getValue(self.state.next_time_scheduled, "next_time_scheduled") //
-                  ) {
-                it += 2;
-              } else {
+              if (!(it.takeValue(self.state.last_time_wet, "last_time_wet") //
+              || it.takeValue(self.state.next_time_scheduled, "next_time_scheduled") //
+                  )) {
                 ++err;
                 it.skip_key_and_value();
               }
@@ -135,8 +129,7 @@ struct MagValve {
         },
 
         [](self_type &self, jsmn_iterator &it, int &err) -> bool {
-          if (it.getValue(self.name, "name")) {
-            it += 2;
+          if (it.takeValue(self.name, "name")) {
             return true;
           }
           return false;
