@@ -7,7 +7,7 @@
 #include "rv/rv_timers.hh"
 #include <rv/rv_zone.hh>
 #include <rv/rv_zones.hh>
-#include <misc/int_macros.h>
+#include <utils_misc/int_macros.h>
 
 static uint16_t valves;
 static bool rain;

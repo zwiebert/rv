@@ -1,7 +1,4 @@
 set(srcs 
-operator_new_malloc.cc
-misc/base64.c
-misc/cstring_utils.cc
 valves/valve_relays.cc
 peri/uart.cc
 peri/relay16.cc
@@ -32,7 +29,6 @@ cli/cli.c
 debug/dbg.c
 protobuf/mcu_com.pb.c
 protobuf/zone_data.cc
-jsmn/jsmn.c
 time/stm32/systick_1ms.c
 time/stm32/real_time_clock.c
 time/host/real_time_clock.cc
@@ -43,6 +39,7 @@ water_pump/water_pump.cc
 )
 
 add_library(rv_main STATIC ${srcs})
-#target_include_directories(rv_main ${CMAKE_SOURCE_DIR}/
+target_link_libraries(rv_main PUBLIC mcp23017 tm1638 jsmn utils_misc ${CMAKE_SOURCE_DIR}/external/libopencm3/lib/libopencm3_stm32f1.a rv_system)
+add_dependencies(rv_main ocm3)
+target_compile_features(rv_main PUBLIC cxx_std_20 c_std_11)
 
-#target_add_sources(

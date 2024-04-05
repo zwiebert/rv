@@ -12,7 +12,7 @@
 #include "rv/rv_timer.hh"
 #include "rv/rain_sensor.hh"
 extern "C" {
-#include "misc/base64.h"
+#include <utils_misc/base64.h>
 }
 #include <malloc.h>
 #include "protobuf/mcu_com.pb.h"

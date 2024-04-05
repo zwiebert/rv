@@ -10,7 +10,7 @@
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/cm3/nvic.h>
 #include <libopencm3/stm32/exti.h>
-#include "misc/int_macros.h"
+#include <utils_misc/int_macros.h>
 #include "rv/report.h"
 #include "time/real_time_clock.h"
 #include "time/systick_1ms.h"

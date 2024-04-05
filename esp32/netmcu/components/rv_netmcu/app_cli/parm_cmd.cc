@@ -39,6 +39,7 @@ volatile bool cli_cmd_wait_for_response;
 
 const char cli_help_parmCmd[]  =
     "durN=[0-60]      activate zone N for up to 60 minutes (0=off). Example: cmd dur3=45;\n"
+    "%f,%d,%f,%d,%f,%d,%f,%f, on, ignoreRainSensor, off, repeats, period, dInterval, dhBegin, dhEnd\n"
     "dur=?            request durations of all activated zones\n"
     "rem=?            request remaining times of all activated zones\n"
 ;
@@ -97,7 +98,6 @@ process_parmCmd(clpar p[], int len, class UoutWriter &td) {
         int ignoreRainSensor = 0;
 
         sscanf(val, "%f,%d,%f,%d,%f,%d,%f,%f", &on, &ignoreRainSensor, &off, &repeats, &period, &dInterval, &dhBegin, &dhEnd);
-
         buf_idx += sprintf(buf + strlen(buf), "\"dur%d.%d\":\"%d,%d,%d,%d,%d,%d,%d,%d\",", zone, timer_number, (int) (on * ONE_MINUTE), ignoreRainSensor, (int) (off * ONE_MINUTE), repeats,
             (int) (period * ONE_HOUR), dInterval, (int)(dhBegin * ONE_HOUR), (int)(dhEnd * ONE_HOUR));
 

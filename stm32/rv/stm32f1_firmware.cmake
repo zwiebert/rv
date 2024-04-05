@@ -51,21 +51,24 @@ add_custom_command(OUTPUT ${CMAKE_SOURCE_DIR}/external/libopencm3/lib/libopencm3
                    COMMAND make ARGS -C ${CMAKE_SOURCE_DIR}/external/libopencm3 lib/stm32/f1)
 add_custom_target(ocm3 DEPENDS ${CMAKE_SOURCE_DIR}/external/libopencm3/lib/libopencm3_stm32f1.a)
 
+
+#####  components-mcu  #########
+add_subdirectory(components-mcu/jsmn)
+add_subdirectory(components-mcu/utils_misc)
+
 ######### Our MCP23017 lib ##############
 add_subdirectory(Libraries/mcp23017)
 
 ######### Our TM1638 lib  ###############
 add_subdirectory(Libraries/tm1638)
 
+
 ##### Startup, Interrupt Handlers, etc ##
 add_library(rv_system  src/tiny_printf.c)
-add_subdirectory(src/main)
 target_compile_features(rv_system PUBLIC c_std_11)
 
 #### App Archive ########################
-target_link_libraries(rv_main PUBLIC mcp23017 tm1638 ${CMAKE_SOURCE_DIR}/external/libopencm3/lib/libopencm3_stm32f1.a rv_system)
-add_dependencies(rv_main ocm3)
-target_compile_features(rv_main PUBLIC cxx_std_20 c_std_11)
+add_subdirectory(src/main)
 
 ### Linked Firmware #####################
 add_executable(rv.elf src/main.cpp)

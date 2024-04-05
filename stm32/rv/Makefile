@@ -34,7 +34,7 @@ stm32f1.fw.menuconfig $(_config):
 $(rv_config_h): $(_config)
 	 python -m kconfgen  --kconfig $(THIS_ROOT)/src/main/Kconfig --config $(_config) --output header $(rv_config_h)
 external/libopencm3/lib/libopencm3_stm32f1.a:
-	make -C stm32/rv/external/libopencm3
+	make -C ./external/libopencm3 lib/libopencm3_stm32f1.a
 
 
 stm32f1.fw.configure:
@@ -47,7 +47,7 @@ stm32f1.fw.configure:
 stm32f1.fw.build.make := make -C $(STM32F1_FW_BUILD_DIR) -k  $(make_verbose_opts)
 stm32f1.fw.build.ninja := (cd $(STM32F1_FW_BUILD_DIR) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
 	
-stm32f1.fw.build: external/libopencm3/lib/libopencm3_stm32f1.a
+stm32f1.fw.build:
 	$(stm32f1.fw.build.make) -- bin
 	
 stm32f1.fw.flash:
