@@ -17,8 +17,8 @@ struct WeatherAdapter: public Weather_Adapter_Neutral {
   WeatherAdapter() :
       d_temp(0.06), d_wind(0.001), d_humi(0.01), d_clouds(0.01) {
   }
-  WeatherAdapter(const WeatherAdapter &) = default;
-  WeatherAdapter &operator=(const WeatherAdapter &) = default;
+  WeatherAdapter(const WeatherAdapter&) = default;
+  WeatherAdapter& operator=(const WeatherAdapter&) = default;
 
   int modify_interval(const weather_data &wd, unsigned interval) const {
     auto f = get_factor(wd);
@@ -45,22 +45,22 @@ struct WeatherAdapter: public Weather_Adapter_Neutral {
   }
 
 public:
-   /**
-    * \brief            serialize object into JSON format. with terminating null, if buffer is large enough, or without it, if not.
-    * \param dst        output buffer
-    * \param dst_size   output buffer size
-    * \return           bytes written on success.  on failure: required buffer size as a negative number (size is meant without terminating null)
-    */
+  /**
+   * \brief            serialize object into JSON formatted null-terminated string.
+   * \param dst        output buffer
+   * \param dst_size   output buffer size
+   * \return           return values are the as standard snprintf(3). The bytes written or if larger than dst_size, the bytes which would have written.
+   *                   the terminating null byte is not counted, but its always there even if a data bytes has to be truncated for it.
+   *                   so make sure to add one byte to the return value before using it as a parameter for dst_size in a retry call.
+   */
   int to_json(char *dst, size_t dst_size) const {
-    auto n = snprintf(dst, dst_size, //
+    return snprintf(dst, dst_size, //
         R"({"name":"%s","flags":{"exists":%d,"neutral":%d,"read_only":%d},"temp":%g,"wind":%g,"humi":%g,"clouds":%g})", //
         name, //
         flags.exists, flags.neutral, flags.read_only, d_temp, d_wind, d_humi, d_clouds);
-
-    return n <= dst_size ? n : -1 - n; // we need to request for size plus null byte, snprintf will always null terminate and truncates the byte before instead
   }
 
-  template<typename T, typename std::enable_if<!std::is_class<T>{},bool>::type = true>
+  template<typename T, typename std::enable_if<!std::is_class<T> { }, bool>::type = true>
   bool from_json(T json) {
     auto jsmn = Jsmn<32, T>(json);
 
@@ -71,7 +71,7 @@ public:
     return from_json(it);
   }
 
-  template<typename jsmn_iterator = Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator>{},bool>::type = true>
+  template<typename jsmn_iterator = Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
   bool from_json(jsmn_iterator &it) {
     assert(it->type == JSMN_OBJECT);
 
@@ -85,7 +85,7 @@ public:
               if (!(it.takeValue(self.flags.exists, "exists") //
               || it.takeValue(self.flags.neutral, "neutral") //
                   || it.takeValue(self.flags.read_only, "read_only") //
-                      )) {
+              )) {
                 ++err;
                 it.skip_key_and_value();
               }

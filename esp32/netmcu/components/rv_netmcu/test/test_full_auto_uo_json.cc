@@ -4,7 +4,6 @@
 #endif
 
 #include <debug/dbg.h>
-#include <uout/to_json_adapter.hh>
 #include "../full_auto/automatic_timer.cc"
 #include "full_auto/weather.hh"
 #include "full_auto/weather.hh"

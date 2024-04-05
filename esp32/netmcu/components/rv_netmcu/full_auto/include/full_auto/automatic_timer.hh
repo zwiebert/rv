@@ -3,7 +3,6 @@
 #include "adapter.hh"
 #include "valve.hh"
 #include "weather/weather_irrigation.hh"
-#include "uout/to_json_adapter.hh"
 #include "jsmn/jsmn_iterate.hh"
 #include <debug/log.h>
 #include <uout/uout_writer.hh>
@@ -12,6 +11,8 @@
 #include <list>
 #include <iterator>
 #include <algorithm>
+#include <functional>
+using namespace std::placeholders;
 
 class AutoTimer {
   constexpr static const char *our_logtag = "auto_timer";
@@ -56,6 +57,12 @@ public:
   auto valves_all_end() {
     return std::end(m_s.m_magval);
   }
+  auto get_zone_json(char *dst, size_t dst_size, int idx) {
+    return m_s.m_magval[idx].to_json(dst, dst_size);
+  }
+  auto get_adapter_json(char *dst, size_t dst_size, int idx) {
+    return m_s.m_adapters[idx].to_json(dst, dst_size);
+  }
 
 public:
 
@@ -93,14 +100,13 @@ public:
     if (!(0 <= idx && idx < CONFIG_APP_FA_MAX_WEATHER_ADAPTERS))
       return false;
     if (sj.add_key(key)) {
-      bool result = uo_elem_to_json(sj, m_s.m_adapters[idx]);
-      return result;
+      return sj.read_json_from_function(std::bind(&WeatherAdapter::to_json, &m_s.m_adapters[idx], _1, _2));
     }
     return false;
   }
   bool write_adapters_json(UoutBuilderJson &sj, const char *key) {
     if (sj.add_key(key)) {
-      return uo_arr_to_json(sj, &m_s.m_adapters[0], CONFIG_APP_FA_MAX_WEATHER_ADAPTERS);
+      return sj.read_json_arr_from_function(std::bind(&AutoTimer::get_adapter_json, this,  _1, _2, _3), CONFIG_APP_FA_MAX_WEATHER_ADAPTERS);
     }
     return false;
   }
@@ -118,13 +124,13 @@ public:
     if (!(0 <= idx && idx < CONFIG_APP_NUMBER_OF_VALVES))
       return false;
     if (sj.add_key(key)) {
-      return uo_elem_to_json(sj, m_s.m_magval[idx]);
+      return sj.read_json_from_function(std::bind(&MagValve::to_json, &m_s.m_magval[idx], _1, _2));
     }
     return false;
   }
   bool write_zones_json(UoutBuilderJson &sj, const char *key) {
     if (sj.add_key(key)) {
-      return uo_arr_to_json(sj, &m_s.m_magval[0], CONFIG_APP_NUMBER_OF_VALVES);
+      return sj.read_json_arr_from_function(std::bind(&AutoTimer::get_zone_json, this,  _1, _2, _3), CONFIG_APP_NUMBER_OF_VALVES);
     }
     return false;
   }

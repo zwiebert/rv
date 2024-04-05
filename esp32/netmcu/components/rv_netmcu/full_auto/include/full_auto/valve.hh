@@ -1,5 +1,4 @@
 #pragma once
-
 #include "adapter.hh"
 #include <cstring>
 #include <cstdio>
@@ -31,24 +30,23 @@ struct MagValve {
     time_t next_time_scheduled = 0;
   } state;
 
-   /**
-    * \brief            serialize object into JSON format. with terminating null, if buffer is large enough, or without it, if not.
-    * \param dst        output buffer
-    * \param dst_size   output buffer size
-    * \return           bytes written on success.  on failure: required buffer size as a negative number (size is meant without terminating null)
-    */
+  /**
+   * \brief            serialize object into JSON formatted null-terminated string.
+   * \param dst        output buffer
+   * \param dst_size   output buffer size
+   * \return           return values are the as standard snprintf(3). The bytes written or if larger than dst_size, the bytes which would have written.
+   *                   the terminating null byte is not counted, but its always there even if a data bytes has to be truncated for it.
+   *                   so make sure to add one byte to the return value before using it as a parameter for dst_size in a retry call.
+   */
   int to_json(char *dst, size_t dst_size) const {
-    auto n =
-        snprintf(dst,
-            dst_size, //
-            R"({"name":"%s","flags":{"active":%d,"exists":%d,"is_due":%d},"attr":{"duration_s":%d,"adapter":%d,"flow_lph":%d,"priority":%d,"interval_s":%d},"state":{"last_time_wet":%llu,"next_time_scheduled":%llu}})", //
-            name, //
-            flags.active, flags.exists, flags.is_due, //
-            attr.duration_s, attr.adapter, attr.flow_lph, attr.priority, attr.interval_s, //
-            (long long unsigned) state.last_time_wet, (long long unsigned) state.next_time_scheduled //
-            );
-
-    return n <= dst_size ? n : -1 - n; // we need to request for size plus null byte, snprintf will always null terminate and truncates the byte before instead
+    return snprintf(dst,
+        dst_size, //
+        R"({"name":"%s","flags":{"active":%d,"exists":%d,"is_due":%d},"attr":{"duration_s":%d,"adapter":%d,"flow_lph":%d,"priority":%d,"interval_s":%d},"state":{"last_time_wet":%llu,"next_time_scheduled":%llu}})", //
+        name, //
+        flags.active, flags.exists, flags.is_due, //
+        attr.duration_s, attr.adapter, attr.flow_lph, attr.priority, attr.interval_s, //
+        (long long unsigned) state.last_time_wet, (long long unsigned) state.next_time_scheduled //
+        );
   }
 
   /*
@@ -102,7 +100,7 @@ struct MagValve {
                   || it.takeValue(self.attr.flow_lph, "flow_lph") //
                   || it.takeValue(self.attr.priority, "priority") //
                   || it.takeValue(self.attr.interval_s, "interval_s") //
-                      )) {
+              )) {
                 ++err;
                 it.skip_key_and_value();
               }
@@ -118,7 +116,7 @@ struct MagValve {
             for (it += 2; count > 0 && it; --count) {
               if (!(it.takeValue(self.state.last_time_wet, "last_time_wet") //
               || it.takeValue(self.state.next_time_scheduled, "next_time_scheduled") //
-                  )) {
+              )) {
                 ++err;
                 it.skip_key_and_value();
               }
