@@ -5,9 +5,9 @@
 extern "C" {
 #include <time/real_time_clock.h>
 #include "user_config.h"
-#include "cli_imp.h"
 #include "peri/uart.h"
 }
+#include "cli_imp.h"
 #include "rv/rv_zones.hh"
 #include "loop/loop.hh"
 #include "rv/rv_timer.hh"
@@ -36,7 +36,7 @@ static int match_zoneKeyN(const char *key) {
   return -1;
 }
 
-int process_parmKvs(clpar p[], int len) {
+int process_parmKvs(clpar p[], int len, class UoutWriter &td) {
   int arg_idx;
   int errors = 0;
   int needSecondPass = 0;

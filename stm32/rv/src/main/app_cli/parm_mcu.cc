@@ -17,8 +17,8 @@
 #define KEY_VERSION "version"
 
 
-extern "C" int
-process_parmMcu(clpar p[], int len) {
+int
+process_parmMcu(clpar p[], int len, class UoutWriter &td) {
 
   for (int arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;

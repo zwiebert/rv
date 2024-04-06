@@ -32,7 +32,7 @@ extern "C" void timer_set(int8_t channel);
 const char help_parmTimer[] = "zone=[0-13]      zone number\n"
     "duration=[0-60]  how long to irrigate\n";
 
-int process_parmTimer(clpar p[], int len) {
+int process_parmTimer(clpar p[], int len, class UoutWriter &td) {
   RvTimer::SetArgs args = RvTimer::SetArgs(reinterpret_cast<cstr_pair*>(&p[1]), len - 1);
 
   RvTimer *timer;

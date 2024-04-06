@@ -35,6 +35,8 @@ static void led_setup(void) {
 
 void app_setup_cxx();
 
+#include <txtio/inout.h>
+void cliApp_setup();
 
 void app_setup() {
   setenv("TZ", "CET-2", 1); //XXX
@@ -42,6 +44,8 @@ void app_setup() {
   systick_setup();
   uart_setup();
   report_setup({esp32_puts});
+  cliApp_setup();
+  io_getc_fun = esp32_getc;
   i2c2_setup();
   led_setup();
   rtc_setup();

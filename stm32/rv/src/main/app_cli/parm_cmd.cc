@@ -48,7 +48,7 @@ extern "C" void timer_set(int8_t channel);
 const char help_parmCmd[] = "zone=[0-13]      zone number\n"
     "duration=[0-60]  how long to irrigate\n";
 
-int process_parmCmd(clpar p[], int len) {
+int process_parmCmd(clpar p[], int len, class UoutWriter &td) {
   int arg_idx;
   int errors = 0;
   int res = 0;

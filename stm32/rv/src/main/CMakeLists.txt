@@ -16,16 +16,13 @@ rv/rv_timers.cc
 rv/rv_timer_pause.cc
 rv/rain_sensor.cc
 rv/rv_timer_data.cc
-app_cli/cli_getcmdline.c
 app_cli/parm_config.cc
-app_cli/cli_parsecmdline.c
 app_cli/parm_cmd.cc
 app_cli/parm_mcu.cc
-app_cli/cli_json.c
 app_cli/parm_timer.cc
 app_cli/parm_protobuf.cc
 app_cli/parm_kvs.cc
-app_cli/cli.c
+app_cli/cli.cc
 debug/dbg.c
 protobuf/mcu_com.pb.c
 protobuf/zone_data.cc
