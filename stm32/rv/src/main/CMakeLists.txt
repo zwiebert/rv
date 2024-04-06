@@ -16,16 +16,16 @@ rv/rv_timers.cc
 rv/rv_timer_pause.cc
 rv/rain_sensor.cc
 rv/rv_timer_data.cc
-cli/cli_getcmdline.c
-cli/parm_config.cc
-cli/cli_parsecmdline.c
-cli/parm_cmd.cc
-cli/parm_mcu.cc
-cli/cli_json.c
-cli/parm_timer.cc
-cli/parm_protobuf.cc
-cli/parm_kvs.cc
-cli/cli.c
+app_cli/cli_getcmdline.c
+app_cli/parm_config.cc
+app_cli/cli_parsecmdline.c
+app_cli/parm_cmd.cc
+app_cli/parm_mcu.cc
+app_cli/cli_json.c
+app_cli/parm_timer.cc
+app_cli/parm_protobuf.cc
+app_cli/parm_kvs.cc
+app_cli/cli.c
 debug/dbg.c
 protobuf/mcu_com.pb.c
 protobuf/zone_data.cc
@@ -39,7 +39,7 @@ water_pump/water_pump.cc
 )
 
 add_library(rv_main STATIC ${srcs})
-target_link_libraries(rv_main PUBLIC mcp23017 tm1638 jsmn utils_misc ${CMAKE_SOURCE_DIR}/external/libopencm3/lib/libopencm3_stm32f1.a rv_system)
+target_link_libraries(rv_main PUBLIC mcp23017 tm1638 jsmn utils_misc cli ${CMAKE_SOURCE_DIR}/external/libopencm3/lib/libopencm3_stm32f1.a rv_system)
 add_dependencies(rv_main ocm3)
 target_compile_features(rv_main PUBLIC cxx_std_20 c_std_11)
 

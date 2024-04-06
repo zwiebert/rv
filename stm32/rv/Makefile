@@ -29,10 +29,10 @@ _config:=$(config_dir)/.config
 stm32f1.fw.all: stm32f1.fw.configure stm32f1.fw.build
 
 stm32f1.fw.menuconfig $(_config):
-	mkdir -p $(config_dir) && cd $(config_dir) && menuconfig $(THIS_ROOT)/src/main/Kconfig
+	mkdir -p $(config_dir) && cd $(config_dir) && menuconfig $(THIS_ROOT)/Kconfig.projbuild
 
 $(rv_config_h): $(_config)
-	 python -m kconfgen  --kconfig $(THIS_ROOT)/src/main/Kconfig --config $(_config) --output header $(rv_config_h)
+	 python -m kconfgen  --kconfig $(THIS_ROOT)/Kconfig.projbuild --config $(_config) --output header $(rv_config_h)
 external/libopencm3/lib/libopencm3_stm32f1.a:
 	make -C ./external/libopencm3 lib/libopencm3_stm32f1.a
 
