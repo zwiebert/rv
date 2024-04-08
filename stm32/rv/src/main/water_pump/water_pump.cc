@@ -16,6 +16,19 @@
 #include "time/systick_1ms.h"
 #include "assert.h"
 #include "valves/valve_relays.h"
+#include <debug/log.h>
+
+#ifdef CONFIG_WAPU_DEBUG
+#define DEBUG
+#define D(x) x
+#define L(x) x
+#else
+#define D(x)
+#define L(x) x
+#endif
+#define logtag "wapu"
+
+
 
 #define WP_RELAY_PIN CONFIG_RV_WATER_PUMP_RELAY  ///< relay number to switch water pump contactor (for turning on pump)
 #define WP_PCOUT_PIN CONFIG_RV_PRESS_CONTROL_RELAY  ///< relay number to switch pressure-control contactor (for turning off PC)
@@ -47,6 +60,7 @@ static void delay_secs(int secs) {
 // switch on/off main voltage of water pump
 static void wp_switchPumpRelay(bool on) {
   static bool old_on;
+  D(db_logi(logtag, "%s(%d)  , old_on=%d", __func__, on, old_on));
   //bool old_on = !Mcp23017_getBit(&relay_16, WP_RELAY_PIN, true);
   Mcp23017_putBit(&relay_16, WP_RELAY_PIN, !on); // mains relay with NO contact
   if (old_on != on) {
@@ -201,6 +215,8 @@ run_time_T wp_getPumpOnDuration(void) {
 
 // switch on/off pump on (and set internal time stamps)
 void wp_switchPump(bool on) {
+    D(db_logi(logtag, "%s(%d)  , wp_error=%d", __func__, on, wp_error));
+
 	if (wp_error != WP_ERR_NONE)
 		on = OFF; // force pump off if error
 

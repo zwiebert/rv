@@ -11,6 +11,17 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef CONFIG_CLI_DEBUG
+#define DEBUG
+#define D(x) x
+#define L(x) x
+#else
+#define D(x)
+#define L(x) x
+#endif
+#define logtag "cli"
+
+
 #define ENABLE_RESTART 1 // allow software reset
 
 typedef void (*void_fun_ptr)(void);
@@ -73,11 +84,6 @@ const parm_handler* cli_parmHandler_find(const char *key) {
     return strcmp(key, el.parm) == 0;
   });
   if (std::end(handlers) == handler) {
-    if (strcmp("timer", key) == 0)  // alias
-      return cli_parmHandler_find("auto");
-    if (strcmp("send", key) == 0)  // alias
-      return cli_parmHandler_find("cmd");
-
     return nullptr;
   }
 
@@ -86,10 +92,10 @@ const parm_handler* cli_parmHandler_find(const char *key) {
 
 
 void cliApp_setup() {
- // cli_hook_process_json = cliApp_redirect_to_rv;
  // cli_hook_process_json_obj = process_objJson;
  // cli_hook_checkPassword = cliApp_checkPassword;
 
+  cli_hook_process_json = process_json;
   cli_parmHandler_find_cb = cli_parmHandler_find;
   cli_parm_handlers = &our_parm_handlers;
 }

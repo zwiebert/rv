@@ -33,6 +33,7 @@ stm32f1.fw.menuconfig $(_config):
 
 $(rv_config_h): $(_config)
 	 python -m kconfgen  --kconfig $(THIS_ROOT)/Kconfig.projbuild --config $(_config) --output header $(rv_config_h)
+	 cp $(rv_config_h) $(THIS_ROOT)/src/main/rv_config.h
 external/libopencm3/lib/libopencm3_stm32f1.a:
 	make -C ./external/libopencm3 lib/libopencm3_stm32f1.a
 

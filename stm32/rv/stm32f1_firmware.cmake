@@ -10,17 +10,17 @@ project(rv_stm32f1 C CXX ASM)
 
 add_compile_definitions(MCU_STM32F1 STM32F1 STM32F10X_MD)
 
-add_compile_options(  $<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>
-					  $<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics>
-					  $<$<COMPILE_LANGUAGE:CXX>:-fno-use-cxa-atexit>
-                      $<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>
-					  $<$<COMPILE_LANGUAGE:CXX>:-std=gnu++2a>
-					  $<$<COMPILE_LANGUAGE:C>:-std=gnu11>
-                      $<$<COMPILE_LANGUAGE:ASM>:-xassembler-with-cpp>
+add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-fno-rtti>
+		    $<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics>
+		    $<$<COMPILE_LANGUAGE:CXX>:-fno-use-cxa-atexit>
+                    $<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>
+		    $<$<COMPILE_LANGUAGE:CXX>:-std=gnu++2a>
+                    $<$<COMPILE_LANGUAGE:CXX>:-Wno-narrowing>
+		    $<$<COMPILE_LANGUAGE:C>:-std=gnu11>
+                    $<$<COMPILE_LANGUAGE:ASM>:-xassembler-with-cpp>
                       -mcpu=cortex-m3 -mfloat-abi=soft -mthumb
                       #  -fstack-protector-all # -fanalyzer
                       -ffunction-sections -fdata-sections -fstack-usage
-                       $<$<COMPILE_LANGUAGE:CXX>:-Wno-narrowing>
                       -Wall -Wextra -Wno-missing-field-initializers -Wno-psabi
 )
 

@@ -1,8 +1,8 @@
 #include <cli/cli.h>
 #include <loop/loop.hh>
 #include <utils_misc/int_macros.h>
-#include <peri/uart.h>
 #include <peri/i2c.h>
+#include <peri/uart.h>
 #include <rv/rain_sensor.hh>
 #include <rv/report.h>
 #include <rv/rv.hh>

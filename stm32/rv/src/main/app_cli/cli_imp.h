@@ -45,6 +45,16 @@ void cli_out_config_reply_entry(const char *key, const char *val, int len);
 void cli_out_mcu_reply_entry(const char *key, const char *val, int len);
 
 /**
+ * \brief   This will be called by \ref process_json_hook
+ *          It will eventually replace all of the parm handlers.
+ *          They are not very useful for communicating with netmcu.
+ *
+ * \param json    null terminated json string
+ * \return        true if json was been handled by this function
+ */
+bool process_json(char *json);
+
+/**
  * \brief handler for cli command "cmd"
  * \param p   array of key/value pairs.
  *            index 0 contains the command name in the key (value is empty).

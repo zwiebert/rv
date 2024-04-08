@@ -1,3 +1,4 @@
+
 /**
  * \file cli/parm_config.cc
  * \brief handle cli command
@@ -6,7 +7,7 @@ extern "C" {
 #include <time/real_time_clock.h>
 #include <time/real_time_clock.h>
 #include "user_config.h"
-#include "peri/uart.h"
+#include <peri/uart.h>
 }
 #include "cli_imp.h"
 #include "loop/loop.hh"
@@ -41,9 +42,7 @@ static const char *zoneKeysN[] = {
 };
 
 bool kvs_store_string(const char *key, const char *val) {
-  char buf[128];
-  if (0 < std::snprintf(buf, sizeof buf, "{\"to\":\"cli\",\"kvs\":{\"%s\":\"%s\"}};\n", key, val)) {
-    esp32_puts(buf);
+  if (0 < std::printf("{\"to\":\"cli\",\"kvs\":{\"%s\":\"%s\"}};\n", key, val)) {
     return true;
   }
   return false;

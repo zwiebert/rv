@@ -2,5 +2,17 @@ menu "RV"
 
 rsource "water_pump/Kconfig"
 
+  config USART_STDOUT
+    int "usart number for writing to stdout (fd 1)"
+    default 1
+
+  config USART_STDERR
+    int "usart number for writing to stdout (fd 1)"
+    default 2
+
+  config RV_DEBUG
+    bool "enable debug messages for rv"
+    default n
+
 endmenu
 

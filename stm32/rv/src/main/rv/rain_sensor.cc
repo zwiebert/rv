@@ -9,7 +9,7 @@
 
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
-#include "peri/uart.h"
+#include <peri/uart.h>
 
 #define RAIN_SENSOR_RCC RCC_GPIOB
 #define RAIN_SENSOR_PORT GPIOB

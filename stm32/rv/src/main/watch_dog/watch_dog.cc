@@ -8,10 +8,10 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/memorymap.h>
+#include <peri/uart.h>
 #include "time/real_time_clock.h"
 
 #include "watch_dog.hh"
-#include "peri/uart.h"
 #include "rv/report.h"
 
 #include <cstring>

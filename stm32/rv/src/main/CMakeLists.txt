@@ -1,6 +1,8 @@
 set(srcs 
 valves/valve_relays.cc
 peri/uart.cc
+peri/uart1.cc
+peri/uart2.cc
 peri/relay16.cc
 peri/i2c.cc
 peri/dlb8.cc
@@ -22,6 +24,7 @@ app_cli/parm_mcu.cc
 app_cli/parm_timer.cc
 app_cli/parm_protobuf.cc
 app_cli/parm_kvs.cc
+app_cli/process_json_hook.cc
 app_cli/cli.cc
 debug/dbg.c
 protobuf/mcu_com.pb.c

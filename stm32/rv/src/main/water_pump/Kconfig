@@ -19,6 +19,10 @@ menu "RV: Water Pump"
 	config WP_PC_CLEAR_FAILURE_TIME
 		int "seconds to switch of mains voltage of pressure-control for error reset"
 		default 5
+		
+	config WAPU_DEBUG
+	   bool "turn on debbung of water_pump"
+	   default n
 
 
 endmenu

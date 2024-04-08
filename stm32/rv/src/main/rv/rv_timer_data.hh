@@ -37,6 +37,12 @@ public:
     /// \param buf_size    size of buffer provided by caller
     /// \param no_brackets if true, don't surround our JSON with curly brackets
     char* toJSON(char *buf, size_t buf_size, bool no_brackets = false) const;
+    /**
+     * \brief             convert args to JSON
+     * \param sj          json builder
+     * \return            success
+     */
+    bool to_json(class UoutBuilderJson &sj, bool content_only = false) const;
   public:
     SetArgs() = default;
     SetArgs(cstr_pair kvs[], int len);
@@ -49,6 +55,7 @@ protected:
 public:
 
   char* toJSON(char *buf, size_t buf_size, bool no_brackets = false) const;
+  bool to_json(class UoutBuilderJson &sj) const;
   RvTimerData() {
   }
 };

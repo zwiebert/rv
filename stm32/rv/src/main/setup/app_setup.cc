@@ -3,8 +3,8 @@
 #include <libopencm3/stm32/f1/gpio.h>
 #include <libopencm3/stm32/f1/rcc.h>
 #include <peri/i2c.h>
-#include <peri/uart.h>
 #include <peri/relay16.h>
+#include <peri/uart.h>
 #include <water_pump/water_pump.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -19,6 +19,10 @@
 #include <rv/report.h>
 #include <watch_dog/watch_dog.hh>
 
+void* __dso_handle = (void*)NULL;
+extern "C" void _fini() {
+  while(true);
+}
 
 void timers_was_modified(int vn, int tn, bool removed);
 
@@ -44,8 +48,11 @@ void app_setup() {
   systick_setup();
   uart_setup();
   report_setup({esp32_puts});
+
   cliApp_setup();
   io_getc_fun = esp32_getc;
+  io_putc_fun = esp32_putc;
+
   i2c2_setup();
   led_setup();
   rtc_setup();

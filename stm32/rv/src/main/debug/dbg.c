@@ -1,6 +1,5 @@
 #include <debug/dbg.h>
-#include "peri/uart.h"
-
+#include <peri/uart.h>
 #include <stdio.h>
 #include <stdarg.h>
 

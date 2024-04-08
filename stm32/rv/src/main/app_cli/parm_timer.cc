@@ -2,12 +2,12 @@
  * \file cli/parm_timer.cc
  * \brief handle cli command
  */
+#include <peri/uart.h>
 #include "user_config.h"
 #include <time/real_time_clock.h>
 #include <string.h>
 #include "cli_imp.h"
 #include <stdio.h>
-#include "peri/uart.h"
 #include "water_pump/water_pump.h"
 #include "rv/rv_timers.hh"
 #include "rv/rain_sensor.hh"

@@ -1,5 +1,5 @@
 #include "rv_timer.hh"
-
+#include <uout/uout_builder_json.hh>
 #include <stdlib.h>
 
 RvTimerData::SetArgs::SetArgs(cstr_pair kvs[], int len) {
@@ -35,6 +35,75 @@ RvTimerData::SetArgs::SetArgs(cstr_pair kvs[], int len) {
       args.ignorePumpPause = std::strcmp("true", val) == 0;
     }
   }
+}
+
+bool RvTimerData::to_json(UoutBuilderJson &sj)  const {
+  const SetArgs &args = mArgs;
+
+  sj.add_object();
+
+  sj.put_kv("nr", mNextRun);
+  sj.put_kv("lr", mLastRun);
+
+  args.to_json(sj, true);
+
+  sj.close_object();
+
+  return true;
+}
+
+bool RvTimerData::SetArgs::to_json(UoutBuilderJson &sj, bool content_only) const {
+  const SetArgs &args = *this;
+
+  if (!content_only)
+  sj.add_object();
+
+  sj.put_kv("vn", args.valve_number);
+
+  if (args.timer_number) {
+    sj.put_kv("tn", args.timer_number);
+  }
+
+  if (args.on_duration) {
+    sj.put_kv("d1", args.on_duration);
+  }
+
+  if (args.off_duration) {
+    sj.put_kv("d0", args.off_duration);
+  }
+
+  if (args.repeats) {
+    sj.put_kv("r", args.repeats);
+  }
+
+  if (args.period) {
+    sj.put_kv("per", args.period);
+  }
+
+  if (args.mDaysInterval) {
+    sj.put_kv("di", args.mDaysInterval);
+  }
+
+  if (args.mTodSpanBegin) {
+    sj.put_kv("sb", args.mTodSpanBegin);
+  }
+
+  if (args.mTodSpanEnd) {
+    sj.put_kv("se", args.mTodSpanEnd);
+  }
+
+  if (args.ignoreRainSensor) {
+    sj.put_kv("ir", true);
+  }
+
+  if (args.ignorePumpPause) {
+    sj.put_kv("ip", true);
+  }
+
+  if (!content_only)
+    sj.close_object();
+
+  return true;
 }
 
 char* RvTimerData::SetArgs::toJSON(char *buf, size_t buf_size, bool no_brackets) const {

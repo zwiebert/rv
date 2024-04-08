@@ -5,7 +5,6 @@
 #include "user_config.h"
 #include <time/real_time_clock.h>
 #include "cli_imp.h"
-#include "peri/uart.h"
 #include "water_pump/water_pump.h"
 #include "rv/rv_timers.hh"
 #include "rv/rain_sensor.hh"
@@ -15,6 +14,7 @@
 #include <stdlib.h>
 #include <cstring>
 #include <errno.h>
+#include <peri/uart.h>
 
 #define warning_unknown_option(x)
 extern "C" void timer_set(int8_t channel);
@@ -120,87 +120,99 @@ int process_parmCmd(clpar p[], int len, class UoutWriter &td) {
 
   if (wantsReply) {
     char buf[BUF_SIZE] = "";
+    auto sj = td.sj();
 
-    esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
+    sj.open_root_object();
+
+    sj.add_object("data");
 
     for (const RvTimer &vt : *rvt.getTimerList()) {
       if (wantsDurations) {
         int secs = vt.get_duration();
         if (secs) {
-          std::snprintf(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf), "\"%s%d.%d\":%d,", KEY_DURATION_PREFIX, vt.getValveNumber(), vt.getTimerNumber(),
-              secs);
+          char key[16];
+          std::snprintf(key, sizeof key, "%s%d.%d", KEY_DURATION_PREFIX, vt.getValveNumber(), vt.getTimerNumber());
+          sj.put_kv(key, secs);
         }
       }
 
       if (wantsRemainingTimes) {
         int secs = vt.get_remaining();
         if (secs) {
-          std::snprintf(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf), "\"%s%d.%d\":%d,", KEY_REMAINING_PREFIX, vt.getValveNumber(), vt.getTimerNumber(),
-              secs);
+          char key[16];
+          std::snprintf(key, sizeof key, "%s%d.%d", KEY_REMAINING_PREFIX, vt.getValveNumber(), vt.getTimerNumber());
+          sj.put_kv(key, secs);
         }
       }
     }
 
     if (wantsRelayPC) {
-      std::strcat(buf, wp_isPressControlOn(0) ? "\"pc\":1," : "\"pc\":0,");
+          sj.put_kv("pc",  wp_isPressControlOn(0));
     }
 
     if (wantsRelayPump) {
-      std::strcat(buf, wp_isPumpOn() ? "\"pump\":1," : "\"pump\":0,");
+          sj.put_kv("pc",  wp_isPumpOn());
     }
 
     if (wantsPumpRunTime) {
       if (wp_isPumpOn()) {
-        std::snprintf(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf), "\"p1d\":%lu,", wp_getPumpOnDuration());
+        sj.put_kv("p1d", wp_getPumpOnDuration());
       } else {
-        std::snprintf(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf), "\"p0d\":%lu,", wp_getPumpOffDuration());
+        sj.put_kv("p0d", wp_getPumpOffDuration());
       }
     }
 
     if (wantsRainSensor) {
-      std::strcat(buf, rs.getState() ? "\"rain\":1," : "\"rain\":0,");
+      sj.put_kv("rain", rs.getState());
     }
 
     if (wantsTime) {
+      char ft[32];
       time_t timer = time(NULL);
       struct tm t;
       localtime_r(&timer, &t);
-      strftime(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf), "\"time\":\"%FT%H:%M:%S\",", &t);
+      strftime(ft, sizeof ft, "%FT%H:%M:%S", &t);
+      sj.put_kv("time", ft);
     }
 
     if (wantsVersion) {
-      std::snprintf(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf), "\"version\":\"%s\",", VERSION);
+      sj.put_kv("version", VERSION);
     }
 
-    if (*buf)
-      esp32_write(buf, std::strlen(buf) - 1); // no terminating comma
-
-    esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
+    sj.close_object();
+    sj.close_root_object();
+    sj.writeln_json(false);
 
     if (wantsTimers)
+      buf[0] = '\0';
       for (const RvTimer &vt : *rvt.getTimerList()) {
-        char *json = vt.argsToJSON(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf));
-        esp32_write(JSON_PREFIX, JSON_PREFIX_LEN);
-        esp32_puts(json);
-        esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
+        sj.open_root_object();
+        sj.add_key("data");
+        vt.to_json(sj);
+        sj.close_root_object();
+        sj.writeln_json(false);
       }
   }
 
   if (errors) {
     db_printf("error:errno=%d\n", errno);
-    esp32_puts("error: error in processing cli cmd\n");
+    fputs("error: error in processing cli cmd\n", stderr);
   }
   return 0;
 }
 
 void timers_was_modified(int vn, int tn, bool removed) {
   char buf[128];
+  UoutBuilderJson sj(buf, sizeof buf);
 
   if (removed) {
-    std::snprintf(buf, sizeof buf, "\"timer\":{\"vn\":%d,\"tn\":%d}", vn, tn);
-    esp32_write(JSON_PREFIX_UPD, JSON_PREFIX_UPD_LEN);
-    esp32_puts(buf);
-    esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
+    sj.open_root_object();
+    sj.add_object("timer");
+    sj.put_kv("vn", vn);
+    sj.put_kv("tn", tn);
+    sj.close_object();
+    sj.close_root_object();
+    fputs(sj.get_json(), stdout);
     return;
   }
 
@@ -208,11 +220,11 @@ void timers_was_modified(int vn, int tn, bool removed) {
   for (const RvTimer &vt : *rvt.getTimerList()) {
     if (!vt.match(vn, tn))
       continue;
-    char *json = vt.argsToJSON(buf + std::strlen(buf), BUF_SIZE - std::strlen(buf));
-    esp32_write(JSON_PREFIX_UPD, JSON_PREFIX_UPD_LEN);
-    esp32_puts(json);
-    esp32_write(JSON_SUFFIX, JSON_SUFFIX_LEN);
+    sj.open_root_object();
+    sj.add_key("update");
+    vt.to_json(sj);
+    sj.close_root_object();
+    fputs(sj.get_json(), stdout);
     return;
   }
-
 }
