@@ -31,7 +31,7 @@ void app_switch_valve(int valve_number, bool state) {
 }
 
 void app_switch_valves(uint16_t valve_bits, uint16_t valve_mask) {
-  D(db_logi(logtag, "%s(vn=0x%4x, state=0x%4x)", __func__, valve_bits, valve_mask));
+  D(db_logi(logtag, "%s(bits=0x%x, mask=0x%x)", __func__, valve_bits, valve_mask));
   uint16_t old_bits = ~Mcp23017_getBits(&relay_16, valve_mask, true);
   Mcp23017_putBits(&relay_16, valve_mask, ~valve_bits);
 

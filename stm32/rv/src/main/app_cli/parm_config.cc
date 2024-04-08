@@ -16,6 +16,16 @@ extern "C" {
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <debug/log.h>
+#ifdef CONFIG_CLI_DEBUG
+#define DEBUG
+#define D(x) x
+#define L(x) x
+#else
+#define D(x)
+#define L(x) x
+#endif
+#define logtag "cli"
 
 #define ENABLE_RESTART 0 // allow software reset
 
@@ -57,6 +67,7 @@ static int match_zoneKeyN(const char *key) {
 }
 
 int process_parmConfig(clpar p[], int len, class UoutWriter &td) {
+  D(db_logi(logtag, "%s(len=%d)", __func__, len));
   int arg_idx;
   int errors = 0;
   int needSecondPass = 0;

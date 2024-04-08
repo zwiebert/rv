@@ -29,8 +29,3 @@ void report_pc_status(bool pressure_low);
 /// \param is_open      true if open
 void report_state_change(int valve, int is_open);
 
-struct Report_Cfg {
-  int (*putString)(const char *s);
-};
-
-void report_setup(struct Report_Cfg cfg);

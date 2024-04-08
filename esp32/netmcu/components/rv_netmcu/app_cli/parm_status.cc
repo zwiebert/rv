@@ -20,6 +20,7 @@
 #include "uout/uout_builder_json.hh"
 #include <uout/cli_out.h>
 #include "debug/dbg.h"
+#include "debug/log.h"
 #include "utils_misc/int_macros.h"
 #include "utils_misc/int_types.h"
 #include <stdio.h>
@@ -32,7 +33,7 @@
 #else
 #define D(x)
 #endif
-#define logtag "rv.cli.parm_status";
+#define logtag "appcli"
 
 #define STM32_STATUS "status "
 #define STM32_STATUS_LEN (sizeof (STM32_STATUS) - 1)
@@ -50,6 +51,7 @@
 
 int
 process_parmStatus(clpar p[], int len, class UoutWriter &td) {
+  D(db_logi(logtag, "%s(len=%d)", __func__, len));
   int arg_idx;
 
   soMsg_RVE_begin(td);

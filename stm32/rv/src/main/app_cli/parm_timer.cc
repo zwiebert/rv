@@ -11,6 +11,16 @@
 #include "water_pump/water_pump.h"
 #include "rv/rv_timers.hh"
 #include "rv/rain_sensor.hh"
+#include <debug/log.h>
+#ifdef CONFIG_CLI_DEBUG
+#define DEBUG
+#define D(x) x
+#define L(x) x
+#else
+#define D(x)
+#define L(x) x
+#endif
+#define logtag "cli"
 
 #define warning_unknown_option(x)
 extern "C" void timer_set(int8_t channel);
@@ -33,6 +43,7 @@ const char help_parmTimer[] = "zone=[0-13]      zone number\n"
     "duration=[0-60]  how long to irrigate\n";
 
 int process_parmTimer(clpar p[], int len, class UoutWriter &td) {
+  D(db_logi(logtag, "%s(len=%d)", __func__, len));
   RvTimer::SetArgs args = RvTimer::SetArgs(reinterpret_cast<cstr_pair*>(&p[1]), len - 1);
 
   RvTimer *timer;

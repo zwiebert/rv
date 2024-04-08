@@ -14,6 +14,16 @@ extern "C" {
 #include "rv/rv_timer.hh"
 #include <stdio.h>
 #include <ctype.h>
+#include <debug/log.h>
+#ifdef CONFIG_CLI_DEBUG
+#define DEBUG
+#define D(x) x
+#define L(x) x
+#else
+#define D(x)
+#define L(x) x
+#endif
+#define logtag "cli"
 
 enum { ZN, LPH };
 static const char *zoneKeysN[] = {
@@ -36,6 +46,7 @@ static int match_zoneKeyN(const char *key) {
 }
 
 int process_parmKvs(clpar p[], int len, class UoutWriter &td) {
+  D(db_logi(logtag, "%s(len=%d)", __func__, len));
   int arg_idx;
   int errors = 0;
   int needSecondPass = 0;

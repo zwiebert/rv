@@ -34,7 +34,7 @@ extern "C" void hard_fault_handler() {
 int main() {
   app_setup();
   report_event("mcu:started");
-  puts("stdio: mcu:started");
+  fputs("mcu:started\n", stderr);
   wp_clearPcFailure(); //
 
   for (;;) {

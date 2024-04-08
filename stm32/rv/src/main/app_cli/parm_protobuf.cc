@@ -17,6 +17,16 @@ extern "C" {
 #include <malloc.h>
 #include "protobuf/mcu_com.pb.h"
 #include "protobuf/zone_data.hh"
+#include <debug/log.h>
+#ifdef CONFIG_CLI_DEBUG
+#define DEBUG
+#define D(x) x
+#define L(x) x
+#else
+#define D(x)
+#define L(x) x
+#endif
+#define logtag "cli"
 
 extern bool got_zoneData;
 
@@ -29,6 +39,7 @@ bool decode_zoneData(uint8_t *msg, unsigned msg_len);
 
 int
 process_parmProtoBuf(clpar p[], int len, class UoutWriter &td) {
+  D(db_logi(logtag, "%s(len=%d)", __func__, len));
 
   for (int arg_idx = 1; arg_idx < len; ++arg_idx) {
     const char *key = p[arg_idx].key, *val = p[arg_idx].val;

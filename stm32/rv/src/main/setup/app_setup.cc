@@ -47,7 +47,6 @@ void app_setup() {
   clock_setup();
   systick_setup();
   uart_setup();
-  report_setup({esp32_puts});
 
   cliApp_setup();
   io_getc_fun = esp32_getc;

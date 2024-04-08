@@ -10,47 +10,49 @@
 #include <cstdio>
 #include <stdint.h>
 #include "report.h"
-
-static struct Report_Cfg MyConfig;
-
-static void MyPuts(const char *s) {
-  if (MyConfig.putString)
-    (*MyConfig.putString)(s);
-  else
-    std::fputs(s, stdout);
-}
+#include <debug/log.h>
+#ifdef CONFIG_CLI_DEBUG
+#define DEBUG
+#define D(x) x
+#define L(x) x
+#else
+#define D(x)
+#define L(x) x
+#endif
+#define logtag "rv"
 
 
 void report_event(const char *msg) {
+  D(db_logi(logtag, "%s(%s)", __func__, msg));
   char buf[64];
-  std::snprintf(buf, sizeof buf, "{\"status\":{\"event\":\"rv:%s\"}}\n", msg);
-  MyPuts(buf);
+  std::snprintf(buf, sizeof buf, "{\"status\":{\"event\":\"rv:%s\"}}", msg);
+  std::puts(buf);
 }
 
 void report_valve_status(uint16_t valve_bits, uint16_t valve_mask) {
+    D(db_logi(logtag, "%s(bits=0x%x, mask=0x%x)", __func__, valve_bits, valve_mask));
     char buf[80] = "";
-    std::sprintf(buf, "{\"status\":{\"valve-bits\":\"0x%x\",\"valve-change-mask\":\"0x%x\"}}\n", valve_bits, valve_mask);
-    MyPuts(buf);
+    std::sprintf(buf, "{\"status\":{\"valve-bits\":\"0x%x\",\"valve-change-mask\":\"0x%x\"}}", valve_bits, valve_mask);
+    std::puts(buf);
 }
 
 void report_pump_status(bool state) {
+    D(db_logi(logtag, "%s(%d)", __func__, state));
     char buf[80] = "";
-    std::sprintf(buf, "{\"status\":{\"pump\":%s}}\n", state ? "1" : "0");
-    MyPuts(buf);
+    std::sprintf(buf, "{\"status\":{\"pump\":%s}}", state ? "1" : "0");
+    std::puts(buf);
 }
 
 void report_pc_status(bool state) {
+    D(db_logi(logtag, "%s(%d)", __func__, state));
     char buf[80] = "";
-    std::sprintf(buf, "{\"status\":{\"pc\":%s}}\n", state ? "1" : "0");
-    MyPuts(buf);
+    std::sprintf(buf, "{\"status\":{\"pc\":%s}}", state ? "1" : "0");
+    std::puts(buf);
 }
 
 void report_state_change(int valve, int run_state) {
+  D(db_logi(logtag, "%s(vn=%d, state=%d)", __func__, valve, run_state));
   char buf[80] = "";
-  std::sprintf(buf, "{\"status\":{\"valve\":%d,\"run_state\":%d}}\n", valve, run_state);
-  MyPuts(buf);
-}
-
-void report_setup(struct Report_Cfg cfg) {
-  MyConfig = cfg;
+  std::sprintf(buf, "{\"status\":{\"valve\":%d,\"run_state\":%d}}", valve, run_state);
+  std::puts(buf);
 }

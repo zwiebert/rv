@@ -15,6 +15,16 @@
 #include <cstring>
 #include <errno.h>
 #include <peri/uart.h>
+#include <debug/log.h>
+#ifdef CONFIG_CLI_DEBUG
+#define DEBUG
+#define D(x) x
+#define L(x) x
+#else
+#define D(x)
+#define L(x) x
+#endif
+#define logtag "cli"
 
 #define warning_unknown_option(x)
 extern "C" void timer_set(int8_t channel);
@@ -49,6 +59,7 @@ const char help_parmCmd[] = "zone=[0-13]      zone number\n"
     "duration=[0-60]  how long to irrigate\n";
 
 int process_parmCmd(clpar p[], int len, class UoutWriter &td) {
+  D(db_logi(logtag, "%s(len=%d)", __func__, len));
   int arg_idx;
   int errors = 0;
   int res = 0;
@@ -181,6 +192,7 @@ int process_parmCmd(clpar p[], int len, class UoutWriter &td) {
 
     sj.close_object();
     sj.close_root_object();
+    D(db_logi(logtag, "%s: writeln <%s>", __func__, sj.get_json()));
     sj.writeln_json(false);
 
     if (wantsTimers)
@@ -190,6 +202,7 @@ int process_parmCmd(clpar p[], int len, class UoutWriter &td) {
         sj.add_key("data");
         vt.to_json(sj);
         sj.close_root_object();
+    D(db_logi(logtag, "%s: writeln <%s>", __func__, sj.get_json()));
         sj.writeln_json(false);
       }
   }
@@ -212,7 +225,8 @@ void timers_was_modified(int vn, int tn, bool removed) {
     sj.put_kv("tn", tn);
     sj.close_object();
     sj.close_root_object();
-    fputs(sj.get_json(), stdout);
+    D(db_logi(logtag, "%s: puts <%s>", __func__, sj.get_json()));
+    puts(sj.get_json());
     return;
   }
 
@@ -224,7 +238,8 @@ void timers_was_modified(int vn, int tn, bool removed) {
     sj.add_key("update");
     vt.to_json(sj);
     sj.close_root_object();
-    fputs(sj.get_json(), stdout);
+    D(db_logi(logtag, "%s: puts <%s>", __func__, sj.get_json()));
+    puts(sj.get_json());
     return;
   }
 }

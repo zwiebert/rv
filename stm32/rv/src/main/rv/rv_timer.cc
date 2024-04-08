@@ -5,11 +5,23 @@
 #include "report.h"
 #include "debug/dbg.h"
 #include <algorithm>
+#include <debug/log.h>
+
+#ifdef CONFIG_RV_DEBUG
+#define DEBUG
+#define D(x) x
+#define L(x) x
+#else
+#define D(x)
+#define L(x) x
+#endif
+#define logtag "rv"
 
 
 RvTimerPause RvTimer::rvtp;
 
 void RvTimer::changeState(state_T state) {
+  D(db_logi(logtag, "%s(%d) mState=%d", __func__, state, mState));
   state_T oldState = mState;
   if (oldState == state)
     return;
@@ -41,6 +53,7 @@ void RvTimer::changeState(state_T state) {
 }
 
 void RvTimer::changeOnOff() {
+  D(db_logi(logtag, "%s()", __func__));
 
   if (mState == STATE_ON) {
 
@@ -60,15 +73,18 @@ void RvTimer::changeOnOff() {
 }
 
 void RvTimer::pause() {
+  D(db_logi(logtag, "%s()", __func__));
   changeState(STATE_PAUSED);
 }
 
 void RvTimer::unpause() {
+  D(db_logi(logtag, "%s()", __func__));
   precond(mState == STATE_PAUSED);
   changeState(STATE_RUN);
 }
 
 void RvTimer::stop() {
+  D(db_logi(logtag, "%s()", __func__));
 
   time_t now = time(0);
   mNextOnOff = 0;
