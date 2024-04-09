@@ -158,11 +158,11 @@ int process_parmCmd(clpar p[], int len, class UoutWriter &td) {
     }
 
     if (wantsRelayPC) {
-          sj.put_kv("pc",  wp_isPressControlOn(0));
+      sj.put_kv("pc", wp_isPressControlOn(0));
     }
 
     if (wantsRelayPump) {
-          sj.put_kv("pc",  wp_isPumpOn());
+      sj.put_kv("pump", wp_isPumpOn());
     }
 
     if (wantsPumpRunTime) {
@@ -197,14 +197,14 @@ int process_parmCmd(clpar p[], int len, class UoutWriter &td) {
 
     if (wantsTimers)
       buf[0] = '\0';
-      for (const RvTimer &vt : *rvt.getTimerList()) {
-        sj.open_root_object();
-        sj.add_key("data");
-        vt.to_json(sj);
-        sj.close_root_object();
-    D(db_logi(logtag, "%s: writeln <%s>", __func__, sj.get_json()));
-        sj.writeln_json(false);
-      }
+    for (const RvTimer &vt : *rvt.getTimerList()) {
+      sj.open_root_object();
+      sj.add_key("data");
+      vt.to_json(sj);
+      sj.close_root_object();
+      D(db_logi(logtag, "%s: writeln <%s>", __func__, sj.get_json()));
+      sj.writeln_json(false);
+    }
   }
 
   if (errors) {

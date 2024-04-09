@@ -83,46 +83,44 @@ static bool do_work() {
   if (!stm32com_get_commandline(line, sizeof line)) {
     return false;
   }
+#ifdef  CONFIG_RV_ENABLE_WATCHDOG
   if (watchDog_checkCommandLine(line))
     return true;
+#endif
   if (stmTrace_checkCommandLine(line))
     return true;
 
   D(ESP_LOGI(logtag, "from_rv: received: <%s>", line));
+  char *json = nullptr;
 
-  char *json = strstr(line, "{\"status\":");
-  if (!json)
-    json = strstr(line, "{\"pbuf\":");
-  if (!json)
-    json = strstr(line, "{\"kvs\":");
-  if (!json)
-    json = strstr(line, "{\"to\":\"cli\",");
+  // forward json to web app
+  if ((json = strstr(line, "{\"update\":")) || (json = strstr(line, "{\"data\":"))) {
+    uoCb_publish_wsJson(json);
+    D(ESP_LOGI(logtag, "to_webstream:reply: <%s>", json));
+    return true;
+  }
 
-  if (json) {
-    LockGuard lock(cli_mutex);
-
-    UoutWriterStm32 td { static_cast<so_target_bits>(SO_TGT_FLAG_JSON) };
-    DD(ESP_LOGI(logtag, "from_rv:request: <%s>", json));
+  // call CLI handler without wanting data sent back
+  if ((json = strstr(line, "{\"status\":"))) {
+    LockGuard lock_cli(cli_mutex);
+    LockGuard lock_stm32(stm32_mutex);
+    UoutWriterBuilder td { static_cast<so_target_bits>(SO_TGT_FLAG_JSON) };
     cli_process_json(json, td);
-
-    if (td.sj().get_json()) {
-      DD(ESP_LOGI(logtag, "from_netmcu:response: <%s>", td.sj().get_json()));
-      LockGuard lock(stm32_mutex);
-
-      stm32_write(td.sj().get_json(), strlen(td.sj().get_json()));
-      stm32_write("\n", 2);
-
-      td.sj().free_buffer();
-    }
+    return true;
   }
 
-  char *reply = strstr(line, "{\"data\":");
-  if (!reply)
-    reply = strstr(line, "{\"update\":");
-  if (reply) {
-    uoCb_publish_wsJson(reply);
-    D(ESP_LOGI(logtag, "to_webstream:reply: <%s>", reply));
+ // get data from CLI handler
+  if ((json = strstr(line, "{\"pbuf\":")) || (json = strstr(line, "{\"kvs\":")) || (json = strstr(line, "{\"to\":\"cli\","))) {
+    LockGuard lock_cli(cli_mutex);
+    LockGuard lock_stm32(stm32_mutex);
+    UoutWriterStm32 td { static_cast<so_target_bits>(SO_TGT_FLAG_JSON) };
+    td.sj().cat_to_buf("\r\n");
+    cli_process_json(json, td);
+    td.sj().cat_to_buf(";\r\n");
+    td.sj().write_json(true);
+    return true;
   }
+
 
   return true;
 }

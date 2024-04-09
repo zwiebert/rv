@@ -57,7 +57,7 @@ const char cli_help_parmCmd[]  =
 int
 process_parmCmd(clpar p[], int len, class UoutWriter &td) {
   int arg_idx;
-  char buf[BUF_SIZE] = "{\"cmd\":{";
+  char buf[BUF_SIZE] = "\r\n{\"cmd\":{";
   int buf_idx = sizeof(buf);
 
   bool hasCmdLine = false;
@@ -119,7 +119,7 @@ process_parmCmd(clpar p[], int len, class UoutWriter &td) {
 
   if (hasCmdLine) {
     buf[strlen(buf) - 1] = '\0';
-    strcat(buf, "}}\n");
+    strcat(buf, "}};\r\n");
     D(db_logi(logtag, "to_stm32: <%s>", buf));
     stm32_write(buf, strlen(buf));
   }

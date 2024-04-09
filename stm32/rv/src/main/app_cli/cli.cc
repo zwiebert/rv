@@ -10,7 +10,7 @@
 #include "cli_imp.h"
 #include <stdio.h>
 #include <string.h>
-
+#include <debug/log.h>
 #ifdef CONFIG_CLI_DEBUG
 #define DEBUG
 #define D(x) x
@@ -84,9 +84,10 @@ const parm_handler* cli_parmHandler_find(const char *key) {
     return strcmp(key, el.parm) == 0;
   });
   if (std::end(handlers) == handler) {
+    D(db_logi(logtag, "%s(%s) handler not found", __func__, key));
     return nullptr;
   }
-
+  D(db_logi(logtag, "%s(%s) handler found", __func__, key));
   return handler;
 }
 

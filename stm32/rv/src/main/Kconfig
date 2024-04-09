@@ -1,6 +1,9 @@
 menu "RV"
 
 rsource "water_pump/Kconfig"
+  config USART_STDIN
+    int "usart number for reading from stdin (fd 0)"
+    default 1
 
   config USART_STDOUT
     int "usart number for writing to stdout (fd 1)"
@@ -9,10 +12,13 @@ rsource "water_pump/Kconfig"
   config USART_STDERR
     int "usart number for writing to stdout (fd 1)"
     default 2
+    
+  config RV_USE_WATCHDOG
+    bool "enable exchanging alive messages with netmcu"
+    default y
 
   config RV_DEBUG
     bool "enable debug messages for rv"
     default n
-
 endmenu
 

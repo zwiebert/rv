@@ -30,7 +30,7 @@ void lfa_createWifiAp() {
 
 void lfa_syncStm32Time(void) {
   char buf[80];
-  sprintf(buf, "{\"config\":{\"time\":%lld}};", time(0));
+  sprintf(buf, "\r\n{\"config\":{\"time\":%lld}};\r\n", time(0));
   ESP_LOGI(logtag, "to-strm32: <%s>", buf);
   stm32_write(buf, strlen(buf));
 }

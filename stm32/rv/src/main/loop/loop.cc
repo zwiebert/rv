@@ -10,6 +10,7 @@
 #include <water_pump/water_pump_logic.h>
 #include <time/systick_1ms.h>
 #include <watch_dog/watch_dog.hh>
+#include <debug/log.h>
 
 #include <cstdio>
 
@@ -39,7 +40,7 @@ static void fetchData_loop() {
 }
 
 static void interval_1s_loop() {
-#ifdef USE_WDG
+#ifdef CONFIG_RV_USE_WATCHDOG
   watchDog_loop();
 #endif
   i2c2_check_loop();
@@ -55,7 +56,11 @@ static void interval_64ms_loop() {
   wpl_loop();
 }
 
-static const lfa_funT lfa_table[lf_Len] = { interval_1s_loop, interval_512ms_loop, interval_64ms_loop, cli_loop, wpl_loop, fetchData_loop, };
+static void event_rx_buffer_full() {
+  db_loge("rv", "%s()", __func__);
+}
+
+static const lfa_funT lfa_table[lf_Len] = { interval_1s_loop, interval_512ms_loop, interval_64ms_loop, cli_loop, wpl_loop, fetchData_loop, event_rx_buffer_full};
 
 extern "C" void lf_loop() {
   for (int i = 0; i < 4500 && !loop_flags_once; ++i) {

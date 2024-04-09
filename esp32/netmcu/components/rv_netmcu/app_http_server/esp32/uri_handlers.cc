@@ -159,7 +159,7 @@ void hts_setup_content() {
 #ifdef USE_WS
   uo_flagsT flags;
   flags.tgt.websocket = true;
-  flags.evt.uo_evt_flag_valveChange = true;
+  flags.evt.uo_evt_flag_rvStatusChange = true;
   flags.evt.async_http_resp = true;
   flags.fmt.json = true;
   uoCb_subscribe(ws_send_json_cb, flags);

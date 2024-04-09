@@ -54,7 +54,7 @@ process_parmStatus(clpar p[], int len, class UoutWriter &td) {
   D(db_logi(logtag, "%s(len=%d)", __func__, len));
   int arg_idx;
 
-  soMsg_RVE_begin(td);
+  //soMsg_RVE_begin(td);
 
 
   bool hasValveBits = false, hasValveChangeMask = false;
@@ -96,7 +96,7 @@ process_parmStatus(clpar p[], int len, class UoutWriter &td) {
   }
 
 
-  soMsg_RVE_end(td);
+  //soMsg_RVE_end(td);
 
   return 0;
 }

@@ -84,7 +84,7 @@ public:
   }
 };
 
-static UART_Buffer<7, volatile uint8_t> uart1_rx_buf;
+static UART_Buffer<10, volatile uint16_t> uart1_rx_buf;
 
 int usart1_getc(void) {
   return uart1_rx_buf.getc();
@@ -117,6 +117,9 @@ extern "C" void usart1_isr(void) {
 
     /* Retrieve the data from the peripheral. */
     uint16_t data = usart_recv(USART1);
+
+    if(!data)  // XXX: Igrnore the null bytes which are coming in regularily (some bug in esp32 code? data events?)
+      return;
 
     if (!uart1_rx_buf.putc_unguarded(data & 0xff))
       lf_setBit(lf_rx_buffer_full);

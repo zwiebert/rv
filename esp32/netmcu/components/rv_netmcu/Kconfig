@@ -20,6 +20,10 @@ menu "zwiebert: rv_netmcu"
   config APP_FA_MAX_WEATHER_ADAPTERS
         int "Max possible number of weather adapters for full automatiion"
         default 16
+
+  config RV_ENABLE_WATCHDOG
+        bool "Enable sending back alive messages"
+        default y
         
   config RV_NETMCU_DEBUG
         bool "Enable debug messages"

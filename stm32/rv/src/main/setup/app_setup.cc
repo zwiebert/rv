@@ -60,7 +60,7 @@ void app_setup() {
 #endif
   relay16_setup(false);
   wp_setup();
-#ifdef USE_WDG
+#ifdef CONFIG_RV_USE_WATCHDOG
     watchDog_setup();
 #endif
     rvt.register_callback(timers_was_modified);

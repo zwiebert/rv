@@ -48,11 +48,6 @@ const parm_handler* cli_parmHandler_find(const char *key) {
     return strcmp(key, el.parm) == 0;
   });
   if (std::end(handlers) == handler) {
-    if (strcmp("timer", key) == 0)  // alias
-      return cli_parmHandler_find("auto");
-    if (strcmp("send", key) == 0)  // alias
-      return cli_parmHandler_find("cmd");
-
     return nullptr;
   }
 
@@ -78,6 +73,7 @@ static bool cliApp_redirect_to_rv(char *json) {
 constexpr const char *TO_RV = "\"to\":\"rv\"";
   if (strstr(json, TO_RV)) {
     LockGuard lock(stm32_mutex);
+    stm32_write("\r\n", 2);
     stm32_write(json, strlen(json));
     stm32_write(";\r\n", 3);
     return true;

@@ -28,7 +28,7 @@ time_t last_call_time;
 
 bool watchDog_checkCommandLine(const char *cmdLine) {
   if (strcmp(cmdLine, "alive?") == 0) {
-    stm32_write("ALIVE!\n", 7); // response
+    stm32_write("\r\nALIVE!\r\n", 7); // response
     missing_call_count = 0;
     last_call_time = time(0);
     return true;

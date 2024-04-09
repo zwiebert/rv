@@ -136,22 +136,19 @@ void soMsg_RVE_begin(class UoutWriter &td) {
 
 void soMsg_RVE_PUMP(class UoutWriter &td, const so_arg_on_t *state) {
   io_mqtt_publish_pump_status(state->on);
-  td.so().print("pump", state->on);
+  uoAPp_publish_on_off_state_change("pump", state->on);
 }
 
 void soMsg_RVE_RAIN(class UoutWriter &td, const so_arg_on_t *state) {
   io_mqtt_publish_rain_sensor_status(state->on);
-  td.so().print("rain", state->on);
+  uoAPp_publish_on_off_state_change("rain", state->on);
 }
 
 void soMsg_RVE_PRESS_CTL(class UoutWriter &td, const so_arg_on_t *state) {
-  td.so().print("pc", state->on);
+  uoAPp_publish_on_off_state_change("pc", state->on);
 }
 
 void soMsg_RVE_VALVES(class UoutWriter &td, const so_arg_valves_t *valves) {
-  td.so().print("valve_state", valves->state_bits);
-  td.so().print("uo_evt_flag_valveChange", valves->changed_bits);
-
   u32 mask = valves->changed_bits;
   for (uint8_t i = 0; mask; ++i, (mask >>= 1)) {
     if (mask & 1) {

@@ -20,12 +20,14 @@
 #include <libopencm3/stm32/i2c.h>
 #include <libopencm3/stm32/f1/memorymap.h>
 #include <peri/uart.h>
+#include <cstdio>
 
 void loop(void);
 void app_setup();
 
 extern "C" void hard_fault_handler() {
   relay16_atFault();
+  fputs("\n\nerror: program stopped in hard fault handler ###", stderr);
   while(1);
 }
 
@@ -60,6 +62,16 @@ extern "C" int _write(int fd, char *ptr, int len) {
      return CALL_FUNC2(CONFIG_USART_STDOUT, write, (ptr, len));
   case 2:
      return CALL_FUNC2(CONFIG_USART_STDERR, write, (ptr, len));
+  default:
+    errno = EIO;
+    return -1;
+  }
+}
+// redirect standard output (fd 1) and stderr (fd 2)
+extern "C" int _read(int fd, char *ptr, int len) {
+  switch(fd){
+  case 0:
+     return CALL_FUNC2(CONFIG_USART_STDIN, read, (ptr, len));
   default:
     errno = EIO;
     return -1;
