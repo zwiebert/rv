@@ -95,6 +95,8 @@ static bool do_work() {
 
   // forward json to web app
   if ((json = strstr(line, "{\"update\":")) || (json = strstr(line, "{\"data\":"))) {
+    if (auto p = strpbrk(json, "\r\n"))
+      *p = '\0'; //XXX: cr lf should be removed in getline function
     uoCb_publish_wsJson(json);
     D(ESP_LOGI(logtag, "to_webstream:reply: <%s>", json));
     return true;

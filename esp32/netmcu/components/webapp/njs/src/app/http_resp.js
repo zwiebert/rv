@@ -46,7 +46,9 @@ export function http_handleResponses(obj) {
     let data = obj.data || obj.update;
     if ("version" in data) {
       Stm32McuFirmwareVersion.set(data.version);
-    } else if ("timer" in data) {
+    }
+
+    if ("timer" in data) {
       const timer = data.timer;
       const update_timer = function (t) {
         const key = "timer" + (t.vn || 0) + "." + (t.tn || 0);
@@ -62,25 +64,26 @@ export function http_handleResponses(obj) {
       } else {
         update_timer(timer);
       }
-    } else {
-      let zoneDurations = [];
-      let zoneRemainingSeconds = [];
-      for (let i = 0; i < ZoneCountMax; ++i) {
-        let sfx = i.toString() + ".0";
-        let dur = "dur" + sfx;
-        let rem = "rem" + sfx;
-        zoneDurations[i] = dur in data ? data[dur] : 0;
-        zoneRemainingSeconds[i] = rem in data ? data[rem] : 0;
-      }
-
-      //ZoneTimers.set(zoneTimers);
-      ZoneDurations.set(zoneDurations);
-      ZoneRemainingSeconds.set(zoneRemainingSeconds);
-      if ("pc" in data) PressControlStatus.set(data.pc);
-      if ("pump" in data) WaterPumpStatus.set(data.pump);
-      if ("rain" in data) RainSensorStatus.set(data.rain);
-      if ("time" in data) Stm32Time.set(data.time);
     }
+
+    if ("dur" in data) {
+      for (let i = 0; i < ZoneCountMax; ++i) {
+        let key = i.toString() + ".0";
+        ZoneDurations.update(i, key in data.dur ? data.dur[key] : 0);
+      }
+    }
+
+    if ("rem" in data) {
+      for (let i = 0; i < ZoneCountMax; ++i) {
+        let key = i.toString() + ".0";
+        ZoneRemainingSeconds.update(i, key in data.rem ? data.rem[key] : 0);
+      }
+    }
+
+    if ("pc" in data) PressControlStatus.set(data.pc);
+    if ("pump" in data) WaterPumpStatus.set(data.pump);
+    if ("rain" in data) RainSensorStatus.set(data.rain);
+    if ("time" in data) Stm32Time.set(data.time);
   }
 
   if ("rve" in obj) {
@@ -106,7 +109,7 @@ export function http_handleResponses(obj) {
   }
 
   if ("auto" in obj) {
-      let auto = obj.auto;
+    let auto = obj.auto;
     if ("zones" in obj.auto) {
       let zones = obj.auto.zones;
       ZonesAuto.set(zones);

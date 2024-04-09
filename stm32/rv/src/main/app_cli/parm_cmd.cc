@@ -137,23 +137,31 @@ int process_parmCmd(clpar p[], int len, class UoutWriter &td) {
 
     sj.add_object("data");
 
-    for (const RvTimer &vt : *rvt.getTimerList()) {
-      if (wantsDurations) {
-        int secs = vt.get_duration();
-        if (secs) {
-          char key[16];
-          std::snprintf(key, sizeof key, "%s%d.%d", KEY_DURATION_PREFIX, vt.getValveNumber(), vt.getTimerNumber());
-          sj.put_kv(key, secs);
+    if (wantsDurations) {
+      if (sj.add_object("dur")) {
+        for (const RvTimer &vt : *rvt.getTimerList()) {
+          int secs = vt.get_duration();
+          if (secs) {
+            char key[16];
+            std::snprintf(key, sizeof key, "%d.%d", vt.getValveNumber(), vt.getTimerNumber());
+            sj.put_kv(key, secs);
+          }
         }
+        sj.close_object();
       }
+    }
 
-      if (wantsRemainingTimes) {
-        int secs = vt.get_remaining();
-        if (secs) {
-          char key[16];
-          std::snprintf(key, sizeof key, "%s%d.%d", KEY_REMAINING_PREFIX, vt.getValveNumber(), vt.getTimerNumber());
-          sj.put_kv(key, secs);
+    if (wantsRemainingTimes) {
+      if (sj.add_object("rem")) {
+        for (const RvTimer &vt : *rvt.getTimerList()) {
+          int secs = vt.get_remaining();
+          if (secs) {
+            char key[16];
+            std::snprintf(key, sizeof key, "%d.%d", vt.getValveNumber(), vt.getTimerNumber());
+            sj.put_kv(key, secs);
+          }
         }
+        sj.close_object();
       }
     }
 
