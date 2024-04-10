@@ -17,6 +17,7 @@ export const FETCH_BOOT_COUNT = (bit <<= 1);
 export const FETCH_RV_VERSION = (bit <<= 1);
 
 export const FETCH_GIT_TAGS = 0; //XXX
+export const CMD_URL = "/cmd.json";
 
 
 const FETCHES_TARGET_STM32 =  FETCH_ZONE_DURATIONS | FETCH_ZONE_REMAINING_DURATIONS | FETCH_ZONE_TIMERS | FETCH_RV_STATUS | FETCH_RV_VERSION;
@@ -42,6 +43,10 @@ export function sendRv(cmdobj) {
   let url = "/cmd.json";
   let obj = { from: "wapp", to: "rv", ...cmdobj };
   http_postRequest(url, obj);
+}
+
+export function http_postCommand(data, state = { retry_count: 0 }) {
+  http_postRequest(CMD_URL, data, state);
 }
 
 export function http_postRequest(url = "", data = {}, state = { retry_count: 0 }) {
