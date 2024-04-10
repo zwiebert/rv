@@ -200,7 +200,6 @@ int process_parmCmd(clpar p[], int len, class UoutWriter &td) {
 
     sj.close_object();
     sj.close_root_object();
-    D(db_logi(logtag, "%s: writeln <%s>", __func__, sj.get_json()));
     sj.writeln_json(false);
 
     if (wantsTimers)
@@ -210,15 +209,13 @@ int process_parmCmd(clpar p[], int len, class UoutWriter &td) {
       sj.add_key("data");
       vt.to_json(sj);
       sj.close_root_object();
-      D(db_logi(logtag, "%s: writeln <%s>", __func__, sj.get_json()));
       sj.writeln_json(false);
     }
   }
 
-  if (errors) {
-    db_printf("error:errno=%d\n", errno);
-    fputs("error: error in processing cli cmd\n", stderr);
-  }
+  if (errors)
+  db_loge(logtag, "%s: error in processing cli command cmd (errno=%d)", __func__, errno);
+
   return 0;
 }
 

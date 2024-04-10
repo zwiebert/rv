@@ -72,7 +72,7 @@ bool cli_checkStm32CommandLine(char *line) {
 static bool cliApp_redirect_to_rv(char *json) {
 constexpr const char *TO_RV = "\"to\":\"rv\"";
   if (strstr(json, TO_RV)) {
-    LockGuard lock(stm32_mutex);
+    LockGuard lock(stm32_write_mutex);
     stm32_write("\r\n", 2);
     stm32_write(json, strlen(json));
     stm32_write(";\r\n", 3);

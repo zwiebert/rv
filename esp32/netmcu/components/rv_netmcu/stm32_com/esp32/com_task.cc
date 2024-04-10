@@ -105,7 +105,6 @@ static bool do_work() {
   // call CLI handler without wanting data sent back
   if ((json = strstr(line, "{\"status\":"))) {
     LockGuard lock_cli(cli_mutex);
-    LockGuard lock_stm32(stm32_mutex);
     UoutWriterBuilder td { static_cast<so_target_bits>(SO_TGT_FLAG_JSON) };
     cli_process_json(json, td);
     return true;
@@ -114,7 +113,7 @@ static bool do_work() {
  // get data from CLI handler
   if ((json = strstr(line, "{\"pbuf\":")) || (json = strstr(line, "{\"kvs\":")) || (json = strstr(line, "{\"to\":\"cli\","))) {
     LockGuard lock_cli(cli_mutex);
-    LockGuard lock_stm32(stm32_mutex);
+    LockGuard lock_write_stm32(stm32_write_mutex);
     UoutWriterStm32 td { static_cast<so_target_bits>(SO_TGT_FLAG_JSON) };
     td.sj().cat_to_buf("\r\n");
     cli_process_json(json, td);
