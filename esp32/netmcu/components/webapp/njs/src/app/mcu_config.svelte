@@ -14,14 +14,8 @@
   import McuConfigNumber from "../components/mcu_config/number.svelte";
   import McuConfigEnable from "../components/mcu_config/enable.svelte";
 
-  let on_destroy = [];
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_CONFIG);
-  });
-  onDestroy(() => {
-    for (const fn of on_destroy) {
-      fn();
-    }
   });
 
   $: mcuConfigKeys = $McuConfigKeys;

@@ -5,7 +5,6 @@
   import * as httpFetch from "../app/fetch.js";
   import * as httpResp from "../app/http_resp.js";
   import { onMount } from "svelte";
-  import PollZoneData from "../app/poll_zone_data.svelte";
   import SelectZone from "../components/select_zone.svelte";
   import RvStatus from "../components/rv_status.svelte";
   import ZoneData from "../components/zone_data.svelte";

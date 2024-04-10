@@ -4,12 +4,13 @@ import * as httpResp from "../app/http_resp.js";
 import { McuWebsocket } from "../store/app_state.js";
 
 let isOpen = false;
+let ws = null;
 
 export function websocket() {
-  let ws = new WebSocket("ws://" + window.location.host + "/ws");
+  ws = new WebSocket("ws://" + window.location.host + "/ws");
   // eslint-disable-next-line no-unused-vars
   ws.onopen = (evt) => {
-    ws.send(JSON.stringify({ from:"wapp",to:"netmcu", cmd: { p: "?" } }));
+    //ws.send(JSON.stringify({ to: "tfmcu", cmd: { p: "?" } }));
     isOpen = true;
   };
   ws.onmessage = (evt) => {
@@ -34,3 +35,13 @@ export function websocket() {
 }
 
 export function ws_isOpen() { return isOpen; }
+export function ws_sendObject(obj) {
+  if (!isOpen || !ws) {
+    return false;
+  }
+
+  const json = JSON.stringify(obj);
+  console.log("ws.send: ", json);
+  ws.send(json);
+  return true;
+}
