@@ -196,4 +196,3 @@ char* SetArgs::toJSON(char *buf, size_t buf_size, bool no_brackets) const {
 
   return result;
 }
-

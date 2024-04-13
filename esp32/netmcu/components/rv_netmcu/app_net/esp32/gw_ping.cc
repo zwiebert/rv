@@ -18,6 +18,7 @@
 #include "lwip/dns.h"
 #include "esp_ping.h"
 #include "esp_netif_ip_addr.h"
+#include "txtio/inout.h"
 
 #include "net/ipnet.h"
 #include "debug/dbg.h"

@@ -23,6 +23,7 @@ set(srcs
     app_http_server/esp32/uri_handlers.cc app_http_server/web_content.cc
     
     stm32_com/esp32/com_task.cc stm32_com/stm32_commands.cc
+    ../../../../stm32/rv/src/main/rv/rv_timer_args.cc
     
     
 )
@@ -48,7 +49,8 @@ endif()
 idf_component_register(
     SRCS ${srcs}
     INCLUDE_DIRS . ${incdirs} app_cli/include app_misc/include app_net/include app_uout/include 
-                   app_mqtt/include stm32_com/include app_http_server/include app_settings/include 
+                   app_mqtt/include stm32_com/include app_http_server/include app_settings/include
+                  # ../../../../stm32/rv/src/main
     REQUIRES app_config cli firmware_update uout utils_debug utils_misc utils_time weather jsmn webapp kvs
     PRIV_REQUIRES app_update cli config_kvs driver esp_event esp_netif kvs lwip net_http_server
                   main_loop mbedtls net  net_mqtt_client nvs_flash protobuf stm32 storage txtio uout utils_debug

@@ -1,9 +1,10 @@
 #define TO_JSON_FLAG_EXISTS v.flags.exists
 #include <full_auto/automatic_timer.hh>
+#include <stm32_com/stm32_commands.hh>
 #include <kvs/kvs_wrapper.h>
 #include <cstdio>
 #include <cstring>
-
+#include <debug/dbg.h>
 #include <debug/log.h>
 #ifdef CONFIG_RV_NETMCU_DEBUG
 #define DEBUG
@@ -75,9 +76,14 @@ void AutoTimer::todo_loop() {
   D(db_logi(logtag, "used_valves_count=%d, due_valves_count=%u", m_used_valves_count, m_due_valves_count));
 
   for (auto ip : m_magval_due_idxs) {
-    auto &v = m_s.m_magval[ip.idx];
+    MagValve &v = m_s.m_magval[ip.idx];
     if (!v.flags.exists || !v.flags.is_due)
       break;
     D(db_logi(logtag, "Schedule valve number %d (%s). prio=%d", ip.idx, v.name, ip.prio));
+    SetArgs args;
+    args.valve_number = ip.idx;
+    args.on_duration = v.attr.duration_s;
+    v.state.last_time_wet = time(0);
+    stm32com_set_timer(args);
   }
 }

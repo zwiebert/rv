@@ -9,7 +9,7 @@
 #include <stdbool.h>
 #include <cstdio>
 #include <stdint.h>
-#include "report.h"
+#include "rv/report.h"
 #include <debug/log.h>
 #ifdef CONFIG_CLI_DEBUG
 #define DEBUG
