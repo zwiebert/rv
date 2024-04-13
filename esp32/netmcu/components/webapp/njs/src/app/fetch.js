@@ -20,7 +20,7 @@ export const FETCH_GIT_TAGS = 0; //XXX
 export const CMD_URL = "/cmd.json";
 
 
-const FETCHES_TARGET_STM32 =  FETCH_ZONE_DURATIONS | FETCH_ZONE_REMAINING_DURATIONS | FETCH_ZONE_TIMERS | FETCH_RV_STATUS | FETCH_RV_VERSION;
+const FETCHES_TARGET_STM32 =  0;
 const FETCHES_REPLY_BY_WS = FETCHES_TARGET_STM32;
 
 const MAX_RETRY_COUNT = 3;
@@ -144,7 +144,7 @@ function fetchByMask2(mask, target) {
   }
 
   if (mask & FETCH_RV_VERSION) {
-    add_kv(cmdobj, "cmd", "version", "?");
+    add_kv(cmdobj, "cmd", "rv-version", "?");
   }
 
   if (mask & FETCH_ZONE_NAMES) add_kv(cmdobj, "kvs", "zn", "?");
