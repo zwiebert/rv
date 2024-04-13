@@ -18,6 +18,7 @@ rv/rv_timers.cc
 rv/rv_timer_pause.cc
 rv/rain_sensor.cc
 rv/rv_timer_data.cc
+rv/rv_timer_args.cc
 app_cli/parm_config.cc
 app_cli/parm_cmd.cc
 app_cli/parm_mcu.cc

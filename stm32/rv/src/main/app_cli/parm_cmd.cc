@@ -85,7 +85,7 @@ int process_parmCmd(clpar p[], int len, class UoutWriter &td) {
       wantsReply = wantsDurations = wantsRemainingTimes = wantsRelayPC = wantsRelayPump = wantsTime = wantsRainSensor = wantsPumpRunTime = true;
 
     } else if (std::strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
-      RvTimer::SetArgs args;
+      SetArgs args;
       int vn = -1, tn = 0;  // XXX: read int because %hhd sometimes fails (why?)
       if ((res = sscanf(key, KEY_DURATION_PREFIX "%d.%d", &vn, &tn)) >= 1) {
         args.valve_number = vn;

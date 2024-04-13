@@ -13,3 +13,4 @@ void stm32com_ask_version();
 void stm32com_ask_value(const char *key);
 void stm32com_duration(unsigned zone, unsigned timer_number, unsigned on_duration_secs);
 void stm32com_duration(unsigned zone, unsigned timer_number, unsigned on_duration_secs, const stm32com_timer_args &args);
+void stm32com_send_time(void);

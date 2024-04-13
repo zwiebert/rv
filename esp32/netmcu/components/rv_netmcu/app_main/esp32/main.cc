@@ -28,13 +28,6 @@ void lfa_createWifiAp() {
   }
 }
 
-void lfa_syncStm32Time(void) {
-  char buf[80];
-  sprintf(buf, "\r\n{\"config\":{\"time\":%lld}};\r\n", time(0));
-  ESP_LOGI(logtag, "to-strm32: <%s>", buf);
-  stm32_write(buf, strlen(buf));
-}
-
 void  mcu_delayedRestart(unsigned delay_ms) {
   printf("mcu_restart()\n");
   vTaskDelay(pdMS_TO_TICKS(delay_ms));
@@ -42,49 +35,6 @@ void  mcu_delayedRestart(unsigned delay_ms) {
   for (;;) {
   }
 }
-
-static void stm32_processInputLine(char *line) {
-  if (watchDog_checkCommandLine(line)) {
-    return; // command-line consumed by watch-dog
-  }
-
-  if (cli_checkStm32CommandLine(line)) {
-    return; // command-line consumed by cli
-  }
-}
-
-void stm32_checkForInput() {
-  char c;
-  char *ptr = 0, *buf = 0;
-  const int block_size = 32;
-  int length, n;
-
-  if ((length = stm32_read(&c, 1)) <= 0)
-    return;
-
-  for (int i = 1; (ptr = static_cast<char*>(realloc(ptr, block_size * i))); ++i) {
-    buf = ptr;
-
-    if (i == 1)
-      *ptr = c;
-
-    int req_size = (i == 1) ? block_size - 2 : block_size;
-
-    length += (n = stm32_read(ptr + length, req_size));
-    if (n >= req_size)
-      continue; // more to read
-    if (n < 0)
-      break; // error
-
-    ptr[length] = '\0';
-    stm32_processInputLine(ptr);
-    ESP_LOGI(logtag, "from-stm32: <%s>", buf);
-    break; // done
-  }
-
-  free(buf);
-}
-
 extern "C" void app_main(void) {
 
   mcu_init();

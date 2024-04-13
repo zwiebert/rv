@@ -3,6 +3,7 @@
 #include "app_settings/config.h"
 #include "stm32/stm32.h"
 #include "stm32_com/com_task.h"
+#include "stm32_com/stm32_commands.hh"
 #include "app_cli/cli_app.h"
 #include "cli/mutex.h"
 #include "net/http_client.h"
@@ -27,7 +28,7 @@ void ntpApp_setup(void) {
         ESP_LOGE(logtag, "ntp server #%d is <%s>", i, name);
       }
     }
-    mainLoop_callFun(lfa_syncStm32Time);
+    mainLoop_callFun(stm32com_send_time);
   });
 
   config_setup_ntpClient();

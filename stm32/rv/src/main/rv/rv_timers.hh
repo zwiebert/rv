@@ -86,7 +86,7 @@ public:
   ///
   /// \args      Describing the new timer by VALVER_NUMBER, TIMER_NUMBER and options.
   /// \return    A pointer to the created timer or NULL.
-  RvTimer* set(RvTimer::SetArgs &args) {
+  RvTimer* set(SetArgs &args) {
 
     for (auto it = mActiveTimers.begin(); it != mActiveTimers.end(); ++it) {
       if (it->match(args.valve_number, args.timer_number)) {
@@ -120,7 +120,7 @@ public:
   /// \valve_number,id      Describing the new timer by VALVER_NUMBER, TIMER_NUMBER and options.
   /// \return               A pointer to the created timer or NULL.
   RvTimer* set(int valve_number, int on_duration, int id = 0) {
-    RvTimer::SetArgs args;
+    SetArgs args;
     args.on_duration = on_duration;
     args.valve_number = valve_number;
     args.timer_number = id;

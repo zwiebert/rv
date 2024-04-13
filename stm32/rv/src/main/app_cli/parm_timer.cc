@@ -44,7 +44,7 @@ const char help_parmTimer[] = "zone=[0-13]      zone number\n"
 
 int process_parmTimer(clpar p[], int len, class UoutWriter &td) {
   D(db_logi(logtag, "%s(len=%d)", __func__, len));
-  RvTimer::SetArgs args = RvTimer::SetArgs(reinterpret_cast<cstr_pair*>(&p[1]), len - 1);
+  SetArgs args = SetArgs(reinterpret_cast<cstr_pair*>(&p[1]), len - 1);
 
   RvTimer *timer;
   if (args.valve_number >= 0 && (timer = rvt.set(args)) && timer->scheduleRun()) {

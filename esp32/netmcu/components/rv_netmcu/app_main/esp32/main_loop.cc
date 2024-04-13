@@ -30,13 +30,6 @@ void tmr_pingLoop_start() {
   }
 }
 
-void stm32loop() {
-  if (stm32_read_mutex.try_lock()) {
-    stm32_checkForInput();
-    stm32_read_mutex.unlock();
-  }
-}
-
 void loop(void) {
   mainLoop_processMessages(0, 5000);
 }

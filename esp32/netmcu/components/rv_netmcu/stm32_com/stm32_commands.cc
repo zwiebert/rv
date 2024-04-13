@@ -3,6 +3,7 @@
 #include <stm32/stm32.h>
 
 #include <cstdio>
+#include <ctime>
 #include <cassert>
 
 
@@ -39,6 +40,13 @@ void stm32com_duration(unsigned zone, unsigned timer_number, unsigned on_duratio
       args.dInterval,
       args.dhBegin,
       args.dhEnd);
+  assert (0 < n && n < sizeof buf);
+  stm32_write(buf, n + 1);
+}
+
+void stm32com_send_time(void) {
+  char buf[80];
+  int n = snprintf(buf, sizeof buf, "\r\n{\"config\":{\"time\":%lld}};\r\n", (long long)time(0));
   assert (0 < n && n < sizeof buf);
   stm32_write(buf, n + 1);
 }
