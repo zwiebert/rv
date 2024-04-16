@@ -33,7 +33,7 @@ if(ASAN)
   add_compile_options(-fsanitize=address -fstack-protector-all)
 endif()
 
-include(${proj_src_dir}/components-mcu/test_host/host_test.cmake)
+include(${proj_src_dir}/external/host-test-idf/components/test_host/host_test.cmake)
 
 add_subdirectory(${proj_src_dir}/components/rv_netmcu ${CMAKE_BINARY_DIR}/${BIN_COMP_ROOT}/rv_netmcu)
 #add_subdirectory(comp/components-mcu/test_host)

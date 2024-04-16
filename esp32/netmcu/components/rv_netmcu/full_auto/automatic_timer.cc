@@ -1,4 +1,3 @@
-#define TO_JSON_FLAG_EXISTS v.flags.exists
 #include <full_auto/automatic_timer.hh>
 #include <stm32_com/stm32_commands.hh>
 #include <kvs/kvs_wrapper.h>
@@ -84,6 +83,8 @@ void AutoTimer::todo_loop() {
     args.valve_number = ip.idx;
     args.on_duration = v.attr.duration_s;
     v.state.last_time_wet = time(0);
+#ifndef TEST_HOST
     stm32com_set_timer(args);
+#endif
   }
 }

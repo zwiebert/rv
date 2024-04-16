@@ -53,7 +53,7 @@ add_custom_target(ocm3 DEPENDS ${CMAKE_SOURCE_DIR}/external/libopencm3/lib/libop
 
 
 #####  components-mcu  #########
-add_subdirectory(components-mcu/jsmn)
+add_subdirectory(external/jsmnit/components/jsmn)
 add_subdirectory(components-mcu/utils_misc)
 add_subdirectory(components-mcu/utils_debug)
 add_subdirectory(components-mcu/cli)
