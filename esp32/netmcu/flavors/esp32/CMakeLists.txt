@@ -4,8 +4,10 @@ cmake_minimum_required(VERSION 3.16)
 
 set(PROJECT_NAME "rv-netmcu")
 
-set(EXTRA_COMPONENT_DIRS components components-mcu)
+file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components)
+set(EXTRA_COMPONENT_DIRS components)
 list(TRANSFORM EXTRA_COMPONENT_DIRS PREPEND   ${CMAKE_SOURCE_DIR}/../../)
+list(APPEND EXTRA_COMPONENT_DIRS ${external_components})
 
 
 set(COMPONENTS rv_netmcu

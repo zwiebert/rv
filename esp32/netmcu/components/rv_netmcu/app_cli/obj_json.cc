@@ -2,12 +2,14 @@
 #include <jsmn/jsmn_iterate.hh>
 #include <debug/log.h>
 #include <uout/uout_writer.hh>
+#ifdef CONFIG_APP_USE_WEATHER_AUTO
 #include <full_auto/adapter.hh>
 #include <full_auto/automatic_timer.hh>
-
+#include <full_auto/setup.hh>
+#endif
 #define logtag  "rv.cli"
 
-extern AutoTimer at;
+
 
 bool process_objJson(UoutWriter &td, Jsmn_String::Iterator &it) {
   db_loge("test.json_obj", "all_json: <%s>", it.get_json());
@@ -17,13 +19,15 @@ bool process_objJson(UoutWriter &td, Jsmn_String::Iterator &it) {
   using token_handler_fun_type = bool (*)(class UoutWriter &td, Jsmn_String::Iterator &it, int &err);
   static const token_handler_fun_type tok_processRootChilds_funs[] = { //
 
+#ifdef CONFIG_APP_USE_WEATHER_AUTO
       [](class UoutWriter &td, Jsmn_String::Iterator &it, int &err) -> bool {
         if (it.keyIsEqual("auto", JSMN_OBJECT)) {
-          return at.handle_json(td.sj(), ++it);
+          return full_auto->auto_timer().handle_json(td.sj(), ++it);
         }
         return false;
 
       },
+#endif
       [](class UoutWriter &td, Jsmn_String::Iterator &it, int &err) -> bool {
         return Jsmn_String::skip_key_and_value(it);
       } };

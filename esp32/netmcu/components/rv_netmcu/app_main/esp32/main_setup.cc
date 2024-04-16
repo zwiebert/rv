@@ -14,7 +14,9 @@
 #include <esp_netif.h>
 #include <esp_log.h>
 #include <config_kvs/register_settings.hh>
+#ifdef CONFIG_APP_USE_WEATHER_AUTO
 #include <full_auto/setup.hh>
+#endif
 
 #define logtag "main"
 

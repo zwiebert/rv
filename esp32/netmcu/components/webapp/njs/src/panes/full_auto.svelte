@@ -194,6 +194,12 @@
           </td>
         </tr>
         <tr>
+          <th>Duration</th><td>
+            <input type="number" min="0" step="30" bind:value={zones[sel_zone_idx].attr.duration_s} style="width:8ch;" />
+            {zones[sel_zone_idx].attr.duration_s / 60}
+          </td>
+        </tr>
+        <tr>
           <th>Interval</th><td>
             <input type="number" min="0" step="3600" bind:value={zones[sel_zone_idx].attr.interval_s} style="width:8ch;" />
             {secs_to_dh(zones[sel_zone_idx].attr.interval_s)}
@@ -204,6 +210,12 @@
             <input type="number" min="0" bind:value={zones[sel_zone_idx].attr.flow_lph} style="width:8ch;" />
           </td>
         </tr>
+        <tr>
+          <th>Last Time Wet</th><td>
+            <input type="number" min="0" step="30" bind:value={zones[sel_zone_idx].state.last_time_wet} style="width:8ch;" />
+          </td>
+        </tr>
+        <tr>
       </table>
       <button type="button" on:click={get_data}>Reload</button>
       <button type="button" on:click={get_zones}>Reload Zones</button>

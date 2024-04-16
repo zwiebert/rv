@@ -12,8 +12,11 @@ set(proj_src_dir "${CMAKE_SOURCE_DIR}/../..")
 
 add_compile_definitions(USE_JSON) 
 
-set(COMPONENT_DIRECTORIES components components-mcu)
-list(TRANSFORM COMPONENT_DIRECTORIES PREPEND   "${proj_src_dir}/")
+
+file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components)
+set(COMPONENT_DIRECTORIES components)
+list(TRANSFORM COMPONENT_DIRECTORIES PREPEND   ${CMAKE_SOURCE_DIR}/../../)
+list(APPEND COMPONENT_DIRECTORIES ${external_components})
 
 set(comp_compile_feats cxx_std_20)
 set(comp_compile_opts -O0 -ggdb  # -fanalyzer

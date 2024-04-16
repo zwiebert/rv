@@ -1,6 +1,3 @@
-[submodule "esp32/netmcu/components-mcu"]
-	path = esp32/netmcu/components-mcu
-	url = https://github.com/zwiebert/components-mcu.git
 [submodule "stm32/rv/test/host/unity"]
 	path = stm32/rv/external/unity
 	url = https://github.com/ThrowTheSwitch/Unity.git
@@ -10,3 +7,6 @@
 [submodule "stm32/rv/external/catch2"]
 	path = stm32/rv/external/catch2
 	url = https://github.com/catchorg/Catch2.git
+[submodule "esp32/netmcu/external/components-misc"]
+	path = esp32/netmcu/external/components-misc
+	url = https://github.com/zwiebert/components-misc.git

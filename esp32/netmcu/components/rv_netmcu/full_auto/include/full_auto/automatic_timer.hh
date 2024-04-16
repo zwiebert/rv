@@ -443,8 +443,9 @@ if (m_wi) {
 }
 
 interval_s = (0 < f) ? interval_s * f : 0;
-
-return twhen < (tlast + interval_s);
+bool result = (tlast + interval_s) < twhen;
+//db_logi("full_auto", "%s() => %u -- name=%s, dry_hours=%d, f=%f, ival=%u, tlast=%lld, twhen=%lld", __func__, result, v.name, dry_hours, f, interval_s, tlast, twhen);
+return result;
 }
 
 private:
