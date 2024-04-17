@@ -9,7 +9,7 @@
 #include "app_uout/status_output.h"
 #include "app_settings/config.h"
 #include "app_misc/rtc.h"
-#include <uout/cli_out.h>
+#include <cli/cli_out.hh>
 #include "cli_imp.h"
 #include "app_cli/cli_app.h"
 #include "app_mqtt/mqtt.h"

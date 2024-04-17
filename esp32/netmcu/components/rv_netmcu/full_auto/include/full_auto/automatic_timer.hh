@@ -151,7 +151,6 @@ public:
     assert(it->type == JSMN_OBJECT);
     auto count = it->size;
     for (it += 1; count > 0 && it; --count) {
-      int cmdn = -1;
       char cmds[32] = "";
 
       if (it.takeValue(cmds, "save")) {

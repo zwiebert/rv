@@ -16,3 +16,6 @@
 [submodule "esp32/netmcu/external/host-test-idf"]
 	path = esp32/netmcu/external/host-test-idf
 	url = https://github.com/zwiebert/host-test-idf.git
+[submodule "esp32/netmcu/external/util-components"]
+	path = esp32/netmcu/external/util-components
+	url = https://github.com/zwiebert/util-components.git

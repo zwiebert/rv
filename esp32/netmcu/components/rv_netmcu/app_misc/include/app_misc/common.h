@@ -5,7 +5,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 
 #ifdef DISTRIBUTION
 #define NO_PRECOND

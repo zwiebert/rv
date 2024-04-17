@@ -3,7 +3,7 @@
 #include <uout/uout_writer.hh>
 #include <app_uout/so_types.h>
 #include <cli/cli_types.h>
-#include <utils_misc/int_types.h>
+#include <stdint.h>
 
 #define ENABLE_RESTART 1 // allow software reset
 

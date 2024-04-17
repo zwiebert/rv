@@ -11,7 +11,7 @@
 #include "config_kvs.h"
 #include "utils_misc/int_macros.h"
 #include "kvs/kvs_wrapper.h"
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 
 #ifdef CONFIG_APP_USE_MQTT
 #include <net_mqtt_client/comp_glue.hh>

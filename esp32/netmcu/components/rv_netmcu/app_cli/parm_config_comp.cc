@@ -8,7 +8,7 @@
 #include <app_uout/so_config.h>
 #include <config_kvs/comp_settings.hh>
 #include <config_kvs/config.h>
-#include <uout/cli_out.h>
+#include <cli/cli_out.hh>
 
 #ifdef CONFIG_APP_USE_MQTT
 #include <app_mqtt/mqtt.h>
@@ -29,8 +29,8 @@
 
 #include "main_loop/main_queue.hh"
 
-#include <utils_misc/int_types.h>
-#include <utils_misc/int_types.h>
+#include <stdint.h>
+#include <stdint.h>
 #include <utils_misc/mutex.hh>
 #include <utils_misc/int_macros.h>
 

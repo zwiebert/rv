@@ -13,7 +13,7 @@
 #include "kvs/kvs_wrapper.h"
 #include "app_misc/kvstore.h"
 #include "utils_misc/int_macros.h"
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include "net/ethernet_setup.hh"
 #include "net/ipnet.h"
 #include "app_mqtt/mqtt.h"

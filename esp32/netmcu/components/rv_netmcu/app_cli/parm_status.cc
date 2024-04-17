@@ -18,11 +18,11 @@
 #include "app_cli/cli_app.h"
 #include "app_uout/status_output.h"
 #include "uout/uout_builder_json.hh"
-#include <uout/cli_out.h>
+#include <cli/cli_out.hh>
 #include "debug/dbg.h"
 #include "debug/log.h"
 #include "utils_misc/int_macros.h"
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include <stdio.h>
 
 #include <stm32/stm32.h>

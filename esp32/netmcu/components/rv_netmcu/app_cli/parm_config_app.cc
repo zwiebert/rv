@@ -27,8 +27,8 @@
 #endif
 
 
-#include "utils_misc/int_types.h"
-#include "utils_misc/int_types.h"
+#include "stdint.h"
+#include "stdint.h"
 #include <utils_misc/mutex.hh>
 #include <utils_misc/int_macros.h>
 

@@ -11,7 +11,7 @@
 #include "app_cli/cli_app.h"
 #include "app_uout/status_output.h"
 #include "uout/uout_builder_json.hh"
-#include <uout/cli_out.h>
+#include <cli/cli_out.hh>
 #include "app_misc/opt_map.hh"
 #include "debug/dbg.h"
 #include <debug/log.h>

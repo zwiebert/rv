@@ -16,7 +16,7 @@
 #include "app_uout/status_output.h"
 #include "app_uout/callbacks.h"
 #include "utils_misc/int_macros.h"
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 #include "utils_misc/base64.h"
 #include <utils_time/run_time.h>
 

@@ -11,7 +11,7 @@
 #include "app_settings/config.h"
 #include "utils_misc/int_macros.h"
 #include "kvs/kvs_wrapper.h"
-#include "utils_misc/int_types.h"
+#include "stdint.h"
 
 #ifdef CONFIG_RV_NETMCU_DEBUG
 #define DEBUG
