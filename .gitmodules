@@ -10,9 +10,6 @@
 [submodule "esp32/netmcu/external/components-misc"]
 	path = esp32/netmcu/external/components-misc
 	url = https://github.com/zwiebert/components-misc.git
-[submodule "esp32/netmcu/external/jsmnit"]
-	path = esp32/netmcu/external/jsoneat
-	url = https://github.com/zwiebert/jsmnit.git
 [submodule "esp32/netmcu/external/host-test-idf"]
 	path = esp32/netmcu/external/host-test-idf
 	url = https://github.com/zwiebert/host-test-idf.git
@@ -25,3 +22,6 @@
 [submodule "esp32/netmcu/mbed-mainloop"]
 	path = esp32/netmcu/external/mbed-mainloop
 	url = https://github.com/zwiebert/mbed-mainloop.git
+[submodule "esp32/netmcu/external/mbed-jsoneat"]
+	path = esp32/netmcu/external/mbed-jsoneat
+	url = https://github.com/zwiebert/mbed-jsoneat.git
