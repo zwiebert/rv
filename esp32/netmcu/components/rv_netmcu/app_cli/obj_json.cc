@@ -29,7 +29,8 @@ bool process_objJson(UoutWriter &td, Jsmn_String::Iterator &it) {
       },
 #endif
       [](class UoutWriter &td, Jsmn_String::Iterator &it, int &err) -> bool {
-        return Jsmn_String::skip_key_and_value(it);
+        return it.skip_key_and_value();
+;
       } };
 
   int err = 0;

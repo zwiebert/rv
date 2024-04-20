@@ -335,7 +335,7 @@ if (sj.add_object("auto")) {
 
     db_loge(our_logtag, "unknown key found in json.auto");
     ++err;
-    Jsmn_String::skip_key_and_value(it);
+    it.skip_key_and_value();
 
   }
   sj.close_object();
