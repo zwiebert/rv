@@ -25,3 +25,6 @@
 [submodule "esp32/netmcu/external/mbed-jsoneat"]
 	path = esp32/netmcu/external/mbed-jsoneat
 	url = https://github.com/zwiebert/mbed-jsoneat.git
+[submodule "esp32/netmcu/external/mbed-net-lib"]
+	path = esp32/netmcu/external/mbed-net-lib
+	url = https://github.com/zwiebert/mbed-net-lib.git

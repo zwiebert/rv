@@ -136,10 +136,6 @@ menu "RV Project Configuration"
             If disabled, use a dummy instead of a real Mutex
             Note: Disable it only for testing/debugging purposes
 
-    config APP_USE_CLI_TASK
-        bool "Run CLI in its own task"
-        default y
-
     config APP_USE_ESP_GET_TIME
         bool "Get up-time from esp_timer_get_time()"
         default y
