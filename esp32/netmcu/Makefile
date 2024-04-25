@@ -88,10 +88,13 @@ $(foreach tgt,$(esp32_tgts_auto),$(eval $(call GEN_RULE,$(tgt))))
 
 esp32-all: pre_build
 	$(esp32_build_cmd) reconfigure all
+	make $(compile_commands_json_latest)
 esp32-cellar: pre_build
 	make esp32-all CELLAR=1
+	make $(compile_commands_json_latest)
 esp32-flash: pre_build
 	$(esp32_build_cmd) -p $(PORT) flash
+	make $(compile_commands_json_latest)
 
 ############# graphviz #################################
 esp32-png: $(BUILD_PATH)/netmcu.png
