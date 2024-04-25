@@ -6,11 +6,7 @@
  */
 
 #include "unity.h"
-#ifdef TEST_HOST
-#include <test_runner.h>
-#endif
 #include "stdbool.h"
-
 #include "app_misc/rtc.h"
 
 
@@ -24,7 +20,11 @@ void test_rtc()
 }
 
 
-TEST_CASE("test rtc", "[app]")
-{
-     test_rtc();
+int main() {
+  UNITY_BEGIN();
+
+  RUN_TEST(test_rtc);
+
+  return UNITY_END();
 }
+

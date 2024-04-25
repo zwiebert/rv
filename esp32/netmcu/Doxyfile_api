@@ -170,7 +170,39 @@ FULL_PATH_NAMES        = YES
 # will be relative from the directory where doxygen is started.
 # This tag requires that the tag FULL_PATH_NAMES is set to YES.
 
-STRIP_FROM_PATH        = comp/app/app_cli/include comp/app/app_config/include comp/app/app_http_server/include comp/app/app_main/include comp/app/app_misc/include comp/app/app_mqtt/include comp/app/app_settings/include comp/app/app_uout/include comp/app/app_webapp/include comp/library/fernotron_app/include comp/library/fernotron_lib/include comp/library/fernotron_trx/include comp/library/gpio/include comp/external/components-mcu/components/cli/include comp/external/components-mcu/components/config_kvs/include comp/external/components-mcu/components/firmware_update/include comp/external/components-mcu/components/jsmn/include comp/external/components-mcu/components/key_value_store/include comp/external/components-mcu/components/nanopb/include comp/external/components-mcu/components/net_http_server/include comp/external/components-mcu/components/net/include comp/external/components-mcu/components/net_mqtt/include comp/external/components-mcu/components/stm32/include comp/external/components-mcu/components/storage/include comp/external/components-mcu/components/txtio/include comp/external/components-mcu/components/uout/include comp/external/components-mcu/components/utils_debug/include comp/external/components-mcu/components/utils_misc/include comp/external/components-mcu/components/utils_time/include
+STRIP_FROM_PATH        = components/webapp/include \
+                         components/rv_netmcu/app_uout/include \
+                         components/rv_netmcu/stm32_com/include \
+                         components/rv_netmcu/app_http_server/include \
+                         components/rv_netmcu/app_cli/include \
+                         components/rv_netmcu/app_main/include \
+                         components/rv_netmcu/app_mqtt/include \
+                         components/rv_netmcu/app_settings/include \
+                         components/rv_netmcu/app_net/include \
+                         components/rv_netmcu/app_misc/include \
+                         components/rv_netmcu/full_auto/include \
+                         components/app_config/include \
+                         components/protobuf/include \
+external/components-misc/components/weather/include \
+external/components-misc/components/storage/include \
+external/components-misc/components/txtio/include \
+external/components-misc/components/stm32/include \
+external/components-misc/components/firmware_update/include \
+external/components-misc/components/kvs/include \
+external/components-misc/components/cli/include \
+external/components-misc/components/config_kvs/include \
+external/mbed-jsoneat/components/jsoneat/include \
+external/mbed-mainloop/components/main_loop/include \
+external/mbed-net-lib/components/net/include \
+external/mbed-net-lib/components/net_mqtt_client/include \
+external/mbed-net-lib/components/net_connect/include \
+external/mbed-net-lib/components/net_http_server/include \
+external/mbed-uout/components/uout/include \
+external/util-components/components/utils_misc/include \
+external/util-components/components/utils_time/include \
+external/util-components/components/utils_debug/include \
+
+
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of the
 # path mentioned in the documentation of a class, which tells the reader which
@@ -179,7 +211,38 @@ STRIP_FROM_PATH        = comp/app/app_cli/include comp/app/app_config/include co
 # specify the list of include paths that are normally passed to the compiler
 # using the -I flag.
 
-STRIP_FROM_INC_PATH    =
+STRIP_FROM_INC_PATH    = components/webapp/include \
+                         components/rv_netmcu/app_uout/include \
+                         components/rv_netmcu/stm32_com/include \
+                         components/rv_netmcu/app_http_server/include \
+                         components/rv_netmcu/app_cli/include \
+                         components/rv_netmcu/app_main/include \
+                         components/rv_netmcu/app_mqtt/include \
+                         components/rv_netmcu/app_settings/include \
+                         components/rv_netmcu/app_net/include \
+                         components/rv_netmcu/app_misc/include \
+                         components/rv_netmcu/full_auto/include \
+                         components/app_config/include \
+                         components/protobuf/include \
+external/components-misc/components/weather/include \
+external/components-misc/components/storage/include \
+external/components-misc/components/txtio/include \
+external/components-misc/components/stm32/include \
+external/components-misc/components/firmware_update/include \
+external/components-misc/components/kvs/include \
+external/components-misc/components/cli/include \
+external/components-misc/components/config_kvs/include \
+external/mbed-jsoneat/components/jsoneat/include \
+external/mbed-mainloop/components/main_loop/include \
+external/mbed-net-lib/components/net/include \
+external/mbed-net-lib/components/net_mqtt_client/include \
+external/mbed-net-lib/components/net_connect/include \
+external/mbed-net-lib/components/net_http_server/include \
+external/mbed-uout/components/uout/include \
+external/util-components/components/utils_misc/include \
+external/util-components/components/utils_time/include \
+external/util-components/components/utils_debug/include \
+
 
 # If the SHORT_NAMES tag is set to YES, doxygen will generate much shorter (but
 # less readable) file names. This can be useful is your file systems doesn't

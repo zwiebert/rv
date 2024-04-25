@@ -28,3 +28,6 @@
 [submodule "esp32/netmcu/external/mbed-net-lib"]
 	path = esp32/netmcu/external/mbed-net-lib
 	url = https://github.com/zwiebert/mbed-net-lib.git
+[submodule "esp32/netmcu/external/mbed-esp-stm32"]
+	path = esp32/netmcu/external/mbed-esp-stm32
+	url = https://github.com/zwiebert/mbed-esp-stm32.git

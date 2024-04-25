@@ -1,10 +1,5 @@
 #include "unity.h"
-#ifdef TEST_HOST
-#include <test_runner.h>
-#endif
-
 #include <debug/dbg.h>
-
 
 #include "../full_auto/automatic_timer.cc"
 #include "full_auto/weather.hh"
@@ -87,9 +82,14 @@ void test_at_loop() {
 
 }
 
-TEST_CASE("full_auto", "[app]")
-{
-  test_at_loop();
-  //test_mulitple_fetch();
-  test_json();
+
+int main() {
+  UNITY_BEGIN();
+
+  RUN_TEST(test_at_loop);
+  //RUN_TEST(test_mulitple_fetch);
+  RUN_TEST(test_json);
+
+  return UNITY_END();
 }
+

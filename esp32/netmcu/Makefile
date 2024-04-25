@@ -28,11 +28,23 @@ esp32_build_opt_verbose = -v
 endif
 
 THIS_ROOT := $(realpath .)
-BUILD_BASE ?= $(THIS_ROOT)/build/$(flavor)
-esp32_src_dir := $(THIS_ROOT)/flavors/$(flavor)
-esp32_build_dir := $(BUILD_BASE)
-esp32_build_cmd := idf.py -G Ninja -C $(esp32_src_dir) -B $(esp32_build_dir)  -p $(PORT)  $(esp32_build_opts)
-esp32_cmake_cmd := cmake -S $(esp32_src_dir) -B $(esp32_build_dir) -G Ninja
+
+CMAKE_SRC_PATH :=$(THIS_ROOT)/configs/$(flavor)
+BUILD_BASE ?=$(THIS_ROOT)/build/$(flavor)
+BUILD_PATH :=$(BUILD_BASE)
+
+compile_commands_json_latest :=$(THIS_ROOT)/build/compile_commands.json
+sdkconfig_h_latest :=$(THIS_ROOT)/build/sdkconfig.h
+
+esp32_cmake_generator := -G Ninja
+esp32_build_args :=$(esp32_cmake_generator) -C $(CMAKE_SRC_PATH) -B $(BUILD_PATH)  -p $(PORT)  $(esp32_build_opts)
+esp32_build_cmd :=idf.py $(esp32_build_args)
+esp32_cmake_cmd :=/usr/bin/cmake -S $(CMAKE_SRC_PATH) -B $(BUILD_PATH) $(esp32_cmake_generator)
+
+
+$(compile_commands_json_latest) $(sdkconfig_h_latest): FORCE
+	cp $(BUILD_BASE)/compile_commands.json $(compile_commands_json_latest)
+	cp $(BUILD_BASE)/config/sdkconfig.h $(sdkconfig_h_latest)
 
 
 #need bash for "source" command
@@ -82,13 +94,13 @@ esp32-flash: pre_build
 	$(esp32_build_cmd) -p $(PORT) flash
 
 ############# graphviz #################################
-esp32-png: $(esp32_build_dir)/netmcu.png
-esp32-dot: $(esp32_build_dir)/netmcu.dot
+esp32-png: $(BUILD_PATH)/netmcu.png
+esp32-dot: $(BUILD_PATH)/netmcu.dot
 esp32-graph-view: esp32-png
-	xdg-open $(esp32_build_dir)/netmcu.png&
+	xdg-open $(BUILD_PATH)/netmcu.png&
 
-$(esp32_build_dir)/netmcu.dot: FORCE
-	$(esp32_cmake_cmd) --graphviz=$(esp32_build_dir)/netmcu.dot
+$(BUILD_PATH)/netmcu.dot: FORCE
+	$(esp32_cmake_cmd) --graphviz=$(BUILD_PATH)/netmcu.dot
 	
 	
 %.png:%.dot
@@ -98,7 +110,7 @@ FORCE:
 
 
 ############ openocd ###################################
-esp32_ocd_sh :=  "$(esp32_src_dir)/esp32_ocd.sh" $(esp32_src_dir) $(esp32_build_dir)
+esp32_ocd_sh :=  "$(CMAKE_SRC_PATH)/esp32_ocd.sh" $(CMAKE_SRC_PATH) $(BUILD_PATH)
 
 esp32-flash-ocd:
 	$(esp32_ocd_sh) flash
@@ -126,38 +138,12 @@ win_copy_release:
 	$(MAKE) clean
 	$(MAKE) win_copy DISTRIBUTION=1
 	
-	
-############## On Host ########################
-HOST_TEST_BUILD_PATH=$(BUILD_BASE)/../host/test
-HOST_TEST_SRC_PATH=$(THIS_ROOT)/flavors/host_test
-
-.PHONY: test.cm.configure test.cm.build
-
-test.cm.configure:
-	rm -fr $(HOST_TEST_BUILD_PATH)
-	mkdir -p $(HOST_TEST_BUILD_PATH)/config
-	cp $(THIS_ROOT)/flavors/host_test/sdkconfig.h $(THIS_ROOT)/flavors/host_test/sdkconfig.cmake $(HOST_TEST_BUILD_PATH)/config/
-	-cat $(THIS_ROOT)/flavors/host_test/.local_sdkconfig.h >>$(HOST_TEST_BUILD_PATH)/config/sdkconfig.h #Openweather-URL
-	cmake -B $(HOST_TEST_BUILD_PATH) -D BUILD_HOST_TESTS=ON -S  $(HOST_TEST_SRC_PATH) #-G Ninja)
-
-cm_build := make -C $(HOST_TEST_BUILD_PATH) -k -j  -s --no-print-dir $(make_verbose_opts)
-#cm_build := (cd $(HOST_TEST_BUILD_PATH) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --verbose $(ninja_verbose_opts))
-
-	
-test.cm.build: pre_build
-	$(cm_build)
-
-test.cm.ctest: test.cm.build
-	cd  $(HOST_TEST_BUILD_PATH) && ctest --output-on-failure
-	
+############## On Host Tests ##############
+kconfigs=components/app_config/Kconfig.projbuild external/*/Kconfig
 TEST ?= test.weather.test_
-test.cm.ctest.regex: test.cm.build
-	(cd  $(HOST_TEST_BUILD_PATH) && ctest --verbose  --output-on-failure -R "$(TEST)")
 
-
-host-test-all:
-	make -s --no-print-directory  test.cm.configure test.cm.ctest
-
+include ./host_test_rules.mk
+	
 
 ############# Doxygen ###################
 doxy_flavors=usr dev api
@@ -165,15 +151,23 @@ DOXY_BUILD_PATH=$(THIS_ROOT)/build/doxy
 DOXYFILE_PATH=$(THIS_ROOT)
 include doxygen_rules.mk
 
+ext=. external/*
+
+$(DOXY_BUILD_PATH)/api/input_files: $(DOXY_BUILD_PATH)/api FORCE
+	-rm $@
+	for dir in $(ext) ; do \
+		(cd $${dir} && git ls-files README.md 'components/**.h' 'components/**.hh'  | xargs realpath) | fgrep include  >> $@ ; \
+	done
+
+$(DOXY_BUILD_PATH)/dev/input_files: $(DOXY_BUILD_PATH)/dev FORCE
+	-rm $@
+	for dir in $(ext) ; do \
+		(cd $${dir} && git ls-files README.md 'components/**.h' 'components/**.hh' 'components/**.c' 'components/**.cc' 'components/**.cpp' | xargs realpath) >> $@ ; \
+	done
+
+
 $(DOXY_BUILD_PATH)/usr/input_files: $(DOXY_BUILD_PATH)/usr FORCE
 	echo "" > $@
 	
-$(DOXY_BUILD_PATH)/api/input_files: $(DOXY_BUILD_PATH)/api FORCE
-	git ls-files '*.h' '*.hh' README.md | fgrep -e include -e README.md | sed "s~^~$(THIS_ROOT)/~" > $@
-	cd components-mcu && git ls-files '*.h' '*.hh' | fgrep -e include  | sed "s~^~$(THIS_ROOT)/components-mcu/~" >> $@
-	
-$(DOXY_BUILD_PATH)/dev/input_files: $(DOXY_BUILD_PATH)/dev FORCE
-	git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' README.md | sed "s~^~$(THIS_ROOT)/~" > $@
-	cd components-mcu && git ls-files '*.h' '*.c' '*.hh' '*.cc' '*.cpp' | sed "s~^~$(THIS_ROOT)/components-mcu/~" >> $@
 
 

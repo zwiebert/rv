@@ -1,16 +1,11 @@
 #include "unity.h"
-#ifdef TEST_HOST
-#include <test_runner.h>
-#endif
 
 #include <debug/dbg.h>
 #include "../full_auto/automatic_timer.cc"
 #include "full_auto/weather.hh"
-#include "full_auto/weather.hh"
-
+#include <full_auto/automatic_timer.hh>
 #include "weather/weather_irrigation.hh"
 #include "weather/weather_provider_owm.hh"
-#include <full_auto/automatic_timer.hh>
 
 #include <unistd.h>
 
@@ -68,7 +63,10 @@ void test_uo_json() {
 
 }
 
-TEST_CASE("full_auto", "[app]")
-{
-  test_uo_json();
+int main() {
+  UNITY_BEGIN();
+
+  RUN_TEST(test_uo_json);
+
+  return UNITY_END();
 }
