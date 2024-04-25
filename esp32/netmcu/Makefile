@@ -142,7 +142,7 @@ win_copy_release:
 	$(MAKE) win_copy DISTRIBUTION=1
 	
 ############## On Host Tests ##############
-kconfigs=components/app_config/Kconfig.projbuild external/*/Kconfig
+kconfigs:=components/*/Kconfig* external/*/Kconfig
 TEST ?= test.weather.test_
 
 include ./host_test_rules.mk

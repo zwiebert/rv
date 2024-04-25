@@ -116,7 +116,7 @@ constexpr bool use_POSIX_TIME = false;
 #define use_POSIX_TIME 0
 #endif
 #endif
-#ifdef CONFIG_STM32_USE_COMPONENT
+#ifdef CONFIG_STM32_HAVE_COMPONENT
 #define  USE_SERIAL
 #ifdef __cplusplus
 constexpr bool use_SERIAL = true;

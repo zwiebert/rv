@@ -4,11 +4,8 @@ cmake_minimum_required(VERSION 3.16)
 
 set(PROJECT_NAME "rv-netmcu")
 
-file(GLOB external_components ${CMAKE_SOURCE_DIR}/../../external/*/components ${CMAKE_SOURCE_DIR}/../../external/*/external/*/components)
-set(EXTRA_COMPONENT_DIRS components)
-list(TRANSFORM EXTRA_COMPONENT_DIRS PREPEND   ${CMAKE_SOURCE_DIR}/../../)
-list(APPEND EXTRA_COMPONENT_DIRS ${external_components})
-
+file(GLOB external_components ${CMAKE_CURRENT_LIST_DIR}/../../external/*/components ${CMAKE_CURRENT_LIST_DIR}/../../external/*/external/*/components)
+set(EXTRA_COMPONENT_DIRS  ${CMAKE_CURRENT_LIST_DIR}/../../components ${external_components} )
 
 set(COMPONENTS rv_netmcu
     bootloader esptool_py partition_table soc log spi_flash micro-ecc main efuse driver esp_rom  

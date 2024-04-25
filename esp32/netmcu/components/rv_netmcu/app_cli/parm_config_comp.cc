@@ -195,7 +195,7 @@ void parmConfig_reconfig_comp(uint32_t changed_mask) {
     rtc_setup();
   }
 
-#ifdef CONFIG_STM32_USE_COMPONENT
+#ifdef CONFIG_STM32_HAVE_COMPONENT
   if (changed_mask & CB_STM32_INV_BOOTPIN) {
     mainLoop_callFun(config_setup_stm32);
  }

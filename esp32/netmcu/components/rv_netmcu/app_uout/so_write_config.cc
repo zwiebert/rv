@@ -153,7 +153,7 @@ void soCfg_GPIO_MODES_AS_STRING(class UoutWriter &td) {
 #ifdef CONFIG_NET_MQTT_CLIENT_HAVE_COMPONENT
 #include <net_mqtt_client/comp_glue.hh>
 #endif
-#ifdef CONFIG_STM32_USE_COMPONENT
+#ifdef CONFIG_STM32_HAVE_COMPONENT
 #include <stm32/comp_glue.hh>
 #endif
 
@@ -218,7 +218,7 @@ void soCfg_all_time(class UoutWriter &td) {
 }
 
 void soCfg_all_rv(class UoutWriter &td) {
-#ifdef CONFIG_STM32_USE_COMPONENT
+#ifdef CONFIG_STM32_HAVE_COMPONENT
   soCfg_STM32_BOOTGPIO_INV(td);
 #endif
 }
