@@ -27,7 +27,7 @@ constexpr cfg_args_lanPhyT cfg_args_lanPhy = { "none", "lan8270", "rtl8201", "ip
 
 
 typedef int8_t otokBaseT;
-/// \brief options as enum (matching the string options in \link otok_strings \endlink )
+/// \brief options as enum (matching the string options in @ref otok_strings  )
 enum class otok : otokBaseT  {
   NONE = -1,  // not existing
       /////////// begin of config keys //////////////////
@@ -54,7 +54,7 @@ constexpr cfg_keysT cfg_keys = { "rtc", "network", "wlan-ssid", "wlan-password",
     "mqtt-url", "mqtt-user", "mqtt-password", "mqtt-root-topic", "mqtt-client-id", "http-enable", "http-user", "http-password", "stm32-bootgpio-inv" };
 #endif
 
-/// \brief options as null terminated strings (matching the enum options in \link otok \endlink )
+/// \brief options as null terminated strings (matching the enum options in @ref otok  )
 constexpr const_cstringT otok_strings[] = {
      /////////// begin of config keys //////////////////
     "rtc", //

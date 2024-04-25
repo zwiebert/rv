@@ -6,8 +6,8 @@
 
 .PHONY: esp32-all esp32-flash esp32-flash-ocd esp32-flash-app esp32-flash-app-ocd
 
-flavors = esp32 esp32dbg
-flavor ?= esp32
+flavors = esp32-release esp32-debug
+flavor ?= esp32-release
 PORT ?= /dev/ttyUSB1
 
 default: print-help
