@@ -1,0 +1,25 @@
+{
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "editor.codeActionsOnSave": null,
+    "files.associations": {
+      "CMakeLists.txt": "cmake",
+      "regex": "cpp",
+      "*.ipp": "cpp"
+    },
+      "cmakeExplorer.debugConfig": "myCustomDebugConfig",
+      "cmakeExplorer.buildDir": "build",
+      "clang-tidy.buildPath": "build",
+      "window.title": "RV-NetMCU (esp32-debug)${separator}${activeEditorLong}",
+      "cmake.generator": "Ninja",
+      "cmake.buildDirectory": "${workspaceFolder}/build",
+      "cmake.configureArgs": [
+        "-DBUILD_HOST_TESTS=ON"
+      ],
+      "idf.port": "/dev/ttyUSB0",
+      "output.smartScroll.enabled": false,
+      "cmake.sourceDirectory": "${workspaceFolder}",
+      "stm32-for-vscode.openOCDPath": false,
+      "idf.adapterTargetName": "esp32",
+      "C_Cpp.errorSquiggles": "enabled",
+      "idf.flashType": "JTAG"
+}
