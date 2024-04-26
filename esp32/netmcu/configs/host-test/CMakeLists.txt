@@ -10,6 +10,13 @@ option(GPROF "enable gprof" OFF)
 
 project(mbed-all-tests)
 
+
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/config)
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/config/sdkconfig.h DESTINATION ${PROJECT_BINARY_DIR}/config)
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/config/sdkconfig.cmake DESTINATION ${PROJECT_BINARY_DIR}/config)
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/config/sdkconfig.json DESTINATION ${PROJECT_BINARY_DIR}/config)
+
+
 file(GLOB external_components ${CMAKE_CURRENT_LIST_DIR}/../../external/*/components ${CMAKE_CURRENT_LIST_DIR}/../../external/*/external/*/components)
 set(EXTRA_COMPONENT_DIRS  ${CMAKE_CURRENT_LIST_DIR}/../../components ${external_components} )
 

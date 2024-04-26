@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 option(CMAKE_EXPORT_COMPILE_COMMANDS "generate compilation database for clang-tidy" ON)
 
-option(BUILD_HOST_TESTS "build configs/host-test" ON)
+option(BUILD_HOST_TESTS "build configs/host-test" OFF)
 option(BUILD_ESP32_RELEASE "build configs/esp32-release" OFF)
 option(BUILD_ESP32_DEBUG "build configs/esp32-debug" OFF)
 
+#option(CMAKE_esptool_py_COMPILER "/home/bertw/.espressif/tools/xtensa-esp-elf/esp-13.2.0_20230928/xtensa-esp-elf/bin/xtensa-esp32-elf-gcc") 
 
 
 if(BUILD_HOST_TESTS)
@@ -19,5 +20,10 @@ endif()
 
 if(BUILD_ESP32_DEBUG)
 project("rv-netmcu")
-# run idf.py or make somehow
+include("configs/esp32-cmake/CMakeLists.txt")
+endif()
+
+if(BUILD_ESP32_RELEASE)
+project("rv-netmcu")
+include("configs/esp32-release/CMakeLists.txt")
 endif()
