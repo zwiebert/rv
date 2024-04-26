@@ -4,10 +4,6 @@ cmake_minimum_required(VERSION 3.16)
 
 set(PROJECT_NAME "rv-netmcu")
 
-
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../build/esp32-debug)
-
-
 file(GLOB external_components ${CMAKE_CURRENT_LIST_DIR}/../../external/*/components ${CMAKE_CURRENT_LIST_DIR}/../../external/*/external/*/components)
 set(EXTRA_COMPONENT_DIRS  ${CMAKE_CURRENT_LIST_DIR}/../../components ${external_components} )
 

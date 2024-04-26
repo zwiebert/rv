@@ -10,10 +10,8 @@ option(GPROF "enable gprof" OFF)
 
 project(rv-netmcu-tests)
 
-# delete this folder in build, or a second configure will break the build
+# delete this folder in build, or a second configure will break the build (XXX)
 execute_process(COMMAND bash -c "rm -r ${PROJECT_BINARY_DIR}/comp")
-# create the actual build directory (target of soft-link build)
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/../../build/host-test)
 # copy the config from config subdirectory. TODO: build config here instead of root-makefile
 file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/config)
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/config/sdkconfig.h DESTINATION ${PROJECT_BINARY_DIR}/config)
