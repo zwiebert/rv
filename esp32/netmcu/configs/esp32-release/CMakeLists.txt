@@ -20,7 +20,6 @@ include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
 add_compile_definitions(MCU_ESP32 MCU_TYPE="esp32")
 add_compile_options(-include esp_attr.h)
-#add_compile_definitions(MQTT_SUPPORTED_FEATURE_TRANSPORT_ERR_REPORTING)
 
 if(DEFINED ENV{DISTRO})
 add_compile_definitions(DISTRIBUTION)
@@ -34,6 +33,8 @@ function(component_compile_features)
 endfunction()
 
 project(netmcu esptool_py)
-#set_target_properties(__idf_stm32 PROPERTIES LINK_INTERFACE_MULTIPLICITY 3)
 
-include(CTest)
+# copy the current compile_commands.json to a single location for vscode
+add_custom_command(TARGET netmcu.elf POST_BUILD
+                   COMMAND cp --verbose ${PROJECT_BINARY_DIR}/compile_commands.json ${CMAKE_CURRENT_LIST_DIR}/../../build/compile_commands.json
+)
