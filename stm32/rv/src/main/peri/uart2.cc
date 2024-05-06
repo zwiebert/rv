@@ -119,7 +119,7 @@ extern "C" void usart2_isr(void) {
     uint16_t data = usart_recv(USART2);
 
     if (!uart1_rx_buf.putc_unguarded(data & 0xff))
-      lf_setBit(lf_rx_buffer_full);
+      lf_setBit(lf_uart2_rx_buffer_full);
 
     lf_setBit(lf_cli);
   }

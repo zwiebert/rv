@@ -1,3 +1,3 @@
-#include "../components-mcu/nanopb/nanopb/pb_decode.h"
+#include "../external/components-misc/components/nanopb/nanopb/pb_decode.h"
 
 

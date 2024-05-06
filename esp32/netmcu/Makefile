@@ -9,6 +9,7 @@
 flavors = esp32-release esp32-debug
 flavor ?= esp32-release
 PORT ?= /dev/ttyUSB1
+CMAKE_ARGS_GENERATOR ?= -G Ninja
 
 default: print-help
 clean: esp32-clean http_clean
@@ -36,10 +37,9 @@ BUILD_PATH :=$(BUILD_BASE)
 compile_commands_json_latest :=$(THIS_ROOT)/build/compile_commands.json
 sdkconfig_h_latest :=$(THIS_ROOT)/build/sdkconfig.h
 
-esp32_cmake_generator := -G Ninja
-esp32_build_args :=$(esp32_cmake_generator) -C $(CMAKE_SRC_PATH) -B $(BUILD_PATH)  -p $(PORT)  $(esp32_build_opts)
+esp32_build_args :=$(CMAKE_ARGS_GENERATOR) -C $(CMAKE_SRC_PATH) -B $(BUILD_PATH)  -p $(PORT)  $(esp32_build_opts)
 esp32_build_cmd :=idf.py $(esp32_build_args)
-esp32_cmake_cmd :=/usr/bin/cmake -S $(CMAKE_SRC_PATH) -B $(BUILD_PATH) $(esp32_cmake_generator)
+esp32_cmake_cmd :=/usr/bin/cmake -S $(CMAKE_SRC_PATH) -B $(BUILD_PATH) $(CMAKE_ARGS_GENERATOR)
 
 # copy  the last used defines and includes into root/build 
 # this is intended if you have all configs in one IDE workspace (Eclipse)

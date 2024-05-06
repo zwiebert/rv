@@ -97,16 +97,19 @@ static void interval_64ms_loop() {
   wpl_loop();
 }
 
-static void event_rx_buffer_full() {
-db_loge("rv", "%s()", __func__);
+static void event_uart1_rx_buffer_full() {
+db_loge("rv", "stdin,uart1 rx buffer full");
+}
+static void event_uart2_rx_buffer_full() {
+db_loge("rv", "uart2 rx buffer full");
 }
 
-static const lfa_funT lfa_table[lf_Len] =
-  { interval_1s_loop, interval_512ms_loop, interval_64ms_loop, cli_loop, wpl_loop, fetchData_loop, event_rx_buffer_full };
+static const lfa_funT lfa_table[lf_Len] = { interval_1s_loop, interval_512ms_loop, interval_64ms_loop, cli_loop, wpl_loop, fetchData_loop,
+event_uart1_rx_buffer_full, event_uart2_rx_buffer_full, };
 
 void lf_loop() {
 for (int i = 0; i < 4500 && !loop_flags_once; ++i) {
-  __asm__("nop");
+__asm__("nop");
 }
 // XXX: interrupt should be disabled here
 int loop_flags = loop_flags_periodic | loop_flags_once;
@@ -114,10 +117,10 @@ loop_flags_once = 0;
 // XXX: Interrupt should be re-enabled here
 
 for (int i = 0; i < lf_Len; ++i) {
-  enum loop_flagbits fb = (enum loop_flagbits) i;
-  if (!GET_BIT(loop_flags, fb))
-    continue;
+enum loop_flagbits fb = (enum loop_flagbits) i;
+if (!GET_BIT(loop_flags, fb))
+  continue;
 
-  (lfa_table[fb])();
+(lfa_table[fb])();
 }
 }

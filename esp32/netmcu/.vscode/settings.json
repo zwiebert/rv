@@ -4,10 +4,11 @@
   "files.associations": {
     "CMakeLists.txt": "cmake",
     "regex": "cpp",
-    "*.ipp": "cpp"
+    "*.ipp": "cpp",
+    "ctime": "cpp"
   },
       "clang-tidy.buildPath": "build/host-test",
-      "window.title": "TronfernoMCU${separator}${activeEditorLong}",
+      "window.title": "RV-NetMCU(all)${separator}${activeEditorLong}",
       "cmake.generator": "Ninja",
       "cmake.buildDirectory": "${sourceDirectory}/build",
       "cmake.configureArgs": [

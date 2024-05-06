@@ -15,7 +15,8 @@ enum loop_flagbits {
   lf_cli,
   lf_wpl,
   lf_fetchData,
-  lf_rx_buffer_full,
+  lf_uart1_rx_buffer_full,
+  lf_uart2_rx_buffer_full,
   /////////////
   lf_Len
 };

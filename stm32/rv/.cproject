@@ -138,9 +138,7 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Libraries"/>
-						<entry excluding="esp32/|host/|test/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="components-mcu/cli"/>
 						<entry excluding="test/**|jsmn/**" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="components-mcu/jsmn"/>
-						<entry excluding="esp32/|host/|test/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="components-mcu/txtio"/>
 						<entry excluding="test/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="components-mcu/uout"/>
 						<entry excluding="esp32/|test/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="components-mcu/utils_misc"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
@@ -280,7 +278,6 @@
 					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Libraries"/>
-						<entry excluding="jsmn/example/|jsmn/test/" flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="components-mcu/jsmn"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="src"/>
 					</sourceEntries>
 				</configuration>

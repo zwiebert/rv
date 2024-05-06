@@ -122,7 +122,7 @@ extern "C" void usart1_isr(void) {
       return;
 
     if (!uart1_rx_buf.putc_unguarded(data & 0xff))
-      lf_setBit(lf_rx_buffer_full);
+      lf_setBit(lf_uart1_rx_buffer_full);
 
     lf_setBit(lf_cli);
   }

@@ -40,7 +40,7 @@ water_pump/water_pump.cc
 )
 
 add_library(rv_main STATIC ${srcs})
-target_link_libraries(rv_main PUBLIC mcp23017 tm1638 jsmn utils_misc cli ${CMAKE_SOURCE_DIR}/external/libopencm3/lib/libopencm3_stm32f1.a rv_system)
+target_link_libraries(rv_main PUBLIC mcp23017 tm1638 jsoneat utils_misc cli txtio ${CMAKE_SOURCE_DIR}/external/libopencm3/lib/libopencm3_stm32f1.a rv_system)
 add_dependencies(rv_main ocm3)
 target_compile_features(rv_main PUBLIC cxx_std_20 c_std_11)
 

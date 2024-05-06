@@ -1,5 +1,5 @@
   rsource "src/main/Kconfig"
-  rsource "components-mcu/uout/Kconfig"
-  rsource "components-mcu/txtio/Kconfig"
-  rsource "components-mcu/cli/Kconfig"
+  rsource "external/mbed-uout/Kconfig"
+  rsource "external/components-misc/components/txtio/Kconfig"
+  rsource "external/components-misc/components/cli/Kconfig"
 

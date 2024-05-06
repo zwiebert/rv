@@ -53,12 +53,12 @@ add_custom_target(ocm3 DEPENDS ${CMAKE_SOURCE_DIR}/external/libopencm3/lib/libop
 
 
 #####  components-mcu  #########
-add_subdirectory(external/jsmnit/components/jsmn)
-add_subdirectory(components-mcu/utils_misc)
-add_subdirectory(components-mcu/utils_debug)
-add_subdirectory(components-mcu/cli)
-add_subdirectory(components-mcu/txtio)
-add_subdirectory(components-mcu/uout)
+add_subdirectory(external/mbed-jsoneat/components/jsoneat)
+add_subdirectory(external/util-components/components/utils_misc)
+add_subdirectory(external/util-components/components/utils_debug)
+add_subdirectory(external/components-misc/components/cli)
+add_subdirectory(external/components-misc/components/txtio)
+add_subdirectory(external/mbed-uout/components/uout)
 
 ######### Our MCP23017 lib ##############
 add_subdirectory(Libraries/mcp23017)

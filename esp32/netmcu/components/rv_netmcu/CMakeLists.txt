@@ -54,6 +54,7 @@ idf_component_register(
     PRIV_REQUIRES app_update cli config_kvs driver esp_event esp_netif kvs lwip net_http_server
                   main_loop mbedtls net  net_mqtt_client nvs_flash protobuf stm32 storage txtio uout utils_debug
                   utils_misc utils_time 
+                  espcoredump
     EMBED_TXTFILES app_misc/ca_cert.pem
 )
  
