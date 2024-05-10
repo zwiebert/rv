@@ -1,4 +1,4 @@
-#include "../components-mcu/nanopb/nanopb/pb_common.h"
+#include "../external/components-misc/components/nanopb/nanopb/pb_common.h"
 
 
 
