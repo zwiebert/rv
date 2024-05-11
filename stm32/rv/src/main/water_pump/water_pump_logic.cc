@@ -13,7 +13,6 @@ static time_t wpl_max_on_time = WPL_MAX_ON_TIME_SHORT;
 static uint32_t wpl_increaseMaxOnTimeTime;
 static bool maybePcFailure;
 
-#define VALVE_ACTIVE_DELAY 20
 static bool areValvesActive() {
   static time_t last_time;
   time_t now = runTime();
@@ -23,12 +22,11 @@ static bool areValvesActive() {
     return true;
   }
 
-  if (last_time + VALVE_ACTIVE_DELAY > now) {
+  if (last_time + WPL_MAX_ON_TIME_SHORT > now) {
     return true;
   }
 
   return false;
-
 }
 
 static bool hasPumpRunTooLong() {

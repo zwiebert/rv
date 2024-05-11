@@ -32,6 +32,7 @@ void i2c2_setup(void) {
 
     /* 400KHz - I2C Fast Mode */
     i2c_set_fast_mode(I2C2);
+//    i2c_set_standard_mode(I2C2);
 
     /*
      * fclock for I2C is 36MHz APB2 -> cycle time 28ns, low time at 400kHz
@@ -45,7 +46,8 @@ void i2c2_setup(void) {
      * 400kHz => 300ns and 100kHz => 1000ns; 300ns/28ns = 10;
      * Incremented by 1 -> 11.
      */
-    i2c_set_trise(I2C2, 0x0b);
+ //    i2c_set_trise(I2C2, 36);
+   i2c_set_trise(I2C2, 0x0b);
 
     /*
      * This is our slave address - needed only if we want to receive from
@@ -55,4 +57,5 @@ void i2c2_setup(void) {
 
     /* If everything is configured -> enable the peripheral. */
     i2c_peripheral_enable(I2C2);
+
 }

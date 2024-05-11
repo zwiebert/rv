@@ -10,7 +10,7 @@ rsource "water_pump/Kconfig"
     default 1
 
   config USART_STDERR
-    int "usart number for writing to stdout (fd 1)"
+    int "usart number for writing to stderr (fd 2). set 0 to disable stderr"
     default 2
     
   config RV_USE_WATCHDOG

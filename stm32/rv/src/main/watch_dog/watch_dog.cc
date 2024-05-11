@@ -8,8 +8,8 @@
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/memorymap.h>
-#include <peri/uart.h>
 #include "time/real_time_clock.h"
+#include <stdio.h>
 
 #include "watch_dog.hh"
 #include "rv/report.h"
@@ -28,7 +28,7 @@ static void watchDog_gotResponse() {
 }
 
 static void watchDog_sendCall() {
-	esp32_write(WDG_CALL, WDG_CALL_LEN);
+	puts(WDG_CALL);
 	call_time = runTime();
 	response_time = 0;
 }
@@ -68,7 +68,7 @@ void watchDog_loop() {
 
 
 
-bool watchDog_checkCommandLine(const char *cmdLine) {
+bool watchDog_checkCommandLine(char *cmdLine) {
 	if (std::strcmp (cmdLine, WDG_RESPONSE) == 0) {
 		watchDog_gotResponse();
 		return true;

@@ -35,7 +35,7 @@ static void twait() {
 }
 
 
-static void Tm1638_dout(Tm1638 *obj, bool value) {
+static void Tm1638_dout(Tm1638 *, bool value) {
 	my_put_pin(Tm1638_dio_pin, !value);
 }
 

@@ -15,8 +15,7 @@
 #define MAIN_WATCH_DOG_HH_
 
 const unsigned WDG_INTERVAL = 10; ///< Send \ref WDG_CALL every this secs to companion MCU
-const char WDG_CALL[] = "alive?\n"; ///< Send this string to companion MCU every \ref WDG_INTERVAL secs
-const unsigned WDG_CALL_LEN = sizeof WDG_CALL;
+const char WDG_CALL[] = "alive?;"; ///< Send this string to companion MCU every \ref WDG_INTERVAL secs
 const char WDG_RESPONSE[] = "ALIVE!";  ///< Expect this string as response to \ref WDG_CALL
 const unsigned WDG_RESPONSE_LEN = sizeof WDG_RESPONSE;
 const unsigned WDG_RESPONSE_DELAY = 1;  ///< Expect \ref WDG_RESPONSE to arrive before this delay in secs
@@ -41,7 +40,7 @@ void watchDog_setup();
  *  \param cmdLine   a received command line string
  *  \return   false if the command-line was not an alive message
  */
-extern "C" bool watchDog_checkCommandLine(const char *cmdLine);
+extern "C" bool watchDog_checkCommandLine(char *cmdLine);
 
 
 #endif /* MAIN_WATCH_DOG_HH_ */

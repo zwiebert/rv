@@ -5,6 +5,7 @@
  *  Author: bertw
  */
 #include <cli/cli.h>
+#include "watch_dog/watch_dog.hh"
 #include <debug/dbg.h>
 #include "user_config.h"
 #include "cli_imp.h"
@@ -97,6 +98,7 @@ void cliApp_setup() {
  // cli_hook_checkPassword = cliApp_checkPassword;
 
   cli_hook_process_json = process_json;
+  cli_hook_process_txt = watchDog_checkCommandLine;
   cli_parmHandler_find_cb = cli_parmHandler_find;
   cli_parm_handlers = &our_parm_handlers;
 }

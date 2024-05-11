@@ -21,14 +21,17 @@
 
 int missing_call_count;
 time_t last_call_time;
-#define MAX_CALL_INTERVAL 12
-#define MAX_MISSING_CALLS 3
+#define MAX_CALL_INTERVAL 24
+#define MAX_MISSING_CALLS 6
 
+const char WDG_CALL[] = "alive?;";
 
+const char WDG_RESPONSE[] = "\r\nALIVE!;\r\n";
+const size_t WDG_RESPONSE_LEN = sizeof WDG_RESPONSE;
 
 bool watchDog_checkCommandLine(const char *cmdLine) {
-  if (strcmp(cmdLine, "alive?") == 0) {
-    stm32_write("\r\nALIVE!\r\n", 7); // response
+  if (strcmp(cmdLine, WDG_CALL) == 0) {
+    stm32_write(WDG_RESPONSE, WDG_RESPONSE_LEN); // response
     missing_call_count = 0;
     last_call_time = time(0);
     return true;

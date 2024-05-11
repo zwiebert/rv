@@ -21,6 +21,7 @@ src/main/rv_config.h config_ide:
 # create a directory in ./configs/$(BUILD_TYPE)
 #
 BUILD_TYPE ?=Debug
+CMAKE_ARGS_GENERATOR ?=#-G Ninja
 STM32F1_FW_BUILD_DIR = $(BUILD_BASE)/stm32f1/$(BUILD_TYPE)
 rv_config_h:=$(STM32F1_FW_BUILD_DIR)/rv_config.h
 config_dir:=$(THIS_ROOT)/configs/$(BUILD_TYPE)
@@ -42,18 +43,14 @@ stm32f1.fw.configure:
 	rm -fr $(STM32F1_FW_BUILD_DIR)
 	mkdir -p $(STM32F1_FW_BUILD_DIR)
 	make  $(rv_config_h)
-	env PATH=.:/usr/bin:$$PATH cmake -S $(realpath .) -B $(STM32F1_FW_BUILD_DIR) -DCMAKE_TOOLCHAIN_FILE=arm-gcc-toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)  -DTARGET_ARCH=STM32F1  #-G Ninja
+	(cmake -S $(realpath .) -B $(STM32F1_FW_BUILD_DIR) -DCMAKE_TOOLCHAIN_FILE=arm-gcc-toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)  -DTARGET_ARCH=STM32F1 $(CMAKE_ARGS_GENERATOR))
 
-	
-stm32f1.fw.build.make := make -C $(STM32F1_FW_BUILD_DIR) -k  $(make_verbose_opts)
-stm32f1.fw.build.ninja := (cd $(STM32F1_FW_BUILD_DIR) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
 	
 stm32f1.fw.build:
-	$(stm32f1.fw.build.make) -- bin
+	(cmake --build $(STM32F1_FW_BUILD_DIR) -- bin)
 	
 stm32f1.fw.flash:
-	$(stm32f1.fw.build.make) -- flash
-
+	(cmake --build $(STM32F1_FW_BUILD_DIR) -- flash)
 
 ############# HOST/FIRMWARE ####################
 HOST_FW_BUILD_DIR=$(BUILD_BASE)/host/xxx
@@ -61,14 +58,10 @@ HOST_FW_BUILD_DIR=$(BUILD_BASE)/host/xxx
 host.fw.configure:
 	rm -fr $(HOST_FW_BUILD_DIR)
 	mkdir -p $(HOST_FW_BUILD_DIR)
-	cmake -B $(HOST_FW_BUILD_DIR) -DTARGET_ARCH=HOST -S $(realpath .) #-G Ninja
-	
-host.fw.build.make := make -C $(HOST_FW_BUILD_DIR) -k  $(make_verbose_opts)
-host.fw.build.ninja := (cd $(HOST_FW_BUILD_DIR) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
+	(cmake -B $(HOST_FW_BUILD_DIR) -DTARGET_ARCH=HOST -S $(realpath .) $(CMAKE_ARGS_GENERATOR))
 
-	
 host.fw.build:
-	$(host.fw.build.make) 
+	(cmake --build $(HOST_FW_BUILD_DIR))
 
 
 ############## HOST/TESTS_ONLY ########################
@@ -79,17 +72,14 @@ HOST_TESTS_BUILD_DIR=$(BUILD_BASE)/host/test
 host.tests.configure:
 	rm -fr $(HOST_TESTS_BUILD_DIR)
 	mkdir -p $(HOST_TESTS_BUILD_DIR)
-	cmake -B $(HOST_TESTS_BUILD_DIR) -DTARGET_ARCH=HOST  -DBUILD_ONLY_TESTS=ON -S $(realpath .) #-G Ninja
+	(cmake -B $(HOST_TESTS_BUILD_DIR) -DTARGET_ARCH=HOST  -DBUILD_ONLY_TESTS=ON -S $(realpath .) $(CMAKE_ARGS_GENERATOR))
 
-host.tests.build.make := make -C $(HOST_TESTS_BUILD_DIR) -k  $(make_verbose_opts)
-host.tests.build.ninja := (cd $(HOST_TESTS_BUILD_DIR) && cmake -G Ninja $(THIS_ROOT) &&  ninja -k 0 --extra-verbose $(ninja_verbose_opts))
-host.tests.build = $(host.tests.build.make)
 
 host.tests.build:
-	$(host.tests.build) 
+	(cmake --build $(HOST_TESTS_BUILD_DIR))
 
 host.tests.ctest: host.tests.build
-	$(host.tests.build) test
+	(cmake --build $(HOST_TESTS_BUILD_DIR) -- test)
 	
 host.tests.ctest.current: host.tests.build
 	(cd  $(HOST_TESTS_BUILD_DIR) && ctest --verbose -R "fernotron_trx.test_send")

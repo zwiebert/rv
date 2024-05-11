@@ -83,6 +83,7 @@ static bool do_work() {
   if (!stm32com_get_commandline(line, sizeof line)) {
     return false;
   }
+D(ESP_LOGI(logtag, "from_rv: received: <%s>", line));
 #ifdef  CONFIG_RV_ENABLE_WATCHDOG
   if (watchDog_checkCommandLine(line))
     return true;
@@ -90,7 +91,6 @@ static bool do_work() {
   if (stmTrace_checkCommandLine(line))
     return true;
 
-  D(ESP_LOGI(logtag, "from_rv: received: <%s>", line));
   char *json = nullptr;
 
   // forward json to web app

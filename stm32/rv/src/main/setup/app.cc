@@ -60,8 +60,12 @@ extern "C" int _write(int fd, char *ptr, int len) {
   switch(fd){
   case 1:
      return CALL_FUNC2(CONFIG_USART_STDOUT, write, (ptr, len));
+
+#if defined CONFIG_USART_STDERR && CONFIG_USART_STDERR != 0
   case 2:
      return CALL_FUNC2(CONFIG_USART_STDERR, write, (ptr, len));
+#endif
+
   default:
     errno = EIO;
     return -1;

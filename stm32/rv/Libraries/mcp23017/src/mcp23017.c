@@ -38,12 +38,15 @@ static bool Mcp23017_writeIO(Mcp23017 *obj, uint8_t start_reg, uint8_t byte_coun
 			& (I2C_SR2(i2c) & (I2C_SR2_MSL | I2C_SR2_BUSY))))
 		;
 
-	/* Say to what address we want to talk to. */
-	i2c_send_7bit_address(i2c, obj->mAddr, I2C_WRITE);
+    /* Say to what address we want to talk to. */
+    i2c_send_7bit_address(i2c, obj->mAddr, I2C_WRITE);
 
-	/* Waiting for address is transferred. */
-	while (!(I2C_SR1(i2c) & I2C_SR1_ADDR))
-		;
+    /* Waiting for address is transferred. */
+    for (int i = 0;; ++i) {
+      //if (i > 5000) return false;
+      if ((I2C_SR1(i2c) & I2C_SR1_ADDR))
+        break;
+    }
 
 	/* Cleaning ADDR condition sequence. */
 	reg32 = I2C_SR2(i2c);
@@ -137,7 +140,7 @@ Mcp23017 *Mcp23017_construct_out(// setup object with all pins as output
 	return memory;
 }
 
-void Mcp23017_destruct(Mcp23017 *obj) {
+void Mcp23017_destruct(Mcp23017 *) {
 
 }
 
@@ -183,13 +186,13 @@ uint16_t Mcp23017_getBits(Mcp23017 *obj, uint16_t bitMask, bool cached) {
 	//return obj->mRegs[OLAT] & bitMask; // XXX FIXME
 }
 
-bool Mcp23017_forceWrite(Mcp23017 *obj) {
+bool Mcp23017_forceWrite(Mcp23017 *) {
 
 
 	return true;
 }
 
-bool Mcp23017_statusOk(Mcp23017 *obj) {
+bool Mcp23017_statusOk(Mcp23017 *) {
 	return true;
 }
 
