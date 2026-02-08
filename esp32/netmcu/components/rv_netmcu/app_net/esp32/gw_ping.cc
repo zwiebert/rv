@@ -16,7 +16,8 @@
 #include "lwip/inet.h"
 #include "lwip/ip4_addr.h"
 #include "lwip/dns.h"
-#include "esp_ping.h"
+#include "ping/ping_sock.h"
+
 #include "esp_netif_ip_addr.h"
 #include "txtio/inout.h"
 
@@ -36,8 +37,6 @@
 
 void (*ping_restart_cb)();
 
-extern "C" int ping_init(void);
-
 u32 ping_count = 4;  //how many pings per report
 u32 ping_timeout = 1000; //mS till we consider it timed out
 u32 ping_delay = 500; //mS between pings
@@ -48,6 +47,7 @@ static int recv_count;
 static int ping_error_count;
 #define PING_ERROR_LIMIT 10
 
+#ifdef CONFIG_APP_PING_THE_GATEWAY
 esp_err_t pingResults(ping_target_id_t msgType, esp_ping_found * pf){
 
   recv_count = pf->recv_count;
@@ -72,7 +72,7 @@ static void ping_send() {
   esp_ping_set_target(PING_TARGET_IP_ADDRESS, &ip4_gateway_address.addr, sizeof(u32));
   esp_ping_set_target(PING_TARGET_RES_FN, reinterpret_cast<void *>(&pingResults), sizeof(&pingResults));
   waiting_results = 1;
-  ping_init();
+  esp_ping_new_session();
 }
 
 void ping_loop() {
@@ -90,3 +90,4 @@ void ping_loop() {
   ping_send();
 }
 
+#endif

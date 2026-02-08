@@ -14,12 +14,14 @@ set(COMPONENTS rv_netmcu
 
 #set environment variables to be used in components
 set(comp_compile_feats cxx_std_20)
-set(comp_compile_opts -Wno-missing-field-initializers)
+set(comp_compile_opts  "$<$<COMPILE_LANGUAGE:CXX>:-fpermissive>"
+                       -Wno-error=switch
+                       -Wno-missing-field-initializers)
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
 add_compile_definitions(MCU_ESP32 MCU_TYPE="esp32")
-add_compile_options(-include esp_attr.h)
+add_compile_options("$<$<COMPILE_LANGUAGE:C,CXX>:-include>" "$<$<COMPILE_LANGUAGE:C,CXX>:esp_attr.h>")
 
 if(DEFINED ENV{DISTRO})
 add_compile_definitions(DISTRIBUTION)
