@@ -71,53 +71,28 @@ public:
     return from_json(it);
   }
 
-  template<typename jsmn_iterator = Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
+  template<typename jsmn_iterator = jsoneat::Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
   bool from_json(jsmn_iterator &it) {
     assert(it->type == JSMN_OBJECT);
 
-    using token_handler_fun_type = bool (*)(self_type &self, jsmn_iterator &it, int &err);
-    static const token_handler_fun_type tok_processRootChilds_funs[] = { //
+    // if JSON value is null, re-initialize object
+    if ((it + 1).value_equals_null()) {
+      *this = WeatherAdapter();
+      return true;
+    }
 
-        [](self_type &self, jsmn_iterator &it, int &err) -> bool {
-          if (it.keyIsEqual("flags", JSMN_OBJECT)) {
-            auto count = it[1].size;
-            for (it += 2; count > 0 && it; --count) {
-              if (!(it.takeValue(self.flags.exists, "exists") //
-              || it.takeValue(self.flags.neutral, "neutral") //
-                  || it.takeValue(self.flags.read_only, "read_only") //
-              )) {
-                ++err;
-                it.skip_key_and_value();
-              }
-            }
-            return true;
-          }
-          return false;
-
-        },
-
-        [](self_type &self, jsmn_iterator &it, int &err) -> bool {
-          if (it.takeValue(self.name, "name") || it.takeValue(self.d_temp, "temp") || it.takeValue(self.d_wind, "wind") || it.takeValue(self.d_humi, "humi")
-              || it.takeValue(self.d_clouds, "clouds")) {
-            return true;
-          }
-          return false;
-        },
-
-        [](self_type &self, jsmn_iterator &it, int &err) -> bool { // Throw away unwanted objects
-          return it.skip_key_and_value();
-        } };
-
-    int err = 0;
     auto count = it->size;
     for (++it; count > 0 && it; --count) {
-      for (auto fun : tok_processRootChilds_funs) {
-        if (fun(*this, it, err))
-          break;
-      }
+      if (!(it.takeValue(name, "name") //
+      || it.takeValue(d_temp, "temp") //
+          || it.takeValue(d_wind, "wind") //
+          || it.takeValue(d_humi, "humi") //
+          || it.takeValue(d_clouds, "clouds") //
+          || it.takeObject(flags, "flags") //
+      ))
+        return false; // fail for unknown keys
     }
-    return !err;
-
+    return true;
   }
 
 public:
@@ -126,6 +101,22 @@ public:
     bool exists = false;   ///< to mark as non existent flat value in array
     bool neutral = false;   ///< mark adapter as neutral (returning factor 1.0)
     bool read_only = false; ///< prevent adapter from beeing overwritten by user
+
+    template<typename jsmn_iterator>
+    bool from_json(jsmn_iterator &it) {
+      assert(it->type == JSMN_OBJECT);
+
+      auto count = it->size;
+      for (++it; count > 0 && it; --count) {
+        if (!(it.takeValue(exists, "exists") //
+        || it.takeValue(neutral, "neutral") //
+            || it.takeValue(read_only, "read_only") //
+        ))
+          return false; // fail for unknown keys
+      }
+      return true;
+    }
+
   } flags;
   float d_temp, d_wind, d_humi, d_clouds;
 };

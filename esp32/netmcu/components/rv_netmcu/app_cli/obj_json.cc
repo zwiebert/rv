@@ -11,16 +11,16 @@
 
 
 
-bool process_objJson(UoutWriter &td, Jsmn_String::Iterator &it) {
+bool process_objJson(UoutWriter &td, jsoneat::Jsmn_String::Iterator &it) {
   db_loge("test.json_obj", "all_json: <%s>", it.get_json());
 
   assert(it->type == JSMN_OBJECT);
 
-  using token_handler_fun_type = bool (*)(class UoutWriter &td, Jsmn_String::Iterator &it, int &err);
+  using token_handler_fun_type = bool (*)(class UoutWriter &td, jsoneat::Jsmn_String::Iterator &it, int &err);
   static const token_handler_fun_type tok_processRootChilds_funs[] = { //
 
 #ifdef CONFIG_APP_USE_WEATHER_AUTO
-      [](class UoutWriter &td, Jsmn_String::Iterator &it, int &err) -> bool {
+      [](class UoutWriter &td, jsoneat::Jsmn_String::Iterator &it, int &err) -> bool {
         if (it.keyIsEqual("auto", JSMN_OBJECT)) {
           return full_auto->auto_timer().handle_json(td.sj(), ++it);
         }
@@ -28,7 +28,7 @@ bool process_objJson(UoutWriter &td, Jsmn_String::Iterator &it) {
 
       },
 #endif
-      [](class UoutWriter &td, Jsmn_String::Iterator &it, int &err) -> bool {
+      [](class UoutWriter &td, jsoneat::Jsmn_String::Iterator &it, int &err) -> bool {
         return it.skip_key_and_value();
 ;
       } };

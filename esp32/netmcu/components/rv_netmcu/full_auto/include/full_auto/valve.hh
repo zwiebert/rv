@@ -15,6 +15,23 @@ struct MagValve {
     bool active = false;  ///< to mark as active (or not disabled temporarily)
     bool exists = false;   ///< to mark as non existent flat value in array
     bool is_due = false;
+
+
+    template<typename jsmn_iterator>
+    bool from_json(jsmn_iterator &it) {
+      assert(it->type == JSMN_OBJECT);
+
+      auto count = it->size;
+      for (++it; count > 0 && it; --count) {
+        if (!(it.takeValue(exists, "exists") //
+        || it.takeValue(active, "active") //
+            || it.takeValue(is_due, "is_due") //
+        ))
+          return false; // fail for unknown keys
+      }
+      return true;
+    }
+
   } flags;
 
   struct {
@@ -23,11 +40,43 @@ struct MagValve {
     unsigned flow_lph = 0;
     int priority = 0;
     unsigned interval_s = SECS_PER_DAY;
+
+    template<typename jsmn_iterator>
+    bool from_json(jsmn_iterator &it) {
+      assert(it->type == JSMN_OBJECT);
+
+      auto count = it->size;
+      for (++it; count > 0 && it; --count) {
+        if (!(it.takeValue(duration_s, "duration_s") //
+        || it.takeValue(adapter, "adapter") //
+        || it.takeValue(priority, "priority") //
+        || it.takeValue(interval_s, "interval_s") //
+        ))
+          return false; // fail for unknown keys
+      }
+      return true;
+    }
+
   } attr;
 
   struct {
     time_t last_time_wet = 0;
     time_t next_time_scheduled = 0;
+
+    template<typename jsmn_iterator>
+    bool from_json(jsmn_iterator &it) {
+      assert(it->type == JSMN_OBJECT);
+
+      auto count = it->size;
+      for (++it; count > 0 && it; --count) {
+        if (!(it.takeValue(last_time_wet, "last_time_wet") //
+        || it.takeValue(next_time_scheduled, "next_time_scheduled") //
+        ))
+          return false; // fail for unknown keys
+      }
+      return true;
+    }
+
   } state;
 
   /**
@@ -68,85 +117,26 @@ struct MagValve {
    * \param it  Iterator pointing to the object token (JSMN_OBJECT)
    * \return
    */
-  template<typename jsmn_iterator = Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
+  template<typename jsmn_iterator = jsoneat::Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
   bool from_json(jsmn_iterator &it) {
     assert(it->type == JSMN_OBJECT);
 
-    using token_handler_fun_type = bool (*)(MagValve &self, jsmn_iterator &it, int &err);
-    static const token_handler_fun_type tok_processRootChilds_funs[] = { //
+    // if JSON value is null, re-initialize object
+    if ((it+1).value_equals_null()) {
+      *this =  MagValve();
+      return true;
+    }
 
-        [](MagValve &self, jsmn_iterator &it, int &err) -> bool {
-          if (it.keyIsEqual("flags", JSMN_OBJECT)) {
-            auto count = it[1].size;
-            for (it += 2; count > 0 && it; --count) {
-              if (!(it.takeValue(self.flags.active, "active") //
-              || it.takeValue(self.flags.exists, "exists") //
-                  || it.takeValue(self.flags.is_due, "is_due"))) {
-                ++err;
-                it.skip_key_and_value();
-              }
-            }
-            return true;
-          }
-          return false;
-        },
-
-        [](MagValve &self, jsmn_iterator &it, int &err) -> bool {
-          if (it.keyIsEqual("attr", JSMN_OBJECT)) {
-            auto count = it[1].size;
-            for (it += 2; count > 0 && it; --count) {
-              if (!(it.takeValue(self.attr.duration_s, "duration_s") //
-              || it.takeValue(self.attr.adapter, "adapter") //
-                  || it.takeValue(self.attr.flow_lph, "flow_lph") //
-                  || it.takeValue(self.attr.priority, "priority") //
-                  || it.takeValue(self.attr.interval_s, "interval_s") //
-              )) {
-                ++err;
-                it.skip_key_and_value();
-              }
-            }
-            return true;
-          }
-          return false;
-        },
-
-        [](MagValve &self, jsmn_iterator &it, int &err) -> bool {
-          if (it.keyIsEqual("state", JSMN_OBJECT)) {
-            auto count = it[1].size;
-            for (it += 2; count > 0 && it; --count) {
-              if (!(it.takeValue(self.state.last_time_wet, "last_time_wet") //
-              || it.takeValue(self.state.next_time_scheduled, "next_time_scheduled") //
-              )) {
-                ++err;
-                it.skip_key_and_value();
-              }
-            }
-            return true;
-          }
-          return false;
-        },
-
-        [](self_type &self, jsmn_iterator &it, int &err) -> bool {
-          if (it.takeValue(self.name, "name")) {
-            return true;
-          }
-          return false;
-        },
-
-        [](self_type &self, jsmn_iterator &it, int &err) -> bool {
-          return it.skip_key_and_value();
-        } };
-
-    int err = 0;
     auto count = it->size;
     for (++it; count > 0 && it; --count) {
-      for (auto fun : tok_processRootChilds_funs) {
-        if (fun(*this, it, err))
-          break;
-      }
+      if (!(it.takeValue(name, "name") //
+          || it.takeObject(flags, "flags") //
+          || it.takeObject(attr, "attr") //
+          || it.takeObject(state, "state") //
+      ))
+        return false; // fail for unknown keys
     }
-    return !err;
-
+    return true;
   }
 
 };

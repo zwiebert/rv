@@ -9,10 +9,13 @@ then
    elif test -n "$IDF_PATH" -a -f "$IDF_PATH/export.sh" 
    then
      echo "variable exists: IDF_PATH=<$IDF_PATH>"
-     cd "$IDF_PATH" && . "./export.sh"
+       export IDF_PATH_FORCE=1
+       . "$IDF_PATH/export.sh"
    else
      echo "using path <$HOME/esp/esp-idf>"
-     cd "$HOME/esp/esp-idf" && . "./export.sh"
+       export IDF_PATH="$HOME/esp/esp-idf"
+       export IDF_PATH_FORCE=1
+       . "$IDF_PATH/export.sh"
    fi
 fi
 

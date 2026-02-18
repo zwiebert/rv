@@ -30,7 +30,7 @@ void test_uo_json2() {
   TEST_ASSERT_TRUE_MESSAGE(at.write_zones_json(sj, "zones"), "As long as there is enought buffer");
   sj.close_root_object();
 
-  Jsmn_String jsmn(sj.get_json(), 1024);
+  jsoneat::Jsmn_String jsmn(sj.get_json(), 1024);
   TEST_ASSERT_TRUE_MESSAGE((bool )jsmn, "Validate JSON by trying to parse it");
 
   printf("buf3:<%s>\n", buf3);
@@ -58,7 +58,7 @@ void test_uo_json() {
     sj.close_root_object();
   }
   puts(buf4);
-  Jsmn_String jsmn(buf4, 1024);
+  jsoneat::Jsmn_String jsmn(buf4, 1024);
   TEST_ASSERT_TRUE_MESSAGE((bool )jsmn, "Validate JSON by trying to parse it");
 
 }

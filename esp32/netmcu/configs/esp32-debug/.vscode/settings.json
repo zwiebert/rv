@@ -21,5 +21,6 @@
       "stm32-for-vscode.openOCDPath": false,
       "idf.adapterTargetName": "esp32",
       "C_Cpp.errorSquiggles": "enabled",
-      "idf.flashType": "JTAG"
+      "idf.flashType": "JTAG",
+      "idf.currentSetup": "/home/bertw/.espressif/master/esp-idf"
 }
