@@ -60,18 +60,7 @@ public:
         flags.exists, flags.neutral, flags.read_only, d_temp, d_wind, d_humi, d_clouds);
   }
 
-  template<typename T, typename std::enable_if<!std::is_class<T> { }, bool>::type = true>
-  bool from_json(T json) {
-    auto jsmn = Jsmn<32, T>(json);
-
-    if (!jsmn)
-      return false;
-
-    auto it = jsmn.begin();
-    return from_json(it);
-  }
-
-  template<typename jsmn_iterator = jsoneat::Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
+  template<typename jsmn_iterator>
   bool from_json(jsmn_iterator &it) {
     assert(it->type == JSMN_OBJECT);
 

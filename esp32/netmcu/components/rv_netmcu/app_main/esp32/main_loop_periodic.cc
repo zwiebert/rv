@@ -45,8 +45,6 @@ void tmr_loopPeriodic_start() {
 
 
     static uint32_t count; // counts up every 0.1 seconds.
-    ++count;
-
 
 
     // Every 100ms: run cli_loop, watch_dog, ...
@@ -60,10 +58,10 @@ void tmr_loopPeriodic_start() {
       struct tm tms;
       if (localtime_r(&tnow, &tms)) {
 
-#ifdef CONFIG_APP_USE_WEATHER_AUTO
+#if 1//def CONFIG_APP_USE_WEATHER_AUTO
     // Poll weather data at full hour
     static time_t weather_last_poll;
-    if ((weather_last_poll == 0 || (weather_last_poll + SECS_PER_MINT * 58) < tnow) && tms.tm_min < 5) {
+    if (ipnet_isConnected() && (weather_last_poll == 0 || ((weather_last_poll + SECS_PER_MINT * 58) < tnow && tms.tm_min < 5))) {
       mainLoop_callFun([]() {
         if (fa_poll_weather_full_hour()) {
             weather_last_poll = time(0);
@@ -82,8 +80,10 @@ void tmr_loopPeriodic_start() {
     }
   }
 }
+  ++count;
 } );
   if (!tmr || xTimerStart(tmr, 10 ) != pdPASS) {
     printf("PerLoopTimer start error");
   }
+
 }

@@ -99,25 +99,11 @@ struct MagValve {
   }
 
   /*
-   * \brief parse JSON and then calls this->from_json(JsmnBase::Iterator &it)
-   */
-  template<typename T, typename std::enable_if<!std::is_class<T> { }, bool>::type = true>
-  bool from_json(T json) {
-    auto jsmn = Jsmn<32, T>(json);
-
-    if (!jsmn)
-      return false;
-
-    auto it = jsmn.begin();
-    return from_json(it);
-  }
-
-  /*
    * \brief     initialize *this by default ctor and then get any values from parsed JSON object
    * \param it  Iterator pointing to the object token (JSMN_OBJECT)
    * \return
    */
-  template<typename jsmn_iterator = jsoneat::Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
+  template<typename jsmn_iterator>
   bool from_json(jsmn_iterator &it) {
     assert(it->type == JSMN_OBJECT);
 

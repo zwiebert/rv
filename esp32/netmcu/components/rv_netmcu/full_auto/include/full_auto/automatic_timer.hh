@@ -66,17 +66,6 @@ public:
 
 public:
 
-  template<typename T, typename std::enable_if<!std::is_class<T> { }, bool>::type = true>
-  bool from_json(T json) {
-    auto jsmn = Jsmn<1024, T>(json);
-
-    if (!jsmn)
-      return false;
-
-    auto it = jsmn.begin();
-    return from_json(it);
-  }
-
   bool update(int idx, const WeatherAdapter &adapter) {
     if (!(0 <= idx && idx < CONFIG_APP_FA_MAX_WEATHER_ADAPTERS))
       return false;
@@ -85,7 +74,7 @@ public:
     m_adapters[idx] = adapter;
     return true;
   }
-  template<typename jsmn_iterator = jsoneat::Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
+  template<typename jsmn_iterator>
   bool update_adapter(int idx, jsmn_iterator &it, bool update = false) {
     if (!(0 <= idx && idx < CONFIG_APP_FA_MAX_WEATHER_ADAPTERS))
       return false;
@@ -111,7 +100,7 @@ public:
     return false;
   }
 
-  template<typename jsmn_iterator = jsoneat::Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
+  template<typename jsmn_iterator>
   bool update_zone(int idx, jsmn_iterator &it, bool update = false) {
     if (!(0 <= idx && idx < CONFIG_APP_NUMBER_OF_VALVES))
       return false;
@@ -342,7 +331,7 @@ if (sj.add_object("auto")) {
 }
 return !err;
 }
-template<typename jsmn_iterator = jsoneat::Jsmn_String::Iterator, typename std::enable_if<std::is_class<jsmn_iterator> { }, bool>::type = true>
+template<typename jsmn_iterator>
 bool from_json(jsmn_iterator &it) {
 assert(it->type == JSMN_OBJECT);
 

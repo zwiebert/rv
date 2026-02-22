@@ -8,7 +8,7 @@
 
 flavors = esp32-release esp32-debug
 flavor ?= esp32-release
-PORT ?= /dev/ttyUSB1
+PORT ?= /dev/ttyUSB0
 CMAKE_ARGS_GENERATOR ?= -G Ninja
 
 default: print-help
