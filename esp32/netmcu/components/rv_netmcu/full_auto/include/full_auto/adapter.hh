@@ -3,6 +3,7 @@
 #include <weather/weather_data.hh>
 #include <weather/weather_irrigation.hh>
 #include "jsmn/jsmn_iterate.hh"
+#include "jsoneat/from_json_jsmn.hh"
 #include <string>
 
 struct location_data {
@@ -70,18 +71,9 @@ public:
       return true;
     }
 
-    auto count = it->size;
-    for (++it; count > 0 && it; --count) {
-      if (!(it.takeValue(name, "name") //
-      || it.takeValue(d_temp, "temp") //
-          || it.takeValue(d_wind, "wind") //
-          || it.takeValue(d_humi, "humi") //
-          || it.takeValue(d_clouds, "clouds") //
-          || it.takeObject(flags, "flags") //
-      ))
-        return false; // fail for unknown keys
-    }
-    return true;
+    return jsoneat::from_json::jsmn::deserialize_object(it, JSONEAT_KvPairs(name, flags), jsoneat::KvPair("temp", d_temp),
+        jsoneat::KvPair("wind", d_wind),
+        jsoneat::KvPair("humi", d_humi), jsoneat::KvPair("clouds", d_clouds));
   }
 
 public:
@@ -93,17 +85,7 @@ public:
 
     template<typename jsmn_iterator>
     bool from_json(jsmn_iterator &it) {
-      assert(it->type == JSMN_OBJECT);
-
-      auto count = it->size;
-      for (++it; count > 0 && it; --count) {
-        if (!(it.takeValue(exists, "exists") //
-        || it.takeValue(neutral, "neutral") //
-            || it.takeValue(read_only, "read_only") //
-        ))
-          return false; // fail for unknown keys
-      }
-      return true;
+    return jsoneat::from_json::jsmn::deserialize_object(it, JSONEAT_KvPairs(exists, neutral, read_only));
     }
 
   } flags;

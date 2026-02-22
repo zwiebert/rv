@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <ctime>
 #include <jsmn/jsmn_iterate.hh>
+#include "jsoneat/from_json_jsmn.hh"
 #include <utils_time/ut_constants.hh>
 
 struct MagValve {
@@ -19,17 +20,7 @@ struct MagValve {
 
     template<typename jsmn_iterator>
     bool from_json(jsmn_iterator &it) {
-      assert(it->type == JSMN_OBJECT);
-
-      auto count = it->size;
-      for (++it; count > 0 && it; --count) {
-        if (!(it.takeValue(exists, "exists") //
-        || it.takeValue(active, "active") //
-            || it.takeValue(is_due, "is_due") //
-        ))
-          return false; // fail for unknown keys
-      }
-      return true;
+    return jsoneat::from_json::jsmn::deserialize_object(it, JSONEAT_KvPairs(exists, active, is_due));
     }
 
   } flags;
@@ -43,18 +34,7 @@ struct MagValve {
 
     template<typename jsmn_iterator>
     bool from_json(jsmn_iterator &it) {
-      assert(it->type == JSMN_OBJECT);
-
-      auto count = it->size;
-      for (++it; count > 0 && it; --count) {
-        if (!(it.takeValue(duration_s, "duration_s") //
-        || it.takeValue(adapter, "adapter") //
-        || it.takeValue(priority, "priority") //
-        || it.takeValue(interval_s, "interval_s") //
-        ))
-          return false; // fail for unknown keys
-      }
-      return true;
+      return jsoneat::from_json::jsmn::deserialize_object(it, JSONEAT_KvPairs(duration_s, adapter, priority, interval_s));
     }
 
   } attr;
@@ -65,16 +45,7 @@ struct MagValve {
 
     template<typename jsmn_iterator>
     bool from_json(jsmn_iterator &it) {
-      assert(it->type == JSMN_OBJECT);
-
-      auto count = it->size;
-      for (++it; count > 0 && it; --count) {
-        if (!(it.takeValue(last_time_wet, "last_time_wet") //
-        || it.takeValue(next_time_scheduled, "next_time_scheduled") //
-        ))
-          return false; // fail for unknown keys
-      }
-      return true;
+      return jsoneat::from_json::jsmn::deserialize_object(it, JSONEAT_KvPairs(last_time_wet, next_time_scheduled));
     }
 
   } state;
@@ -113,16 +84,7 @@ struct MagValve {
       return true;
     }
 
-    auto count = it->size;
-    for (++it; count > 0 && it; --count) {
-      if (!(it.takeValue(name, "name") //
-          || it.takeObject(flags, "flags") //
-          || it.takeObject(attr, "attr") //
-          || it.takeObject(state, "state") //
-      ))
-        return false; // fail for unknown keys
-    }
-    return true;
+    return jsoneat::from_json::jsmn::deserialize_object(it, JSONEAT_KvPairs(name, flags, attr, state));
   }
 
 };
