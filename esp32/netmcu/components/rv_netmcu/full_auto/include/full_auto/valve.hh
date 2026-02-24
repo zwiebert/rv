@@ -7,6 +7,18 @@
 #include "jsoneat/from_to_json_jsmn_cbuf.hh"
 #include <utils_time/ut_constants.hh>
 
+/**
+ * \brief  Valve or Zone???
+ *
+ *  This type seems to represent a sing magnetic valve, but it rather should
+ *  be a called a zone and have a single or more valves attached. On the other hand
+ *  you could or should attach one ore more magnetic valves to a single relay output.
+ *  Makes not much sense to do this in software.
+ *
+ *  So a zone class should be called Zone or  ZoneRelay.
+ *
+ *
+ */
 struct MagValve {
   using self_type = MagValve;
 

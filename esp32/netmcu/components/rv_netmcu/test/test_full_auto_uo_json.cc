@@ -27,7 +27,7 @@ char buf[1024], buf2[1024], buf3[100000], buf4[100000];
 void test_uo_json2() {
   static UoutBuilderJson sj(buf3, sizeof buf3);
   TEST_ASSERT_TRUE_MESSAGE(sj.open_root_object("test"), "We need a root object");
-  TEST_ASSERT_TRUE_MESSAGE(at.write_zones_json(sj, "zones"), "As long as there is enought buffer");
+  TEST_ASSERT_TRUE_MESSAGE(at.write_zones_to_json(sj, "zones"), "As long as there is enought buffer");
   sj.close_root_object();
 
   jsoneat::Jsmn_String jsmn(sj.get_json(), 1024);
@@ -53,7 +53,7 @@ void test_uo_json() {
     auto &sj = td.sj();
     TEST_ASSERT_TRUE_MESSAGE(sj.open_root_object("testroot"), "We need a root object");
     TEST_ASSERT_TRUE_MESSAGE(sj.add_object("testobj"), "We need a root object");
-    TEST_ASSERT_TRUE_MESSAGE(at.write_zones_json(sj, "zones"), "As long as there is enought buffer");
+    TEST_ASSERT_TRUE_MESSAGE(at.write_zones_to_json(sj, "zones"), "As long as there is enought buffer");
     sj.close_object();
     sj.close_root_object();
   }

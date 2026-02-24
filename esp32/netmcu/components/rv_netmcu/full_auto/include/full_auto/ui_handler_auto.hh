@@ -1,3 +1,9 @@
+/**
+ * \brief Handle command objects with JSON key "auto" sent by HTML browser.
+ *
+ *   Any output is written as JSON "auto" object to an output stream, which
+ *   has to be passed to the handler when called.
+ */
 #pragma once
 #include "automatic_timer.hh"
 
@@ -47,10 +53,17 @@ return !err;
 }
 /**
  * \brief                 handles auto.set command object
+ *
+ * To set/update a single object, the JSON object key contains the number
+ *  (index) of the object, like so:
+ *   "zone.N" - zone number N. range of N: 0 <= N && N < CONFIG_APP_NUMBER_OF_VALVES
+ *   "adapter.N" - range of N: 0 <= N && N < CONFIG_APP_FA_MAX_WEATHER_ADAPTERS
+ *
+ *
  * \tparam jsmn_iterator
- * \param sj
- * \param it
- * \param update
+ * \param sj              output JSON stream
+ * \param it              input iterator to a JSMN token array
+ * \param update          (currently not used for anything)
  * \return
  */
 template<typename jsmn_iterator>
@@ -66,7 +79,7 @@ for (it += 1; count > 0 && it; --count) {
     char key[16];
     if (it.getValue(key)) {
       zone_idx = atoi(key + strlen(zone_prefix));
-      if (at.update_zone(zone_idx, ++it) && at.write_zone_json(sj, zone_idx, key)) {
+      if (at.update_zone_from_json(zone_idx, ++it, update) && at.write_zone_to_json(sj, zone_idx, key)) {
         continue; // update succeeded
       }
     }
@@ -81,7 +94,7 @@ for (it += 1; count > 0 && it; --count) {
     char key[16];
     if (it.getValue(key)) {
       adapter_idx = atoi(key + strlen(adapter_prefix));
-      if (at.update_adapter(adapter_idx, ++it)) {
+      if (at.update_adapter_from_json(adapter_idx, ++it)) {
         continue; // update succeeded
       }
     }
@@ -117,7 +130,7 @@ for (it += 1; count > 0 && it; --count) {
     if (it.getValue(key)) {
       it.skip_key_and_value();
       zone_idx = atoi(key + strlen(zone_prefix));
-      if (at.write_zone_json(sj, zone_idx, key)) {
+      if (at.write_zone_to_json(sj, zone_idx, key)) {
         continue; // update succeeded
       }
     }
@@ -133,7 +146,7 @@ for (it += 1; count > 0 && it; --count) {
     if (it.getValue(key)) {
       it.skip_key_and_value();
       adapter_idx = atoi(key + strlen(adapter_prefix));
-      if (at.write_adapter_json(sj, adapter_idx, key)) {
+      if (at.write_adapter_to_json(sj, adapter_idx, key)) {
         continue; // update succeeded
       }
     }
@@ -143,7 +156,7 @@ for (it += 1; count > 0 && it; --count) {
   }
   if (it.keyIsEqual("zones", JSMN_ARRAY)) {
     it.skip_key_and_value();
-    if (at.write_zones_json(sj, "zones")) {
+    if (at.write_zones_to_json(sj, "zones")) {
       continue;
     }
     db_loge(our_logtag, "Could not get zones");
@@ -152,7 +165,7 @@ for (it += 1; count > 0 && it; --count) {
   }
   if (it.keyIsEqual("adapters", JSMN_ARRAY)) {
     it.skip_key_and_value();
-    if (at.write_adapters_json(sj, "adapters")) {
+    if (at.write_adapters_to_json(sj, "adapters")) {
       continue;
     }
     db_loge(our_logtag, "Could not get adapters");
@@ -162,7 +175,7 @@ for (it += 1; count > 0 && it; --count) {
 
   if (it.keyIsEqual("past_wd", JSMN_ARRAY)) {
     it.skip_key_and_value();
-    if (at.write_past_weather_data_json(sj, "past_wd")) {
+    if (at.write_past_weather_data_to_json(sj, "past_wd")) {
       continue;
     }
     db_loge(our_logtag, "Could not get adapters");

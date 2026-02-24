@@ -78,8 +78,16 @@ public:
     m_adapters[idx] = adapter;
     return true;
   }
+  /**
+   * \brief  Update or Set a single adapter from JSON object
+   * \tparam jsmn_iterator  type of argument "it"
+   * \param idx    number of adapter
+   * \param it     iterator pointing to JSON zone object (without its key)
+   * \param update If false, the adapter is initialized first with default values
+   * \return       success. Failures: idx out of range. read_only flag set. Wrong JSON content.
+   */
   template<typename jsmn_iterator>
-  bool update_adapter(int idx, jsmn_iterator &it, bool update = false) {
+  bool update_adapter_from_json(int idx, jsmn_iterator &it, bool update = false) {
     if (!(0 <= idx && idx < CONFIG_APP_FA_MAX_WEATHER_ADAPTERS))
       return false;
     auto &el = m_adapters[idx];
@@ -89,7 +97,14 @@ public:
       el = WeatherAdapter();
     return el._from_json(it);
   }
-  bool write_adapter_json(UoutBuilderJson &sj, int idx, const char *key) {
+  /**
+   * \brief      Write content of a single adapter to JSON stream
+   * \param sj   output JSON stream
+   * \param idx  number of adapter
+   * \param key  JSON key for the JSON object written
+   * \return     success
+   */
+  bool write_adapter_to_json(UoutBuilderJson &sj, int idx, const char *key) {
     if (!(0 <= idx && idx < CONFIG_APP_FA_MAX_WEATHER_ADAPTERS))
       return false;
     if (sj.add_key(key)) {
@@ -97,15 +112,29 @@ public:
     }
     return false;
   }
-  bool write_adapters_json(UoutBuilderJson &sj, const char *key) {
+  /**
+   * \brief     Write array of all adapter objects to JSON stream
+   * \param sj  output JSON stream
+   * \param key JSON key for the JSON array written
+   * \return    success
+   */
+  bool write_adapters_to_json(UoutBuilderJson &sj, const char *key) {
     if (sj.add_key(key)) {
       return sj.read_json_arr_from_function(std::bind(&AutoTimer::get_adapter_json, this, _1, _2, _3), CONFIG_APP_FA_MAX_WEATHER_ADAPTERS);
     }
     return false;
   }
 
+  /**
+   * \brief  Update or Set a single zone from JSON object
+   * \tparam jsmn_iterator  type of argument "it"
+   * \param idx    number of zone
+   * \param it     iterator pointing to JSON zone object (without its key)
+   * \param update If false, the zone is initialized first with default values
+   * \return       success. Failures: idx out of range.  Wrong JSON content.
+   */
   template<typename jsmn_iterator>
-  bool update_zone(int idx, jsmn_iterator &it, bool update = false) {
+  bool update_zone_from_json(int idx, jsmn_iterator &it, bool update = false) {
     if (!(0 <= idx && idx < CONFIG_APP_NUMBER_OF_VALVES))
       return false;
     auto &el = m_magval[idx];
@@ -113,7 +142,14 @@ public:
       el = MagValve();
     return el._from_json(it);
   }
-  bool write_zone_json(UoutBuilderJson &sj, int idx, const char *key) {
+  /**
+   * \brief      Write content of a single zoneV to JSON stream
+   * \param sj   output JSON stream
+   * \param idx  number of zone
+   * \param key  JSON key for the JSON object written
+   * \return     success
+   */
+  bool write_zone_to_json(UoutBuilderJson &sj, int idx, const char *key) {
     if (!(0 <= idx && idx < CONFIG_APP_NUMBER_OF_VALVES))
       return false;
     if (sj.add_key(key)) {
@@ -121,14 +157,25 @@ public:
     }
     return false;
   }
-  bool write_zones_json(UoutBuilderJson &sj, const char *key) {
+  /**
+   * \brief     Write array of all zone objects to JSON stream
+   * \param sj  output JSON stream
+   * \param key JSON key for the JSON array written
+   * \return    success
+   */
+  bool write_zones_to_json(UoutBuilderJson &sj, const char *key) {
     if (sj.add_key(key)) {
       return sj.read_json_arr_from_function(std::bind(&AutoTimer::get_zone_json, this, _1, _2, _3), CONFIG_APP_NUMBER_OF_VALVES);
     }
     return false;
   }
-
-  bool write_past_weather_data_json(UoutBuilderJson &sj, const char *key) {
+  /**
+   * \brief     Write past weather data array to JSON stream
+   * \param sj  output JSON stream
+   * \param key JSON key for the JSON array written
+   * \return    success
+   */
+  bool write_past_weather_data_to_json(UoutBuilderJson &sj, const char *key) {
     if (!m_wi)
       return false;
 
@@ -139,6 +186,12 @@ public:
   }
 
 public:
+  /**
+   * \brief       Test if the given valve is scheduled for now or a given future time
+   * \param v     the valve in question
+   * \param twhen the time for which we ask. Should be now or in the future.
+   * \return      true, if valve is due
+   */
   bool should_valve_be_due(const MagValve &v, const time_t twhen = time(0)) const {
     if (!v.flags.exists || v.state.next_time_scheduled || m_stm32_state.rain_sensor)
       return false;
@@ -166,6 +219,12 @@ public:
   }
 
 private:
+  /**
+   * \brief  sort valve indexes according to priority and schedule (due)
+   *
+   * This allows looking up the order in which the zones (valves) need to be irrigated.
+   *
+   */
   void sort_magval_idxs() {
 
     m_used_valves_count = m_due_valves_count = 0;
