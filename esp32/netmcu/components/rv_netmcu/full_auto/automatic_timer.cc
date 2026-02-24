@@ -24,8 +24,9 @@ bool AutoTimer::save_settings(const char *key) {
       MagValve magvals[CONFIG_APP_NUMBER_OF_VALVES];
       WeatherAdapter adapters[CONFIG_APP_FA_MAX_WEATHER_ADAPTERS];
     } m_s;
-      memcpy(m_magval, m_s.magvals, sizeof (m_magval));
-      memcpy(m_adapters, m_s.adapters, sizeof (m_adapters));
+      set_default_adapter();
+      memcpy(m_s.magvals, m_magval, sizeof (m_magval));
+      memcpy(m_s.adapters, m_adapters, sizeof (m_adapters));
     if (kvs_set_blob(h, key, &m_s, sizeof m_s)) {
       result = true;
     }
@@ -50,6 +51,7 @@ bool AutoTimer::restore_settings(const char *key) {
       result = true;
       memcpy(m_magval, m_s.magvals, sizeof (m_magval));
       memcpy(m_adapters, m_s.adapters, sizeof (m_adapters));
+      set_default_adapter();
     }
     kvs_close(h);
   }

@@ -4,7 +4,7 @@
 #include <uout/uout_writer.hh>
 #ifdef CONFIG_APP_USE_WEATHER_AUTO
 #include <full_auto/adapter.hh>
-#include <full_auto/automatic_timer.hh>
+#include <full_auto/ui_handler_auto.hh>
 #include <full_auto/setup.hh>
 #endif
 #define logtag  "rv.cli"
@@ -22,7 +22,7 @@ bool process_objJson(UoutWriter &td, jsoneat::Jsmn_String::Iterator &it) {
 #ifdef CONFIG_APP_USE_WEATHER_AUTO
       [](class UoutWriter &td, jsoneat::Jsmn_String::Iterator &it, int &err) -> bool {
         if (it.keyIsEqual("auto", JSMN_OBJECT)) {
-          return full_auto->auto_timer().handle_json(td.sj(), ++it);
+          return ui::handler__auto(full_auto->auto_timer(), td.sj(), ++it);
         }
         return false;
 

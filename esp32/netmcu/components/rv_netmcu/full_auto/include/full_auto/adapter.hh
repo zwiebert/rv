@@ -3,7 +3,7 @@
 #include <weather/weather_data.hh>
 #include <weather/weather_irrigation.hh>
 #include "jsmn/jsmn_iterate.hh"
-#include "jsoneat/from_json_jsmn.hh"
+#include "jsoneat/from_to_json_jsmn_cbuf.hh"
 #include <string>
 
 struct location_data {
@@ -46,35 +46,9 @@ struct WeatherAdapter: public Weather_Adapter_Neutral {
   }
 
 public:
-  /**
-   * \brief            serialize object into JSON formatted null-terminated string.
-   * \param dst        output buffer
-   * \param dst_size   output buffer size
-   * \return           return values are the as standard snprintf(3). The bytes written or if larger than dst_size, the bytes which would have written.
-   *                   the terminating null byte is not counted, but its always there even if a data bytes has to be truncated for it.
-   *                   so make sure to add one byte to the return value before using it as a parameter for dst_size in a retry call.
-   */
-  int to_json(char *dst, size_t dst_size) const {
-    return snprintf(dst, dst_size, //
-        R"({"name":"%s","flags":{"exists":%d,"neutral":%d,"read_only":%d},"temp":%g,"wind":%g,"humi":%g,"clouds":%g})", //
-        name, //
-        flags.exists, flags.neutral, flags.read_only, d_temp, d_wind, d_humi, d_clouds);
-  }
-
-  template<typename jsmn_iterator>
-  bool from_json(jsmn_iterator &it) {
-    assert(it->type == JSMN_OBJECT);
-
-    // if JSON value is null, re-initialize object
-    if ((it + 1).value_equals_null()) {
-      *this = WeatherAdapter();
-      return true;
-    }
-
-    return jsoneat::from_json::jsmn::deserialize_object(it, JSONEAT_KvPairs(name, flags), jsoneat::KvPair("temp", d_temp),
+  JSONEAT_SER_FROM_TO(JSONEAT_KvPairs(name, flags), jsoneat::KvPair("temp", d_temp),
         jsoneat::KvPair("wind", d_wind),
         jsoneat::KvPair("humi", d_humi), jsoneat::KvPair("clouds", d_clouds));
-  }
 
 public:
   char name[CONFIG_APP_FA_NAMES_MAX_LEN] = "";
@@ -83,11 +57,7 @@ public:
     bool neutral = false;   ///< mark adapter as neutral (returning factor 1.0)
     bool read_only = false; ///< prevent adapter from beeing overwritten by user
 
-    template<typename jsmn_iterator>
-    bool from_json(jsmn_iterator &it) {
-    return jsoneat::from_json::jsmn::deserialize_object(it, JSONEAT_KvPairs(exists, neutral, read_only));
-    }
-
+    JSONEAT_SER_FROM_TO(JSONEAT_KvPairs(exists, neutral, read_only));
   } flags;
   float d_temp, d_wind, d_humi, d_clouds;
 };
