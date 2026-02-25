@@ -21,7 +21,7 @@ using namespace std;
 #undef logtag
 #define logtag "rv.test.full_auto"
 
-static AutoTimer at;
+static app::fa::AutoTimer at;
 char buf[1024], buf2[1024], buf3[100000], buf4[100000];
 
 int writecb(const char *src, ssize_t src_len, int chunk_status) {

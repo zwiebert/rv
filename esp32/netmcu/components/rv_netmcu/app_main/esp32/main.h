@@ -7,7 +7,7 @@
 #include "app_misc/timer.h"
 #include "app_config/proj_app_cfg.h"
 #include "app_net/gw_ping.h"
-#include "app_cli/cli_app.h"
+#include "app_cli/cli_app.hh"
 #include "app_settings/config.h"
 #include "driver/gpio.h"
 #include "kvs/kvs_wrapper.h"

@@ -13,6 +13,7 @@
 #endif
 #define logtag "rv.full_auto"
 
+namespace app::fa {
 static constexpr char kvs_name[] = "full_auto";
 
 bool AutoTimer::save_settings(const char *key) {
@@ -98,7 +99,8 @@ void AutoTimer::todo_loop() {
     args.on_duration = v.attr.duration_s;
     v.state.last_time_wet = time(0);
 #ifndef TEST_HOST
-    stm32com_set_timer(args);
+    app::stm32::stm32com_set_timer(args);
 #endif
   }
 }
+} // namespace

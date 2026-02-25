@@ -7,6 +7,7 @@
 #include "jsoneat/from_to_json_jsmn_cbuf.hh"
 #include <utils_time/ut_constants.hh>
 
+namespace app::fa {
 /**
  * \brief  Controls a relay for a irrigation zone.
  *
@@ -53,3 +54,5 @@ struct IrrigationZone {
 
   JSONEAT_SER_FROM_TO(JSONEAT_KvPairs(name, flags, attr, state));
 };
+
+}// namespace

@@ -8,6 +8,8 @@
 #include <ctime>
 #include <cassert>
 
+namespace app::stm32 {
+
 void stm32com_ask_version() {
   const char json[] = "\r\n{\"cmd\":{\"version\":\"?\"}};\r\n";
   stm32_write(json, sizeof json);
@@ -57,3 +59,5 @@ void stm32com_set_timer(const SetArgs &args) {
     stm32_write(buf, strlen(buf));
   }
 }
+
+} // namespace

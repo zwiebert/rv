@@ -21,7 +21,7 @@ using namespace std;
 #define logtag "rv.test.full_auto"
 
 
-static AutoTimer at;
+static app::fa::AutoTimer at;
 char buf[1024], buf2[1024];
 
 
@@ -43,10 +43,10 @@ void test_json()
   }
 
   at.save_settings("at");
-  AutoTimer at2;
+  app::fa::AutoTimer at2;
   at2.restore_settings("at");
 
-  WeatherAdapter ad;
+  app::fa::WeatherAdapter ad;
   count = 0;
   for(auto it = at2.adapters_begin(); it != at2.adapters_end(); ++it, ++count) {
     if (!it->flags.exists)
@@ -64,7 +64,7 @@ void test_json()
 
 void test_mulitple_fetch() {
   for (int i=0; i < 4; ++i) {
-    TEST_ASSERT_TRUE_MESSAGE(fa_poll_weather_full_hour(), "Fetch, parse and save JSON data ... what could go wrong?");
+    TEST_ASSERT_TRUE_MESSAGE(app::fa::fa_poll_weather_full_hour(), "Fetch, parse and save JSON data ... what could go wrong?");
     sleep(10);
   }
 }
@@ -74,7 +74,7 @@ void test_at_loop() {
   static Weather_Provider_Owm weather_provider;
   static Weather_Irrigation weather_irrigation(&weather_provider);
   weather_irrigation.dev_fill_past_wd_randomly();
-  static AutoTimer at(&weather_irrigation);
+  static app::fa::AutoTimer at(&weather_irrigation);
   at.dev_random_fill_data();
 
 

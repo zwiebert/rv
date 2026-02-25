@@ -4,7 +4,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
-#include "app_cli/cli_app.h"
+#include "app_cli/cli_app.hh"
 #include "app_uout/status_output.h"
 #include "uout/uout_builder_json.hh"
 #include "debug/dbg.h"
@@ -63,7 +63,7 @@ int Lph[RV_VALVE_COUNT] = {
     LPH_POTS_NORTH, //11
     };
 
-extern "C" int
+int
 process_parmProtoBuf(clpar p[], int len, class UoutWriter &td) {
 
   soMsg_PBUF_begin(td);

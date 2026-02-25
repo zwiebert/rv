@@ -4,7 +4,7 @@
 #include "stm32/stm32.h"
 #include "stm32_com/com_task.h"
 #include "stm32_com/stm32_commands.hh"
-#include "app_cli/cli_app.h"
+#include "app_cli/cli_app.hh"
 #include "cli/mutex.h"
 #include "net/http_client.h"
 #include "app_settings/config.h"
@@ -30,7 +30,7 @@ void ntpApp_setup(void) {
         ESP_LOGE(logtag, "ntp server #%d is <%s>", i, name);
       }
     }
-    mainLoop_callFun(stm32com_send_time);
+    mainLoop_callFun(app::stm32::stm32com_send_time);
   });
 
   config_setup_ntpClient();
@@ -148,7 +148,7 @@ void mcu_init() {
 #endif
 
 #ifdef CONFIG_APP_USE_WEATHER_AUTO
-  fa_setup(nullptr);
+  app::fa::fa_setup(nullptr);
 #endif
   kvs_get_int32(KEY_BOOT_COUNTER, &boot_counter), kvs_store_int32(KEY_BOOT_COUNTER, ++boot_counter);
 

@@ -1,6 +1,6 @@
 #pragma once
 #include "cli/cli.h"
-#include "app_cli/cli_app.h"
+#include "app_cli/cli_app.hh"
 #include <cli/cli_out.hh>
 
 extern const char pin_state_args[];

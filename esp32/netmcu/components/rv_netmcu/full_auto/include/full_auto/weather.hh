@@ -5,6 +5,7 @@
 #include "weather/weather_provider_owm.hh"
 #include <full_auto/automatic_timer.hh>
 
+namespace app::fa {
 class FullAuto {
 
 public:
@@ -30,3 +31,4 @@ void fa_loop();
  *
  */
 bool fa_poll_weather_full_hour();
+} // namespace

@@ -6,6 +6,8 @@
 #include "jsoneat/from_to_json_jsmn_cbuf.hh"
 #include <string>
 
+namespace app::fa {
+
 struct location_data {
 
 };
@@ -62,3 +64,4 @@ public:
   float d_temp, d_wind, d_humi, d_clouds;
 };
 
+} // namespace

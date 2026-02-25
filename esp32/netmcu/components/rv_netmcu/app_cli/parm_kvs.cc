@@ -11,7 +11,7 @@
 #include "app_misc/rtc.h"
 #include <cli/cli_out.hh>
 #include "cli_imp.h"
-#include "app_cli/cli_app.h"
+#include "app_cli/cli_app.hh"
 #include "app_mqtt/mqtt.h"
 #include "app_misc/kvstore.h"
 #include "debug/log.h"

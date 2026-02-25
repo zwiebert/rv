@@ -7,13 +7,13 @@
 #pragma once
 #include "automatic_timer.hh"
 
-namespace ui {
+namespace app::fa::ui {
 
 constexpr const char *our_logtag = "ui.auto";
 constexpr auto zone_prefix = "zone.";
 constexpr auto adapter_prefix = "adapter.";
 
-namespace details {
+namespace {
 
   ///////////////////////////////////////////////////////////////////////////////
   ////////////   Handlers for external commands via JSON auto object ////////////
@@ -190,7 +190,8 @@ for (it += 1; count > 0 && it; --count) {
 return !err;
 }
 
-}
+} // namespace
+
 
 /**
  * \brief    ???  Command interface taking JSON (taking "auto" object which contains commands)
@@ -209,7 +210,7 @@ if (td.sj().add_object("auto")) {
   for (it += 1; count > 0 && it; --count) {
 
     if (it.keyIsEqual("command", JSMN_OBJECT)) {
-      if (details::handler__command(at, ++it))
+      if (handler__command(at, ++it))
         continue;
 
       db_loge(our_logtag, "Command failed");
@@ -218,7 +219,7 @@ if (td.sj().add_object("auto")) {
     }
 
     if (it.keyIsEqual("get", JSMN_OBJECT)) {
-      if (details::handler__get (at, td, ++it))
+      if (handler__get (at, td, ++it))
         continue;
 
       db_loge(our_logtag, "get failed");
@@ -227,7 +228,7 @@ if (td.sj().add_object("auto")) {
     }
 
     if (it.keyIsEqual("set", JSMN_OBJECT)) {
-      if (details::handler__set(at, td, ++it))
+      if (handler__set(at, td, ++it))
         continue;
 
       db_loge(our_logtag, "set failed");
@@ -236,7 +237,7 @@ if (td.sj().add_object("auto")) {
     }
 
     if (it.keyIsEqual("update", JSMN_OBJECT)) {
-      if (details::handler__set (at, td, ++it), true)
+      if (handler__set (at, td, ++it), true)
         continue;
 
       db_loge(our_logtag, "update failed");
@@ -255,4 +256,4 @@ return !err;
 }
 
 
-}
+} // namespace

@@ -1,5 +1,5 @@
 #include "../web_content.hh"
-#include "app_cli/cli_app.h"
+#include "app_cli/cli_app.hh"
 #include <cli/cli.h>
 
 #include <sys/param.h>

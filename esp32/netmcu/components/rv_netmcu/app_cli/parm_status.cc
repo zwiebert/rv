@@ -15,7 +15,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
-#include "app_cli/cli_app.h"
+#include "app_cli/cli_app.hh"
 #include "app_uout/status_output.h"
 #include "uout/uout_builder_json.hh"
 #include <cli/cli_out.hh>

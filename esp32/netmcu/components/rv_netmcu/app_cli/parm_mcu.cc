@@ -7,7 +7,7 @@
 #include "app_misc/rtc.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
-#include "app_cli/cli_app.h"
+#include "app_cli/cli_app.hh"
 #include "stm32/stm32.h"
 #include "stm32/stm32_ota.h"
 #include "app_misc/ota.h"

@@ -15,6 +15,8 @@
 #include <functional>
 using namespace std::placeholders;
 
+namespace app::fa {
+
 class AutoTimer {
 public:
   constexpr static const char *our_logtag = "auto_timer";
@@ -280,3 +282,5 @@ public:
       jsoneat::KvPair("adapters", m_adapters))
   ;
 };
+
+} // namespace

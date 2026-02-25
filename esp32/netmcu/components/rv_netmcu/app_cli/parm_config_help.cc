@@ -1,5 +1,5 @@
 #include "app_config/proj_app_cfg.h"
-#include "app_cli/cli_app.h"
+#include "app_cli/cli_app.hh"
 
 const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
     "rtc=(ISO_TIME|?)   set local time it NTP is not working.;\n"

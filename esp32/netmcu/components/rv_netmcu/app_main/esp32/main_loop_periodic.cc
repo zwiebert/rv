@@ -63,13 +63,13 @@ void tmr_loopPeriodic_start() {
     static time_t weather_last_poll;
     if (ipnet_isConnected() && (weather_last_poll == 0 || ((weather_last_poll + SECS_PER_MINT * 58) < tnow && tms.tm_min < 5))) {
       mainLoop_callFun([]() {
-        if (fa_poll_weather_full_hour()) {
+        if (app::fa::fa_poll_weather_full_hour()) {
             weather_last_poll = time(0);
         }
       });
     }
 
-    mainLoop_callFun(fa_loop);
+    mainLoop_callFun(app::fa::fa_loop);
 #endif
 
     // forced daily reboot

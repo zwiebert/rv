@@ -8,7 +8,7 @@
 #include "app_config/proj_app_cfg.h"
 #include "cli_imp.h"
 #include "cli/cli.h"
-#include "app_cli/cli_app.h"
+#include "app_cli/cli_app.hh"
 #include "app_uout/status_output.h"
 #include "uout/uout_builder_json.hh"
 #include <cli/cli_out.hh>
@@ -69,9 +69,9 @@ int process_parmCmd(clpar p[], int len, class UoutWriter &td) {
 #endif
     if (*val == '?') {
       if (strcmp(key, "rv-version") == 0) {
-        stm32com_ask_version();
+        app::stm32::stm32com_ask_version();
       } else if (strcmp(key, "dur") == 0 || strcmp(key, "rem") == 0 || strcmp(key, "timer") == 0 || strcmp(key, "status") == 0) {
-        stm32com_ask_value(key);
+        app::stm32::stm32com_ask_value(key);
       }
     } else if (strncmp(key, KEY_DURATION_PREFIX, KEY_DURATION_PREFIX_LEN) == 0) {
       int zone = -1, timer_number = 0;
@@ -86,16 +86,16 @@ int process_parmCmd(clpar p[], int len, class UoutWriter &td) {
 
         sscanf(val, "%f,%u,%f,%u,%f,%d,%f,%f", &on, &ignoreRainSensor, &off, &repeats, &period, &dInterval, &dhBegin, &dhEnd);
 
-        stm32com_timer_args ta = { .off_duration_secs = (unsigned) (off * ONE_MINUTE), .repeats = repeats, .period_secs = (unsigned) (period * ONE_HOUR),
+        app::stm32::stm32com_timer_args ta = { .off_duration_secs = (unsigned) (off * ONE_MINUTE), .repeats = repeats, .period_secs = (unsigned) (period * ONE_HOUR),
             .dInterval = dInterval, .dhBegin = (int) (dhBegin * ONE_HOUR), .dhEnd = (int) (dhEnd * ONE_HOUR), .ignoreRainSensor = !!ignoreRainSensor, };
 
-        stm32com_duration(zone, timer_number, (unsigned) (on * ONE_MINUTE), ta);
+        app::stm32::stm32com_duration(zone, timer_number, (unsigned) (on * ONE_MINUTE), ta);
 
       } else {
         float duration = 0;
         sscanf(val, "%f", &duration);
         if (0 <= zone && zone < ZONE_COUNT && 0 <= duration && duration <= MAX_DURATION) {
-          stm32com_duration(zone, timer_number, (unsigned) (duration * ONE_MINUTE));
+          app::stm32::stm32com_duration(zone, timer_number, (unsigned) (duration * ONE_MINUTE));
 
         } else {
           db_printf("error: out of range");
