@@ -37,6 +37,8 @@
 #include <algorithm>
 
 
+namespace app::cli {
+
 bool process_parmConfig_get_app(otok kt, const char *val, class UoutWriter &td) {
   switch (kt) {
 
@@ -60,3 +62,5 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, class Uou
 
 void parmConfig_reconfig_app(uint32_t changed_mask) {
 }
+
+} // namespace

@@ -27,6 +27,9 @@
 
 #include <stm32/stm32.h>
 
+
+namespace app::cli {
+
 #ifdef CONFIG_RV_NETMCU_DEBUG
 #define DEBUG
 #define D(x) x
@@ -102,3 +105,4 @@ process_parmStatus(clpar p[], int len, class UoutWriter &td) {
 }
 
 
+} // namespace

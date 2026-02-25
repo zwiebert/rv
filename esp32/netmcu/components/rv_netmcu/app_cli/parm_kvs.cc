@@ -18,6 +18,10 @@
 #include <ctype.h>
 #include <string.h>
 
+
+namespace app::cli {
+
+
 #ifdef CONFIG_RV_NETMCU_DEBUG
 #define DEBUG
 #define D(x) x
@@ -117,3 +121,5 @@ int process_parmKvs(clpar p[], int len, class UoutWriter &td) {
   return 0;
 }
 
+
+} // namespace

@@ -17,11 +17,11 @@ static const struct file_map uri_file_map[] = { //
 #ifdef CONFIG_APP_USE_HTTP_SERVE_CSS_MAP
         { .uri = "/f/css/wapp.css.map", .type = "application/json", .wc =  wapp_css_map_gz_fm  }, //
 #endif
-        { .uri = "/f/cli/help/config", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmConfig } }, //
-        { .uri = "/f/cli/help/mcu", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmMcu } }, //
-        { .uri = "/f/cli/help/help", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmHelp } }, //
-        { .uri = "/f/cli/help/kvs", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmKvs } }, //
-        { .uri = "/f/cli/help/cmd", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = cli_help_parmCmd } }, //
+        { .uri = "/f/cli/help/config", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = app::cli::cli_help_parmConfig } }, //
+        { .uri = "/f/cli/help/mcu", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = app::cli::cli_help_parmMcu } }, //
+        { .uri = "/f/cli/help/help", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = app::cli::cli_help_parmHelp } }, //
+        { .uri = "/f/cli/help/kvs", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = app::cli::cli_help_parmKvs } }, //
+        { .uri = "/f/cli/help/cmd", .type = "text/plain;charset=\"UTF-8\"", .wc = { .content = app::cli::cli_help_parmCmd } }, //
 };
 
 

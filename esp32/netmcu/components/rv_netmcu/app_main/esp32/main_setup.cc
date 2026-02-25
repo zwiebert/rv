@@ -140,7 +140,7 @@ void mcu_init() {
   if constexpr (use_FS)
     stor_setup();
   rtc_setup();
-  cliApp_setup();
+  app::cli::cliApp_setup();
 #ifdef CONFIG_APP_USE_CLI_TASK
   cli_setup_task(true);
 #else

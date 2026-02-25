@@ -19,6 +19,8 @@
 #include <app_uout/so_msg.h>
 #include "kvs/kvs_wrapper.h"
 
+namespace app::cli {
+
 #ifdef CONFIG_RV_NETMCU_DEBUG
 #define DEBUG
 #define D(x) x
@@ -236,3 +238,5 @@ static void kvs_print_keys(const char *name_space) {
         return kvsCb_match;
       }, nullptr);
 }
+
+} // namespace

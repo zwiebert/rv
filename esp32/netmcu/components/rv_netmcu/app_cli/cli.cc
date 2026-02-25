@@ -20,6 +20,8 @@
 #include <algorithm>
 #include <iterator>
 
+namespace app::cli {
+
 bool cli_isJson;
 
 int process_parmHelp(clpar p[], int len, class UoutWriter &td);
@@ -30,14 +32,14 @@ const char cli_help_parmHelp[]  =
 const char cli_help_None[]  = "none";
 
 static struct parm_handler handlers[] = {
-    { "config", process_parmConfig, cli_help_parmConfig },
-    { "help", process_parmHelp, cli_help_parmHelp },
-    { "cmd", process_parmCmd, cli_help_parmCmd },
-    { "mcu", process_parmMcu, cli_help_parmMcu },
-    { "kvs", process_parmKvs, cli_help_parmKvs },
-    { "status", process_parmStatus, cli_help_None},
+    { "config", app::cli::process_parmConfig, app::cli::cli_help_parmConfig },
+    { "help", app::cli::process_parmHelp, app::cli::cli_help_parmHelp },
+    { "cmd", app::cli::process_parmCmd, app::cli::cli_help_parmCmd },
+    { "mcu", app::cli::process_parmMcu, app::cli::cli_help_parmMcu },
+    { "kvs", app::cli::process_parmKvs, app::cli::cli_help_parmKvs },
+    { "status", app::cli::process_parmStatus, cli_help_None},
 #ifdef CONFIG_APP_USE_PROTOBUF
-    { "pbuf", process_parmProtoBuf, cli_help_None},
+    { "pbuf", app::cli::process_parmProtoBuf, cli_help_None},
 #endif
   };
 
@@ -109,10 +111,12 @@ static bool cliApp_checkPassword(clpar p[], int len, class UoutWriter &td) {
 
 void cliApp_setup() {
   cli_hook_process_json = cliApp_redirect_to_rv;
-  cli_hook_process_json_obj = process_objJson;
+  cli_hook_process_json_obj = app::cli::process_objJson;
   cli_hook_checkPassword = cliApp_checkPassword;
 
   cli_parmHandler_find_cb = cli_parmHandler_find;
   cli_parm_handlers = &our_parm_handlers;
 }
 
+
+} // namespace

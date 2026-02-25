@@ -22,6 +22,9 @@
 #include "protobuf/mcu_com.pb.h"
 #include "protobuf/zone_data.hh"
 
+
+namespace app::cli {
+
 #define warning_unknown_option(x)
 
 #define KEY_ZONE_DATA "zd"
@@ -109,4 +112,5 @@ process_parmProtoBuf(clpar p[], int len, class UoutWriter &td) {
 }
 
 
+} // namespace
 

@@ -6,6 +6,8 @@
 extern const char pin_state_args[];
 
 
+namespace app::cli {
+
 #define NODEFAULT() if (val==0) return cli_replyFailure(td)
 
 void cli_out_config_reply_entry(const char *key, const char *val, int len);
@@ -17,5 +19,4 @@ bool config_transmitter(const char *val);
 
 bool asc2u8(const char *s, uint8_t *n, uint8_t limit);
 
-
-
+} // namespace

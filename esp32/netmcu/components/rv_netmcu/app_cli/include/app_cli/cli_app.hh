@@ -3,10 +3,13 @@
  * \brief  CLI main header file
  */
 #include <jsmn/jsmn_iterate.hh>
+#include <cli/cli_types.h>
+
+
+namespace app::cli {
 
 bool process_objJson(class UoutWriter &td, jsoneat::Jsmn_String::Iterator &it);
 
-#include <cli/cli_types.h>
 
 extern const char cli_help_parmKvs[];
 extern const char cli_help_parmCmd[];
@@ -25,3 +28,5 @@ int process_parmProtoBuf(clpar p[], int len, class UoutWriter &td);
 bool cli_checkStm32CommandLine(char *line);
 
 void cliApp_setup();
+
+} // namespace

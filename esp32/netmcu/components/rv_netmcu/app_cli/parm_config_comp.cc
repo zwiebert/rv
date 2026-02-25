@@ -38,6 +38,9 @@
 #include <iterator>
 #include <algorithm>
 
+
+namespace app::cli {
+
 bool process_parmConfig_get_comp(otok kt, const char *val, class UoutWriter &td) {
   switch (kt) {
 
@@ -220,3 +223,5 @@ void parmConfig_reconfig_comp(uint32_t changed_mask) {
     mainLoop_callFun(config_ext_setup_txtio);
   }
 }
+
+} // namespace

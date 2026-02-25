@@ -20,6 +20,9 @@
 #define is_key(k) (strcmp(key, k) == 0)
 #define is_val(k) (strcmp(val, k) == 0)
 
+
+namespace app::cli {
+
 struct SettData {
   const char *kvsKey;
   KvsType kvsType;
@@ -47,3 +50,5 @@ bool process_parmConfig_app(otok kt, const char *key, const char *val, class Uou
 
 void parmConfig_reconfig_comp(uint32_t changed_mask);
 void parmConfig_reconfig_app(uint32_t changed_mask);
+
+} // namespace

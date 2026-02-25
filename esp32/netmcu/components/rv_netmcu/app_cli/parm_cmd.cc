@@ -28,7 +28,7 @@
 #endif
 #define logtag "rv.cli.parm_cmd"
 
-volatile bool cli_cmd_wait_for_response;
+namespace app::cli {
 
 #define ONE_MINUTE (60)
 #define ONE_HOUR (ONE_MINUTE * 60)
@@ -109,3 +109,5 @@ int process_parmCmd(clpar p[], int len, class UoutWriter &td) {
   return 0;
 }
 
+
+} // namespace

@@ -1,11 +1,11 @@
 #include "cli/cli.h"
-extern "C++" {
 #include <cli/cli_out.hh>
-}
 #include "txtio/inout.h"
 #include "debug/dbg.h"
 #include "cli_imp.h"
 #include <string.h>
+
+namespace app::cli {
 
 int process_parmHelp(clpar p[], int len, class UoutWriter &td) {
   int i;
@@ -70,3 +70,5 @@ int process_parmHelp(clpar p[], int len, class UoutWriter &td) {
 
   return 0;
 }
+
+} // namespace

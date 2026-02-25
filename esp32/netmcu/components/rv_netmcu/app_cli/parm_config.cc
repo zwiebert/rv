@@ -10,6 +10,8 @@
 #include <app_misc/opt_map.hh>
 
 
+namespace app::cli {
+
 int process_parmConfig(clpar p[], int len, class UoutWriter &td) {
   // static RecMutex settings_mutex;
   // std::lock_guard<RecMutex> lock(settings_mutex);
@@ -82,3 +84,4 @@ int process_parmConfig(clpar p[], int len, class UoutWriter &td) {
   return 0;
 }
 
+} // namespace

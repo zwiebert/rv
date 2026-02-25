@@ -9,7 +9,7 @@
 #endif
 #define logtag  "rv.cli"
 
-
+namespace app::cli {
 
 bool process_objJson(UoutWriter &td, jsoneat::Jsmn_String::Iterator &it) {
   db_loge("test.json_obj", "all_json: <%s>", it.get_json());
@@ -45,3 +45,6 @@ bool process_objJson(UoutWriter &td, jsoneat::Jsmn_String::Iterator &it) {
   return !err;
   return false;
 }
+
+} // namespace
+

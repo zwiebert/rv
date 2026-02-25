@@ -1,6 +1,9 @@
 #include "app_config/proj_app_cfg.h"
 #include "app_cli/cli_app.hh"
 
+
+namespace app::cli {
+
 const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config option=value ...; to set. Use: config option=? ...; to get, if supported\n\n"
     "rtc=(ISO_TIME|?)   set local time it NTP is not working.;\n"
 #ifdef CONFIG_APP_USE_NETWORK
@@ -40,3 +43,5 @@ const char cli_help_parmConfig[] = "'config' sets or gets options. Use: config o
     "stm32-bootgpio-inv   Invert Boot-Pin for STM32 OTA\n"
 //  "set-expert-password=\n"
 ;
+
+} // namespace
