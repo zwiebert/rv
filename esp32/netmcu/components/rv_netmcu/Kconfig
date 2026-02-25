@@ -9,13 +9,9 @@ menu "zwiebert: rv_netmcu"
         int "Maximal length of names for valves, groups, etc in full automation"
         default 32
 
-  config APP_NUMBER_OF_VALVES
+  config APP_MAX_ZONES
         int "Number of possible valves this system can control"
         default 14
-
-  config APP_FA_MAX_VALVE_GROUPS
-        int "Max possible number of valve groups for full automatiion"
-        default 16
               
   config APP_FA_MAX_WEATHER_ADAPTERS
         int "Max possible number of weather adapters for full automatiion"

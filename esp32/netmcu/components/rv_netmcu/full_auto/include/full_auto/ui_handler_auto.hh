@@ -56,30 +56,30 @@ return !err;
  *
  * To set/update a single object, the JSON object key contains the number
  *  (index) of the object, like so:
- *   "zone.N" - zone number N. range of N: 0 <= N && N < CONFIG_APP_NUMBER_OF_VALVES
+ *   "zone.N" - zone number N. range of N: 0 <= N && N < CONFIG_APP_MAX_ZONES
  *   "adapter.N" - range of N: 0 <= N && N < CONFIG_APP_FA_MAX_WEATHER_ADAPTERS
  *
  *
  * \tparam jsmn_iterator
- * \param sj              output JSON stream
+ * \param td              output JSON stream
  * \param it              input iterator to a JSMN token array
  * \param update          (currently not used for anything)
  * \return
  */
 template<typename jsmn_iterator>
-bool handler__set(AutoTimer &at, UoutBuilderJson &sj, jsmn_iterator &it, bool update = false) {
+bool handler__set(AutoTimer &at, UoutWriter &td, jsmn_iterator &it, bool update = false) {
 int err = 0;
 assert(it->type == JSMN_OBJECT);
 auto count = it->size;
 for (it += 1; count > 0 && it; --count) {
 
   if (it.keyStartsWith(zone_prefix, JSMN_OBJECT)) {
-    MagValve zone;
+    IrrigationZone zone;
     int zone_idx = -1;
     char key[16];
     if (it.getValue(key)) {
       zone_idx = atoi(key + strlen(zone_prefix));
-      if (at.update_zone_from_json(zone_idx, ++it, update) && at.write_zone_to_json(sj, zone_idx, key)) {
+      if (at.update_zone_from_json(zone_idx, ++it, update) && at.write_zone_to_json(td, zone_idx, key)) {
         continue; // update succeeded
       }
     }
@@ -112,25 +112,25 @@ return !err;
 /**
  * \brief   handles auto.get command object
  * \tparam jsmn_iterator
- * \param sj
+ * \param td
  * \param it
  * \return
  */
 template<typename jsmn_iterator>
-bool handler__get(AutoTimer &at, UoutBuilderJson &sj, jsmn_iterator &it) {
+bool handler__get(AutoTimer &at, UoutWriter &td, jsmn_iterator &it) {
 int err = 0;
 assert(it->type == JSMN_OBJECT);
 auto count = it->size;
 for (it += 1; count > 0 && it; --count) {
 
   if (it.keyStartsWith(zone_prefix, JSMN_OBJECT)) {
-    MagValve zone;
+    IrrigationZone zone;
     int zone_idx = -1;
     char key[16];
     if (it.getValue(key)) {
       it.skip_key_and_value();
       zone_idx = atoi(key + strlen(zone_prefix));
-      if (at.write_zone_to_json(sj, zone_idx, key)) {
+      if (at.write_zone_to_json(td, zone_idx, key)) {
         continue; // update succeeded
       }
     }
@@ -146,7 +146,7 @@ for (it += 1; count > 0 && it; --count) {
     if (it.getValue(key)) {
       it.skip_key_and_value();
       adapter_idx = atoi(key + strlen(adapter_prefix));
-      if (at.write_adapter_to_json(sj, adapter_idx, key)) {
+      if (at.write_adapter_to_json(td, adapter_idx, key)) {
         continue; // update succeeded
       }
     }
@@ -156,7 +156,7 @@ for (it += 1; count > 0 && it; --count) {
   }
   if (it.keyIsEqual("zones", JSMN_ARRAY)) {
     it.skip_key_and_value();
-    if (at.write_zones_to_json(sj, "zones")) {
+    if (at.write_zones_to_json(td, "zones")) {
       continue;
     }
     db_loge(our_logtag, "Could not get zones");
@@ -165,7 +165,7 @@ for (it += 1; count > 0 && it; --count) {
   }
   if (it.keyIsEqual("adapters", JSMN_ARRAY)) {
     it.skip_key_and_value();
-    if (at.write_adapters_to_json(sj, "adapters")) {
+    if (at.write_adapters_to_json(td, "adapters")) {
       continue;
     }
     db_loge(our_logtag, "Could not get adapters");
@@ -175,7 +175,7 @@ for (it += 1; count > 0 && it; --count) {
 
   if (it.keyIsEqual("past_wd", JSMN_ARRAY)) {
     it.skip_key_and_value();
-    if (at.write_past_weather_data_to_json(sj, "past_wd")) {
+    if (at.write_past_weather_data_to_json(td, "past_wd")) {
       continue;
     }
     db_loge(our_logtag, "Could not get adapters");
@@ -195,17 +195,17 @@ return !err;
 /**
  * \brief    ???  Command interface taking JSON (taking "auto" object which contains commands)
  * \tparam        Iterator type
- * \param sj      JSON builder for creating output as response
+ * \param td      JSON builder for creating output as response
  * \param it      JSON JSMN iterator for input
  * \return        true for no errors
  */
 template<typename jsmn_iterator>
-bool handler__auto(AutoTimer &at, UoutBuilderJson &sj, jsmn_iterator &it) {
+bool handler__auto(AutoTimer &at, UoutWriter &td, jsmn_iterator &it) {
 int err = 0;
 assert(it->type == JSMN_OBJECT);
 auto count = it->size;
 
-if (sj.add_object("auto")) {
+if (td.sj().add_object("auto")) {
   for (it += 1; count > 0 && it; --count) {
 
     if (it.keyIsEqual("command", JSMN_OBJECT)) {
@@ -218,7 +218,7 @@ if (sj.add_object("auto")) {
     }
 
     if (it.keyIsEqual("get", JSMN_OBJECT)) {
-      if (details::handler__get (at, sj, ++it))
+      if (details::handler__get (at, td, ++it))
         continue;
 
       db_loge(our_logtag, "get failed");
@@ -227,7 +227,7 @@ if (sj.add_object("auto")) {
     }
 
     if (it.keyIsEqual("set", JSMN_OBJECT)) {
-      if (details::handler__set(at, sj, ++it))
+      if (details::handler__set(at, td, ++it))
         continue;
 
       db_loge(our_logtag, "set failed");
@@ -236,7 +236,7 @@ if (sj.add_object("auto")) {
     }
 
     if (it.keyIsEqual("update", JSMN_OBJECT)) {
-      if (details::handler__set (at, sj, ++it), true)
+      if (details::handler__set (at, td, ++it), true)
         continue;
 
       db_loge(our_logtag, "update failed");
@@ -249,7 +249,7 @@ if (sj.add_object("auto")) {
     it.skip_key_and_value();
 
   }
-  sj.close_object();
+  td.sj().close_object();
 }
 return !err;
 }

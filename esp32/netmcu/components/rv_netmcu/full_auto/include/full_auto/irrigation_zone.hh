@@ -8,19 +8,19 @@
 #include <utils_time/ut_constants.hh>
 
 /**
- * \brief  Valve or Zone???
+ * \brief  Controls a relay for a irrigation zone.
  *
- *  This type seems to represent a sing magnetic valve, but it rather should
- *  be a called a zone and have a single or more valves attached. On the other hand
- *  you could or should attach one ore more magnetic valves to a single relay output.
- *  Makes not much sense to do this in software.
+ *  To have more than one magnetic valve per zone, you have to connect them to the same relay.
  *
- *  So a zone class should be called Zone or  ZoneRelay.
+ *  Zones usually have different schedules and durations. If it happens, that different zones need water at the same time, then
+ *  the zone priority comes into play. Also the configured water flow a zone needs may allow other zones to get water too, as long as
+ *  the sum of all zone flows not exceeds the configure flow limit of the water source.
  *
+ *  TODO: Older code parts (in both esp32 and stm32 code) use the term "valve" instead of "zone."
  *
  */
-struct MagValve {
-  using self_type = MagValve;
+struct IrrigationZone {
+  using self_type = IrrigationZone;
 
   char name[CONFIG_APP_FA_NAMES_MAX_LEN] = "";
 

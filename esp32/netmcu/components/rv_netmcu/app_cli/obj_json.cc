@@ -22,7 +22,7 @@ bool process_objJson(UoutWriter &td, jsoneat::Jsmn_String::Iterator &it) {
 #ifdef CONFIG_APP_USE_WEATHER_AUTO
       [](class UoutWriter &td, jsoneat::Jsmn_String::Iterator &it, int &err) -> bool {
         if (it.keyIsEqual("auto", JSMN_OBJECT)) {
-          return ui::handler__auto(full_auto->auto_timer(), td.sj(), ++it);
+          return ui::handler__auto(full_auto->auto_timer(), td, ++it);
         }
         return false;
 

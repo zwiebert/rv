@@ -21,11 +21,11 @@ bool AutoTimer::save_settings(const char *key) {
     return false;
   if (auto h = kvs_open(kvs_name, kvs_WRITE)) {
     struct {
-      MagValve magvals[CONFIG_APP_NUMBER_OF_VALVES];
+      IrrigationZone zones[CONFIG_APP_MAX_ZONES];
       WeatherAdapter adapters[CONFIG_APP_FA_MAX_WEATHER_ADAPTERS];
     } m_s;
       set_default_adapter();
-      memcpy(m_s.magvals, m_magval, sizeof (m_magval));
+      memcpy(m_s.zones, m_zones, sizeof (m_zones));
       memcpy(m_s.adapters, m_adapters, sizeof (m_adapters));
     if (kvs_set_blob(h, key, &m_s, sizeof m_s)) {
       result = true;
@@ -44,12 +44,12 @@ bool AutoTimer::restore_settings(const char *key) {
 
   if (auto h = kvs_open(kvs_name, kvs_READ)) {
     struct {
-      MagValve magvals[CONFIG_APP_NUMBER_OF_VALVES];
+      IrrigationZone zones[CONFIG_APP_MAX_ZONES];
       WeatherAdapter adapters[CONFIG_APP_FA_MAX_WEATHER_ADAPTERS];
     } m_s = { };
     if (kvs_get_blob(h, key, &m_s, sizeof m_s)) {
       result = true;
-      memcpy(m_magval, m_s.magvals, sizeof (m_magval));
+      memcpy(m_zones, m_s.zones, sizeof (m_zones));
       memcpy(m_adapters, m_s.adapters, sizeof (m_adapters));
       set_default_adapter();
     }
@@ -62,7 +62,7 @@ bool AutoTimer::restore_settings(const char *key) {
 
 void AutoTimer::dev_random_fill_data() {
   auto tnow = time(0);
-  for (auto &o : m_magval) {
+  for (auto &o : m_zones) {
     snprintf(o.name, sizeof o.name, "ObjectName-%d", rando(100, 1000));
     o.flags.exists = rando(0, 2);
     o.flags.active = rando(0, 2);
@@ -82,14 +82,14 @@ void AutoTimer::todo_loop() {
   m_f = m_wi ? m_wi->get_simple_irrigation_factor(36) : 1.0;
 
   // first pass: mark all due valves with flag.is_due
-  for (MagValve &mv : m_magval) {
+  for (IrrigationZone &mv : m_zones) {
     mv.flags.is_due = should_valve_be_due(mv, time(0));
   }
-  sort_magval_idxs();
+  sort_zone_idxs();
   D(db_logi(logtag, "used_valves_count=%d, due_valves_count=%u", m_used_valves_count, m_due_valves_count));
 
-  for (auto ip : m_magval_due_idxs) {
-    MagValve &v = m_magval[ip.idx];
+  for (auto ip : m_zone_due_idxs) {
+    IrrigationZone &v = m_zones[ip.idx];
     if (!v.flags.exists || !v.flags.is_due)
       break;
     D(db_logi(logtag, "Schedule valve number %d (%s). prio=%d", ip.idx, v.name, ip.prio));

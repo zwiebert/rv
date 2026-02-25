@@ -1,7 +1,7 @@
 #pragma once
 
 #include "adapter.hh"
-#include "valve.hh"
+#include "irrigation_zone.hh"
 #include "weather/weather_irrigation.hh"
 #include "jsmn/jsmn_iterate.hh"
 #include "jsoneat/from_to_json_jsmn_cbuf.hh"
@@ -57,13 +57,13 @@ public:
   }
 
   auto valves_all_begin() {
-    return std::begin(m_magval);
+    return std::begin(m_zones);
   }
   auto valves_all_end() {
-    return std::end(m_magval);
+    return std::end(m_zones);
   }
   auto get_zone_json(char *dst, size_t dst_size, int idx) {
-    return jsoneat::to_json::cbuf::to_json_val(dst, dst_size, m_magval[idx]);
+    return jsoneat::to_json::cbuf::to_json_val(dst, dst_size, m_zones[idx]);
   }
   auto get_adapter_json(char *dst, size_t dst_size, int idx) {
     return jsoneat::to_json::cbuf::to_json_val(dst, dst_size, m_adapters[idx]);
@@ -99,28 +99,28 @@ public:
   }
   /**
    * \brief      Write content of a single adapter to JSON stream
-   * \param sj   output JSON stream
+   * \param td   output JSON stream
    * \param idx  number of adapter
    * \param key  JSON key for the JSON object written
    * \return     success
    */
-  bool write_adapter_to_json(UoutBuilderJson &sj, int idx, const char *key) {
+  bool write_adapter_to_json(UoutWriter &td, int idx, const char *key) {
     if (!(0 <= idx && idx < CONFIG_APP_FA_MAX_WEATHER_ADAPTERS))
       return false;
-    if (sj.add_key(key)) {
-      return sj.read_json_from_function(std::bind(&WeatherAdapter::to_json, &m_adapters[idx], _1, _2));
+    if (td.sj().add_key(key)) {
+      return td.sj().read_json_from_function(std::bind(&WeatherAdapter::to_json, &m_adapters[idx], _1, _2));
     }
     return false;
   }
   /**
    * \brief     Write array of all adapter objects to JSON stream
-   * \param sj  output JSON stream
+   * \param td  output JSON stream
    * \param key JSON key for the JSON array written
    * \return    success
    */
-  bool write_adapters_to_json(UoutBuilderJson &sj, const char *key) {
-    if (sj.add_key(key)) {
-      return sj.read_json_arr_from_function(std::bind(&AutoTimer::get_adapter_json, this, _1, _2, _3), CONFIG_APP_FA_MAX_WEATHER_ADAPTERS);
+  bool write_adapters_to_json(UoutWriter &td, const char *key) {
+    if (td.sj().add_key(key)) {
+      return td.sj().read_json_arr_from_function(std::bind(&AutoTimer::get_adapter_json, this, _1, _2, _3), CONFIG_APP_FA_MAX_WEATHER_ADAPTERS);
     }
     return false;
   }
@@ -135,52 +135,52 @@ public:
    */
   template<typename jsmn_iterator>
   bool update_zone_from_json(int idx, jsmn_iterator &it, bool update = false) {
-    if (!(0 <= idx && idx < CONFIG_APP_NUMBER_OF_VALVES))
+    if (!(0 <= idx && idx < CONFIG_APP_MAX_ZONES))
       return false;
-    auto &el = m_magval[idx];
+    auto &el = m_zones[idx];
     if (!update)
-      el = MagValve();
+      el = IrrigationZone();
     return el._from_json(it);
   }
   /**
    * \brief      Write content of a single zoneV to JSON stream
-   * \param sj   output JSON stream
+   * \param td   output JSON stream
    * \param idx  number of zone
    * \param key  JSON key for the JSON object written
    * \return     success
    */
-  bool write_zone_to_json(UoutBuilderJson &sj, int idx, const char *key) {
-    if (!(0 <= idx && idx < CONFIG_APP_NUMBER_OF_VALVES))
+  bool write_zone_to_json(UoutWriter &td, int idx, const char *key) {
+    if (!(0 <= idx && idx < CONFIG_APP_MAX_ZONES))
       return false;
-    if (sj.add_key(key)) {
-      return sj.read_json_from_function(std::bind(&MagValve::to_json, &m_magval[idx], _1, _2));
+    if (td.sj().add_key(key)) {
+      return td.sj().read_json_from_function(std::bind(&IrrigationZone::to_json, &m_zones[idx], _1, _2));
     }
     return false;
   }
   /**
    * \brief     Write array of all zone objects to JSON stream
-   * \param sj  output JSON stream
+   * \param td  output JSON stream
    * \param key JSON key for the JSON array written
    * \return    success
    */
-  bool write_zones_to_json(UoutBuilderJson &sj, const char *key) {
-    if (sj.add_key(key)) {
-      return sj.read_json_arr_from_function(std::bind(&AutoTimer::get_zone_json, this, _1, _2, _3), CONFIG_APP_NUMBER_OF_VALVES);
+  bool write_zones_to_json(UoutWriter &td, const char *key) {
+    if (td.sj().add_key(key)) {
+      return td.sj().read_json_arr_from_function(std::bind(&AutoTimer::get_zone_json, this, _1, _2, _3), CONFIG_APP_MAX_ZONES);
     }
     return false;
   }
   /**
    * \brief     Write past weather data array to JSON stream
-   * \param sj  output JSON stream
+   * \param td  output JSON stream
    * \param key JSON key for the JSON array written
    * \return    success
    */
-  bool write_past_weather_data_to_json(UoutBuilderJson &sj, const char *key) {
+  bool write_past_weather_data_to_json(UoutWriter &td, const char *key) {
     if (!m_wi)
       return false;
 
-    if (sj.add_key(key)) {
-      return m_wi->to_json(sj);
+    if (td.sj().add_key(key)) {
+      return m_wi->to_json(td);
     }
     return false;
   }
@@ -192,7 +192,7 @@ public:
    * \param twhen the time for which we ask. Should be now or in the future.
    * \return      true, if valve is due
    */
-  bool should_valve_be_due(const MagValve &v, const time_t twhen = time(0)) const {
+  bool should_valve_be_due(const IrrigationZone &v, const time_t twhen = time(0)) const {
     if (!v.flags.exists || v.state.next_time_scheduled || m_stm32_state.rain_sensor)
       return false;
 
@@ -225,13 +225,13 @@ private:
    * This allows looking up the order in which the zones (valves) need to be irrigated.
    *
    */
-  void sort_magval_idxs() {
+  void sort_zone_idxs() {
 
     m_used_valves_count = m_due_valves_count = 0;
-    for (int i = 0; i < CONFIG_APP_NUMBER_OF_VALVES; ++i) {
-      auto &dst_due = m_magval_due_idxs[i];
-      auto &dst_exists = m_magval_prio_idxs[i];
-      auto &src = m_magval[i];
+    for (int i = 0; i < CONFIG_APP_MAX_ZONES; ++i) {
+      auto &dst_due = m_zone_due_idxs[i];
+      auto &dst_exists = m_zone_prio_idxs[i];
+      auto &src = m_zones[i];
 
       dst_exists.idx = dst_due.idx = i;
 
@@ -248,8 +248,8 @@ private:
         dst_due.prio = -100;
       }
     }
-    std::sort(std::begin(m_magval_prio_idxs), std::end(m_magval_prio_idxs));
-    std::sort(std::begin(m_magval_due_idxs), std::end(m_magval_due_idxs));
+    std::sort(std::begin(m_zone_prio_idxs), std::end(m_zone_prio_idxs));
+    std::sort(std::begin(m_zone_due_idxs), std::end(m_zone_due_idxs));
   }
 
 private:
@@ -262,10 +262,10 @@ private:
 
 private:
   char name[CONFIG_APP_FA_NAMES_MAX_LEN] = "";
-  MagValve m_magval[CONFIG_APP_NUMBER_OF_VALVES];
+  IrrigationZone m_zones[CONFIG_APP_MAX_ZONES];
   WeatherAdapter m_adapters[CONFIG_APP_FA_MAX_WEATHER_ADAPTERS];
-  sorted_index m_magval_prio_idxs[CONFIG_APP_NUMBER_OF_VALVES];
-  sorted_index m_magval_due_idxs[CONFIG_APP_NUMBER_OF_VALVES];
+  sorted_index m_zone_prio_idxs[CONFIG_APP_MAX_ZONES];
+  sorted_index m_zone_due_idxs[CONFIG_APP_MAX_ZONES];
   uint8_t m_used_valves_count = 0, m_due_valves_count = 0;
 private:
   Weather_Irrigation *m_wi = nullptr;
@@ -276,7 +276,7 @@ private:
   } m_stm32_state;
 public:
   void dev_random_fill_data(); //
-  JSONEAT_SER_FROM_TO(JSONEAT_KvPairs(name), jsoneat::KvPair("valves", m_magval), //
+  JSONEAT_SER_FROM_TO(JSONEAT_KvPairs(name), jsoneat::KvPair("valves", m_zones), //
       jsoneat::KvPair("adapters", m_adapters))
   ;
 };
