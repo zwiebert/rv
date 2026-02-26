@@ -57,13 +57,14 @@ public:
   auto adapters_end() {
     return std::end(m_adapters);
   }
-
-  auto valves_all_begin() {
+  auto zones_all_begin() {
     return std::begin(m_zones);
   }
-  auto valves_all_end() {
+  auto zonees_all_end() {
     return std::end(m_zones);
   }
+
+private:
   auto get_zone_json(char *dst, size_t dst_size, int idx) {
     return jsoneat::to_json::cbuf::to_json_val(dst, dst_size, m_zones[idx]);
   }
