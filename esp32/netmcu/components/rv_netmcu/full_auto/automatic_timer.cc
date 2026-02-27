@@ -22,12 +22,10 @@ bool AutoTimer::save_settings(const char *key) {
     return false;
   if (auto h = kvs_open(kvs_name, kvs_WRITE)) {
     struct {
-      IrrigationZone zones[CONFIG_APP_MAX_ZONES];
-      WeatherAdapter adapters[CONFIG_APP_FA_MAX_WEATHER_ADAPTERS];
-    } m_s;
+      std::array<IrrigationZone, CONFIG_APP_MAX_ZONES> zones;
+      std::array<WeatherAdapter, CONFIG_APP_FA_MAX_WEATHER_ADAPTERS> adapters;
+    } m_s = { m_zones,  m_adapters };
       set_default_adapter();
-      memcpy(m_s.zones, m_zones, sizeof (m_zones));
-      memcpy(m_s.adapters, m_adapters, sizeof (m_adapters));
     if (kvs_set_blob(h, key, &m_s, sizeof m_s)) {
       result = true;
     }
@@ -45,13 +43,13 @@ bool AutoTimer::restore_settings(const char *key) {
 
   if (auto h = kvs_open(kvs_name, kvs_READ)) {
     struct {
-      IrrigationZone zones[CONFIG_APP_MAX_ZONES];
-      WeatherAdapter adapters[CONFIG_APP_FA_MAX_WEATHER_ADAPTERS];
+      std::array<IrrigationZone, CONFIG_APP_MAX_ZONES> zones;
+      std::array<WeatherAdapter, CONFIG_APP_FA_MAX_WEATHER_ADAPTERS> adapters;
     } m_s = { };
     if (kvs_get_blob(h, key, &m_s, sizeof m_s)) {
       result = true;
-      memcpy(m_zones, m_s.zones, sizeof (m_zones));
-      memcpy(m_adapters, m_s.adapters, sizeof (m_adapters));
+      m_zones = m_s.zones;
+      m_adapters =  m_s.adapters;
       set_default_adapter();
     }
     kvs_close(h);

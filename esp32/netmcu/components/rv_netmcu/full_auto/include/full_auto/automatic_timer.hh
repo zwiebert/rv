@@ -265,8 +265,8 @@ private:
 
 private:
   char name[CONFIG_APP_FA_NAMES_MAX_LEN] = "";
-  IrrigationZone m_zones[CONFIG_APP_MAX_ZONES];
-  WeatherAdapter m_adapters[CONFIG_APP_FA_MAX_WEATHER_ADAPTERS];
+  std::array<IrrigationZone, CONFIG_APP_MAX_ZONES> m_zones;
+  std::array<WeatherAdapter, CONFIG_APP_FA_MAX_WEATHER_ADAPTERS> m_adapters;
   sorted_index m_zone_prio_idxs[CONFIG_APP_MAX_ZONES];
   sorted_index m_zone_due_idxs[CONFIG_APP_MAX_ZONES];
   uint8_t m_used_valves_count = 0, m_due_valves_count = 0;
