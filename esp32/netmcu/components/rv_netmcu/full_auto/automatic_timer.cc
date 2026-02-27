@@ -16,7 +16,7 @@
 namespace app::fa {
 static constexpr char kvs_name[] = "full_auto";
 
-bool AutoTimer::save_settings(const char *key) {
+bool AutoTimerData::save_settings(const char *key) {
   bool result = false;
   if (strstr(key, "at.") != key)
     return false;
@@ -36,7 +36,7 @@ bool AutoTimer::save_settings(const char *key) {
   return result;
 
 }
-bool AutoTimer::restore_settings(const char *key) {
+bool AutoTimerData::restore_settings(const char *key) {
   bool result = false;
   if (strstr(key, "at.") != key)
     return false;
@@ -59,7 +59,7 @@ bool AutoTimer::restore_settings(const char *key) {
 
 #include <debug/dbg.h>
 
-void AutoTimer::dev_random_fill_data() {
+void AutoTimerData::dev_random_fill_data() {
   auto tnow = time(0);
   for (auto &o : m_zones) {
     snprintf(o.name, sizeof o.name, "ObjectName-%d", rando(100, 1000));
