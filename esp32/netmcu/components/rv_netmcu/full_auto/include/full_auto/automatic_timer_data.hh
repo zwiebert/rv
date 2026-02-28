@@ -212,7 +212,11 @@ public:
    * \return      true, if valve is due
    */
   bool should_valve_be_due(const IrrigationZone &v, const time_t twhen = time(0)) const {
-    if (!v.flags.exists || v.state.next_time_scheduled || m_stm32_state.rain_sensor)
+    if (!v.flags.exists)
+      return false;
+    if (v.state.next_time_scheduled)
+      return false;
+    if (m_stm32_state.rain_sensor)
       return false;
 
     const time_t tlast = v.state.last_time_wet;
@@ -290,7 +294,7 @@ protected:
   float m_f = 1.0;
 protected:
   struct {
-    bool rain_sensor;
+    bool rain_sensor = false;
   } m_stm32_state;
 public:
   void dev_random_fill_data(); //

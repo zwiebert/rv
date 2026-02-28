@@ -90,7 +90,7 @@ void AutoTimer::todo_loop() {
   for (auto ip : m_zone_due_idxs) {
     IrrigationZone &v = m_zones[ip.idx];
     if (!v.flags.exists || !v.flags.is_due)
-      break;
+      break; // not needed to look at more elements in sorted list
     D(db_logi(logtag, "Schedule valve number %d (%s). prio=%d", ip.idx, v.name, ip.prio));
     SetArgs args;
     args.valve_number = ip.idx;

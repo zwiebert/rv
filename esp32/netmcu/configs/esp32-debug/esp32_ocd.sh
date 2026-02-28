@@ -26,8 +26,8 @@ $ocd_cmd \
 
 flash_app() {
 $ocd_cmd \
-        -c "program_esp  $BINDIR/ota_data_initial.bin $part_otadata" \
-        -c "program_esp  $BINDIR/netmcu.bin  $part_ota_0 reset exit"
+        -c "program_esp  $BINDIR/ota_data_initial.bin $part_otadata  verify" \
+        -c "program_esp  $BINDIR/netmcu.bin   $part_ota_0 verify reset exit"
 }
 
 run_server() {

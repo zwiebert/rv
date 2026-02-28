@@ -102,8 +102,7 @@ FORCE:
 esp32_ocd_sh :=  "$(CMAKE_SRC_PATH)/esp32_ocd.sh" $(CMAKE_SRC_PATH) $(BUILD_PATH)
 
 esp32-flash-ocd:
-	$(esp32_build_cmd) openocd_flash
-#	$(esp32_ocd_sh) flash
+	$(esp32_ocd_sh) flash
 esp32-flash-app-ocd:
 	$(esp32_ocd_sh) flash_app
 esp32-ocd:
