@@ -11,7 +11,7 @@
   import RvTimer from "../components/rv_timer.svelte";
   import { ZoneCount, ZoneNames, ZonesAuto, PastWeatherData, WeatherAdapters } from "../store/zones";
   import Zone from "../app/rv_config_zone.svelte";
-  
+
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_NAMES);
     get_data();
@@ -19,10 +19,19 @@
   $: zones = [...$ZonesAuto];
   $: adapters = [...$WeatherAdapters];
   $: sel_adapter_idx = 0;
-  $: sel_zone_idx = -1;
+  $: sel_zone_idx = $Z;
   let zones_exists = [];
   function set_zone_exists(idx, val) {
     zones_exists[idx] = val;
+  }
+  $: {
+    sel_zone_idx;
+    //get_zone(sel_zone_idx);
+  }
+
+  $: {
+    sel_adapter_idx;
+    //get_adapter(sel_zone_idx);
   }
   $: {
     zones;
@@ -62,12 +71,18 @@
     obj.json.auto.get[key] = {};
     httpFetch.http_postRequest("/cmd.json", obj);
   }
+  function get_adapter(idx) {
+    const key = "adapter." + idx;
+    let obj = { json: { auto: { get: {} } } };
+    obj.json.auto.get[key] = {};
+    httpFetch.http_postRequest("/cmd.json", obj);
+  }
   function get_zones() {
     let obj = { json: { auto: { get: { zones: [] } } } };
     httpFetch.http_postRequest("/cmd.json", obj);
   }
   function get_data() {
-    let obj = { json: { auto: { get: { zones: [], adapters: [], past_wd:[] } } } };
+    let obj = { json: { auto: { get: { zones: [], adapters: [], past_wd: [] } } } };
     httpFetch.http_postRequest("/cmd.json", obj);
   }
 
@@ -102,12 +117,10 @@
   }
 
   function epoch_to_dh(secs) {
-   
-     const now_s = (Date.now() / 1000).toFixed();
-     if (secs === 0 || now_s < secs || now_s > (secs + 60 * 60 * 24 * 365))
-        return "";
+    const now_s = (Date.now() / 1000).toFixed();
+    if (secs === 0 || now_s < secs || now_s > secs + 60 * 60 * 24 * 365) return "long ago";
 
-     return secs_to_dh(now_s - secs);
+    return secs_to_dh(now_s - secs);
   }
 
   function save_zone() {
@@ -141,72 +154,33 @@
 </script>
 
 <div class="main-area">
-
-  <SelectZone />
-
-  <div class="area">
-  <h4>Select Zones for Automatic Timer</h4> Changes
-  <table>
-    <tr>
-      {#each zones as v, i}
-        <th>{i}</th>
-      {/each}
-    </tr>
-    {#if zones_exists.length > 0}
-      <tr>
-        {#each zones as v, i}
-          <td><input type="checkbox" bind:checked={zones_exists[i]} /></td>
-        {/each}
-      </tr>
-    {/if}
-  </table>
-  <button
-    type="button"
-    on:click={() => {
-      const mel = get_modified_existences();
-      let obj = { json: { auto: { update: {} } } };
-      for (let i of mel) {
-        const key = "zone." + i;
-        obj.json.auto.update[key] = { flags: { exists: zones_exists[i] } };
-      }
-      httpFetch.http_postRequest("/cmd.json", obj);
-    }}>Apply</button
-  >
+  <div class="text-center">
+    <SelectZone />
   </div>
   <div class="area">
-    <select bind:value={sel_zone_idx}>
-      {#each zones as v, i}
-        {#if v !== null && v.flags.exists}
-          <option value={i}>{i}:{v.name} </option>
-        {/if}
-      {/each}
-    </select>
+    <label
+      >Enable Timer for Zone {sel_zone_idx}:
+      <input
+        type="checkbox"
+        bind:checked={zones_exists[sel_zone_idx]}
+        on:change={() => {
+          const mel = get_modified_existences();
+          let obj = { json: { auto: { update: {} } } };
+          for (let i of mel) {
+            const key = "zone." + sel_zone_idx;
+            obj.json.auto.update[key] = { flags: { exists: zones_exists[sel_zone_idx] } };
+          }
+          httpFetch.http_postRequest("/cmd.json", obj);
+        }}
+      />
+    </label>
 
-    {#if sel_zone_idx < zones.length && zones[sel_zone_idx]}
-      <table class="border-solid">
-        <tr>
-          <th>Kvs-Name</th><td>{$ZoneNames[sel_zone_idx]}</td>
-        </tr>
-        <th>Name</th><td>
-          <input type="text" bind:value={zones[sel_zone_idx].name} style="width:20ch;" />
-        </td>
-        <tr>
-          <th>Priority</th><td>
-            <input type="number" bind:value={zones[sel_zone_idx].attr.priority} style="width:8ch;" />
-          </td>
-        </tr>
-        <tr class="">
-          <th>Adapter</th>
-          <td>
-            <select bind:value={zones[sel_zone_idx].attr.adapter}>
-              {#each adapters as v, i}
-                {#if v !== null && v.flags.exists}
-                  <option value={i}>{v.name} </option>
-                {/if}
-              {/each}
-            </select>
-          </td>
-        </tr>
+    {#if sel_zone_idx < zones.length && zones[sel_zone_idx] && zones_exists[sel_zone_idx]}
+        Info: Last Time Wet: {epoch_to_dh(zones[sel_zone_idx].state.last_time_wet)}
+
+      <hr />
+
+      <table class="border-none">
         <tr>
           <th>Duration</th><td>
             <input type="number" min="0" step="30" bind:value={zones[sel_zone_idx].attr.duration_s} style="width:8ch;" />
@@ -224,14 +198,107 @@
             <input type="number" min="0" bind:value={zones[sel_zone_idx].attr.flow_lph} style="width:8ch;" /> l/h
           </td>
         </tr>
-        <tr>
-          <th>Last Time Wet</th><td>
-            <input type="number" min="0" step="30" bind:value={zones[sel_zone_idx].state.last_time_wet} style="width:8ch;" />
-            {epoch_to_dh(zones[sel_zone_idx].state.last_time_wet)}
+        <tr class="">
+          <th>Adapter</th>
+          <td>
+            <select bind:value={zones[sel_zone_idx].attr.adapter}>
+              {#each adapters as v, i}
+                {#if v !== null && v.flags.exists}
+                  <option value={i}>{v.name} </option>
+                {/if}
+              {/each}
+            </select>
+            <button
+              type="button"
+              on:click={() => {
+                for (let i = 0; i < adapters.length; ++i) {
+                  if (!adapters[i].flags.exists) {
+                    adapter_add([i]);
+                    break;
+                  }
+                }
+              }}>+</button
+            >
           </td>
         </tr>
-        <tr>
       </table>
+
+      {#if sel_adapter_idx > 0 && sel_adapter_idx < adapters.length && adapters[sel_adapter_idx]}
+        <div class="area">
+          <h4 class="text-center">Adapter Settings</h4>
+          <table class="border-none w-full">
+            <tr>
+              <th>Name</th><td>
+                <input type="text" disabled={adapters[sel_adapter_idx].flags.read_only} bind:value={adapters[sel_adapter_idx].name} style="width:20ch;" />
+              </td>
+            </tr>
+            <tr>
+              <th>Temp</th><td>{adapters[sel_adapter_idx].temp}</td>
+              <td
+                ><input
+                  type="range"
+                  disabled={adapters[sel_adapter_idx].flags.read_only}
+                  bind:value={adapters[sel_adapter_idx].temp}
+                  min="0.006"
+                  max="0.6"
+                  step="0.01"
+                /></td
+              >
+            </tr>
+            <tr>
+              <th>Humi</th><td>{adapters[sel_adapter_idx].humi}</td>
+              <td
+                ><input
+                  type="range"
+                  disabled={adapters[sel_adapter_idx].flags.read_only}
+                  bind:value={adapters[sel_adapter_idx].humi}
+                  min="0.001"
+                  max="0.1"
+                  step="0.001"
+                  a
+                /></td
+              >
+            </tr>
+            <tr>
+              <th>Wind</th><td>{adapters[sel_adapter_idx].wind}</td>
+              <td
+                ><input
+                  type="range"
+                  disabled={adapters[sel_adapter_idx].flags.read_only}
+                  bind:value={adapters[sel_adapter_idx].wind}
+                  min="0.0001"
+                  max="0.01"
+                  step="0.001"
+                /></td
+              >
+            </tr>
+            <tr> </tr><tr>
+              <th>Clouds</th><td>{adapters[sel_adapter_idx].clouds}</td>
+              <td
+                ><input
+                  type="range"
+                  disabled={adapters[sel_adapter_idx].flags.read_only}
+                  bind:value={adapters[sel_adapter_idx].clouds}
+                  min="0.001"
+                  max="0.1"
+                  step="0.001"
+                /></td
+              >
+            </tr>
+          </table>
+          <button type="button" on:click={get_data}>Reload Adapter</button>
+          <button
+            type="button"
+            on:click={() => {
+              get_modified_existences();
+              const key = "adapter." + sel_adapter_idx;
+              let obj = { json: { auto: { update: {} } } };
+              obj.json.auto.update[key] = adapters[sel_adapter_idx];
+              httpFetch.http_postRequest("/cmd.json", obj);
+            }}>Apply Adapter</button
+          >
+        </div>
+      {/if}
       <button type="button" on:click={get_data}>Reload</button>
       <button type="button" on:click={get_zones}>Reload Zones</button>
       <button
@@ -244,100 +311,6 @@
     {/if}
   </div>
 
-  <div class="area">
-      <select bind:value={sel_adapter_idx}>
-    {#each adapters as v, i}
-      {#if v !== null && v.flags.exists}
-        <option value={i}>{v.name} </option>
-      {/if}
-    {/each}
-  </select>
-
-  <button
-    type="button"
-    on:click={() => {
-      for (let i = 0; i < adapters.length; ++i) {
-        if (!adapters[i].flags.exists) {
-          adapter_add([i]);
-          break;
-        }
-      }
-    }}>+</button
-  >
-
-  {#if sel_adapter_idx < adapters.length && adapters[sel_adapter_idx]}
-    <table class="border-solid w-full">
-      <tr>
-        <th>Name</th><td>
-          <input type="text" disabled={adapters[sel_adapter_idx].flags.read_only} bind:value={adapters[sel_adapter_idx].name} style="width:20ch;" />
-        </td>
-      </tr>
-      <tr>
-        <th>Temp</th><td>{adapters[sel_adapter_idx].temp}</td>
-        <td
-          ><input
-            type="range"
-            disabled={adapters[sel_adapter_idx].flags.read_only}
-            bind:value={adapters[sel_adapter_idx].temp}
-            min="0.006"
-            max="0.6"
-            step="0.01"
-          /></td
-        >
-      </tr>
-      <tr>
-        <th>Humi</th><td>{adapters[sel_adapter_idx].humi}</td>
-        <td
-          ><input
-            type="range"
-            disabled={adapters[sel_adapter_idx].flags.read_only}
-            bind:value={adapters[sel_adapter_idx].humi}
-            min="0.001"
-            max="0.1"
-            step="0.001"
-a         /></td
-        >
-      </tr>
-      <tr>
-        <th>Wind</th><td>{adapters[sel_adapter_idx].wind}</td>
-        <td
-          ><input
-            type="range"
-            disabled={adapters[sel_adapter_idx].flags.read_only}
-            bind:value={adapters[sel_adapter_idx].wind}
-            min="0.0001"
-            max="0.01"
-            step="0.001"
-          /></td
-        >
-      </tr>
-      <tr> </tr><tr>
-        <th>Clouds</th><td>{adapters[sel_adapter_idx].clouds}</td>
-        <td
-          ><input
-            type="range"
-            disabled={adapters[sel_adapter_idx].flags.read_only}
-            bind:value={adapters[sel_adapter_idx].clouds}
-            min="0.001"
-            max="0.1"
-            step="0.001"
-          /></td
-        >
-      </tr>
-    </table>
-    <button type="button" on:click={get_data}>Reload</button>
-    <button
-      type="button"
-      on:click={() => {
-        get_modified_existences();
-        const key = "adapter." + sel_adapter_idx;
-        let obj = { json: { auto: { update: {} } } };
-        obj.json.auto.update[key] = adapters[sel_adapter_idx];
-        httpFetch.http_postRequest("/cmd.json", obj);
-      }}>Apply</button
-    >
-  {/if}
-  </div>
   <hr />
   <button
     type="button"
