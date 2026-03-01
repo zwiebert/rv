@@ -11,7 +11,7 @@
   import RvTimer from "../components/rv_timer.svelte";
   import { ZoneCount, ZoneNames, ZonesAuto, PastWeatherData, WeatherAdapters } from "../store/zones";
   import Zone from "../app/rv_config_zone.svelte";
-
+  
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_NAMES);
     get_data();
@@ -93,12 +93,21 @@
   }
 
   function secs_to_dh(secs) {
-    const hours = secs / (60 * 60);
+    const hours = secs / 60 / 60;
 
-    const d = (hours / 24).toFixed(0);
+    const d = Math.floor(hours / 24).toFixed(0);
     const hh = (hours % 24).toFixed(0);
     const mm = ((secs / 60) % 60).toFixed(0);
     return `${d}d-${hh}h:${mm}m`;
+  }
+
+  function epoch_to_dh(secs) {
+   
+     const now_s = (Date.now() / 1000).toFixed();
+     if (secs === 0 || now_s < secs || now_s > (secs + 60 * 60 * 24 * 365))
+        return "";
+
+     return secs_to_dh(now_s - secs);
   }
 
   function save_zone() {
@@ -132,6 +141,11 @@
 </script>
 
 <div class="main-area">
+
+  <SelectZone />
+
+  <div class="area">
+  <h4>Select Zones for Automatic Timer</h4> Changes
   <table>
     <tr>
       {#each zones as v, i}
@@ -158,7 +172,7 @@
       httpFetch.http_postRequest("/cmd.json", obj);
     }}>Apply</button
   >
-
+  </div>
   <div class="area">
     <select bind:value={sel_zone_idx}>
       {#each zones as v, i}
@@ -196,7 +210,7 @@
         <tr>
           <th>Duration</th><td>
             <input type="number" min="0" step="30" bind:value={zones[sel_zone_idx].attr.duration_s} style="width:8ch;" />
-            {zones[sel_zone_idx].attr.duration_s / 60}
+            {zones[sel_zone_idx].attr.duration_s / 60} min
           </td>
         </tr>
         <tr>
@@ -207,12 +221,13 @@
         </tr>
         <tr>
           <th>Flow</th><td>
-            <input type="number" min="0" bind:value={zones[sel_zone_idx].attr.flow_lph} style="width:8ch;" />
+            <input type="number" min="0" bind:value={zones[sel_zone_idx].attr.flow_lph} style="width:8ch;" /> l/h
           </td>
         </tr>
         <tr>
           <th>Last Time Wet</th><td>
             <input type="number" min="0" step="30" bind:value={zones[sel_zone_idx].state.last_time_wet} style="width:8ch;" />
+            {epoch_to_dh(zones[sel_zone_idx].state.last_time_wet)}
           </td>
         </tr>
         <tr>
@@ -223,14 +238,14 @@
         type="button"
         on:click={() => {
           get_zone(sel_zone_idx);
-        }}>Reload</button
+        }}>Reload Zone</button
       >
-      <button type="button" on:click={save_zone}>Apply</button>
+      <button type="button" on:click={save_zone}>Apply Changes</button>
     {/if}
   </div>
 
-  <div class="area"></div>
-  <select bind:value={sel_adapter_idx}>
+  <div class="area">
+      <select bind:value={sel_adapter_idx}>
     {#each adapters as v, i}
       {#if v !== null && v.flags.exists}
         <option value={i}>{v.name} </option>
@@ -280,7 +295,7 @@
             min="0.001"
             max="0.1"
             step="0.001"
-          /></td
+a         /></td
         >
       </tr>
       <tr>
@@ -322,6 +337,7 @@
       }}>Apply</button
     >
   {/if}
+  </div>
   <hr />
   <button
     type="button"

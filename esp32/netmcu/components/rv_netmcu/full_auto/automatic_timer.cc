@@ -24,8 +24,8 @@ bool AutoTimerData::save_settings(const char *key) {
     struct {
       std::array<IrrigationZone, CONFIG_APP_MAX_ZONES> zones;
       std::array<WeatherAdapter, CONFIG_APP_FA_MAX_WEATHER_ADAPTERS> adapters;
-    } m_s = { m_zones,  m_adapters };
-      set_default_adapter();
+    } m_s = { m_zones, m_adapters };
+    set_default_adapter();
     if (kvs_set_blob(h, key, &m_s, sizeof m_s)) {
       result = true;
     }
@@ -49,7 +49,7 @@ bool AutoTimerData::restore_settings(const char *key) {
     if (kvs_get_blob(h, key, &m_s, sizeof m_s)) {
       result = true;
       m_zones = m_s.zones;
-      m_adapters =  m_s.adapters;
+      m_adapters = m_s.adapters;
       set_default_adapter();
     }
     kvs_close(h);
@@ -76,6 +76,35 @@ void AutoTimerData::dev_random_fill_data() {
   }
 }
 
+bool AutoTimer::should_valve_be_due(const IrrigationZone &v, const time_t twhen) const {
+  if (!v.flags.exists)
+    return false;
+  if (v.state.next_time_scheduled)
+    return false;
+  if (m_stm32_state.rain_sensor)
+    return false;
+
+  const time_t tlast = v.state.last_time_wet;
+  if (!tlast)
+    return true;
+
+  auto interval_s = v.attr.interval_s;
+  const auto &adapter = m_adapters[v.attr.adapter];
+  int dry_hours = 24 * 7;
+  float f = 1.0;
+
+  if (tlast) {
+     dry_hours = (twhen - tlast) / SECS_PER_HOUR;
+  }
+  if (m_wi) {
+    f = m_wi->get_simple_irrigation_factor(dry_hours, adapter);
+  }
+
+  interval_s = (0 < f) ? interval_s * f : 0;
+  bool result = (tlast + interval_s) < twhen;
+  db_logw("full_auto", "%s() => %u -- name=%s, dry_hours=%d, f=%f, ival=%u, tlast=%lld, twhen=%lld", __func__, result, v.name, dry_hours, f, interval_s, tlast, twhen);
+  return result;
+}
 void AutoTimer::todo_loop() {
   // TODO: the factor should be valve dependent (dry_time as parameter)
   m_f = m_wi ? m_wi->get_simple_irrigation_factor(36) : 1.0;

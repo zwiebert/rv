@@ -14,6 +14,8 @@ part_ota_0_size=$(grep ota_0 $SRCDIR/partitions.csv | sed -E 's/(.+),(.+),(.+),(
 part_otadata=$(grep otadata $SRCDIR/partitions.csv | sed -E 's/(.+),(.+),(.+),(.+),(.+),/\4/')
 
 
+. $IDF_PATH/export.sh
+
 flash_all() {
 $ocd_cmd \
 	-c "program_esp  $BINDIR/bootloader/bootloader.bin 0x1000 verify" \

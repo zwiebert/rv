@@ -205,42 +205,6 @@ public:
   }
 
 public:
-  /**
-   * \brief       Test if the given valve is scheduled for now or a given future time
-   * \param v     the valve in question
-   * \param twhen the time for which we ask. Should be now or in the future.
-   * \return      true, if valve is due
-   */
-  bool should_valve_be_due(const IrrigationZone &v, const time_t twhen = time(0)) const {
-    if (!v.flags.exists)
-      return false;
-    if (v.state.next_time_scheduled)
-      return false;
-    if (m_stm32_state.rain_sensor)
-      return false;
-
-    const time_t tlast = v.state.last_time_wet;
-    if (!tlast)
-      return true;
-
-    auto interval_s = v.attr.interval_s;
-    const auto &adapter = m_adapters[v.attr.adapter];
-    int dry_hours = 24 * 7;
-    float f = 1.0;
-
-    if (tlast) {
-      dry_hours = (twhen - tlast) / SECS_PER_HOUR;
-    }
-    if (m_wi) {
-      f = m_wi->get_simple_irrigation_factor(dry_hours, adapter);
-    }
-
-    interval_s = (0 < f) ? interval_s * f : 0;
-    bool result = (tlast + interval_s) < twhen;
-//db_logi("full_auto", "%s() => %u -- name=%s, dry_hours=%d, f=%f, ival=%u, tlast=%lld, twhen=%lld", __func__, result, v.name, dry_hours, f, interval_s, tlast, twhen);
-    return result;
-  }
-
 protected:
   /**
    * \brief  sort valve indexes according to priority and schedule (due)
