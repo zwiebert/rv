@@ -1,6 +1,9 @@
 #include <full_auto/automatic_timer.hh>
+#include <app_settings/config.h>
 #include <stm32_com/stm32_commands.hh>
 #include <kvs/kvs_wrapper.h>
+#include <utils_misc/sun.h>
+#include <time.h>
 #include <cstdio>
 #include <cstring>
 #include <debug/dbg.h>
@@ -16,21 +19,57 @@
 namespace app::fa {
 static constexpr char kvs_name[] = "full_auto";
 
+AutoTimerData::AutoTimerData(Weather_Irrigation *wi) :
+    m_wi(wi), m_longitude(config_read_longitude()), m_latitude(config_read_latitude()) {
+  set_default_adapter();
+}
+
+bool AutoTimerData::update_sunrise() {
+  double sunrise;
+
+  auto tim = time(0);
+  struct tm tm;
+
+  if (!localtime_r(&tim, &tm))
+    return false;
+
+  sun_calculateDuskDawn(&sunrise, nullptr, 0, tm.tm_yday, m_longitude, m_latitude, CIVIL_TWILIGHT_RAD);
+  m_sunrise_s = int(sunrise * (60 * 60)) + _timezone;
+  return true;
+}
+
+struct AutoTimerSaveData {
+  std::array<IrrigationZone, CONFIG_APP_MAX_ZONES> zones;
+  std::array<WeatherAdapter, CONFIG_APP_FA_MAX_WEATHER_ADAPTERS> adapters; //
+  //JSONEAT_SER_FROM_TO(JSONEAT_KvPairs(zones, adapters));
+};
+
+static AutoTimerSaveData m_s = { };
+
+#if 0
 bool AutoTimerData::save_settings(const char *key) {
   bool result = false;
   if (strstr(key, "at.") != key)
     return false;
-  if (auto h = kvs_open(kvs_name, kvs_WRITE)) {
-    struct {
-      std::array<IrrigationZone, CONFIG_APP_MAX_ZONES> zones;
-      std::array<WeatherAdapter, CONFIG_APP_FA_MAX_WEATHER_ADAPTERS> adapters;
-    } m_s = { m_zones, m_adapters };
-    set_default_adapter();
-    if (kvs_set_blob(h, key, &m_s, sizeof m_s)) {
-      result = true;
+
+  set_default_adapter();
+  m_s.zones = m_zones;
+  m_s.adapters = m_adapters;
+
+  char dummy;
+  const auto json_size = m_s.to_json(&dummy, 0) + 1;
+
+  if (auto json = (char*) malloc(json_size)) {
+    if (m_s.to_json(json, json_size) < json_size) {
+      if (auto h = kvs_open(kvs_name, kvs_WRITE)) {
+        if (kvs_set_str(h, key, json)) {
+          result = true;
+        }
+        kvs_commit(h);
+        kvs_close(h);
+      }
     }
-    kvs_commit(h);
-    kvs_close(h);
+    free(json);
   }
 
   return result;
@@ -41,11 +80,48 @@ bool AutoTimerData::restore_settings(const char *key) {
   if (strstr(key, "at.") != key)
     return false;
 
+  if (auto h = kvs_open("full_auto_json", kvs_READ)) {
+    if (const auto json_size = kvs_get_strlen(h, key) + 1) {
+      if (auto json = (char*) malloc(json_size)) {
+        if (kvs_get_str(h, key, json, json_size)) {
+          result = true;
+          if (m_s.from_json(json)) {
+            m_zones = m_s.zones;
+            m_adapters = m_s.adapters;
+            set_default_adapter();
+          }
+        }
+        free(json);
+      }
+    }
+    kvs_close(h);
+  }
+  return result;
+}
+#else
+bool AutoTimerData::save_settings(const char *key) {
+  bool result = false;
+  if (strstr(key, "at.") != key)
+    return false;
+  if (auto h = kvs_open(kvs_name, kvs_WRITE)) {
+    set_default_adapter();
+    m_s.zones = m_zones;
+    m_s.adapters = m_adapters;
+
+    if (kvs_set_blob(h, key, &m_s, sizeof m_s)) {
+      result = true;
+    }
+    kvs_commit(h);
+    kvs_close(h);
+  }
+  return result;
+}
+
+bool AutoTimerData::restore_settings(const char *key) {
+  bool result = false;
+  if (strstr(key, "at.") != key)
+    return false;
   if (auto h = kvs_open(kvs_name, kvs_READ)) {
-    struct {
-      std::array<IrrigationZone, CONFIG_APP_MAX_ZONES> zones;
-      std::array<WeatherAdapter, CONFIG_APP_FA_MAX_WEATHER_ADAPTERS> adapters;
-    } m_s = { };
     if (kvs_get_blob(h, key, &m_s, sizeof m_s)) {
       result = true;
       m_zones = m_s.zones;
@@ -56,7 +132,7 @@ bool AutoTimerData::restore_settings(const char *key) {
   }
   return result;
 }
-
+#endif
 #include <debug/dbg.h>
 
 void AutoTimerData::dev_random_fill_data() {
@@ -94,7 +170,7 @@ bool AutoTimer::should_valve_be_due(const IrrigationZone &v, const time_t twhen)
   float f = 1.0;
 
   if (tlast) {
-     dry_hours = (twhen - tlast) / SECS_PER_HOUR;
+    dry_hours = (twhen - tlast) / SECS_PER_HOUR;
   }
   if (m_wi) {
     f = m_wi->get_simple_irrigation_factor(dry_hours, adapter);
@@ -108,6 +184,7 @@ bool AutoTimer::should_valve_be_due(const IrrigationZone &v, const time_t twhen)
 void AutoTimer::todo_loop() {
   // TODO: the factor should be valve dependent (dry_time as parameter)
   m_f = m_wi ? m_wi->get_simple_irrigation_factor(36) : 1.0;
+  update_sunrise();
 
   // first pass: mark all due valves with flag.is_due
   for (IrrigationZone &mv : m_zones) {

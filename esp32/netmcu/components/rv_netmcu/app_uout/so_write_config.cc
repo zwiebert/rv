@@ -56,6 +56,14 @@ void soCfg_TZ(class UoutWriter &td) {
 #endif
 }
 
+void soCfg_LONGITUDE(class UoutWriter &td) {
+  td.so().print(comp_sett.get_optKeyStr(CB_LONGITUDE), config_read_longitude(), 2);
+}
+
+void soCfg_LATITUDE(class UoutWriter &td) {
+  td.so().print(comp_sett.get_optKeyStr(CB_LATITUDE), config_read_latitude(), 2);
+}
+
 void soCfg_GPIO_PIN(class UoutWriter &td, const int gpio_number) {
 #ifdef ACCESS_GPIO
   {
@@ -211,9 +219,6 @@ void soCfg_all_time(class UoutWriter &td) {
   soCfg_RTC(td);
 #ifdef USE_POSIX_TIME
   soCfg_TZ(td);
-#else
-  soCfg_TIMEZONE(td);
-  soCfg_DST(td);
 #endif
 }
 

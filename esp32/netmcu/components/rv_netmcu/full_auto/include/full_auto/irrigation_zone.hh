@@ -37,11 +37,12 @@ struct IrrigationZone {
   struct {
     unsigned duration_s = 0;
     int8_t adapter = 0; ///< adapt duration (0 should always be a neutral adapter)
-    unsigned flow_lph = 0;
+    unsigned unused; // TODO: Remove or reuse this member later (removing will invalidate the saved state)
     int priority = 0;
     unsigned interval_s = SECS_PER_DAY;
+    unsigned before_sunrise_s = SECS_PER_HOUR * 4;
 
-    JSONEAT_SER_FROM_TO(JSONEAT_KvPairs(duration_s, adapter, flow_lph, priority, interval_s));
+    JSONEAT_SER_FROM_TO(JSONEAT_KvPairs(duration_s, adapter, priority, interval_s, before_sunrise_s));
   } attr;
 
   struct {

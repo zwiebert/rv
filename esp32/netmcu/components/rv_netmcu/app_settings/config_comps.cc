@@ -40,3 +40,10 @@ void config_ext_setup_cliTcpServer() {
   config_setup_cliTcpServer(&flags);
 #endif
 }
+
+float config_read_longitude() {
+  return config_read_item((CB_LONGITUDE), MY_GEO_LONGITUDE);
+}
+float config_read_latitude() {
+  return config_read_item((CB_LATITUDE), MY_GEO_LATITUDE);
+}

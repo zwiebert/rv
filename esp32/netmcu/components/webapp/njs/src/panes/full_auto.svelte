@@ -14,7 +14,9 @@
 
   onMount(() => {
     httpFetch.http_fetchByMask(httpFetch.FETCH_ZONE_NAMES);
-    get_data();
+    //get_data();
+    get_zones();
+    get_adapters();
   });
   $: zones = [...$ZonesAuto];
   $: adapters = [...$WeatherAdapters];
@@ -26,12 +28,13 @@
   }
   $: {
     sel_zone_idx;
-    //get_zone(sel_zone_idx);
+      get_zone(sel_zone_idx);
   }
 
   $: {
     sel_adapter_idx;
-    //get_adapter(sel_zone_idx);
+      get_adapter(sel_adapter_idx);
+    
   }
   $: {
     zones;
@@ -66,19 +69,27 @@
     console.log("WeatherAdapters:", $WeatherAdapters);
   }
   function get_zone(idx) {
+    if (sel_zone_idx < zones.length && zones[sel_zone_idx]) {
     const key = "zone." + idx;
     let obj = { json: { auto: { get: {} } } };
     obj.json.auto.get[key] = {};
     httpFetch.http_postRequest("/cmd.json", obj);
+    }
   }
   function get_adapter(idx) {
+    if (sel_adapter_idx < adapters.length && adapters[sel_adapter_idx]) {
     const key = "adapter." + idx;
     let obj = { json: { auto: { get: {} } } };
     obj.json.auto.get[key] = {};
     httpFetch.http_postRequest("/cmd.json", obj);
+    }
   }
   function get_zones() {
     let obj = { json: { auto: { get: { zones: [] } } } };
+    httpFetch.http_postRequest("/cmd.json", obj);
+  }
+  function get_adapters() {
+    let obj = { json: { auto: { get: { adapters: [] } } } };
     httpFetch.http_postRequest("/cmd.json", obj);
   }
   function get_data() {
@@ -141,15 +152,24 @@
     httpFetch.http_postRequest("/cmd.json", obj);
   }
 
-  function adapter_add(idxs) {
+  function adapter_add_rm(idx, add) {
     let obj = { json: { auto: { update: {} } } };
-    for (let idx of idxs) {
-      let aobj = { flags: { exists: 1 } };
+    let aobj = { flags: {} };
+    aobj.flags.exists = add;
+    if (add) {
       aobj.name = "New adapter " + idx;
-      const key = "adapter." + idx;
-      obj.json.auto.update[key] = aobj;
     }
+    const key = "adapter." + idx;
+    obj.json.auto.update[key] = aobj;
     httpFetch.http_postRequest("/cmd.json", obj);
+    get_adapter(idx); // fetch updated data
+  }
+
+  function adapter_add(idx) {
+    adapter_add_rm(idx, true);
+  }
+  function adapter_rm(idx) {
+    adapter_add_rm(idx, false);
   }
 </script>
 
@@ -176,11 +196,17 @@
     </label>
 
     {#if sel_zone_idx < zones.length && zones[sel_zone_idx] && zones_exists[sel_zone_idx]}
-        Info: Last Time Wet: {epoch_to_dh(zones[sel_zone_idx].state.last_time_wet)}
+      Info: Last Time Wet: {epoch_to_dh(zones[sel_zone_idx].state.last_time_wet)}
 
       <hr />
 
       <table class="border-none">
+        <tr>
+          <th>BeforeSunrise</th><td>
+            <input type="number" min="0" step="30" bind:value={zones[sel_zone_idx].attr.before_sunrise_s} style="width:8ch;" />
+            {zones[sel_zone_idx].attr.before_sunrise_s / 60} min
+          </td>
+        </tr>
         <tr>
           <th>Duration</th><td>
             <input type="number" min="0" step="30" bind:value={zones[sel_zone_idx].attr.duration_s} style="width:8ch;" />
@@ -194,11 +220,6 @@
           </td>
         </tr>
         <tr>
-          <th>Flow</th><td>
-            <input type="number" min="0" bind:value={zones[sel_zone_idx].attr.flow_lph} style="width:8ch;" /> l/h
-          </td>
-        </tr>
-        <tr class="">
           <th>Adapter</th>
           <td>
             <select bind:value={zones[sel_zone_idx].attr.adapter}>
@@ -218,6 +239,12 @@
                   }
                 }
               }}>+</button
+            >
+            <button
+              type="button"
+              on:click={() => {
+                adapter_rm([sel_adapter_idx]);
+              }}>-</button
             >
           </td>
         </tr>
@@ -325,6 +352,8 @@
     on:click={() => {
       let obj = { json: { auto: { command: { restore: "" } } } };
       httpFetch.http_postRequest("/cmd.json", obj);
+      get_zones();
+      get_adapters();
     }}>Restore</button
   >
 </div>

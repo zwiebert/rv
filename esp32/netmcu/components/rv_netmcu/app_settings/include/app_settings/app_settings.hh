@@ -18,6 +18,8 @@ enum configAppItem : i8 {
   CBA_NONE = -1, CBA_start = CB_size - 1, //
   //----------------
   CB_CFG_PASSWD,
+  CB_LONGITUDE,
+  CB_LATITUDE,
   CB_TZ,
 #ifdef CONFIG_APP_USE_NETWORK
   CB_NETWORK_CONNECTION,

@@ -64,7 +64,7 @@ static int response_callback(httpd_req_t *req, const char *src, ssize_t src_len,
 }
 
 static esp_err_t handle_uri_cmd_json(httpd_req_t *req) {
-  char buf[256];
+  char buf[512] = {};
   int ret, remaining = req->content_len;
   int result = ESP_OK;
 

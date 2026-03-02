@@ -62,6 +62,8 @@ void read_config(uint32_t mask);
 void config_setup_mqttAppClient();
 bool config_item_modified(enum configItem item);
 
+float config_read_longitude();
+float config_read_latitude();
 const char *config_read_tz(char *d, unsigned d_size);
 #ifdef CONFIG_APP_USE_NETWORK
 enum nwConnection  config_read_network_connection();
