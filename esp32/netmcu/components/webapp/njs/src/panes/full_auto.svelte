@@ -1,6 +1,7 @@
 <script>
   import { _ } from "../services/i18n";
   import { Z, ZoneDurationMmss, ZoneRemainingMmss } from "../store/curr_zone";
+  import { McuTime  } from "../store/mcu_firmware";
 
   import * as httpFetch from "../app/fetch.js";
   import * as httpResp from "../app/http_resp.js";
@@ -128,7 +129,8 @@
   }
 
   function epoch_to_dh(secs) {
-    const now_s = (Date.now() / 1000).toFixed();
+    const now_s = $McuTime;
+    console.log("now_s, secs", now_s, secs);
     if (secs === 0 || now_s < secs || now_s > secs + 60 * 60 * 24 * 365) return "long ago";
 
     return secs_to_dh(now_s - secs);
@@ -174,6 +176,7 @@
 </script>
 
 <div class="main-area">
+<h3>Weather Controlled Timers</h3>
   <div class="text-center">
     <SelectZone />
   </div>
@@ -217,6 +220,11 @@
           <th>Interval</th><td>
             <input type="number" min="0" step="3600" bind:value={zones[sel_zone_idx].attr.interval_s} style="width:8ch;" />
             {secs_to_dh(zones[sel_zone_idx].attr.interval_s)}
+          </td>
+        </tr>
+        <tr>
+          <th>Ignore Rain Sensor</th><td>
+            <input type="checkbox" bind:checked={zones[sel_zone_idx].flags.ignore_rain} style="width:8ch;" />
           </td>
         </tr>
         <tr>

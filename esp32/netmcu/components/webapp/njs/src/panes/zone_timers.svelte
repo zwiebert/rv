@@ -29,8 +29,8 @@
 
 
 <div class="main-area">
-
-  <div class="area">
+<h3>Clock Controlled Timers</h3>
+  <div class="text-center">
     <SelectZone />
   </div>
 

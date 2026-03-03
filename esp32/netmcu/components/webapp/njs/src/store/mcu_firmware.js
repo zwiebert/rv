@@ -14,3 +14,5 @@ export const McuFirmwareUpdState = writable(0);
 export const McuFirmwareUpdProgress = writable(0);
 
 export const McuFirmwareUpdChip = writable('');
+
+export const McuTime = writable(0);

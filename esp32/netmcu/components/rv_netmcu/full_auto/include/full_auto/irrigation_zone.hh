@@ -26,12 +26,12 @@ struct IrrigationZone {
   char name[CONFIG_APP_FA_NAMES_MAX_LEN] = "";
 
   struct {
-    bool active = false;  ///< to mark as active (or not disabled temporarily)
+    bool ignore_rain = false;  ///< ignore rain sensor (e.g. this zone is under a roof)
     bool exists = false;   ///< to mark as non existent flat value in array
     bool is_due = false;
 
 
-    JSONEAT_SER_FROM_TO(JSONEAT_KvPairs(exists, active, is_due));
+    JSONEAT_SER_FROM_TO(JSONEAT_KvPairs(exists, ignore_rain, is_due));
   } flags;
 
   struct {

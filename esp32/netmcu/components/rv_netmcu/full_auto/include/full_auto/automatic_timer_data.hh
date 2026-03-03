@@ -244,10 +244,18 @@ protected:
     }
   };
 
-bool update_sunrise();
+/**
+ * \brief  Calculate sunrise and update m_sunrise_time
+ *
+ *         if (m_sunrise_time > time(0)), then it does nothing
+ *
+ * \return success
+ */
+bool update_sunrise_time();
+
 protected:
   char name[CONFIG_APP_FA_NAMES_MAX_LEN] = "";
-  int m_sunrise_s = 0;
+protected:
   std::array<IrrigationZone, CONFIG_APP_MAX_ZONES> m_zones;
   std::array<WeatherAdapter, CONFIG_APP_FA_MAX_WEATHER_ADAPTERS> m_adapters;
   std::array<sorted_index, CONFIG_APP_MAX_ZONES> m_zone_prio_idxs, m_zone_due_idxs;
@@ -255,6 +263,8 @@ protected:
 protected:
   Weather_Irrigation *m_wi = nullptr;
   float m_f = 1.0;
+protected:
+  time_t m_sunrise_time = 0; ///<  UTC timestamp for next sunrise (civil dusk)
   float m_longitude, m_latitude;
 protected:
   struct {

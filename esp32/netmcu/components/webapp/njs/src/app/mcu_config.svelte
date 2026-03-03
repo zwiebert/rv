@@ -207,7 +207,7 @@
 
   /////////////////////////////////////////////
 </script>
-
+<h3>Configure Net-MCU</h3>
 <div class="navtab-sub2 flex flex-col items-center px-1 border-none">
   <NavTabs
     nav_tabs={[

@@ -31,6 +31,15 @@
 #endif
 #define logtag "rv.main.periodic";
 
+static void publish_time() {
+  char json[64] = {};
+
+  if (sizeof json <= snprintf(json, sizeof json, R"({"from":"netmcu", "mcu":{"time":%lld}})", time(0)))
+    return;
+
+  uoCb_publish_wsJson(json);
+}
+
 /**
  * \brief Create 100ms timer for periodic actions
  * Actions should be called with mainLoop_callFun() to execute them in mainLoop context instead of "Tmr Svc" Task.
@@ -50,7 +59,10 @@ void tmr_loopPeriodic_start() {
     // Every 100ms: run cli_loop, watch_dog, ...
     mainLoop_callFun(lfPer100ms_mainFun);
 
-
+    // Ever 1.6 seconds publish current time to webapp
+    if ((count & (BIT(4) - 1)) == 0) {
+      mainLoop_callFun(publish_time);
+    }
 
     // Every 51.2 seconds check if actions based on local time are due
     if ((count & (BIT(9) - 1)) == 0) {

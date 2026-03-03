@@ -3,9 +3,11 @@
 #include <stm32_com/stm32_commands.hh>
 #include <kvs/kvs_wrapper.h>
 #include <utils_misc/sun.h>
+#include <utils_time/ut_constants.hh>
 #include <time.h>
 #include <cstdio>
 #include <cstring>
+#include <cmath>
 #include <debug/dbg.h>
 #include <debug/log.h>
 #ifdef CONFIG_RV_NETMCU_DEBUG
@@ -19,22 +21,35 @@
 namespace app::fa {
 static constexpr char kvs_name[] = "full_auto";
 
+
+
 AutoTimerData::AutoTimerData(Weather_Irrigation *wi) :
     m_wi(wi), m_longitude(config_read_longitude()), m_latitude(config_read_latitude()) {
   set_default_adapter();
 }
 
-bool AutoTimerData::update_sunrise() {
-  double sunrise;
+bool AutoTimerData::update_sunrise_time() {
 
-  auto tim = time(0);
-  struct tm tm;
+  auto now_time = time(0);
 
-  if (!localtime_r(&tim, &tm))
+  if (m_sunrise_time > now_time) // we already calculated a valid sunrise time for today
+    return true;
+
+  struct tm now_tm;
+  if (!gmtime_r(&now_time, &now_tm))
     return false;
 
-  sun_calculateDuskDawn(&sunrise, nullptr, 0, tm.tm_yday, m_longitude, m_latitude, CIVIL_TWILIGHT_RAD);
-  m_sunrise_s = int(sunrise * (60 * 60)) + _timezone;
+  double sunrise;
+  sun_calculateDuskDawn(&sunrise, nullptr, 0, now_tm.tm_yday, m_longitude, m_latitude, CIVIL_TWILIGHT_RAD);
+
+  unsigned sr_dtime_s = unsigned(sunrise * SECS_PER_HOUR);
+  unsigned now_dtime_s = now_tm.tm_hour * SECS_PER_HOUR + now_tm.tm_min * SECS_PER_MINT + now_tm.tm_sec;
+
+  const time_t midnight_time = now_time - now_dtime_s;
+
+  // make sure m_sunrise_time is in the future
+  m_sunrise_time = (sr_dtime_s > now_dtime_s) ? midnight_time + sr_dtime_s : midnight_time + SECS_PER_DAY + sr_dtime_s;
+
   return true;
 }
 
@@ -140,7 +155,7 @@ void AutoTimerData::dev_random_fill_data() {
   for (auto &o : m_zones) {
     snprintf(o.name, sizeof o.name, "ObjectName-%d", rando(100, 1000));
     o.flags.exists = rando(0, 2);
-    o.flags.active = rando(0, 2);
+    o.flags.ignore_rain = rando(0, 2);
     o.state.last_time_wet = rando(tnow - SECS_PER_DAY * 7, tnow - SECS_PER_DAY);
     //o.state.next_time_scheduled = rando(tnow + SECS_PER_HOUR, tnow + SECS_PER_HOUR * 2);
   }
@@ -152,20 +167,22 @@ void AutoTimerData::dev_random_fill_data() {
   }
 }
 
-bool AutoTimer::should_valve_be_due(const IrrigationZone &v, const time_t twhen) const {
-  if (!v.flags.exists)
+bool AutoTimer::should_zone_be_due(const IrrigationZone &z, const time_t twhen) const {
+  if (!z.flags.exists) // there is no auto-timer for this zone
     return false;
-  if (v.state.next_time_scheduled)
+  if (z.state.next_time_scheduled) // already scheduled
     return false;
-  if (m_stm32_state.rain_sensor)
+  if (z.attr.before_sunrise_s && twhen < (m_sunrise_time - z.attr.before_sunrise_s))  // not in specified time window relative to sunrise
+    return false;
+  if (m_stm32_state.rain_sensor && !z.flags.ignore_rain) // XXX: It may be cleaner to wait for RV cancel the timer ???
     return false;
 
-  const time_t tlast = v.state.last_time_wet;
+  const time_t tlast = z.state.last_time_wet;
   if (!tlast)
     return true;
 
-  auto interval_s = v.attr.interval_s;
-  const auto &adapter = m_adapters[v.attr.adapter];
+  auto interval_s = z.attr.interval_s;
+  const auto &adapter = m_adapters[z.attr.adapter];
   int dry_hours = 24 * 7;
   float f = 1.0;
 
@@ -178,17 +195,22 @@ bool AutoTimer::should_valve_be_due(const IrrigationZone &v, const time_t twhen)
 
   interval_s = (0 < f) ? interval_s * f : 0;
   bool result = (tlast + interval_s) < twhen;
-  db_logw("full_auto", "%s() => %u -- name=%s, dry_hours=%d, f=%f, ival=%u, tlast=%lld, twhen=%lld", __func__, result, v.name, dry_hours, f, interval_s, tlast, twhen);
+  db_logw("full_auto", "%s() => %u -- name=%s, dry_hours=%d, f=%f, ival=%u, tlast=%lld, twhen=%lld", __func__, result, z.name, dry_hours, f, interval_s, tlast, twhen);
   return result;
 }
 void AutoTimer::todo_loop() {
+  const auto now_time = time(0);
   // TODO: the factor should be valve dependent (dry_time as parameter)
   m_f = m_wi ? m_wi->get_simple_irrigation_factor(36) : 1.0;
-  update_sunrise();
+  update_sunrise_time();
 
   // first pass: mark all due valves with flag.is_due
   for (IrrigationZone &mv : m_zones) {
-    mv.flags.is_due = should_valve_be_due(mv, time(0));
+    if (m_stm32_state.rain_sensor && !mv.flags.ignore_rain) {
+      mv.state.last_time_wet = now_time; // all zones are supposed to be covered by rain_sensor
+    }
+
+    mv.flags.is_due = should_zone_be_due(mv, now_time);
   }
   sort_zone_idxs();
   D(db_logi(logtag, "used_valves_count=%d, due_valves_count=%u", m_used_valves_count, m_due_valves_count));
@@ -201,7 +223,7 @@ void AutoTimer::todo_loop() {
     SetArgs args;
     args.valve_number = ip.idx;
     args.on_duration = v.attr.duration_s;
-    v.state.last_time_wet = time(0);
+    v.state.last_time_wet = now_time;
 #ifndef TEST_HOST
     app::stm32::stm32com_set_timer(args);
 #endif

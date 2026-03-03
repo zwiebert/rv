@@ -10,6 +10,7 @@ import {
   Stm32McuFirmwareVersion,
   McuFirmwareUpdProgress,
   McuFirmwareUpdState,
+  McuTime,
 } from "../store/mcu_firmware.js";
 import { McuDocs } from "../store/mcu_docs.js";
 import {
@@ -136,6 +137,9 @@ export function http_handleResponses(obj) {
 
   if ("mcu" in obj) {
     let mcu = obj.mcu;
+    if ("time" in mcu) {
+      McuTime.set(mcu.time);
+    }
     if ("chip" in mcu) {
       McuChipId.set(mcu.chip);
     }

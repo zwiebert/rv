@@ -29,27 +29,23 @@
 
 
 <div class="main-area">
-
-  <div class="area">
+<h3>Test Zones</h3>
+  <div class="text-center">
     <SelectZone />
   </div>
 
-  <div class="area">
+  <div class="area text-center">
+  <h4>One Minute Test</h4>
     <button class="text-xl p-8 m-2" on:click={onClickRun}>Start</button>
     <button class="text-xl p-8 m-2" on:click={onClickStop}>Stop</button>
-  </div>
-
-  <div class="area">
+    <hr />
     <p>{$_('app.duration')}: {$ZoneDurationMmss} {$_('app.remaining')}: {$ZoneRemainingMmss}</p>
-  </div>
-
-  <div class="area">
+    <hr />
     <RvStatus />
   </div>
-
+  
   <div class="area">
     <ZoneData />
   </div>
-
 
 </div>
