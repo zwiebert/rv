@@ -205,25 +205,26 @@ void AutoTimer::todo_loop() {
   update_sunrise_time();
 
   // first pass: mark all due valves with flag.is_due
-  for (IrrigationZone &mv : m_zones) {
-    if (m_stm32_state.rain_sensor && !mv.flags.ignore_rain) {
-      mv.state.last_time_wet = now_time; // all zones are supposed to be covered by rain_sensor
+  for (IrrigationZone &z : m_zones) {
+    if (m_stm32_state.rain_sensor && !z.flags.ignore_rain) {
+      z.state.last_time_wet = now_time; // all zones are supposed to be covered by rain_sensor
     }
-
-    mv.flags.is_due = should_zone_be_due(mv, now_time);
+    z.flags.is_due = should_zone_be_due(z, now_time);
   }
-  sort_zone_idxs();
-  D(db_logi(logtag, "used_valves_count=%d, due_valves_count=%u", m_used_valves_count, m_due_valves_count));
 
-  for (auto ip : m_zone_due_idxs) {
-    IrrigationZone &v = m_zones[ip.idx];
-    if (!v.flags.exists || !v.flags.is_due)
-      break; // not needed to look at more elements in sorted list
-    D(db_logi(logtag, "Schedule valve number %d (%s). prio=%d", ip.idx, v.name, ip.prio));
+  sort_zone_idxs();
+  D(db_logi(logtag, "used_valves_count=%d, due_zones_count=%u", m_used_valves_count, m_due_zones_count));
+
+  for (int i=0; i < m_due_zones_count; ++i) {
+    const auto &ip = m_zone_due_idxs[i];
+    IrrigationZone &z = m_zones[ip.idx];
+
+    D(db_logi(logtag, "Schedule valve number %d (%s). prio=%d", ip.idx, z.name, ip.prio));
     SetArgs args;
     args.valve_number = ip.idx;
-    args.on_duration = v.attr.duration_s;
-    v.state.last_time_wet = now_time;
+    args.on_duration = z.attr.duration_s;
+    args.ignoreRainSensor = z.flags.ignore_rain;
+    z.state.last_time_wet = now_time; // XXX: maybe a bit early. the zone irrigation may need some minutes to hours to start for real.
 #ifndef TEST_HOST
     app::stm32::stm32com_set_timer(args);
 #endif

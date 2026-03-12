@@ -211,7 +211,7 @@ protected:
    */
   void sort_zone_idxs() {
 
-    m_used_valves_count = m_due_valves_count = 0;
+    m_used_valves_count = m_due_zones_count = 0;
     for (int i = 0; i < CONFIG_APP_MAX_ZONES; ++i) {
       auto &dst_due = m_zone_due_idxs[i];
       auto &dst_exists = m_zone_prio_idxs[i];
@@ -226,7 +226,7 @@ protected:
         dst_exists.prio = -100;
       }
       if (src.flags.exists && src.flags.is_due) {
-        ++m_due_valves_count;
+        ++m_due_zones_count;
         dst_due.prio = src.attr.priority;
       } else {
         dst_due.prio = -100;
@@ -259,7 +259,7 @@ protected:
   std::array<IrrigationZone, CONFIG_APP_MAX_ZONES> m_zones;
   std::array<WeatherAdapter, CONFIG_APP_FA_MAX_WEATHER_ADAPTERS> m_adapters;
   std::array<sorted_index, CONFIG_APP_MAX_ZONES> m_zone_prio_idxs, m_zone_due_idxs;
-  uint8_t m_used_valves_count = 0, m_due_valves_count = 0;
+  uint8_t m_used_valves_count = 0, m_due_zones_count = 0;
 protected:
   Weather_Irrigation *m_wi = nullptr;
   float m_f = 1.0;

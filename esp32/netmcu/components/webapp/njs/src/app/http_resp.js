@@ -31,7 +31,8 @@ import {
 } from "../store/zones.js";
 
 export function http_handleResponses(obj) {
-  console.log("reply-json: " + JSON.stringify(obj));
+  if (!("mcu" in obj && "time" in obj.mcu))
+    console.log("http/ws-in: " + JSON.stringify(obj));
 
   if ("config" in obj) {
     let config = obj.config;

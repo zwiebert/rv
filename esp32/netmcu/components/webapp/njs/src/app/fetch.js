@@ -50,7 +50,7 @@ export function http_postCommand(data, state = { retry_count: 0 }) {
 }
 
 export function http_postRequest(url = "", data = {}, state = { retry_count: 0 }) {
-  appDebug.dbLog("post-json: " + JSON.stringify(data));
+  appDebug.dbLog("http/ws-out: " + JSON.stringify(data));
 
   const fetch_data = {
     method: "POST",

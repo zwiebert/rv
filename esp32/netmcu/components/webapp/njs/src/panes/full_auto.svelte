@@ -37,9 +37,7 @@
       get_adapter(sel_adapter_idx);
     
   }
-  $: {
-    zones;
-    console.log("new zones");
+  function new_zones() {
     for (let i = 0; sel_zone_idx < 0 && i < zones.length; ++i) {
       if (zones[i] !== null) {
         sel_zone_idx = i;
@@ -48,6 +46,12 @@
     for (let i = 0; i < zones.length; ++i) {
       set_zone_exists(i, zones[i] !== null && zones[i].flags.exists);
     }
+
+  }
+  $: {
+    zones;
+    console.log("new zones");
+    new_zones();
   }
   $: {
     if (zones[sel_zone_idx] && "attr" in zones[sel_zone_idx]) sel_adapter_idx = zones[sel_zone_idx].attr.adapter;

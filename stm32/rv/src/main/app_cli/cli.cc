@@ -9,6 +9,7 @@
 #include <debug/dbg.h>
 #include "user_config.h"
 #include "cli_imp.h"
+#include <algorithm>
 #include <stdio.h>
 #include <string.h>
 #include <debug/log.h>
