@@ -14,7 +14,7 @@
       "cmake.configureArgs": [
         "-DBUILD_HOST_TESTS=ON"
       ],
-      "idf.port": "/home/bertw/start/ser/rv-esp32",
+      "idf.port": "/dev/ttyUSB2",
       "output.smartScroll.enabled": false,
       "cmake.sourceDirectory": [
         "${workspaceFolder}/configs/host-test",
@@ -22,8 +22,11 @@
         "${workspaceFolder}/configs/esp32-release",
     ],
       "stm32-for-vscode.openOCDPath": false,
-      "idf.adapterTargetName": "esp32",
       "C_Cpp.errorSquiggles": "enabled",
-      "idf.flashType": "JTAG",
-      "idf.currentSetup": "/home/bertw/.espressif/master/esp-idf",
+      "idf.flashType": "UART",
+      "idf.currentSetup": "/home/bertw/.espressif/v5.5.3/esp-idf",
+      "idf.monitorPort": "/dev/ttyUSB2",
+      "idf.sdkconfigDefaults": ["${workspaceFolder}/configs/esp32-debug/sdkconfig.defaults"],
+      "idf.sdkconfigFilePath": "${workspaceFolder}/configs/esp32-debug/sdkconfig",
+      "idf.buildPath": "${workspaceFolder}/build/esp32-debug",
 }

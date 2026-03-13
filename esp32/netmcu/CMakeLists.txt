@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 
-if("${PRESET_NAME}" STREQUAL "host-test")
+if("${PRESET_NAME}" STREQUAL "host-test" OR ${BUILD_HOST_TESTS} STREQUAL "ON")
 
 ### Unit Testing On Host Project
 
@@ -15,7 +15,7 @@ option(GPROF "enable gprof" OFF)
 
 set(TARGET_PLATFORM_FILTER "host/.*")
 
-project(tronferno-mcu-tests)
+project(rv-netmcu-tests)
 
 # delete this folder in build, or a second configure will break the build (XXX)
 execute_process(COMMAND bash -c "rm -r ${PROJECT_BINARY_DIR}/comp")
@@ -31,10 +31,8 @@ file(COPY ${CMAKE_CURRENT_LIST_DIR}/configs/host-test/config/sdkconfig.cmake DES
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/configs/host-test/config/sdkconfig.json DESTINATION ${PROJECT_BINARY_DIR}/config)
 endif()
 
-
-
 file(GLOB external_components ${CMAKE_CURRENT_LIST_DIR}/external/*/components ${CMAKE_CURRENT_LIST_DIR}/external/*/external/*/components)
-set(EXTRA_COMPONENT_DIRS ${CMAKE_CURRENT_LIST_DIR}/components ${external_components})
+set(EXTRA_COMPONENT_DIRS  ${CMAKE_CURRENT_LIST_DIR}/components ${external_components} )
 
 message("external_components: ${external_components}")
 
@@ -53,7 +51,7 @@ if(ASAN)
 endif()
 
 include(${CMAKE_CURRENT_LIST_DIR}/external/host-test-idf/components/test_host/host_test.cmake)
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/components/tronferno ${CMAKE_BINARY_DIR}/${BIN_COMP_ROOT}/tronferno)
+add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/components/rv_netmcu ${CMAKE_BINARY_DIR}/${BIN_COMP_ROOT}/rv_netmcu)
 
 else()
 
@@ -61,8 +59,10 @@ else()
 
 ### for idf without presets (prior esp-idf v6), provide locatio of sdkconfig files
 if("${PRESET_NAME}" STREQUAL "")
+ if("${SDKCONFIG_DEFAULTS}" STREQUAL "")
     set(CACHE{SDKCONFIG_DEFAULTS} VALUE "configs/esp32-debug/sdkconfig.defaults" )
     set(CACHE{SDKCONFIG} VALUE "configs/esp32-debug/sdkconfig" )
+ endif()
 endif()
 
 

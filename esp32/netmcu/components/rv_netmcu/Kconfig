@@ -25,4 +25,8 @@ menu "zwiebert: rv_netmcu"
         bool "Enable debug messages"
         default n
 
+  config RV_NETMCU_FORCED_REBOOT
+        bool "Enable rebooting once a day to increase stability"
+        default n
+
 endmenu

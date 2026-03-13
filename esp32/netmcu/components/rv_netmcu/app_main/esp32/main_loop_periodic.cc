@@ -84,12 +84,14 @@ void tmr_loopPeriodic_start() {
     mainLoop_callFun(app::fa::fa_loop);
 #endif
 
+#ifdef CONFIG_NETMCU_FORCED_REBOOT
     // forced daily reboot
     // XXX: restart every >=24 hours at 23:33
     if (run_time_s() > SECS_PER_DAY) { //
       if (tms.tm_hour == 23 && tms.tm_min >= 33)
         mainLoop_mcuRestart(0);
     }
+#endif
   }
 }
   ++count;
