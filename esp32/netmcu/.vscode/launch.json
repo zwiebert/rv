@@ -5,23 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "ESP-IDF: Launch",
-            "type": "espidf",
-            "request": "launch",
-            //"mode":"auto",
-            //"preLaunchTask": "adapter"
-        },
-        {
             "name": "(ctest) Launch",
             "type": "cppdbg",
-            "cwd": "${workspaceFolder}/configs/host-test/build",
+            "cwd": "${workspaceFolder}/build/host-test",
             "request": "launch",
             "program": "${cmake.testProgram}",
             "args": [
                 "${cmake.testArgs}"
             ],
             "stopAtEntry": true,
+        },
+        {
+            "type": "gdbtarget",
+            "request": "attach",
+            "name": "Eclipse CDT GDB Adapter"
         }
-          
     ]
 }

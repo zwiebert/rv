@@ -15,7 +15,7 @@
         },
         {
             "name": "host-test",
-            "binaryDir": "configs/host-test/build",
+            "binaryDir": "build/host-test",
             "displayName": "build test programs and run ctest on host",
             "description": "host testing",
             "cacheVariables": {

@@ -16,11 +16,7 @@
       ],
       "idf.port": "/dev/ttyUSB2",
       "output.smartScroll.enabled": false,
-      "cmake.sourceDirectory": [
-        "${workspaceFolder}/configs/host-test",
-        "${workspaceFolder}/configs/esp32-debug",
-        "${workspaceFolder}/configs/esp32-release",
-    ],
+      "cmake.sourceDirectory": "${workspaceFolder}",
       "stm32-for-vscode.openOCDPath": false,
       "C_Cpp.errorSquiggles": "enabled",
       "idf.flashType": "UART",
