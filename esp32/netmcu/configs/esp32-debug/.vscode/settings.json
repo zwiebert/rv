@@ -26,6 +26,7 @@
       "idf.openOcdConfigs": [
          "/home/bertw/esp/ft2232.cfg",
          "target/esp32.cfg"
-        ]
+        ],
+        "idf.monitorPort": "/dev/ttyUSB2"
 
 }

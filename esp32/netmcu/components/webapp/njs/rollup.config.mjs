@@ -33,6 +33,10 @@ const aliases = alias({
 });
 
 export default {
+   watch: {
+    // This tells the watcher to completely ignore the dependency folder
+    exclude: 'node_modules/**'
+  },
   onwarn(warning, rollupWarn) {
     if ( /eval is strongly/.test(warning.message) ) return;
     if (warning.code === 'CIRCULAR_DEPENDENCY') return;

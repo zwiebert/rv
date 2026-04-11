@@ -7,22 +7,30 @@
     "*.ipp": "cpp",
     "ctime": "cpp"
   },
-      "clang-tidy.buildPath": "build/host-test",
-      "window.title": "RV-NetMCU(all)${separator}${activeEditorLong}",
-      "cmake.generator": "Ninja",
-      "cmake.buildDirectory": "${sourceDirectory}/build",
-      "cmake.configureArgs": [
-        "-DBUILD_HOST_TESTS=ON"
-      ],
-      "idf.port": "/dev/ttyUSB2",
-      "output.smartScroll.enabled": false,
-      "cmake.sourceDirectory": "${workspaceFolder}",
-      "stm32-for-vscode.openOCDPath": false,
-      "C_Cpp.errorSquiggles": "enabled",
-      "idf.flashType": "UART",
-      "idf.currentSetup": "/home/bertw/.espressif/v5.5.3/esp-idf",
-      "idf.monitorPort": "/dev/ttyUSB2",
-      "idf.sdkconfigDefaults": ["${workspaceFolder}/configs/esp32-debug/sdkconfig.defaults"],
-      "idf.sdkconfigFilePath": "${workspaceFolder}/configs/esp32-debug/sdkconfig",
-      "idf.buildPath": "${workspaceFolder}/build/esp32-debug",
+  "clang-tidy.buildPath": "build/host-test",
+  "window.title": "RV-NetMCU(all)${separator}${activeEditorLong}",
+  "cmake.generator": "Ninja",
+  "cmake.buildDirectory": "${sourceDirectory}/build",
+  "cmake.configureArgs": [
+    "-DBUILD_HOST_TESTS=ON"
+  ],
+  "idf.port": "/dev/ttyUSB0",
+  "output.smartScroll.enabled": false,
+  "cmake.sourceDirectory": "${workspaceFolder}",
+  "stm32-for-vscode.openOCDPath": false,
+  "C_Cpp.errorSquiggles": "enabled",
+  "idf.flashType": "UART",
+  "idf.currentSetup": "/home/bertw/.espressif/v6.0/esp-idf",
+  "idf.monitorPort": "/dev/ttyUSB0",
+  "idf.sdkconfigDefaults": [
+    "${workspaceFolder}/configs/esp32-debug/sdkconfig.defaults"
+  ],
+  "idf.sdkconfigFilePath": "${workspaceFolder}/configs/esp32-debug/sdkconfig",
+  "idf.buildPath": "${workspaceFolder}/build/esp32-debug",
+  "clangd.path": "/home/bertw/.espressif/tools/esp-clang/esp-20.1.1_20250829/esp-clang/bin/clangd",
+  "clangd.arguments": [
+    "--background-index",
+    "--query-driver=**",
+    "--compile-commands-dir=/home/bertw/proj/mcu/rv/esp32/netmcu/build/projconf/esp32-debug"
+  ]
 }

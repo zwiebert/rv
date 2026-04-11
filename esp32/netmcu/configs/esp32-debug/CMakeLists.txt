@@ -20,7 +20,7 @@ set(comp_compile_opts
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
-add_compile_definitions(MCU_ESP32 MCU_TYPE="esp32")
+add_compile_definitions(MCU_TYPE="esp32")
 add_compile_options("$<$<COMPILE_LANGUAGE:C,CXX>:-include>" "$<$<COMPILE_LANGUAGE:C,CXX>:esp_attr.h>")
 #add_compile_definitions(MQTT_SUPPORTED_FEATURE_TRANSPORT_ERR_REPORTING)
 

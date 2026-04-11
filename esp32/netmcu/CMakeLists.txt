@@ -2,16 +2,28 @@
 # CMakeLists in this exact order for cmake to work correctly
 cmake_minimum_required(VERSION 3.16)
 
-
-if("${PRESET_NAME}" STREQUAL "host-test" OR ${BUILD_HOST_TESTS} STREQUAL "ON")
-
-### Unit Testing On Host Project
-
 option(BUILD_HOST_TESTS "build host test" OFF)
 option(CMAKE_EXPORT_COMPILE_COMMANDS "generate compilation database for clang-tidy" ON)
 option(BUILD_DOXY "build doxy docs" OFF)
 option(ASAN "enable compiler sanitizer" OFF)
 option(GPROF "enable gprof" OFF)
+
+# find local versions of my components (MonoRepo-like)
+# make sure this relative path does not work when building binary-dist
+set(EXTRA_COMPONENT_DIRS "")
+if(NOT DEFINED ENV{DISTRO})
+  set(master_components_dir "${CMAKE_CURRENT_LIST_DIR}/../../../libs")
+  file(GLOB master_components LIST_DIRECTORIES YES  ${master_components_dir}/*/components)
+endif()
+# now find the normal external components which include my components when not found as master components
+file(GLOB external_components LIST_DIRECTORIES YES ${CMAKE_CURRENT_LIST_DIR}/external/*/components)
+# if any components with same names are found, the last component in list takes precedence
+list(APPEND EXTRA_COMPONENT_DIRS ${external_components} ${master_components})
+message(WARNING "external_components: ${EXTRA_COMPONENT_DIRS}")
+
+if("${PRESET_NAME}" STREQUAL "host-test" OR ${BUILD_HOST_TESTS} STREQUAL "ON")
+
+### Unit Testing On Host Project
 
 set(TARGET_PLATFORM_FILTER "host/.*")
 
@@ -31,10 +43,6 @@ file(COPY ${CMAKE_CURRENT_LIST_DIR}/configs/host-test/config/sdkconfig.cmake DES
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/configs/host-test/config/sdkconfig.json DESTINATION ${PROJECT_BINARY_DIR}/config)
 endif()
 
-file(GLOB external_components ${CMAKE_CURRENT_LIST_DIR}/external/*/components ${CMAKE_CURRENT_LIST_DIR}/external/*/external/*/components)
-set(EXTRA_COMPONENT_DIRS  ${CMAKE_CURRENT_LIST_DIR}/components ${external_components} )
-
-message("external_components: ${external_components}")
 
 set(comp_compile_feats cxx_std_20)
 set(comp_compile_opts -O0 -ggdb  # -fanalyzer
@@ -70,8 +78,6 @@ set(PROJECT_NAME "rv-netmcu")
 
 option(LINKER_DEMANGLE "set linker option --demangle" OFF)
 
-file(GLOB external_components ${CMAKE_CURRENT_LIST_DIR}/external/*/components ${CMAKE_CURRENT_LIST_DIR}/external/*/external/*/components)
-set(EXTRA_COMPONENT_DIRS ${CMAKE_CURRENT_LIST_DIR}/components ${external_components})
 
 set(COMPONENTS rv_netmcu
     bootloader esptool_py partition_table soc log spi_flash micro-ecc main efuse driver esp_rom  
@@ -92,7 +98,6 @@ add_compile_definitions(MCU_ESP32 MCU_TYPE="esp32")
 add_compile_options("$<$<COMPILE_LANGUAGE:C,CXX>:-include>" "$<$<COMPILE_LANGUAGE:C,CXX>:esp_attr.h>")
 
 
-
 if(DEFINED ENV{DISTRO})
 add_compile_definitions(DISTRIBUTION)
 endif()
@@ -109,10 +114,6 @@ endfunction()
 project(netmcu esptool_py)
 #set_target_properties(__idf_stm32 PROPERTIES LINK_INTERFACE_MULTIPLICITY 3)
 
-# copy the current compile_commands.json to a single location for vscode
-add_custom_command(TARGET netmcu.elf POST_BUILD
-                   COMMAND cp --verbose ${PROJECT_BINARY_DIR}/compile_commands.json ${CMAKE_CURRENT_LIST_DIR}/build/compile_commands.json
-)
 ##########################################################################
 
 
