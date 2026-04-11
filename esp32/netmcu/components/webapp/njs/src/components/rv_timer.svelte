@@ -79,73 +79,74 @@
 
     return ts;
   }
-
 </script>
 
 <input type="number" min="0" max="10" step="1" bind:value={tn} />
 <div class="flex">
   {#each { length: 10 } as _, i}
-    <div class="{$ZoneActiveTimerMask & (1<<i) ? 'bg-selected' : ''}">
+    <div class={$ZoneActiveTimerMask & (1 << i) ? "bg-selected" : ""}>
       <input type="radio" bind:group={tn} value={i} />
     </div>
   {/each}
 </div>
 
 <table>
-  <tr>
-    <th>On-Duration</th>
-    <td>
-      <input type="time" step="15" bind:value={args.d1} />
-    </td>
-  </tr>
-  <tr>
-    <th>Off-Duration</th>
-    <td>
-      <input type="time" step="15" bind:value={args.d0} />
-    </td>
-  </tr>
-  <tr>
-    <th>Repeats</th>
-    <td>
-      <input type="number" bind:value={args.r} />
-    </td>
-  </tr>
-  <tr>
-    <th>Period</th>
-    <td>
-      <input type="time" step="15" bind:value={args.per} />
-    </td>
-  </tr>
-  <tr>
-    <th>Day-Interval</th>
-    <td>
-      <input type="number" bind:value={args.di} />
-    </td>
-  </tr>
-  <tr>
-    <th>Daily Begin</th>
-    <td>
-      <input type="time" bind:value={args.sb} />
-    </td>
-  </tr>
-  <tr>
-    <th>Daily End</th>
-    <td>
-      <input type="time" bind:value={args.se} />
-    </td>
-  </tr>
-  <tr>
-    <th>Ignore RainSensor</th>
-    <td>
-      <input type="checkbox" bind:checked={args.ir} />
-    </td>
-  </tr>
-  <tr>
-    <th>Ignore Pause</th>
-    <td>
-      <input type="checkbox" bind:checked={args.ip} />
-    </td>
-  </tr>
+  <tbody>
+    <tr>
+      <th>On-Duration</th>
+      <td>
+        <input type="time" step="15" bind:value={args.d1} />
+      </td>
+    </tr>
+    <tr>
+      <th>Off-Duration</th>
+      <td>
+        <input type="time" step="15" bind:value={args.d0} />
+      </td>
+    </tr>
+    <tr>
+      <th>Repeats</th>
+      <td>
+        <input type="number" bind:value={args.r} />
+      </td>
+    </tr>
+    <tr>
+      <th>Period</th>
+      <td>
+        <input type="time" step="15" bind:value={args.per} />
+      </td>
+    </tr>
+    <tr>
+      <th>Day-Interval</th>
+      <td>
+        <input type="number" bind:value={args.di} />
+      </td>
+    </tr>
+    <tr>
+      <th>Daily Begin</th>
+      <td>
+        <input type="time" bind:value={args.sb} />
+      </td>
+    </tr>
+    <tr>
+      <th>Daily End</th>
+      <td>
+        <input type="time" bind:value={args.se} />
+      </td>
+    </tr>
+    <tr>
+      <th>Ignore RainSensor</th>
+      <td>
+        <input type="checkbox" bind:checked={args.ir} />
+      </td>
+    </tr>
+    <tr>
+      <th>Ignore Pause</th>
+      <td>
+        <input type="checkbox" bind:checked={args.ip} />
+      </td>
+    </tr>
+  </tbody>
 </table>
 
 <button type="button" on:click={post_timer}>Save</button>

@@ -36,19 +36,20 @@
 </script>
 
 <table class="bg-transparent">
-  <tr>
-    <th>#</th>
-    <th>{$_('app.zoneName')}</th>
-    <th>{$_('app.hide')}</th>
-  </tr>
-  {#each { length: $ZoneCount } as _, i}
+  <tbody>
     <tr>
-      <th>{i}</th>
-      <Zone zoneIdx={i} {zoneNames} />
+      <th>#</th>
+      <th>{$_("app.zoneName")}</th>
+      <th>{$_("app.hide")}</th>
     </tr>
-  {/each}
-
+    {#each { length: $ZoneCount } as _, i}
+      <tr>
+        <th>{i}</th>
+        <Zone zoneIdx={i} {zoneNames} />
+      </tr>
+    {/each}
+  </tbody>
 </table>
 
-<button on:click={postZoneNames}>{$_('app.save')}</button>
+<button on:click={postZoneNames}>{$_("app.save")}</button>
 <br />

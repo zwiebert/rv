@@ -1,7 +1,7 @@
 <script>
   import { _ } from "../services/i18n";
   import { Z, ZoneDurationMmss, ZoneRemainingMmss } from "../store/curr_zone";
-  import { McuTime  } from "../store/mcu_firmware";
+  import { McuTime } from "../store/mcu_firmware";
 
   import * as httpFetch from "../app/fetch.js";
   import * as httpResp from "../app/http_resp.js";
@@ -29,13 +29,12 @@
   }
   $: {
     sel_zone_idx;
-      get_zone(sel_zone_idx);
+    get_zone(sel_zone_idx);
   }
 
   $: {
     sel_adapter_idx;
-      get_adapter(sel_adapter_idx);
-    
+    get_adapter(sel_adapter_idx);
   }
   function new_zones() {
     for (let i = 0; sel_zone_idx < 0 && i < zones.length; ++i) {
@@ -46,7 +45,6 @@
     for (let i = 0; i < zones.length; ++i) {
       set_zone_exists(i, zones[i] !== null && zones[i].flags.exists);
     }
-
   }
   $: {
     zones;
@@ -75,18 +73,18 @@
   }
   function get_zone(idx) {
     if (sel_zone_idx < zones.length && zones[sel_zone_idx]) {
-    const key = "zone." + idx;
-    let obj = { json: { auto: { get: {} } } };
-    obj.json.auto.get[key] = {};
-    httpFetch.http_postRequest("/cmd.json", obj);
+      const key = "zone." + idx;
+      let obj = { json: { auto: { get: {} } } };
+      obj.json.auto.get[key] = {};
+      httpFetch.http_postRequest("/cmd.json", obj);
     }
   }
   function get_adapter(idx) {
     if (sel_adapter_idx < adapters.length && adapters[sel_adapter_idx]) {
-    const key = "adapter." + idx;
-    let obj = { json: { auto: { get: {} } } };
-    obj.json.auto.get[key] = {};
-    httpFetch.http_postRequest("/cmd.json", obj);
+      const key = "adapter." + idx;
+      let obj = { json: { auto: { get: {} } } };
+      obj.json.auto.get[key] = {};
+      httpFetch.http_postRequest("/cmd.json", obj);
     }
   }
   function get_zones() {
@@ -180,7 +178,7 @@
 </script>
 
 <div class="main-area">
-<h3>Weather Controlled Timers</h3>
+  <h3>Weather Controlled Timers</h3>
   <div class="text-center">
     <SelectZone />
   </div>
@@ -208,122 +206,126 @@
       <hr />
 
       <table class="border-none">
-        <tr>
-          <th>BeforeSunrise</th><td>
-            <input type="number" min="0" step="30" bind:value={zones[sel_zone_idx].attr.before_sunrise_s} style="width:8ch;" />
-            {zones[sel_zone_idx].attr.before_sunrise_s / 60} min
-          </td>
-        </tr>
-        <tr>
-          <th>Duration</th><td>
-            <input type="number" min="0" step="30" bind:value={zones[sel_zone_idx].attr.duration_s} style="width:8ch;" />
-            {zones[sel_zone_idx].attr.duration_s / 60} min
-          </td>
-        </tr>
-        <tr>
-          <th>Interval</th><td>
-            <input type="number" min="0" step="3600" bind:value={zones[sel_zone_idx].attr.interval_s} style="width:8ch;" />
-            {secs_to_dh(zones[sel_zone_idx].attr.interval_s)}
-          </td>
-        </tr>
-        <tr>
-          <th>Ignore Rain Sensor</th><td>
-            <input type="checkbox" bind:checked={zones[sel_zone_idx].flags.ignore_rain} style="width:8ch;" />
-          </td>
-        </tr>
-        <tr>
-          <th>Adapter</th>
-          <td>
-            <select bind:value={zones[sel_zone_idx].attr.adapter}>
-              {#each adapters as v, i}
-                {#if v !== null && v.flags.exists}
-                  <option value={i}>{v.name} </option>
-                {/if}
-              {/each}
-            </select>
-            <button
-              type="button"
-              on:click={() => {
-                for (let i = 0; i < adapters.length; ++i) {
-                  if (!adapters[i].flags.exists) {
-                    adapter_add([i]);
-                    break;
+        <tbody>
+          <tr>
+            <th>BeforeSunrise</th><td>
+              <input type="number" min="0" step="30" bind:value={zones[sel_zone_idx].attr.before_sunrise_s} style="width:8ch;" />
+              {zones[sel_zone_idx].attr.before_sunrise_s / 60} min
+            </td>
+          </tr>
+          <tr>
+            <th>Duration</th><td>
+              <input type="number" min="0" step="30" bind:value={zones[sel_zone_idx].attr.duration_s} style="width:8ch;" />
+              {zones[sel_zone_idx].attr.duration_s / 60} min
+            </td>
+          </tr>
+          <tr>
+            <th>Interval</th><td>
+              <input type="number" min="0" step="3600" bind:value={zones[sel_zone_idx].attr.interval_s} style="width:8ch;" />
+              {secs_to_dh(zones[sel_zone_idx].attr.interval_s)}
+            </td>
+          </tr>
+          <tr>
+            <th>Ignore Rain Sensor</th><td>
+              <input type="checkbox" bind:checked={zones[sel_zone_idx].flags.ignore_rain} style="width:8ch;" />
+            </td>
+          </tr>
+          <tr>
+            <th>Adapter</th>
+            <td>
+              <select bind:value={zones[sel_zone_idx].attr.adapter}>
+                {#each adapters as v, i}
+                  {#if v !== null && v.flags.exists}
+                    <option value={i}>{v.name} </option>
+                  {/if}
+                {/each}
+              </select>
+              <button
+                type="button"
+                on:click={() => {
+                  for (let i = 0; i < adapters.length; ++i) {
+                    if (!adapters[i].flags.exists) {
+                      adapter_add([i]);
+                      break;
+                    }
                   }
-                }
-              }}>+</button
-            >
-            <button
-              type="button"
-              on:click={() => {
-                adapter_rm([sel_adapter_idx]);
-              }}>-</button
-            >
-          </td>
-        </tr>
+                }}>+</button
+              >
+              <button
+                type="button"
+                on:click={() => {
+                  adapter_rm([sel_adapter_idx]);
+                }}>-</button
+              >
+            </td>
+          </tr>
+        </tbody>
       </table>
 
       {#if sel_adapter_idx > 0 && sel_adapter_idx < adapters.length && adapters[sel_adapter_idx]}
         <div class="area">
           <h4 class="text-center">Adapter Settings</h4>
           <table class="border-none w-full">
-            <tr>
-              <th>Name</th><td>
-                <input type="text" disabled={adapters[sel_adapter_idx].flags.read_only} bind:value={adapters[sel_adapter_idx].name} style="width:20ch;" />
-              </td>
-            </tr>
-            <tr>
-              <th>Temp</th><td>{adapters[sel_adapter_idx].temp}</td>
-              <td
-                ><input
-                  type="range"
-                  disabled={adapters[sel_adapter_idx].flags.read_only}
-                  bind:value={adapters[sel_adapter_idx].temp}
-                  min="0.006"
-                  max="0.6"
-                  step="0.01"
-                /></td
-              >
-            </tr>
-            <tr>
-              <th>Humi</th><td>{adapters[sel_adapter_idx].humi}</td>
-              <td
-                ><input
-                  type="range"
-                  disabled={adapters[sel_adapter_idx].flags.read_only}
-                  bind:value={adapters[sel_adapter_idx].humi}
-                  min="0.001"
-                  max="0.1"
-                  step="0.001"
-                  a
-                /></td
-              >
-            </tr>
-            <tr>
-              <th>Wind</th><td>{adapters[sel_adapter_idx].wind}</td>
-              <td
-                ><input
-                  type="range"
-                  disabled={adapters[sel_adapter_idx].flags.read_only}
-                  bind:value={adapters[sel_adapter_idx].wind}
-                  min="0.0001"
-                  max="0.01"
-                  step="0.001"
-                /></td
-              >
-            </tr>
-            <tr> </tr><tr>
-              <th>Clouds</th><td>{adapters[sel_adapter_idx].clouds}</td>
-              <td
-                ><input
-                  type="range"
-                  disabled={adapters[sel_adapter_idx].flags.read_only}
-                  bind:value={adapters[sel_adapter_idx].clouds}
-                  min="0.001"
-                  max="0.1"
-                  step="0.001"
-                /></td
-              >
-            </tr>
+            <tbody>
+              <tr>
+                <th>Name</th><td>
+                  <input type="text" disabled={adapters[sel_adapter_idx].flags.read_only} bind:value={adapters[sel_adapter_idx].name} style="width:20ch;" />
+                </td>
+              </tr>
+              <tr>
+                <th>Temp</th><td>{adapters[sel_adapter_idx].temp}</td>
+                <td
+                  ><input
+                    type="range"
+                    disabled={adapters[sel_adapter_idx].flags.read_only}
+                    bind:value={adapters[sel_adapter_idx].temp}
+                    min="0.006"
+                    max="0.6"
+                    step="0.01"
+                  /></td
+                >
+              </tr>
+              <tr>
+                <th>Humi</th><td>{adapters[sel_adapter_idx].humi}</td>
+                <td
+                  ><input
+                    type="range"
+                    disabled={adapters[sel_adapter_idx].flags.read_only}
+                    bind:value={adapters[sel_adapter_idx].humi}
+                    min="0.001"
+                    max="0.1"
+                    step="0.001"
+                    a
+                  /></td
+                >
+              </tr>
+              <tr>
+                <th>Wind</th><td>{adapters[sel_adapter_idx].wind}</td>
+                <td
+                  ><input
+                    type="range"
+                    disabled={adapters[sel_adapter_idx].flags.read_only}
+                    bind:value={adapters[sel_adapter_idx].wind}
+                    min="0.0001"
+                    max="0.01"
+                    step="0.001"
+                  /></td
+                >
+              </tr>
+              <tr> </tr><tr>
+                <th>Clouds</th><td>{adapters[sel_adapter_idx].clouds}</td>
+                <td
+                  ><input
+                    type="range"
+                    disabled={adapters[sel_adapter_idx].flags.read_only}
+                    bind:value={adapters[sel_adapter_idx].clouds}
+                    min="0.001"
+                    max="0.1"
+                    step="0.001"
+                  /></td
+                >
+              </tr>
+            </tbody>
           </table>
           <button type="button" on:click={get_data}>Reload Adapter</button>
           <button
