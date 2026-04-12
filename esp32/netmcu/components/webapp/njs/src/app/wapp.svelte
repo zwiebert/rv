@@ -19,27 +19,31 @@
   $: tabIdxSettings = $TabIdx["settings"] || 0;
 </script>
 
-<style lang="scss">
-  @use "../styles/app.scss";
-</style>
-
 <div id="navTabs" class="flex flex-col items-center px-1 border-none">
   <div class="navtab-main">
-    <NavTabs nav_tabs={[
-      { name:$_('app.nav_main_rv'), idx:0},
-      { name:$_('app.nav_main_config'), idx:1},
-      { name: 'Maintenance', idx:2},
-      {name: 'Timers', idx:3 },
-      {name:'Auto', idx:4}]} name="main" />
+    <NavTabs
+      nav_tabs={[
+        { name: $_("app.nav_main_rv"), idx: 0 },
+        { name: $_("app.nav_main_config"), idx: 1 },
+        { name: "Maintenance", idx: 2 },
+        { name: "Timers", idx: 3 },
+        { name: "Auto", idx: 4 },
+      ]}
+      name="main"
+    />
   </div>
   {#if !tabIdxMain}
     <PaneRvControl />
   {:else if tabIdxMain === 1}
     <div class="navtab-sub">
-      <NavTabs nav_tabs={
-        [{name:$_('app.nav_cfg_netMcu'),idx:0},
-        {name: $_('app.nav_cfg_rv'),idx:1},
-        {name: $_('app.nav_main_firmware'), idx:2}]} name="cfg" />
+      <NavTabs
+        nav_tabs={[
+          { name: $_("app.nav_cfg_netMcu"), idx: 0 },
+          { name: $_("app.nav_cfg_rv"), idx: 1 },
+          { name: $_("app.nav_main_firmware"), idx: 2 },
+        ]}
+        name="cfg"
+      />
     </div>
     {#if !tabIdxCfg}
       <PaneMcuSettings />
@@ -47,7 +51,13 @@
       <PaneRvSettings />
     {:else if tabIdxCfg === 2}
       <div class="navtab-sub2">
-        <NavTabs nav_tabs={[{name:$_('app.nav_fw_netMcu'),idx:0}, {name:$_('app.nav_fw_rv'), idx:1}]} name="fw" />
+        <NavTabs
+          nav_tabs={[
+            { name: $_("app.nav_fw_netMcu"), idx: 0 },
+            { name: $_("app.nav_fw_rv"), idx: 1 },
+          ]}
+          name="fw"
+        />
       </div>
       {#if !tabIdxFw}
         <PaneFirmwareEsp32 />
@@ -58,8 +68,8 @@
   {:else if tabIdxMain === 2}
     <PaneZoneMaintenance />
   {:else if tabIdxMain === 3}
-     <PaneZoneTimers />
+    <PaneZoneTimers />
   {:else if tabIdxMain === 4}
-     <PaneFullAuto />
+    <PaneFullAuto />
   {/if}
 </div>

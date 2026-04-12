@@ -26,7 +26,6 @@
   {$_('app.rainSensor')}
 </span>
 
-<!--
 <div class="h-8 w-8 text-gray-800">
 {#if $RainSensorStatus}
 <WiRain />
@@ -34,4 +33,3 @@
 <WiDaySunny />
 {/if}
 </div>
--->
