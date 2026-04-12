@@ -30,4 +30,4 @@
   </tbody>
 </table>
 
-<button on:click={postZoneData2}>{$_("app.save")}</button>
+<button onclick={postZoneData2}>{$_("app.save")}</button>

@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
-import tailwindcss from '@tailwindcss/vite'
-
+import tailwindcss from "@tailwindcss/vite";
 
 // --- CHANGE THIS IP AS NEEDED ---
 const ESP_IP = "192.168.1.71";
@@ -18,9 +17,18 @@ export default defineConfig(({ mode }) => {
       isProduction: isProduction,
       isDistro: process.env.DISTRO === "1",
     },
-    plugins: [svelte(),
+    plugins: [
+      svelte({
+        onwarn: (warning, handler) => {
+          const { code, frame } = warning;
+          // console.log(code); // <= uncomment to check other warnings
+          if (code === "css_unused_selector") return;
+          if (code === "a11y_invalid_attribute") return;
+          handler(warning);
+        },
+      }),
       tailwindcss(),
-     ],
+    ],
     base: isGithub ? "/r19xr25-esp32/" : isProduction ? "/f/" : "/",
 
     build: {
@@ -47,8 +55,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 3002,
-      watch: {
-      },
+      watch: {},
       proxy: {
         // JSON files and /f/ paths
         "^(.*)\\.json$": {

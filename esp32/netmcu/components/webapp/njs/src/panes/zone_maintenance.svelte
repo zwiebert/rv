@@ -36,8 +36,8 @@
 
   <div class="area text-center">
   <h4>One Minute Test</h4>
-    <button class="text-xl p-8 m-2" on:click={onClickRun}>Start</button>
-    <button class="text-xl p-8 m-2" on:click={onClickStop}>Stop</button>
+    <button class="text-xl p-8 m-2" onclick={onClickRun}>Start</button>
+    <button class="text-xl p-8 m-2" onclick={onClickStop}>Stop</button>
     <hr />
     <p>{$_('app.duration')}: {$ZoneDurationMmss} {$_('app.remaining')}: {$ZoneRemainingMmss}</p>
     <hr />

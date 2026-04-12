@@ -149,4 +149,4 @@
   </tbody>
 </table>
 
-<button type="button" on:click={post_timer}>Save</button>
+<button type="button" onclick={post_timer}>Save</button>

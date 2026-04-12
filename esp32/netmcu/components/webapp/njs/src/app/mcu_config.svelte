@@ -444,15 +444,15 @@
 {/if}
 
 <br />
-<button id="crlb" type="button" on:click={hClick_Reload}>
+<button id="crlb" type="button" onclick={hClick_Reload}>
   {$_("app.reload")}
 </button>
-<button id="csvb" type="button" on:click={hClick_Save}>
+<button id="csvb" type="button" onclick={hClick_Save}>
   {$_("app.save")}
 </button>
 <br />
 <br />
-<button id="mrtb" type="button" on:click={() => req_mcuRestart()}>
+<button id="mrtb" type="button" onclick={() => req_mcuRestart()}>
   {$_("app.restartMcu")}
 </button>
 <br />

@@ -23,7 +23,7 @@
 
   <div class="text-right">
     <button
-      on:click={() =>
+      onclick={() =>
         httpFetch.http_fetchByMask(
           httpFetch.FETCH_ZONE_DURATIONS | httpFetch.FETCH_ZONE_REMAINING_DURATIONS | httpFetch.FETCH_ZONE_NAMES | httpFetch.FETCH_RV_STATUS,
         )}

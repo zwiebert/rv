@@ -188,7 +188,7 @@
       <input
         type="checkbox"
         bind:checked={zones_exists[sel_zone_idx]}
-        on:change={() => {
+        onchange={() => {
           const mel = get_modified_existences();
           let obj = { json: { auto: { update: {} } } };
           for (let i of mel) {
@@ -242,7 +242,7 @@
               </select>
               <button
                 type="button"
-                on:click={() => {
+                onclick={() => {
                   for (let i = 0; i < adapters.length; ++i) {
                     if (!adapters[i].flags.exists) {
                       adapter_add([i]);
@@ -253,7 +253,7 @@
               >
               <button
                 type="button"
-                on:click={() => {
+                onclick={() => {
                   adapter_rm([sel_adapter_idx]);
                 }}>-</button
               >
@@ -327,10 +327,10 @@
               </tr>
             </tbody>
           </table>
-          <button type="button" on:click={get_data}>Reload Adapter</button>
+          <button type="button" onclick={get_data}>Reload Adapter</button>
           <button
             type="button"
-            on:click={() => {
+            onclick={() => {
               get_modified_existences();
               const key = "adapter." + sel_adapter_idx;
               let obj = { json: { auto: { update: {} } } };
@@ -340,22 +340,22 @@
           >
         </div>
       {/if}
-      <button type="button" on:click={get_data}>Reload</button>
-      <button type="button" on:click={get_zones}>Reload Zones</button>
+      <button type="button" onclick={get_data}>Reload</button>
+      <button type="button" onclick={get_zones}>Reload Zones</button>
       <button
         type="button"
-        on:click={() => {
+        onclick={() => {
           get_zone(sel_zone_idx);
         }}>Reload Zone</button
       >
-      <button type="button" on:click={save_zone}>Apply Changes</button>
+      <button type="button" onclick={save_zone}>Apply Changes</button>
     {/if}
   </div>
 
   <hr />
   <button
     type="button"
-    on:click={() => {
+    onclick={() => {
       let obj = { json: { auto: { command: { save: "" } } } };
       httpFetch.http_postRequest("/cmd.json", obj);
     }}>Save</button
@@ -363,7 +363,7 @@
 
   <button
     type="button"
-    on:click={() => {
+    onclick={() => {
       let obj = { json: { auto: { command: { restore: "" } } } };
       httpFetch.http_postRequest("/cmd.json", obj);
       get_zones();

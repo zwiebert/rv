@@ -51,5 +51,5 @@
   </tbody>
 </table>
 
-<button on:click={postZoneNames}>{$_("app.save")}</button>
+<button onclick={postZoneNames}>{$_("app.save")}</button>
 <br />

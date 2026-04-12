@@ -27,6 +27,6 @@
   <input class="w-16 text-right" type="number" value={duration} id="dur{zoneIdx}" />
 </td>
 <td>
-  <input type="checkbox" {checked} on:click={onClickRun} id="zrun{zoneIdx}" />
+  <input type="checkbox" {checked} onclick={onClickRun} id="zrun{zoneIdx}" />
 </td>
 <td>{remaining_mmss}</td>
