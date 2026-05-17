@@ -32,7 +32,8 @@
 		"sveltejs-tippy": "^3.0.0",
 		"tailwindcss": "^4.2.2",
 		"uplot": "^1.6.32",
-		"vite": "^8.0.7"
+		"vite": "^8.0.7",
+		"vite-plugin-compression2": "^2.5.3"
 	},
 	"jshintConfig": {
 		"esversion": 6,

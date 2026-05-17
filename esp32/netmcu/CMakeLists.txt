@@ -7,10 +7,11 @@ option(CMAKE_EXPORT_COMPILE_COMMANDS "generate compilation database for clang-ti
 option(BUILD_DOXY "build doxy docs" OFF)
 option(ASAN "enable compiler sanitizer" OFF)
 option(GPROF "enable gprof" OFF)
+option(LINKER_DEMANGLE "set linker option --demangle" ON)
 
 # find local versions of my components (MonoRepo-like)
 # make sure this relative path does not work when building binary-dist
-set(EXTRA_COMPONENT_DIRS "")
+set(EXTRA_COMPONENT_DIRS ${CMAKE_CURRENT_LIST_DIR}/components)
 if(NOT DEFINED ENV{DISTRO})
   set(master_components_dir "${CMAKE_CURRENT_LIST_DIR}/../../../libs")
   file(GLOB master_components LIST_DIRECTORIES YES  ${master_components_dir}/*/components)
@@ -25,6 +26,9 @@ if("${PRESET_NAME}" STREQUAL "host-test" OR ${BUILD_HOST_TESTS} STREQUAL "ON")
 
 ### Unit Testing On Host Project
 
+
+set(ESP_PLATFORM TRUE)
+set(IDF_TARGET "linux")
 set(TARGET_PLATFORM_FILTER "host/.*")
 
 project(rv-netmcu-tests)
@@ -43,10 +47,7 @@ file(COPY ${CMAKE_CURRENT_LIST_DIR}/configs/host-test/config/sdkconfig.cmake DES
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/configs/host-test/config/sdkconfig.json DESTINATION ${PROJECT_BINARY_DIR}/config)
 endif()
 
-
-set(comp_compile_feats cxx_std_20)
-set(comp_compile_opts -O0 -ggdb  # -fanalyzer
-)
+set(CMAKE_CXX_STANDARD 20)
 
 if(${GPROF})
   add_link_options(-pg)
@@ -76,7 +77,6 @@ endif()
 
 set(PROJECT_NAME "rv-netmcu")
 
-option(LINKER_DEMANGLE "set linker option --demangle" OFF)
 
 
 set(COMPONENTS rv_netmcu
@@ -86,10 +86,6 @@ set(COMPONENTS rv_netmcu
 
 
 #set environment variables to be used in components
-set(comp_compile_feats cxx_std_20)
-set(comp_compile_opts 
- -Wno-error=switch
- -Wno-missing-field-initializers)
 
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
@@ -103,21 +99,10 @@ add_compile_definitions(DISTRIBUTION)
 endif()
 
 if(${LINKER_DEMANGLE})
-  add_link_options(-Wl,--demangle)
+  list(APPEND EXTRA_LDFLAGS "-Wl,--demangle")
 endif()
 
-
-function(component_compile_features)
-    target_compile_features(${COMPONENT_LIB} PRIVATE ${ARGV})
-endfunction()
-
-project(netmcu esptool_py)
-#set_target_properties(__idf_stm32 PROPERTIES LINK_INTERFACE_MULTIPLICITY 3)
-
-##########################################################################
-
-
-include(CTest)
+project(netmcu)
 
 
 endif()

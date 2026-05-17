@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import tailwindcss from "@tailwindcss/vite";
+import compression from "vite-plugin-compression2";
 
 // --- CHANGE THIS IP AS NEEDED ---
 const ESP_IP = "192.168.1.71";
@@ -12,6 +13,9 @@ const wsTarget = `ws://${ESP_IP}`;
 
 export default defineConfig(({ mode }) => {
   const isGithub = mode === "github";
+  const isMcu = mode === "mcu";
+  const isHost = mode === "host";
+
   return {
     define: {
       isProduction: isProduction,
@@ -28,8 +32,26 @@ export default defineConfig(({ mode }) => {
         },
       }),
       tailwindcss(),
+      // Generates .gz files
+      compression({
+        algorithm: "gzip",
+        exclude: [/\.(br)$/, /\.(gz)$/],
+        include: /\.(html|css||js|map)$/,
+      }),
+      // Generates .br files
+      compression({
+        algorithm: "brotliCompress",
+        exclude: [/\.(br)$/, /\.(gz)$/],
+        include: /\.(html|css|js|map)$/,
+      }),
     ],
-    base: isGithub ? "/r19xr25-esp32/" : isProduction ? "/f/" : "/",
+    base: isGithub ? "./" : isProduction ? "/f/" : "/",
+    test: {
+      // Allows you to use 'describe', 'it', 'expect' without importing them
+      globals: true,
+      // Uses a browser-like environment (requires: npm install -D jsdom)
+      environment: "jsdom",
+    },
 
     build: {
       outDir: isGithub ? "dist-gh" : build_directory,
@@ -37,6 +59,8 @@ export default defineConfig(({ mode }) => {
       cssCodeSplit: isGithub, // Allow splitting on GitHub for performance
 
       rollupOptions: {
+        input: isGithub ? "index.html" : "wapp.html",
+
         output: isGithub
           ? {
               // Standard GitHub Pages settings (hashed)

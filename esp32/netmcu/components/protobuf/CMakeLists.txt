@@ -18,8 +18,6 @@ idf_component_register(
     REQUIRES nanopb
    )
  
-component_compile_options(${comp_compile_opts})
-component_compile_features(${comp_compile_feats})
 
  if(!TEST_HOST)
  add_custom_command(

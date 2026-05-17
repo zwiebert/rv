@@ -8,25 +8,26 @@ set(srcs
     app_cli/parm_status.cc
     app_cli/obj_json.cc
     
-    app_main/esp32/main.cc app_main/esp32/main_setup.cc app_main/esp32/main_loop.cc
-    app_main/esp32/unity_setup.cc app_main/esp32/main_loop_periodic.cc
+    
  
-    app_misc/rtc.cc  app_misc/watch_dog.cc  app_misc/esp32/kvstore.cc  app_misc/opt_map.cc
+    app_misc/rtc.cc  app_misc/watch_dog.cc    app_misc/opt_map.cc
 
-    app_net/esp32/gw_ping.cc
+    
 
     app_uout/so_print.cc app_uout/so_write_msg.cc app_uout/so_write_config.cc app_uout/callbacks.cc
 
     app_mqtt/mqtt.cc
     
     app_settings/config.cc app_settings/config_kvs.cc app_settings/config_comps.cc app_settings/app_settings.cc 
-    app_http_server/esp32/uri_handlers.cc app_http_server/web_content.cc
+    app_http_server/web_content.cc
     
-    stm32_com/esp32/com_task.cc stm32_com/stm32_commands.cc
+    stm32_com/stm32_commands.cc
     ../../../../stm32/rv/src/main/rv/rv_timer_args.cc
     
-    
 )
+set(platform_srcs app_net/esp32/gw_ping.cc app_main/esp32/main.cc app_main/esp32/main_setup.cc app_main/esp32/main_loop.cc
+    app_main/esp32/unity_setup.cc app_main/esp32/main_loop_periodic.cc app_misc/esp32/kvstore.cc app_http_server/esp32/uri_handlers.cc stm32_com/esp32/com_task.cc)
+include("${CMAKE_CURRENT_LIST_DIR}/../../source_filter.cmake")
 
 # Add experimental host sources, which are not yet part of the firmware
 if (TEST_HOST)
@@ -59,5 +60,5 @@ idf_component_register(
     EMBED_TXTFILES app_misc/ca_cert.pem
 )
  
-component_compile_options(${comp_compile_opts})
-component_compile_features(${comp_compile_feats})
+target_compile_options(${COMPONENT_LIB} PRIVATE "SHELL:-include sdkconfig.h")
+target_link_options(${COMPONENT_LIB} PRIVATE "-Wl,--demangle")
